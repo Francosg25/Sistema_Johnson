@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Johnson Electric - Dashboard</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="bg-light">
+    <div class="container mt-5">
+        <h2 th:text="${titulo}" class="mb-4"></h2>
+        
+        <div class="card shadow">
+            <div class="card-body">
+                <table class="table table-hover">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>Proyecto</th>
+                            <th>N° de Parte</th>
+                            <th>Cliente</th>
+                            <th>SOP Date</th>
+                            <th>Estado</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="p : ${proyectos}">
+                            <td th:text="${p.nombre}"></td>
+                            <td th:text="${p.numeroParte}"></td>
+                            <td th:text="${p.cliente}"></td>
+                            <td th:text="${p.fechaSOP}"></td>
+                            <td>
+                                <span class="badge" 
+                                      th:classappend="${p.estado == 'NEEDS_ACTION' ? 'bg-danger' : 'bg-success'}"
+                                      th:text="${p.estado}"></span>
+                            </td>
+                        </tr>
+                        <tr th:if="${#lists.isEmpty(proyectos)}">
+                            <td colspan="5" class="text-center">No hay proyectos registrados actualmente.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

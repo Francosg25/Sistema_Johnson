@@ -26,9 +26,9 @@ public class Proyecto {
 
     private String cliente;
 
-    private LocalDate fechaSOP; // Fecha de Start of Production
+    private LocalDate fechaSOP;
 
-    private String estado; // e.g. ON_TRACK, NEEDS_ACTION, COMPLETED
+    private String estado; 
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "responsable_id")
