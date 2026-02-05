@@ -1,0 +1,28 @@
+body {
+    font-family: 'Inter', sans-serif;
+    background-color: #f4f6f9; /* Gris muy claro moderno */
+}
+.card {
+    border: none;
+    border-radius: 12px; /* Bordes redondeados modernos */
+    box-shadow: 0 2px 12px rgba(0,0,0,0.08); /* Sombra suave */
+    transition: transform 0.2s;
+}
+.card:hover {
+   transform: translateY(-3px); /* Pequeño efecto al pasar el mouse */
+}
+.table thead th {
+    border-top: none;
+    background-color: #f8f9fa;
+    color: #6c757d;
+    font-weight: 600;
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+.btn-primary {
+    background-color: #0d6efd; /* Azul moderno */
+    border-radius: 8px;
+    padding: 0.6rem 1.2rem;
+    font-weight: 600;
+}

@@ -21,7 +21,7 @@ public class Adjunto {
     private String tipoContenido;
 
     @Column(nullable = false)
-    private String ruta; // filesystem path
+    private String ruta; 
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "subido_por_id")
