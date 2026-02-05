@@ -1,20 +1,17 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
-<head th:replace="fragments/head :: head"></head>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/head :: head}"></head>
 <body class="bg-light">
 
     <div class="d-flex" id="wrapper">
         <div id="sidebar-wrapper">
             <div th:replace="~{fragments/sidebar :: sidebar}"></div>
         </div>
-        <a th:href="@{/proyectos/{id}/checklist(id=${p.id})}" class="btn btn-sm btn-outline-secondary me-2" title="Ver PPAP">
-            <i class="bi bi-list-check"></i>
-        </a>
 
         <div id="page-content-wrapper">
-            <div th:replace="fragments/header :: header"></div>
+            <div th:replace="~{fragments/header :: header}"></div>
+            
             <main class="container-fluid p-4">
-                
                 <div class="d-flex justify-content-between align-items-center mb-4">
                     <div>
                         <h1 class="h3 mb-0 text-dark fw-bold">Dashboard APQP/PPAP</h1>
@@ -26,42 +23,11 @@
                 </div>
 
                 <div class="row mb-4">
-                    <div class="col-md-6 col-xl-3 mb-3 mb-xl-0">
-                        <div class="card h-100 shadow-sm border-0">
-                            <div class="card-body d-flex align-items-center">
-                                <div class="flex-grow-1">
-                                    <h6 class="text-muted fw-normal mb-1">Proyectos Activos</h6>
-                                    <h2 class="mb-0 fw-bold" th:text="${#lists.size(proyectos)}">0</h2>
-                                </div>
-                                <div class="ms-3 bg-primary bg-opacity-10 text-primary rounded-circle p-3">
-                                     <i class="bi bi-folder2-open fs-3"></i>
-                                </div>
-                            </div>
-                        </div>
                     </div>
-                    
-                    <div class="col-md-6 col-xl-3 mb-3 mb-xl-0">
-                        <div class="card h-100 shadow-sm border-0 border-start border-4 border-danger">
-                            <div class="card-body d-flex align-items-center">
-                                <div class="flex-grow-1">
-                                     <h6 class="text-muted fw-normal mb-1">Requieren Atención</h6>
-                                    <h2 class="mb-0 fw-bold text-danger">0</h2> 
-                                </div>
-                                <div class="ms-3 bg-danger bg-opacity-10 text-danger rounded-circle p-3">
-                                    <i class="bi bi-exclamation-triangle-fill fs-3"></i>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
 
                 <div class="card shadow-sm border-0">
                     <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center border-bottom-0">
                         <h5 class="m-0 fw-bold text-primary">Proyectos Recientes</h5>
-                         <div class="input-group w-auto">
-                             <span class="input-group-text bg-light border-end-0"><i class="bi bi-search"></i></span>
-                             <input type="text" class="form-control bg-light border-start-0" placeholder="Buscar...">
-                         </div>
                     </div>
                     <div class="card-body p-0">
                         <div class="table-responsive">
@@ -100,11 +66,17 @@
                                                   th:classappend="${p.estado == 'NEEDS_ACTION' ? 'bg-danger' : 'bg-success'}"
                                                   th:text="${p.estado == null ? 'On Track' : p.estado}">On Track</span>
                                         </td>
+                                        
                                         <td class="text-end pe-4">
-                                            <a href="#" class="btn btn-sm btn-light border" title="Ver PPAP"><i class="bi bi-eye"></i></a>
+                                            <a th:href="@{/proyectos/{id}/checklist(id=${p.id})}" 
+                                               class="btn btn-sm btn-light border" 
+                                               title="Ver PPAP" 
+                                               data-bs-toggle="tooltip">
+                                                <i class="bi bi-list-check"></i>
+                                            </a>
                                         </td>
                                     </tr>
-                                     <tr th:if="${#lists.isEmpty(proyectos)}">
+                                    <tr th:if="${#lists.isEmpty(proyectos)}">
                                         <td colspan="6" class="text-center py-5 text-muted">
                                             <i class="bi bi-inbox fs-1 d-block mb-3 text-secondary"></i>
                                             <p>No hay proyectos registrados aún.</p>

@@ -1,11 +1,10 @@
 package com.johnson.practica.config;
 
 import com.johnson.practica.model.CatalogoElemento;
-import com.johnson.practica.repositorio.CatalogoElementoRepositorio;
+import com.johnson.practica.repositorio.CatalogoElementoRepositorio; 
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-
 import java.util.Arrays;
 import java.util.List;
 
@@ -15,10 +14,7 @@ public class ChecklistSemilla {
     @Bean
     CommandLineRunner initDatabase(CatalogoElementoRepositorio repositorio) {
         return args -> {
-            // Solo ejecutamos si la tabla está vacía
             if (repositorio.count() == 0) {
-                
-                // Lista basada en tu archivo CSV '16.csv'
                 List<String> nombresPPAP = Arrays.asList(
                     "1. Registros de Diseño", "2. Cambios de Ingeniería", 
                     "3. Aprobación Ingeniería Cliente", "4. DFMEA", 
@@ -33,16 +29,13 @@ public class ChecklistSemilla {
                 int contador = 1;
                 for (String nombre : nombresPPAP) {
                     CatalogoElemento elemento = new CatalogoElemento();
-                    
                     elemento.setCodigo("PPAP-" + String.format("%02d", contador));
                     elemento.setNombre(nombre);
-                    elemento.setFase("4. PPAP"); 
-                    elemento.setRequerido(true); 
-                    
+                    elemento.setFase("4. PPAP");
+                    elemento.setRequerido(true);
                     repositorio.save(elemento);
                     contador++;
                 }
-                System.out.println("✅ Catálogo PPAP inicializado correctamente.");
             }
         };
     }

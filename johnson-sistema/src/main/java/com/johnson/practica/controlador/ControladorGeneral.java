@@ -5,7 +5,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 @Controller
-public class GeneralController {
+public class ControladorGeneral {
 
     // Ruta segura que evita acceder a checklist sin proyecto: redirige al listado de proyectos
     @GetMapping("/checklist")

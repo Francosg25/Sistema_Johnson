@@ -1,43 +1,44 @@
 package com.johnson.practica.servicio;
 
 import com.johnson.practica.model.*;
-import com.johnson.practica.repositorio.*;
+import com.johnson.practica.repositorio.*; // Importante para ver los repositorios
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
 @Service
-public class ProyectoServicio {
+public class ProyectoServicio { // Nombre de clase en Español
 
     @Autowired
-    private ProyectoRepositorio proyectoRepositorio;
+    private ProyectoRepositorio proyectoRepositorio; // En Español
 
     @Autowired
-    private CatalogoElementoRepositorio catalogoRepositorio;
+    private CatalogoElementoRepositorio catalogoRepositorio; // En Español
 
     @Autowired
-    private ElementoChecklistRepositorio checklistRepositorio;
+    private ElementoChecklistRepositorio checklistRepositorio; // En Español
 
-    // Método principal para guardar proyecto y generar sus 19 puntos
     @Transactional
     public Proyecto guardarProyecto(Proyecto proyecto) {
-        // 1. Guardamos la portada del proyecto: si es nuevo fijamos la fecha de creación
         if (proyecto.getId() == null) {
-            proyecto.setCreadoEn(LocalDateTime.now());
+            // Aseguramos una fecha si no viene
+            proyecto.setFechaSOP(LocalDate.now().plusMonths(6)); 
         }
-
         Proyecto proyectoGuardado = proyectoRepositorio.save(proyecto);
 
-        // 2. Si es nuevo, generamos el checklist automático (si aún no existe)
         if (checklistRepositorio.findByProyectoId(proyectoGuardado.getId()).isEmpty()) {
             generarChecklistInicial(proyectoGuardado);
         }
-
         return proyectoGuardado;
+    }
+
+    // Método necesario para el Controlador
+    public Proyecto buscarPorId(Long id) {
+        return proyectoRepositorio.findById(id).orElse(null);
     }
 
     private void generarChecklistInicial(Proyecto proyecto) {
@@ -45,24 +46,18 @@ public class ProyectoServicio {
         List<ElementoChecklist> nuevosElementos = new ArrayList<>();
 
         for (CatalogoElemento itemBase : catalogo) {
-            ElementoChecklist elemento = ElementoChecklist.builder()
-                    .proyecto(proyecto)
-                    .titulo(itemBase.getNombre()) // Copiamos del catálogo
-                    .fase(itemBase.getFase())     // Copiamos "4. PPAP"
-                    .estado("PENDIENTE")          // Estado inicial
-                    .build();
+            ElementoChecklist elemento = new ElementoChecklist();
+            elemento.setProyecto(proyecto);
+            elemento.setTitulo(itemBase.getNombre());
+            elemento.setFase(itemBase.getFase());
+            elemento.setEstado("ABIERTO");
             
             nuevosElementos.add(elemento);
         }
-        
         checklistRepositorio.saveAll(nuevosElementos);
     }
-    
+
     public List<Proyecto> obtenerTodos() {
         return proyectoRepositorio.findAll();
-    }
-
-    public Proyecto buscarPorId(Long id) {
-        return proyectoRepositorio.findById(id).orElse(null);
     }
 }
