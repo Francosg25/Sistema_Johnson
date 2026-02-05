@@ -12,16 +12,6 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
     
     <link rel="stylesheet" href="/css/style.css">
-        <style>
-            html, body { height: 100%; margin: 0; padding: 0; overflow-x: hidden; }
-            #sidebar-wrapper { position: fixed; top: 0; left: 0; bottom: 0; width: 280px; min-height: 100vh; transition: transform .25s ease; z-index: 1030; }
-            #page-content-wrapper { margin-left: 280px; width: calc(100% - 280px); box-sizing: border-box; }
-            #sidebar-wrapper.collapsed { transform: translateX(-100%); }
-            @media (max-width: 992px) {
-                #sidebar-wrapper { transform: translateX(-100%); }
-                #sidebar-wrapper.show { transform: translateX(0); }
-                #page-content-wrapper { margin-left: 0; width: 100%; }
-            }
-        </style>
+    <script th:src="@{/js/app.js}"></script>
 </head>
 </html>
