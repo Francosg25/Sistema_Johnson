@@ -1,39 +1,50 @@
-<div th:fragment="sidebar" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
-  <nav class="d-flex flex-column p-3 bg-light" style="width: 250px; min-height:100vh;">
-    <a th:href="@{/}" class="d-flex align-items-center mb-3 mb-md-0 me-md-auto text-decoration-none">
-      <span class="fs-4">Johnson - Calidad</span>
-    </a>
-    <hr>
-    <ul class="nav nav-pills flex-column mb-auto">
-      <li class="nav-item">
-        <a th:href="@{/}" class="nav-link link-dark">Dashboard</a>
-      </li>
-      <li>
-        <a th:href="@{/proyectos}" class="nav-link link-dark">Proyectos</a>
-      </li>
-      <li>
-        <a th:href="@{/catalogo}" class="nav-link link-dark">Catálogo de entregables</a>
-      </li>
-      <li>
-        <a th:href="@{/reportes}" class="nav-link link-dark">Reportes</a>
-      </li>
-      <li>
-        <a th:href="@{/checklist}" class="nav-link link-dark">Checklist PPAP</a>
-      </li>
-      <li>
-        <a th:href="@{/adjuntos}" class="nav-link link-dark">Archivos</a>
-      </li>
-    </ul>
+<div th:fragment="sidebar" xmlns:th="http://www.thymeleaf.org">
+    <nav class="d-flex flex-column p-3 text-white bg-dark" style="width: 280px; height: 100vh;">
+        
+        <a th:href="@{/}" class="d-flex align-items-center mb-3 mb-md-0 me-md-auto text-white text-decoration-none">
+            <i class="bi bi-shield-check-fill fs-3 me-2 text-primary"></i>
+            <span class="fs-4 fw-bold">Johnson <span class="text-primary">Electric</span></span>
+        </a>
+        
+        <hr>
+        
+        <ul class="nav nav-pills flex-column mb-auto">
+            <li class="nav-item">
+                <a th:href="@{/}" class="nav-link text-white active bg-primary">
+                    <i class="bi bi-speedometer2 me-2"></i> Dashboard
+                </a>
+            </li>
+            <li>
+                <a th:href="@{/proyectos}" class="nav-link text-white">
+                    <i class="bi bi-folder2-open me-2"></i> Proyectos
+                </a>
+            </li>
+            <li>
+                <a th:href="@{/entregables}" class="nav-link text-white">
+                    <i class="bi bi-list-check me-2"></i> Checklist PPAP
+                </a>
+            </li>
+            <li>
+                <a th:href="@{/reportes}" class="nav-link text-white">
+                     <i class="bi bi-graph-up me-2"></i> Reportes
+                </a>
+            </li>
+        </ul>
 
-    <hr>
-
-    <div class="mt-3">
-      <small class="text-muted">Roles:</small>
-      <div>
-        <span class="badge bg-primary me-1">Gerente</span>
-        <span class="badge bg-secondary me-1">Ingeniero</span>
-        <span class="badge bg-info">Admin</span>
-      </div>
-    </div>
-  </nav>
+        <hr>
+        
+        <div class="dropdown">
+            <a href="#" class="d-flex align-items-center text-white text-decoration-none dropdown-toggle" id="dropdownUser1" data-bs-toggle="dropdown" aria-expanded="false">
+                <div class="rounded-circle bg-secondary d-flex justify-content-center align-items-center me-2" style="width: 32px; height: 32px;">
+                    <i class="bi bi-person-fill"></i>
+                </div>
+                <strong>Ingeniero</strong>
+            </a>
+            <ul class="dropdown-menu dropdown-menu-dark text-small shadow" aria-labelledby="dropdownUser1">
+                <li><a class="dropdown-item" href="#">Configuración</a></li>
+                <li><hr class="dropdown-divider"></li>
+                <li><a class="dropdown-item" href="#">Salir</a></li>
+            </ul>
+        </div>
+    </nav>
 </div>
