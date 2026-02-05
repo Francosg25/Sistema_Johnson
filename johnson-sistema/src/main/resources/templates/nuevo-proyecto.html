@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/head :: head}"></head>
+<body class="bg-light">
+
+    <div class="d-flex" id="wrapper">
+        <div id="sidebar-wrapper"><div th:replace="~{fragments/sidebar :: sidebar}"></div></div>
+
+        <div id="page-content-wrapper" class="w-100">
+            <div th:replace="~{fragments/header :: header}"></div>
+
+            <main class="container p-4">
+                
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h3 class="fw-bold text-dark">Registrar Nuevo Proyecto</h3>
+                    <a href="/" class="btn btn-outline-secondary btn-sm">
+                        <i class="bi bi-arrow-left me-2"></i>Cancelar
+                    </a>
+                </div>
+
+                <div class="card shadow-sm border-0" style="max-width: 800px;">
+                    <div class="card-body p-4">
+                        <form th:action="@{/proyectos/guardar}" th:object="${proyecto}" method="post">
+                            
+                            <h6 class="text-muted text-uppercase mb-3 fw-bold small">Información General (Portada)</h6>
+                            
+                            <div class="row g-3">
+                                <div class="col-md-12">
+                                    <label for="nombre" class="form-label">Nombre del Proyecto</label>
+                                    <input type="text" class="form-control" id="nombre" th:field="*{nombre}" placeholder="Ej: Dahlia Valve Stellantis" required>
+                                </div>
+
+                                <div class="col-md-6">
+                                    <label for="numeroParte" class="form-label">Número de Parte</label>
+                                    <input type="text" class="form-control" id="numeroParte" th:field="*{numeroParte}" placeholder="Ej: 1722-EJB0033" required>
+                                </div>
+
+                                <div class="col-md-6">
+                                    <label for="cliente" class="form-label">Cliente</label>
+                                    <select class="form-select" id="cliente" th:field="*{cliente}">
+                                        <option value="" selected>Seleccionar...</option>
+                                        <option value="Stellantis">Stellantis</option>
+                                        <option value="Ford">Ford</option>
+                                        <option value="General Motors">General Motors</option>
+                                        <option value="Tesla">Tesla</option>
+                                    </select>
+                                </div>
+
+                                <div class="col-md-6">
+                                    <label for="fechaSOP" class="form-label">Fecha SOP (Start of Production)</label>
+                                    <input type="date" class="form-control" id="fechaSOP" th:field="*{fechaSOP}" required>
+                                </div>
+
+                                <div class="col-md-6">
+                                    <label for="responsable" class="form-label">Líder del Proyecto</label>
+                                    <input type="text" class="form-control" value="Ingeniero de Lanzamientos" readonly>
+                                </div>
+                            </div>
+
+                            <hr class="my-4">
+
+                            <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                                <button type="submit" class="btn btn-primary px-4">
+                                    <i class="bi bi-save me-2"></i>Crear Proyecto e Iniciar APQP
+                                </button>
+                            </div>
+
+                        </form>
+                    </div>
+                </div>
+
+            </main>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

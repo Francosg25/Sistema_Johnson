@@ -60,4 +60,13 @@ public class ProyectoServicio { // Nombre de clase en Español
     public List<Proyecto> obtenerTodos() {
         return proyectoRepositorio.findAll();
     }
+
+    @Transactional // Importante para que borre todo junto
+    public void eliminarProyecto(Long id) {
+        List<ElementoChecklist> items = checklistRepositorio.findByProyectoId(id);
+        checklistRepositorio.deleteAll(items);
+        
+        proyectoRepositorio.deleteById(id);
+    }
+    
 }

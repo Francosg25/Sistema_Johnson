@@ -4,106 +4,127 @@
 <body class="bg-light">
 
     <div class="d-flex" id="wrapper">
-        <div th:replace="~{fragments/sidebar :: sidebar}"></div>
+        <div id="sidebar-wrapper"><div th:replace="~{fragments/sidebar :: sidebar}"></div></div>
 
         <div id="page-content-wrapper" class="w-100">
             <div th:replace="~{fragments/header :: header}"></div>
 
-            <main class="container-fluid p-4">
+            <main class="container p-4">
                 
-                <nav aria-label="breadcrumb" class="mb-4">
-                    <ol class="breadcrumb">
-                        <li class="breadcrumb-item"><a href="/" class="text-decoration-none text-muted">Dashboard</a></li>
-                        <li class="breadcrumb-item active text-dark" aria-current="page" th:text="${proyecto.nombre}">Nombre Proyecto</li>
-                    </ol>
-                </nav>
+                <div class="d-flex justify-content-between align-items-end mb-4">
+                    <div>
+                        <h6 class="text-uppercase text-muted small fw-bold mb-1">Proyecto Activo</h6>
+                        <h2 class="fw-bold text-dark mb-0">
+                            <i class="bi bi-box-seam me-2 text-je-orange"></i>
+                            <span th:text="${proyecto.nombre}">Dahlia Valve</span>
+                        </h2>
+                        <span class="badge bg-secondary mt-2" th:text="${proyecto.numeroParte}">PN-12345</span>
+                    </div>
+                    <div>
+                        <button class="btn btn-outline-dark btn-sm me-2"><i class="bi bi-file-earmark-excel"></i> Reporte</button>
+                        <button class="btn btn-primary btn-sm"><i class="bi bi-save"></i> Guardar Avance</button>
+                    </div>
+                </div>
 
-                <div class="card shadow-sm border-0 mb-4">
-                    <div class="card-body">
-                        <div class="row">
-                            <div class="col-md-3 border-end">
-                                <small class="text-uppercase text-muted fw-bold" style="font-size: 0.7rem;">Cliente</small>
-                                <h5 class="fw-bold text-dark" th:text="${proyecto.cliente}">Stellantis</h5>
-                            </div>
-                            <div class="col-md-3 border-end">
-                                <small class="text-uppercase text-muted fw-bold" style="font-size: 0.7rem;">Número de Parte</small>
-                                <h5 class="fw-bold text-dark" th:text="${proyecto.numeroParte}">1722-EJB0033</h5>
-                            </div>
-                            <div class="col-md-3 border-end">
-                                <small class="text-uppercase text-muted fw-bold" style="font-size: 0.7rem;">Fecha SOP</small>
-                                <h5 class="text-je-orange fw-bold">
-                                    <i class="bi bi-calendar-event"></i> 
-                                    <span th:text="${proyecto.fechaSOP}">2026-11-13</span>
-                                </h5>
-                            </div>
-                            <div class="col-md-3 d-flex align-items-center justify-content-end">
-                                <button class="btn btn-outline-secondary btn-sm me-2"><i class="bi bi-pencil"></i> Editar</button>
-                                <button class="btn btn-primary btn-sm"><i class="bi bi-file-earmark-pdf"></i> Exportar PPAP</button>
+                <ul class="nav nav-tabs nav-fill mb-4 border-bottom-0" id="apqpTabs" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link active border-0 shadow-sm rounded-top fw-bold py-3" id="prog-tab" data-bs-toggle="tab" data-bs-target="#prog" type="button">
+                            <i class="bi bi-calendar-check me-2"></i>Programa APQP
+                        </button>
+                    </li>
+                    <li class="nav-item ms-1" role="presentation">
+                        <button class="nav-link border-0 shadow-sm rounded-top fw-bold py-3 text-secondary bg-white" id="stage2-tab" data-bs-toggle="tab" data-bs-target="#stage2" type="button">
+                            <i class="bi bi-tools me-2"></i>Stage 2: Diseño
+                        </button>
+                    </li>
+                </ul>
+
+                <div class="tab-content" id="apqpTabsContent">
+                    
+                    <div class="tab-pane fade show active" id="prog" role="tabpanel">
+                        <div class="card shadow-sm border-0">
+                            <div class="card-body p-0">
+                                <table class="table table-hover align-middle mb-0">
+                                    <thead class="bg-light">
+                                        <tr>
+                                            <th class="ps-4">Hito Clave</th>
+                                            <th>Tipo</th>
+                                            <th>Fecha Plan</th>
+                                            <th>Estado</th>
+                                            <th class="text-end pe-4">Acción</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr th:each="item : ${elementos}" th:if="${item.fase == '0. Programa'}">
+                                            <td class="ps-4 fw-medium" th:text="${item.titulo}">Hito</td>
+                                            <td><span class="badge bg-light text-dark border" th:text="${#strings.isEmpty(item.descripcion) ? 'Hito' : item.descripcion}">Tipo</span></td>
+                                            <td class="text-muted"><i class="bi bi-calendar me-1"></i> --/--/----</td>
+                                            <td><span class="badge bg-warning text-dark bg-opacity-25">Pendiente</span></td>
+                                            <td class="text-end pe-4"><button class="btn btn-sm btn-light border"><i class="bi bi-pencil"></i></button></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
                             </div>
                         </div>
                     </div>
-                </div>
 
-                <div class="card shadow-sm border-0">
-                    <div class="card-header bg-white py-3">
-                        <h6 class="m-0 font-weight-bold text-dark">Checklist de Entregables (PPAP Nivel 3)</h6>
+                    <div class="tab-pane fade" id="stage2" role="tabpanel">
+                        <div class="card shadow-sm border-0">
+                            
+                            <div class="card-header bg-white py-3 d-flex justify-content-between">
+                                <h6 class="m-0 fw-bold text-primary">Checklist stage 2</h6>
+                                <span class="badge bg-primary rounded-pill">23 Puntos</span>
+                            </div>
+
+                            <div class="table-responsive">
+                                <table class="table align-middle mb-0" style="table-layout: fixed; width: 100%;">
+                                    <thead class="bg-light text-muted text-uppercase small">
+                                        <tr>
+                                            <th style="width: 8%;" class="ps-4">ID</th>
+                                            <th style="width: 45%;">Pregunta de Validación</th> <th style="width: 15%;">Categoría</th>
+                                            <th style="width: 15%;" class="text-center">Cumplimiento</th>
+                                            <th style="width: 17%;" class="text-end pe-4">Evidencia</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr th:each="item, stat : ${elementos}" th:if="${item.fase == '2. Stage 2'}">
+                                            <td class="ps-4 text-muted fw-bold small" th:text="${'S2-' + ((stat.index + 1) < 10 ? '0' + (stat.index + 1) : (stat.index + 1))}">S2-01</td>
+
+                                            <td class="text-wrap py-3 pe-3">
+                                                <span class="fw-medium text-dark d-block" th:text="${item.titulo}">Pregunta larga</span>
+                                            </td>
+
+                                            <td>
+                                                <span class="badge rounded-pill bg-light text-secondary border small" 
+                                                      th:text="${item.descripcion}">General</span>
+                                            </td>
+                                            
+                                            <td class="text-center">
+                                                <div class="btn-group" role="group">
+                                                    <input type="radio" class="btn-check" th:name="${'btnradio'+item.id}" th:id="${'ok'+item.id}" autocomplete="off">
+                                                    <label class="btn btn-outline-success btn-sm" th:for="${'ok'+item.id}">Si</label>
+
+                                                    <input type="radio" class="btn-check" th:name="${'btnradio'+item.id}" th:id="${'no'+item.id}" autocomplete="off">
+                                                    <label class="btn btn-outline-danger btn-sm" th:for="${'no'+item.id}">No</label>
+                                                </div>
+                                            </td>
+                                            
+                                            <td class="text-end pe-4">
+                                                <button class="btn btn-sm btn-light text-primary border-0 hover-bg-gray" title="Subir Archivo">
+                                                    <i class="bi bi-cloud-upload fs-5"></i>
+                                                </button>
+                                                <button class="btn btn-sm btn-light text-muted border-0" title="Comentario">
+                                                    <i class="bi bi-chat-left-text"></i>
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
                     </div>
-                    <div class="table-responsive">
-                        <table class="table table-hover align-middle mb-0">
-                            <thead class="bg-light text-muted">
-                                <tr>
-                                    <th class="ps-4">#</th>
-                                    <th>Entregable</th>
-                                    <th>Responsable</th>
-                                    <th>Fase</th>
-                                    <th>Estado</th>
-                                    <th class="text-end pe-4">Acción</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr th:each="item, stat : ${elementos}">
-                                    <td class="ps-4 text-muted fw-bold" th:text="${stat.count}">1</td>
-                                    
-                                    <td>
-                                        <span class="fw-medium text-dark" th:text="${item.titulo}">Plan de Control</span>
-                                        <span class="badge bg-light text-secondary border ms-2" style="font-size: 0.65rem;">Requerido</span>
-                                    </td>
-                                    
-                                    <td>
-                                        <div class="d-flex align-items-center">
-                                            <div class="rounded-circle bg-secondary text-white d-flex justify-content-center align-items-center me-2" 
-                                                 style="width: 24px; height: 24px; font-size: 0.7rem;">IL</div>
-                                            <small class="text-muted">Ing. Lanzamientos</small> </div>
-                                    </td>
 
-                                    <td><span class="badge bg-secondary bg-opacity-10 text-secondary" th:text="${item.fase}">4. PPAP</span></td>
-                                    
-                                    <td>
-                                        <span th:if="${item.estado == 'ABIERTO'}" class="badge bg-warning text-dark bg-opacity-25 border border-warning">
-                                            <i class="bi bi-hourglass-split me-1"></i> Pendiente
-                                        </span>
-                                        <span th:if="${item.estado == 'CERRADO'}" class="badge bg-success bg-opacity-10 text-success border border-success">
-                                            <i class="bi bi-check-circle-fill me-1"></i> Completado
-                                        </span>
-                                        <span th:if="${item.estado == 'RETRASADO'}" class="badge bg-danger bg-opacity-10 text-danger border border-danger">
-                                            <i class="bi bi-exclamation-octagon-fill me-1"></i> Needs Action
-                                        </span>
-                                    </td>
-                                    
-                                    <td class="text-end pe-4">
-                                        <button class="btn btn-sm btn-outline-primary" data-bs-toggle="tooltip" title="Subir Evidencia">
-                                            <i class="bi bi-cloud-upload"></i>
-                                        </button>
-                                        <button class="btn btn-sm btn-light text-muted" data-bs-toggle="tooltip" title="Ver Historial">
-                                            <i class="bi bi-clock-history"></i>
-                                        </button>
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
                 </div>
-
             </main>
         </div>
     </div>

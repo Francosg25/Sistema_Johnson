@@ -40,33 +40,35 @@
                                     </tr>
                                 </thead>
                                 <tbody>
+                                    <tr th:if="${#lists.isEmpty(proyectos)}">
+                                        <td colspan="6" class="text-center py-5 text-muted">
+                                            <i class="bi bi-inbox fs-1 d-block mb-3 text-secondary"></i>
+                                            <p>No hay proyectos registrados aún.</p>
+                                        </td>
+                                    </tr>
+
                                     <tr th:each="p : ${proyectos}">
                                         <td class="ps-4">
                                             <div class="d-flex align-items-center">
                                                 <div class="avatar-initial rounded bg-primary bg-opacity-10 text-primary me-3 p-2">
                                                     <i class="bi bi-box-seam"></i>
                                                 </div>
-                                                <td class="text-end pe-4">
-    
-                                                <a th:href="@{/proyectos/{id}/checklist(id=${p.id})}" 
-                                                class="btn btn-sm btn-primary shadow-sm" 
-                                                title="Ver Checklist APQP/PPAP">
-                                                <i class="bi bi-list-check me-1"></i> APQP
-                                        </a>
-
-                                        </td>
                                                 <div>
                                                     <h6 class="mb-0 fw-bold text-dark" th:text="${p.nombre}">Nombre</h6>
                                                     <small class="text-muted" th:text="${p.numeroParte}">PN-12345</small>
                                                 </div>
                                             </div>
                                         </td>
+                                        
                                         <td th:text="${p.cliente}">Cliente</td>
+                                        
                                         <td><span class="badge bg-light text-dark border">Etapa 1</span></td>
+                                        
                                         <td>
                                              <i class="bi bi-calendar-event me-1 text-muted"></i>
                                              <span th:text="${p.fechaSOP}">Fecha</span>
                                         </td>
+                                        
                                         <td>
                                             <span class="badge rounded-pill" 
                                                   th:classappend="${p.estado == 'NEEDS_ACTION' ? 'bg-danger' : 'bg-success'}"
@@ -75,17 +77,24 @@
                                         
                                         <td class="text-end pe-4">
                                             <a th:href="@{/proyectos/{id}/checklist(id=${p.id})}" 
-                                               class="btn btn-sm btn-light border" 
-                                               title="Ver PPAP" 
-                                               data-bs-toggle="tooltip">
-                                                <i class="bi bi-list-check"></i>
-                                            </a>
+                                               class="btn btn-sm btn-outline-primary" 
+                                               title="Ver Checklist PPAP">
+                                                <i class="bi bi-list-check me-1"></i> APQP
+                                                <td class="text-end pe-4">
+                                        <a th:href="@{/proyectos/{id}/checklist(id=${p.id})}" 
+                                            class="btn btn-sm btn-outline-primary me-1" 
+                                            title="Ver Checklist APQP">
+                                            <i class="bi bi-list-check"></i>
+                                        </a>
+
+                                        <a th:href="@{/proyectos/eliminar/{id}(id=${p.id})}" 
+                                            class="btn btn-sm btn-outline-danger" 
+                                            onclick="return confirm('¿Estás seguro de borrar este proyecto y todo su historial?');"
+                                            title="Eliminar Proyecto">
+                                            <i class="bi bi-trash"></i>
+                                        </a>
                                         </td>
-                                    </tr>
-                                    <tr th:if="${#lists.isEmpty(proyectos)}">
-                                        <td colspan="6" class="text-center py-5 text-muted">
-                                            <i class="bi bi-inbox fs-1 d-block mb-3 text-secondary"></i>
-                                            <p>No hay proyectos registrados aún.</p>
+                                            </a>
                                         </td>
                                     </tr>
                                 </tbody>

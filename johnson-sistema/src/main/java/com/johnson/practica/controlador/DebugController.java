@@ -1,4 +1,4 @@
-package com.johnson.practica.controlador;
+/*package com.johnson.practica.controlador;
 
 import com.johnson.practica.model.ElementoChecklist;
 import com.johnson.practica.model.Proyecto;
@@ -65,3 +65,6 @@ public class DebugController {
         return "redirect:/proyectos/" + guardado.getId() + "/checklist";
     }
 }
+
+/*/ 
+    
