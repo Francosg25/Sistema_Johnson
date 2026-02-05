@@ -15,12 +15,18 @@ public class CatalogoElemento {
     private Long id;
 
     @Column(nullable = false, unique = true)
-    private String codigo;
+    private String codigo; // Ej: "PPAP-01"
 
     @Column(nullable = false)
     private String nombre;
 
     private String tipo;
+
+    // Fase del proceso, por ejemplo "4. PPAP"
+    private String fase;
+
+    // Indica si el elemento es obligatorio en el checklist
+    private boolean requerido = false;
 
     private String descripcion;
 }

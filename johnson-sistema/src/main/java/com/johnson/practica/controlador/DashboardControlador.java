@@ -7,7 +7,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 
 @Controller
-public class DashboardController {
+public class DashboardControlador {
 
     @Autowired
     private ProyectoRepositorio proyectoRepositorio;

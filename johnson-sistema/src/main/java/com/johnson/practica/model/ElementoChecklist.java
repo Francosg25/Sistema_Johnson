@@ -27,7 +27,9 @@ public class ElementoChecklist {
 
     private String descripcion;
 
-    private String estado; 
+    private String estado;
+     
+    private String fase; 
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "responsable_id")

@@ -7,6 +7,9 @@
         <div id="sidebar-wrapper">
             <div th:replace="~{fragments/sidebar :: sidebar}"></div>
         </div>
+        <a th:href="@{/proyectos/{id}/checklist(id=${p.id})}" class="btn btn-sm btn-outline-secondary me-2" title="Ver PPAP">
+            <i class="bi bi-list-check"></i>
+        </a>
 
         <div id="page-content-wrapper">
             <div th:replace="fragments/header :: header"></div>
