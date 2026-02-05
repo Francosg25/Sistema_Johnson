@@ -1,131 +1,122 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
-<head>
-    <meta charset="UTF-8">
-    <title>Johnson Electric - Dashboard</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="/css/style.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
-</head>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="fragments/head :: head"></head>
 <body class="bg-light">
-    <div class="d-flex">
-        <div th:replace="~{fragments/sidebar :: sidebar}"></div>
 
-        <main class="flex-grow-1 p-4" style="margin-left: 280px;">
+    <div class="d-flex" id="wrapper">
+        <div id="sidebar-wrapper">
+            <div th:replace="~{fragments/sidebar :: sidebar}"></div>
+        </div>
+
+        <div id="page-content-wrapper">
+            <div th:replace="fragments/header :: header"></div>
+            <main class="container-fluid p-4">
+                
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <div>
+                        <h1 class="h3 mb-0 text-dark fw-bold">Dashboard APQP/PPAP</h1>
+                        <p class="text-muted small">Resumen general de proyectos</p>
+                    </div>
+                    <a href="/proyectos/nuevo" class="btn btn-primary shadow-sm">
+                        <i class="bi bi-plus-lg me-2"></i>Nuevo Proyecto
+                    </a>
+                </div>
+
+                <div class="row mb-4">
+                    <div class="col-md-6 col-xl-3 mb-3 mb-xl-0">
+                        <div class="card h-100 shadow-sm border-0">
+                            <div class="card-body d-flex align-items-center">
+                                <div class="flex-grow-1">
+                                    <h6 class="text-muted fw-normal mb-1">Proyectos Activos</h6>
+                                    <h2 class="mb-0 fw-bold" th:text="${#lists.size(proyectos)}">0</h2>
+                                </div>
+                                <div class="ms-3 bg-primary bg-opacity-10 text-primary rounded-circle p-3">
+                                     <i class="bi bi-folder2-open fs-3"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-6 col-xl-3 mb-3 mb-xl-0">
+                        <div class="card h-100 shadow-sm border-0 border-start border-4 border-danger">
+                            <div class="card-body d-flex align-items-center">
+                                <div class="flex-grow-1">
+                                     <h6 class="text-muted fw-normal mb-1">Requieren Atención</h6>
+                                    <h2 class="mb-0 fw-bold text-danger">0</h2> 
+                                </div>
+                                <div class="ms-3 bg-danger bg-opacity-10 text-danger rounded-circle p-3">
+                                    <i class="bi bi-exclamation-triangle-fill fs-3"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card shadow-sm border-0">
+                    <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center border-bottom-0">
+                        <h5 class="m-0 fw-bold text-primary">Proyectos Recientes</h5>
+                         <div class="input-group w-auto">
+                             <span class="input-group-text bg-light border-end-0"><i class="bi bi-search"></i></span>
+                             <input type="text" class="form-control bg-light border-start-0" placeholder="Buscar...">
+                         </div>
+                    </div>
+                    <div class="card-body p-0">
+                        <div class="table-responsive">
+                            <table class="table table-hover align-middle mb-0">
+                                <thead class="bg-light text-muted">
+                                    <tr>
+                                        <th class="ps-4">Proyecto / N° Parte</th>
+                                        <th>Cliente</th>
+                                        <th>Fase</th>
+                                        <th>Fecha SOP</th>
+                                        <th>Estado</th>
+                                        <th class="text-end pe-4">Acciones</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr th:each="p : ${proyectos}">
+                                        <td class="ps-4">
+                                            <div class="d-flex align-items-center">
+                                                <div class="avatar-initial rounded bg-primary bg-opacity-10 text-primary me-3 p-2">
+                                                    <i class="bi bi-box-seam"></i>
+                                                </div>
+                                                <div>
+                                                    <h6 class="mb-0 fw-bold text-dark" th:text="${p.nombre}">Nombre</h6>
+                                                    <small class="text-muted" th:text="${p.numeroParte}">PN-12345</small>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td th:text="${p.cliente}">Cliente</td>
+                                        <td><span class="badge bg-light text-dark border">Etapa 1</span></td>
+                                        <td>
+                                             <i class="bi bi-calendar-event me-1 text-muted"></i>
+                                             <span th:text="${p.fechaSOP}">Fecha</span>
+                                        </td>
+                                        <td>
+                                            <span class="badge rounded-pill" 
+                                                  th:classappend="${p.estado == 'NEEDS_ACTION' ? 'bg-danger' : 'bg-success'}"
+                                                  th:text="${p.estado == null ? 'On Track' : p.estado}">On Track</span>
+                                        </td>
+                                        <td class="text-end pe-4">
+                                            <a href="#" class="btn btn-sm btn-light border" title="Ver PPAP"><i class="bi bi-eye"></i></a>
+                                        </td>
+                                    </tr>
+                                     <tr th:if="${#lists.isEmpty(proyectos)}">
+                                        <td colspan="6" class="text-center py-5 text-muted">
+                                            <i class="bi bi-inbox fs-1 d-block mb-3 text-secondary"></i>
+                                            <p>No hay proyectos registrados aún.</p>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+            </main>
+        </div>
     </div>
-    <main class="container-fluid p-4">
-        <div class="d-flex justify-content-between align-items-center mb-4">
-            <div>
-                <h1 class="h3 mb-0 text-gray-800">Dashboard APQP/PPAP</h1>
-            </div>
-            <a href="/proyectos/nuevo" class="btn btn-primary shadow-sm">
-                <i class="bi bi-plus-lg me-2"></i>Nuevo Proyecto
-            </a>
-        </div>
-
-        <div class="row mb-4">
-            <div class="col-md-6 col-xl-3 mb-3 mb-xl-0">
-                <div class="card h-100">
-                    <div class="card-body d-flex align-items-center">
-                        <div class="flex-grow-1">
-                            <h6 class="text-muted fw-normal mb-1">Total Proyectos Activos</h6>
-                            <h2 class="mb-0 fw-bold" th:text="${#lists.size(proyectos)}">0</h2>
-                        </div>
-                        <div class="ms-3 bg-primary text-white rounded-circle p-3 d-flex align-items-center justify-content-center" style="width: 64px; height: 64px;">
-                             <i class="bi bi-folder2-open fs-2"></i>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-6 col-xl-3 mb-3 mb-xl-0">
-                <div class="card h-100 border-start border-4 border-danger">
-                    <div class="card-body d-flex align-items-center">
-                        <div class="flex-grow-1">
-                             <h6 class="text-muted fw-normal mb-1">Requieren Atención (Needs Action)</h6>
-                            <h2 class="mb-0 fw-bold text-danger">0</h2> </div>
-                        <div class="ms-3 bg-danger bg-opacity-10 text-danger rounded-circle p-3 d-flex align-items-center justify-content-center" style="width: 64px; height: 64px;">
-                            <i class="bi bi-exclamation-triangle-fill fs-2"></i>
-                        </div>
-                    </div>
-                </div>
-            </div>
-             </div>
-
-        <div class="card shadow-sm">
-            <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
-                <h5 class="m-0 font-weight-bold text-primary">Proyectos Recientes</h5>
-                 <div class="input-group w-auto">
-                     <span class="input-group-text bg-light border-end-0"><i class="bi bi-search"></i></span>
-                     <input type="text" class="form-control bg-light border-start-0" placeholder="Buscar número de parte...">
-                 </div>
-            </div>
-            <div class="card-body p-0">
-                <div class="table-responsive">
-                    <table class="table table-hover align-middle mb-0">
-                        <thead class="bg-light">
-                            <tr>
-                                <th class="ps-4">Proyecto / N° Parte</th>
-                                <th>Cliente</th>
-                                <th>Fase Actual</th>
-                                <th>Fecha SOP</th>
-                                <th>Estado</th>
-                                <th class="text-end pe-4">Acciones</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr th:each="p : ${proyectos}">
-                                <td class="ps-4">
-                                    <div class="d-flex align-items-center">
-                                        <div class="avatar-initial rounded bg-primary bg-opacity-10 text-primary me-3 p-2">
-                                            <i class="bi bi-box-seam"></i>
-                                        </div>
-                                        <div>
-                                            <h6 class="mb-0 fw-bold" th:text="${p.nombre}">Nombre Proyecto</h6>
-                                            <small class="text-muted" th:text="${p.numeroParte}">PN-12345</small>
-                                        </div>
-                                    </div>
-                                </td>
-                                <td th:text="${p.cliente}">Ford</td>
-                                <td><span class="badge bg-secondary bg-opacity-25 text-dark">Etapa 1</span></td> <td>
-                                     <i class="bi bi-calendar-event me-1 text-muted"></i>
-                                     <span th:text="${p.fechaSOP}">2026-10-20</span>
-                                </td>
-                                <td>
-                                    <span class="badge rounded-pill text-uppercase" 
-                                          th:classappend="${p.estado == 'NEEDS_ACTION' ? 'bg-danger' : 'bg-success'}"
-                                          th:text="${p.estado == null ? 'On Track' : p.estado}">On Track</span>
-                                </td>
-                                <td class="text-end pe-4">
-                                    <a href="#" class="btn btn-sm btn-outline-secondary me-2" data-bs-toggle="tooltip" title="Ver PPAP">
-                                        <i class="bi bi-list-check"></i>
-                                    </a>
-                                    <a href="#" class="btn btn-sm btn-outline-primary" data-bs-toggle="tooltip" title="Editar">
-                                        <i class="bi bi-pencil-square"></i>
-                                    </a>
-                                </td>
-                            </tr>
-                             <tr th:if="${#lists.isEmpty(proyectos)}">
-                                <td colspan="6" class="text-center py-5 text-muted">
-                                    <i class="bi bi-inbox fs-1 d-block mb-3"></i>
-                                    No hay proyectos registrados aún.
-                                    <br>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
-    </main>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script>
-        // Activar tooltips de Bootstrap
-        var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
-        var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
-          return new bootstrap.Tooltip(tooltipTriggerEl)
-        })
-    </script>
-    
 </body>
 </html>

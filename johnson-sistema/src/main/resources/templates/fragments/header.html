@@ -1,0 +1,38 @@
+<!-- Fragmento: header -->
+<header th:fragment="header" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+  <nav class="navbar navbar-expand-lg navbar-light bg-white border-bottom">
+    <div class="container-fluid">
+
+      <div class="collapse navbar-collapse">
+        <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+          <li class="nav-item">
+            <a class="nav-link" th:href="@{/notificaciones}">Notificaciones <span class="badge bg-danger" th:text="${notificacionesCount}">0</span></a>
+          </li>
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" id="userMenu" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+              <span th:text="${#authentication?.name ?: 'Invitado'}">Usuario</span>
+            </a>
+            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userMenu">
+              <li><a class="dropdown-item" th:href="@{/perfil}">Perfil</a></li>
+              <li><hr class="dropdown-divider"></li>
+              <li><a class="dropdown-item" th:href="@{/logout}">Cerrar sesión</a></li>
+            </ul>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <script>
+    // simple sidebar toggle for layouts that include the sidebar fragment
+    document.addEventListener('DOMContentLoaded', function() {
+      var btn = document.getElementById('sidebarToggle');
+      if (btn) {
+        btn.addEventListener('click', function() {
+          var nav = document.querySelector('nav.d-flex');
+          if (nav) nav.classList.toggle('collapsed');
+        });
+      }
+    });
+  </script>
+</header>
