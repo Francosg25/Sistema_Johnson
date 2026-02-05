@@ -1,31 +1,91 @@
+:root {
+    /* Paleta Johnson Electric Inspirada */
+    --je-orange: #fd7e14; /* Naranja vibrante */
+    --je-orange-hover: #e36a09;
+    --je-black: #1a1a1a;
+    --je-dark-grey: #2c3e50;
+    --je-light-bg: #f8f9fa;
+    --je-text-muted: #6c757d;
+}
+
 body {
     font-family: 'Inter', sans-serif;
-    background-color: #f4f6f9; 
+    background-color: var(--je-light-bg);
+    color: #333;
 }
+
+/* --- Tarjetas (Cards) --- */
 .card {
     border: none;
-    border-radius: 12px; 
-    box-shadow: 0 2px 12px rgba(0,0,0,0.08); 
-    transition: transform 0.2s;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05); /* Sombra más suave */
+    transition: all 0.3s ease;
+    background-color: white;
 }
 
 .card:hover {
-   transform: translateY(-3px); 
+   transform: translateY(-5px);
+   box-shadow: 0 8px 16px rgba(0,0,0,0.1);
 }
 
+/* Bordes de estado */
+.border-je-orange {
+    border-left: 4px solid var(--je-orange) !important;
+}
+
+/* --- Tablas --- */
 .table thead th {
     border-top: none;
-    background-color: #f8f9fa;
-    color: #6c757d;
-    font-weight: 600;
-    font-size: 0.85rem;
+    background-color: white;
+    color: var(--je-text-muted);
+    font-weight: 700;
+    font-size: 0.75rem;
     text-transform: uppercase;
-    letter-spacing: 0.5px;
+    letter-spacing: 0.8px;
+    border-bottom: 2px solid #eee;
 }
 
+.table-hover tbody tr:hover {
+    background-color: rgba(253, 126, 20, 0.05);
+}
+
+/* --- Botones --- */
 .btn-primary {
-    background-color: #0d6efd; 
-    border-radius: 8px;
-    padding: 0.6rem 1.2rem;
+    background-color: var(--je-orange);
+    border-color: var(--je-orange);
+    border-radius: 6px;
+    padding: 0.5rem 1.2rem;
     font-weight: 600;
+    box-shadow: 0 2px 4px rgba(253, 126, 20, 0.3);
+    transition: all 0.2s;
+}
+
+.btn-primary:hover {
+    background-color: var(--je-orange-hover);
+    border-color: var(--je-orange-hover);
+    transform: translateY(-1px);
+}
+
+/* --- Badges --- */
+.badge-soft-success {
+    background-color: rgba(25, 135, 84, 0.1);
+    color: #198754;
+}
+.badge-soft-danger {
+    background-color: rgba(220, 53, 69, 0.1);
+    color: #dc3545;
+}
+
+/* --- Layout Wrappers --- */
+#sidebar-wrapper {
+    min-height: 100vh;
+    margin-left: 0;
+    transition: margin 0.25s ease-out;
+    position: fixed;
+    z-index: 1000;
+    background-color: var(--je-black);
+}
+#page-content-wrapper {
+    margin-left: 280px;
+    width: 100%;
 }

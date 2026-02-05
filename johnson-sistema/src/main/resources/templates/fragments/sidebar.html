@@ -1,50 +1,69 @@
 <div th:fragment="sidebar" xmlns:th="http://www.thymeleaf.org">
-    <nav class="d-flex flex-column p-3 text-white bg-dark" style="width: 280px; height: 100vh;">
+    <nav class="d-flex flex-column p-3 text-white" style="width: 280px; height: 100vh; background-color: #1a1a1a;">
         
-        <a th:href="@{/}" class="d-flex align-items-center mb-3 mb-md-0 me-md-auto text-white text-decoration-none">
-            <i class="bi bi-shield-check-fill fs-3 me-2 text-primary"></i>
-            <span class="fs-4 fw-bold">Johnson <span class="text-primary">Electric</span></span>
+        <a th:href="@{/}" class="d-flex align-items-center mb-4 mb-md-0 me-md-auto text-white text-decoration-none px-2">
+            <div class="rounded bg-white p-1 me-2 d-flex align-items-center justify-content-center" style="width: 32px; height: 32px;">
+                <span class="fw-bold text-dark" style="font-size: 0.8rem;">JE</span>
+            </div>
+            <span class="fs-5 fw-bold" style="letter-spacing: -0.5px;">Johnson <span style="color: #fd7e14;">Electric</span></span>
         </a>
         
-        <hr>
+        <hr class="text-secondary opacity-25 my-4">
         
         <ul class="nav nav-pills flex-column mb-auto">
-            <li class="nav-item">
-                <a th:href="@{/}" class="nav-link text-white active bg-primary">
-                    <i class="bi bi-speedometer2 me-2"></i> Dashboard
+            <li class="nav-item mb-1">
+                <a th:href="@{/}" class="nav-link text-white d-flex align-items-center" 
+                   th:classappend="${#httpServletRequest.requestURI == '/' ? 'active-je' : ''}"
+                   style="border-radius: 8px; transition: 0.2s;">
+                    <i class="bi bi-speedometer2 me-3 opacity-75"></i> 
+                    <span class="fw-medium">Dashboard</span>
                 </a>
             </li>
-            <li>
-                <a th:href="@{/proyectos}" class="nav-link text-white">
-                    <i class="bi bi-folder2-open me-2"></i> Proyectos
+            <li class="mb-1">
+                <a th:href="@{/proyectos}" class="nav-link text-white-50 d-flex align-items-center hover-light"
+                   th:classappend="${#httpServletRequest.requestURI.startsWith('/proyectos') ? 'text-white bg-secondary bg-opacity-25' : ''}">
+                    <i class="bi bi-folder2-open me-3"></i> 
+                    Proyectos
                 </a>
             </li>
-            <li>
-                <a th:href="@{/entregables}" class="nav-link text-white">
-                    <i class="bi bi-list-check me-2"></i> Checklist PPAP
+            <li class="mb-1">
+                <a th:href="@{/entregables}" class="nav-link text-white-50 d-flex align-items-center hover-light">
+                    <i class="bi bi-list-check me-3"></i> 
+                    Checklist PPAP
                 </a>
             </li>
-            <li>
-                <a th:href="@{/reportes}" class="nav-link text-white">
-                     <i class="bi bi-graph-up me-2"></i> Reportes
+            <li class="mb-1">
+                <a th:href="@{/reportes}" class="nav-link text-white-50 d-flex align-items-center hover-light">
+                     <i class="bi bi-graph-up me-3"></i> 
+                     Reportes
                 </a>
             </li>
         </ul>
 
-        <hr>
-        
-        <div class="dropdown">
-            <a href="#" class="d-flex align-items-center text-white text-decoration-none dropdown-toggle" id="dropdownUser1" data-bs-toggle="dropdown" aria-expanded="false">
-                <div class="rounded-circle bg-secondary d-flex justify-content-center align-items-center me-2" style="width: 32px; height: 32px;">
-                    <i class="bi bi-person-fill"></i>
+        <div class="mt-auto p-3 rounded bg-secondary bg-opacity-10 border border-secondary border-opacity-10">
+            <div class="d-flex align-items-center">
+                <div class="rounded-circle d-flex justify-content-center align-items-center me-3" 
+                     style="width: 38px; height: 38px; background-color: #fd7e14; color: white;">
+                    <span class="fw-bold small">IL</span>
                 </div>
-                <strong>Ingeniero</strong>
-            </a>
-            <ul class="dropdown-menu dropdown-menu-dark text-small shadow" aria-labelledby="dropdownUser1">
-                <li><a class="dropdown-item" href="#">Configuración</a></li>
-                <li><hr class="dropdown-divider"></li>
-                <li><a class="dropdown-item" href="#">Salir</a></li>
-            </ul>
+                <div class="flex-grow-1 overflow-hidden">
+                    <h6 class="mb-0 text-white small text-truncate">Ing. Lanzamientos</h6>
+                    <small class="text-muted" style="font-size: 0.7rem;">Calidad Planta 1</small>
+                </div>
+                <a href="#" class="text-secondary"><i class="bi bi-gear-fill"></i></a>
+            </div>
         </div>
     </nav>
+    
+    <style>
+        .active-je {
+            background-color: #fd7e14 !important; /* Naranja Johnson */
+            color: white !important;
+            box-shadow: 0 4px 10px rgba(253, 126, 20, 0.4);
+        }
+        .nav-link:hover:not(.active-je) {
+            background-color: rgba(255,255,255,0.05);
+            color: white !important;
+        }
+    </style>
 </div>
