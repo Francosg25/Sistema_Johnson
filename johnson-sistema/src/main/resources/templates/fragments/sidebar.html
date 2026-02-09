@@ -1,5 +1,5 @@
 <div th:fragment="sidebar" xmlns:th="http://www.thymeleaf.org">
-    <nav class="d-flex flex-column p-3 bg-dark text-white" style="width: 280px; min-height:100vh;">
+    <nav class="d-flex flex-column p-3 bg-dark text-white" style="width: 230px; min-height:100vh;">
         <a th:href="@{/}" class="d-flex align-items-center mb-3 mb-md-0 me-md-auto text-white text-decoration-none">
             <i class="bi bi-shield-check-fill fs-3 me-2 text-primary"></i>
             <span class="fs-4 fw-bold">Johnson <span class="text-primary">Electric</span></span>
@@ -18,11 +18,7 @@
                     <i class="bi bi-folder2-open me-2"></i> Proyectos
                 </a>
             </li>
-            <li class="nav-item">
-                <a th:href="@{/entregables}" class="nav-link text-white">
-                    <i class="bi bi-list-check me-2"></i> Catálogo entregables
-                </a>
-            </li>
+            
             <li class="nav-item">
                 <a th:href="@{/reportes}" class="nav-link text-white">
                     <i class="bi bi-graph-up me-2"></i> Reportes

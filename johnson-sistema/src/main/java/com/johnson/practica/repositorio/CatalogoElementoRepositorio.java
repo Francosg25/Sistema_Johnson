@@ -6,6 +6,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface CatalogoElementoRepositorio extends JpaRepository<CatalogoElemento, Long> {
-    // Aquí podrías agregar búsquedas personalizadas, por ejemplo:
-    // List<CatalogoElemento> findByTipo(String tipo);
+    
 }

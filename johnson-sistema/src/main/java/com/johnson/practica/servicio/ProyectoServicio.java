@@ -11,16 +11,16 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Service
-public class ProyectoServicio { // Nombre de clase en Español
+public class ProyectoServicio { 
 
     @Autowired
-    private ProyectoRepositorio proyectoRepositorio; // En Español
+    private ProyectoRepositorio proyectoRepositorio; 
 
     @Autowired
-    private CatalogoElementoRepositorio catalogoRepositorio; // En Español
+    private CatalogoElementoRepositorio catalogoRepositorio; 
 
     @Autowired
-    private ElementoChecklistRepositorio checklistRepositorio; // En Español
+    private ElementoChecklistRepositorio checklistRepositorio; 
 
     @Transactional
     public Proyecto guardarProyecto(Proyecto proyecto) {
@@ -36,7 +36,6 @@ public class ProyectoServicio { // Nombre de clase en Español
         return proyectoGuardado;
     }
 
-    // Método necesario para el Controlador
     public Proyecto buscarPorId(Long id) {
         return proyectoRepositorio.findById(id).orElse(null);
     }
