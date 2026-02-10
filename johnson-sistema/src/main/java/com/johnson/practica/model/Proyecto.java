@@ -39,4 +39,6 @@ public class Proyecto {
     @OneToMany(mappedBy = "proyecto", cascade = CascadeType.ALL, orphanRemoval = true)
     @Builder.Default
     private List<ElementoChecklist> elementosChecklist = new ArrayList<>();
+
+    
 }

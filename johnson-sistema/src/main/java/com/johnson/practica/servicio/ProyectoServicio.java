@@ -1,7 +1,7 @@
 package com.johnson.practica.servicio;
 
 import com.johnson.practica.model.*;
-import com.johnson.practica.repositorio.*; // Importante para ver los repositorios
+import com.johnson.practica.repositorio.*; 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -60,7 +60,7 @@ public class ProyectoServicio {
         return proyectoRepositorio.findAll();
     }
 
-    @Transactional // Importante para que borre todo junto
+    @Transactional 
     public void eliminarProyecto(Long id) {
         List<ElementoChecklist> items = checklistRepositorio.findByProyectoId(id);
         checklistRepositorio.deleteAll(items);
