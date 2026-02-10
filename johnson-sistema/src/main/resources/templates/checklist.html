@@ -19,7 +19,7 @@
                     </div>
                     <div>
                         <button class="btn btn-outline-dark btn-sm me-2"><i class="bi bi-file-earmark-excel"></i> Reporte</button>
-                        <button class="btn btn-primary btn-sm"><i class="bi bi-save"></i> Guardar Avance</button>
+                        <button class="btn btn-primary btn-sm"><i></i> Guardar Avance</button>
                     </div>
                 </div>
 
@@ -28,17 +28,48 @@
                     <button class="nav-link active border-0 shadow-sm rounded-top fw-bold py-3" 
                     id="prog-tab" data-bs-toggle="tab" data-bs-target="#prog" 
                     type="button" role="tab" aria-controls="prog" aria-selected="true">
-                <i class="bi bi-calendar-check me-2"></i>Programa APQP
+                <i></i>Programa APQP
             </button>
         </li>
             <li class="nav-item ms-1" role="presentation">
                 <button class="nav-link border-0 shadow-sm rounded-top fw-bold py-3" 
                     id="stage2-tab" data-bs-toggle="tab" data-bs-target="#stage2" 
                     type="button" role="tab" aria-controls="stage2" aria-selected="false">
-                <i class="bi bi-tools me-2"></i>Stage 2: Diseño
+                <i></i>Stage 2: Diseño
             </button>
             </li>
-        </ul>
+            <li class="nav-item ms-1" role="presentation">
+                <button class="nav-link border-0 shadow-sm rounded-top fw-bold py-3" 
+                    id="stage3-tab" data-bs-toggle="tab" data-bs-target="#stage3" 
+                    type="button" role="tab" aria-controls="stage3" aria-selected="false">
+                <i></i>Stage 3: Producción
+            </button>
+            </li>
+
+            <li class="nav-item ms-1" role="presentation">
+                <button class="nav-link border-0 shadow-sm rounded-top fw-bold py-3" 
+                    id="stage4-tab" data-bs-toggle="tab" data-bs-target="#stage4" 
+                    type="button" role="tab" aria-controls="stage4" aria-selected="false">
+                <i></i>Stage 4: PPAP
+
+            <li class="nav-item ms-1" role="presentation">
+                <button class="nav-link border-0 shadow-sm rounded-top fw-bold py-3" 
+                    id="stage5-tab" data-bs-toggle="tab" data-bs-target="#stage5" 
+                    type="button" role="tab" aria-controls="stage5" aria-selected="false">
+                <i></i>Stage 5: Validacion
+
+            </ul>
+
+            <tr th:each="item : ${lista}">
+    
+            <th:block th:if="${item.catalogo.tipoInput == 'HITO'}">
+                <td> <input type="date" ...> </td> <td> <input type="date" ...> </td> </th:block>
+
+            <th:block th:if="${item.catalogo.tipoInput == 'PREGUNTA'}">
+                <td> <button class="btn-success">Sí</button> <button class="btn-danger">No</button> </td>
+            </th:block>
+
+        </tr>
 
         <div class="tab-pane fade show active" id="prog" role="tabpanel" aria-labelledby="prog-tab">
     
@@ -55,16 +86,16 @@
 
             <div class="row g-0 border border-secondary">
                 <div class="col-md-3 bg-light p-2 border-end border-bottom border-secondary fw-bold">Cliente:</div>
-                <div class="col-md-3 p-2 border-end border-bottom border-secondary text-primary" th:text="${proyecto.cliente}">Stellantis</div>
+                <div class="col-md-3 p-2 border-end border-bottom border-secondary text-primary" th:text="${proyecto.cliente}"></div>
                 
                 <div class="col-md-3 bg-light p-2 border-end border-bottom border-secondary fw-bold">Nombre de Proyecto:</div>
-                <div class="col-md-3 p-2 border-bottom border-secondary" th:text="${proyecto.nombre}">Dahlia Valve</div>
+                <div class="col-md-3 p-2 border-bottom border-secondary" th:text="${proyecto.nombre}"></div>
 
                 <div class="col-md-3 bg-light p-2 border-end border-secondary fw-bold">Numero de parte:</div>
-                <div class="col-md-3 p-2 border-end border-secondary" th:text="${proyecto.numeroParte}">123-456-789</div>
+                <div class="col-md-3 p-2 border-end border-secondary" th:text="${proyecto.numeroParte}"></div>
 
                 <div class="col-md-3 bg-light p-2 border-end border-secondary fw-bold">SOP (Plan):</div>
-                <div class="col-md-3 p-2 border-secondary fw-bold text-danger" th:text="${proyecto.fechaSOP}">2026-04-15</div>
+                <div class="col-md-3 p-2 border-secondary fw-bold text-danger" th:text="${proyecto.fechaSOP}"></div>
             </div>
         </div>
     </div>

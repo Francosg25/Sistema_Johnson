@@ -31,6 +31,8 @@ public class ElementoChecklist {
      
     private String fase; 
 
+    private CatalogoElemento catalogo;
+
     @Column(length = 1000) 
     private String comentario;
 
@@ -45,4 +47,8 @@ public class ElementoChecklist {
     @OneToMany(mappedBy = "elementoChecklist", cascade = CascadeType.ALL, orphanRemoval = true)
     @Builder.Default
     private List<Adjunto> adjuntos = new ArrayList<>();
+
+    public CatalogoElemento getCatalogo() {
+        return catalogo;
+    }
 }

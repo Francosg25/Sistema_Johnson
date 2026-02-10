@@ -4,6 +4,8 @@ import com.johnson.practica.model.Proyecto;
 import com.johnson.practica.model.ElementoChecklist; 
 import com.johnson.practica.servicio.ProyectoServicio;
 import com.johnson.practica.repositorio.ElementoChecklistRepositorio;
+import com.johnson.practica.repositorio.ProyectoRepositorio;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -16,6 +18,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import java.util.Map;
+import java.util.stream.Collectors;
 import java.util.HashMap;
 import java.util.List;
 
@@ -29,27 +32,48 @@ public class ProyectoControlador {
     @Autowired
     private ElementoChecklistRepositorio checklistRepositorio;
 
+    @Autowired
+    private ProyectoRepositorio proyectoRepositorio; 
+
 
     @GetMapping("") 
     public String listarProyectos() {
         return "redirect:/"; // Redirige al Dashboard donde está la tabla
     }
 
+    // En ProyectoControlador.java
+
     @GetMapping("/{id}/checklist")
     public String verChecklist(@PathVariable Long id, Model model) {
-        Proyecto proyecto = proyectoServicio.buscarPorId(id);
-        
+        Proyecto proyecto = proyectoRepositorio.findById(id).orElse(null);
         if (proyecto == null) {
             return "redirect:/";
         }
 
-        // Sincronizar con ChecklistSemilla: los hitos del PROGRAMA se guardan como "2. Programa"
-        List<ElementoChecklist> elementosPrograma = checklistRepositorio.findByProyectoIdAndFase(id, "2. Programa");
+        // 1. Obtener todos los elementos del checklist de este proyecto
+        List<ElementoChecklist> todosLosItems = checklistRepositorio.findByProyectoId(id);
+
+        // 2. FILTRAR: Separar los Hitos (Programa) de las Preguntas (Stage 2)
+        // Usamos el campo 'fase' del catálogo para saber a dónde pertenece cada uno
+    
+        // En ProyectoControlador.java, dentro de verChecklist:
+
+        List<ElementoChecklist> programa = todosLosItems.stream()
+            .filter(item -> item.getCatalogo() != null && 
+                    item.getCatalogo().getFase() != null && 
+                    item.getCatalogo().getFase().startsWith("0"))
+            .collect(Collectors.toList());
+
+        List<ElementoChecklist> stage2 = todosLosItems.stream()
+            .filter(item -> item.getCatalogo() != null && 
+                    item.getCatalogo().getFase() != null && 
+                    item.getCatalogo().getFase().startsWith("2"))
+            .collect(Collectors.toList());
+
         model.addAttribute("proyecto", proyecto);
-        model.addAttribute("elementos", elementosPrograma);
-        // La plantilla `checklist.html` itera sobre `${prog}` — exponerlo también
-        model.addAttribute("prog", elementosPrograma);
-        
+        model.addAttribute("prog", programa);   // <--- Esta es la variable que espera tu HTML nuevo
+        model.addAttribute("stage2", stage2);   // <--- Esta es para la otra pestaña
+
         return "checklist";
     }
 
