@@ -14,11 +14,8 @@
                 <div class="d-flex justify-content-between align-items-end mb-4">
                     <div>
                         <h6 class="text-uppercase text-muted small fw-bold mb-1">Proyecto Activo</h6>
-                        <h2 class="fw-bold text-dark mb-0">
-                            <i class="bi bi-box-seam me-2 text-je-orange"></i>
-                            <span th:text="${proyecto.nombre}">Dahlia Valve</span>
-                        </h2>
-                        <span class="badge bg-secondary mt-2" th:text="${proyecto.numeroParte}">PN-12345</span>
+                        
+                        <span class="badge bg-secondary mt-2" th:text="${proyecto.numeroParte}"></span>
                     </div>
                     <div>
                         <button class="btn btn-outline-dark btn-sm me-2"><i class="bi bi-file-earmark-excel"></i> Reporte</button>
@@ -28,99 +25,128 @@
 
                 <ul class="nav nav-tabs nav-fill mb-4 border-bottom-0" id="apqpTabs" role="tablist">
                     <li class="nav-item" role="presentation">
-                        <button class="nav-link active border-0 shadow-sm rounded-top fw-bold py-3" id="prog-tab" data-bs-toggle="tab" data-bs-target="#prog" type="button">
-                            <i class="bi bi-calendar-check me-2"></i>Programa APQP
-                        </button>
-                    </li>
-                    <li class="nav-item ms-1" role="presentation">
-                        <button class="nav-link border-0 shadow-sm rounded-top fw-bold py-3 text-secondary bg-white" id="stage2-tab" data-bs-toggle="tab" data-bs-target="#stage2" type="button">
-                            <i class="bi bi-tools me-2"></i>Stage 2: Diseño
-                        </button>
-                    </li>
-                </ul>
+                    <button class="nav-link active border-0 shadow-sm rounded-top fw-bold py-3" 
+                    id="prog-tab" data-bs-toggle="tab" data-bs-target="#prog" 
+                    type="button" role="tab" aria-controls="prog" aria-selected="true">
+                <i class="bi bi-calendar-check me-2"></i>Programa APQP
+            </button>
+        </li>
+            <li class="nav-item ms-1" role="presentation">
+                <button class="nav-link border-0 shadow-sm rounded-top fw-bold py-3" 
+                    id="stage2-tab" data-bs-toggle="tab" data-bs-target="#stage2" 
+                    type="button" role="tab" aria-controls="stage2" aria-selected="false">
+                <i class="bi bi-tools me-2"></i>Stage 2: Diseño
+            </button>
+            </li>
+        </ul>
 
-                <div class="tab-content" id="apqpTabsContent">
-                    
-                    <div class="tab-pane fade show active" id="prog" role="tabpanel">
-                        <div class="card shadow-sm border-0">
-                            <div class="card-body p-0">
-                                <table class="table table-hover align-middle mb-0">
-                                    <thead class="bg-light">
-                                        <tr>
-                                            <th class="ps-4">Hito Clave</th>
-                                            <th>Tipo</th>
-                                            <th>Fecha Plan</th>
-                                            <th>Estado</th>
-                                            <th class="text-end pe-4">Acción</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr th:each="item : ${elementos}" th:if="${item.fase == '0. Programa'}">
-                                            <td class="ps-4 fw-medium" th:text="${item.titulo}">Hito</td>
-                                            <td><span class="badge bg-light text-dark border" th:text="${#strings.isEmpty(item.descripcion) ? 'Hito' : item.descripcion}">Tipo</span></td>
-                                            <td class="text-muted"><i class="bi bi-calendar me-1"></i> --/--/----</td>
-                                            <td><span class="badge bg-warning text-dark bg-opacity-25">Pendiente</span></td>
-                                            <td class="text-end pe-4"><button class="btn btn-sm btn-light border"><i class="bi bi-pencil"></i></button></td>
-                                        </tr>
-                                    </tbody>
-                                </table>
+        <div class="tab-pane fade show active" id="prog" role="tabpanel" aria-labelledby="prog-tab">
+    
+    <div class="card mb-4 border-2 border-dark">
+        <div class="card-body p-4">
+            <div class="row align-items-center mb-4">
+                <div class="col-md-6">
+                    <h2 class="fw-bold text-uppercase mb-0" style="color: #000000; letter-spacing: 1px;">
+                        <i></i>Johnson Electric
+                    </h2>
+                    <small class="text-muted fw-bold">APQP PROGRAM MANAGEMENT</small>
+                </div>
+            </div>
+
+            <div class="row g-0 border border-secondary">
+                <div class="col-md-3 bg-light p-2 border-end border-bottom border-secondary fw-bold">Cliente:</div>
+                <div class="col-md-3 p-2 border-end border-bottom border-secondary text-primary" th:text="${proyecto.cliente}">Stellantis</div>
+                
+                <div class="col-md-3 bg-light p-2 border-end border-bottom border-secondary fw-bold">Nombre de Proyecto:</div>
+                <div class="col-md-3 p-2 border-bottom border-secondary" th:text="${proyecto.nombre}">Dahlia Valve</div>
+
+                <div class="col-md-3 bg-light p-2 border-end border-secondary fw-bold">Numero de parte:</div>
+                <div class="col-md-3 p-2 border-end border-secondary" th:text="${proyecto.numeroParte}">123-456-789</div>
+
+                <div class="col-md-3 bg-light p-2 border-end border-secondary fw-bold">SOP (Plan):</div>
+                <div class="col-md-3 p-2 border-secondary fw-bold text-danger" th:text="${proyecto.fechaSOP}">2026-04-15</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card shadow-sm">
+        
+        
+        <div class="table-responsive">
+            <table class="table table-bordered table-hover align-middle mb-0">
+                <thead class="table-light text-center align-middle">
+                    <tr>
+                        <th style="width: 5%">#</th>
+                        <th style="width: 35%" class="text-start">Milestone / Hito</th>
+                        <th style="width: 15%">Planned Date<br><small class="text-muted">(Compromiso)</small></th>
+                        <th style="width: 15%">Actual Date<br><small class="text-muted">(Real)</small></th>
+                        <th style="width: 10%">Status</th>
+                        <th style="width: 20%">Comments / Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="item : ${prog}" th:id="'fila-'+${item.id}">
+                        <td class="text-center fw-bold text-muted" th:text="${item.codigo}">H-01</td>
+                        
+                        <td>
+                            <span class="fw-bold d-block" th:text="${item.titulo}">Kick-off Meeting</span>
+                            <small class="text-muted" th:text="${item.descripcion}">Descripción opcional</small>
+                        </td>
+
+                        <td>
+                            <input type="date" class="form-control form-control-sm text-center border-0 bg-transparent"
+                                   th:value="${item.fechaCompromiso}"
+                                   th:onchange="'guardarFecha(' + ${item.id} + ', \'compromiso\', this.value)'">
+                        </td>
+
+                        <td>
+                            <input type="date" class="form-control form-control-sm text-center"
+                                   th:value="${item.fechaReal}"
+                                   th:classappend="${item.fechaReal != null && item.fechaCompromiso != null && item.fechaReal > item.fechaCompromiso ? 'text-danger fw-bold' : 'text-success'}"
+                                   th:onchange="'guardarFecha(' + ${item.id} + ', \'real\', this.value)'">
+                        </td>
+
+                        <td class="text-center">
+                            <div class="dropdown">
+                                <button class="btn btn-sm dropdown-toggle w-100 fw-bold" type="button" 
+                                        data-bs-toggle="dropdown" aria-expanded="false"
+                                        th:classappend="${item.estado == 'OK' ? 'btn-success' : (item.estado == 'NOK' ? 'btn-danger' : 'btn-secondary')}"
+                                        th:text="${item.estado == 'OK' ? 'Completed' : (item.estado == 'NOK' ? 'Late' : 'Open')}">
+                                    Status
+                                </button>
+                                <ul class="dropdown-menu">
+                                    <li><a class="dropdown-item text-success" href="#" th:onclick="'actualizarEstado(' + ${item.id} + ', \'OK\')'"><i class="bi bi-check-circle me-2"></i>Completed (Verde)</a></li>
+                                    <li><a class="dropdown-item text-danger" href="#" th:onclick="'actualizarEstado(' + ${item.id} + ', \'NOK\')'"><i class="bi bi-exclamation-circle me-2"></i>Late / Risk (Rojo)</a></li>
+                                    <li><a class="dropdown-item text-secondary" href="#" th:onclick="'actualizarEstado(' + ${item.id} + ', \'PENDING\')'"><i class="bi bi-dash-circle me-2"></i>Open (Gris)</a></li>
+                                </ul>
                             </div>
-                        </div>
-                    </div>
+                        </td>
+
+                        <td>
+                            <textarea class="form-control form-control-sm" rows="1" placeholder="Add note..."
+                                      th:text="${item.comentario}"
+                                      th:onblur="'guardarComentario(' + ${item.id} + ', this.value)'"></textarea>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+                
 
                     <div class="tab-pane fade" id="stage2" role="tabpanel">
-                        <div class="card shadow-sm border-0">
-                            
-                            <div class="card-header bg-white py-3 d-flex justify-content-between">
-                                <h6 class="m-0 fw-bold text-primary">Checklist stage 2</h6>
-                                <span class="badge bg-primary rounded-pill">23 Puntos</span>
-                            </div>
-
-                            <div class="table-responsive">
-                                <table class="table align-middle mb-0" style="table-layout: fixed; width: 100%;">
-                                    <thead class="bg-light text-muted text-uppercase small">
-                                        <tr>
-                                            <th style="width: 8%;" class="ps-4">ID</th>
-                                            <th style="width: 45%;">Pregunta de Validación</th> <th style="width: 15%;">Categoría</th>
-                                            <th style="width: 15%;" class="text-center">Cumplimiento</th>
-                                            <th style="width: 17%;" class="text-end pe-4">Evidencia</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr th:each="item, stat : ${elementos}" th:if="${item.fase == '2. Stage 2'}">
-                                            <td class="ps-4 text-muted fw-bold small" th:text="${'S2-' + ((stat.index + 1) < 10 ? '0' + (stat.index + 1) : (stat.index + 1))}">S2-01</td>
-
-                                            <td class="text-wrap py-3 pe-3">
-                                                <span class="fw-medium text-dark d-block" th:text="${item.titulo}">Pregunta larga</span>
-                                            </td>
-
-                                            <td>
-                                                <span class="badge rounded-pill bg-light text-secondary border small" 
-                                                      th:text="${item.descripcion}">General</span>
-                                            </td>
-                                            
-                                            <td class="text-center">
-                                                <div class="btn-group" role="group">
-                                                    <input type="radio" class="btn-check" th:name="${'btnradio'+item.id}" th:id="${'ok'+item.id}" autocomplete="off" th-onclick="actualizarEstado(' + ${item.id} + ', \'OK\')">
-                                                    <label class="btn btn-outline-success btn-sm" th:for="${'ok'+item.id}">Si</label>
-
-                                                    <input type="radio" class="btn-check" th:name="${'btnradio'+item.id}" th:id="${'no'+item.id}" autocomplete="off" th-onclick="actualizarEstado(' + ${item.id} + ', \'NOK\')">
-                                                    <label class="btn btn-outline-danger btn-sm" th:for="${'no'+item.id}">No</label>
-                                                </div>
-                                            </td>
-                                            
-                                            <td class="text-end pe-4">
-                                                <button class="btn btn-sm btn-light text-primary border-0 hover-bg-gray" title="Subir Archivo">
-                                                    <i class="bi bi-cloud-upload fs-5"></i>
-                                                </button>
-                                                <button class="btn btn-sm btn-light text-muted border-0" 
-                                                        title="Comentario" th:onclick="'guardarComentario(' + ${item.id} + ', \'' + ${item.comentario != null ? item.comentario : ''} + '\')'">
-                                                            <i class="bi bi-chat-left-text" th:classappend="${item.comentario != null} ? 'text-primary' : ''"></i>
-                                                </button>
-                                            </td>
-                                        </tr>
-                                    </tbody>
-                                </table>
+                        <!-- Placeholder content: will be loaded via AJAX when user opens Stage 2 -->
+                        <div id="stage2-content" th:attr="data-proyecto-id=${proyecto.id}" class="py-4">
+                            <div class="text-center py-5" id="stage2-spinner">
+                                <div class="spinner-border text-primary" role="status"><span class="visually-hidden">Cargando...</span></div>
+                                <div class="mt-3 text-muted">Cargando checklist...</div>
                             </div>
                         </div>
                     </div>
@@ -176,6 +202,35 @@
         // Opcional: Lleva la pantalla hacia arriba suavemente
         window.scrollTo({ top: 0, behavior: 'smooth' });
     }
+</script>
+<script>
+// Load Stage 2 content via AJAX only when tab shown (improves perceived performance)
+document.addEventListener('DOMContentLoaded', function() {
+    var stage2Loaded = false;
+    var stage2Tab = document.querySelector('#stage2-tab');
+    var stage2Content = document.querySelector('#stage2-content');
+    if (!stage2Tab || !stage2Content) return;
+
+    stage2Tab.addEventListener('shown.bs.tab', function (e) {
+        if (stage2Loaded) return;
+        stage2Loaded = true;
+        var pid = stage2Content.getAttribute('data-proyecto-id');
+        var spinner = document.getElementById('stage2-spinner');
+
+        fetch('/proyectos/' + pid + '/checklist/stage2')
+            .then(function(resp){
+                if (!resp.ok) throw new Error('Network response was not ok');
+                return resp.text();
+            })
+            .then(function(html){
+                stage2Content.innerHTML = html;
+            })
+            .catch(function(err){
+                if (spinner) spinner.innerHTML = '<div class="text-danger">Error cargando Stage 2</div>';
+                console.error(err);
+            });
+    });
+});
 </script>
 </body>
 </html>

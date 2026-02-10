@@ -73,26 +73,19 @@
                                                   th:classappend="${p.estado == 'NEEDS_ACTION' ? 'bg-danger' : 'bg-success'}"
                                                   th:text="${p.estado == null ? 'On Track' : p.estado}">On Track</span>
                                         </td>
-                                        
+
                                         <td class="text-end pe-4">
                                             <a th:href="@{/proyectos/{id}/checklist(id=${p.id})}" 
-                                               class="btn btn-sm btn-outline-primary" 
-                                               title="Ver Checklist PPAP">
-                                                <i class="bi bi-list-check me-1"></i> APQP
-                                                <td class="text-end pe-4">
-                                        <a th:href="@{/proyectos/{id}/checklist(id=${p.id})}" 
-                                            class="btn btn-sm btn-outline-primary me-1" 
-                                            title="Ver Checklist APQP">
-                                            <i class="bi bi-list-check"></i>
-                                        </a>
+                                               class="btn btn-sm btn-outline-primary me-1" 
+                                               title="Ver Checklist APQP">
+                                                <i class="bi bi-list-check"></i>
+                                            </a>
 
-                                        <a th:href="@{/proyectos/eliminar/{id}(id=${p.id})}" 
-                                            class="btn btn-sm btn-outline-danger" 
-                                            onclick="return confirm('¿Estás seguro de borrar este proyecto y todo su historial?');"
-                                            title="Eliminar Proyecto">
-                                            <i class="bi bi-trash"></i>
-                                        </a>
-                                        </td>
+                                            <a th:href="@{/proyectos/eliminar/{id}(id=${p.id})}" 
+                                               class="btn btn-sm btn-outline-danger" 
+                                               onclick="return confirm('¿Estás seguro de borrar este proyecto y todo su historial?');"
+                                               title="Eliminar Proyecto">
+                                                <i class="bi bi-trash"></i>
                                             </a>
                                         </td>
                                     </tr>

@@ -29,6 +29,12 @@ public class ProyectoControlador {
     @Autowired
     private ElementoChecklistRepositorio checklistRepositorio;
 
+
+    @GetMapping("") 
+    public String listarProyectos() {
+        return "redirect:/"; // Redirige al Dashboard donde está la tabla
+    }
+
     @GetMapping("/{id}/checklist")
     public String verChecklist(@PathVariable Long id, Model model) {
         Proyecto proyecto = proyectoServicio.buscarPorId(id);
@@ -37,12 +43,24 @@ public class ProyectoControlador {
             return "redirect:/";
         }
 
-        List<ElementoChecklist> elementos = checklistRepositorio.findByProyectoId(id);
-        
+        // Sincronizar con ChecklistSemilla: los hitos del PROGRAMA se guardan como "2. Programa"
+        List<ElementoChecklist> elementosPrograma = checklistRepositorio.findByProyectoIdAndFase(id, "2. Programa");
         model.addAttribute("proyecto", proyecto);
-        model.addAttribute("elementos", elementos);
+        model.addAttribute("elementos", elementosPrograma);
+        // La plantilla `checklist.html` itera sobre `${prog}` — exponerlo también
+        model.addAttribute("prog", elementosPrograma);
         
         return "checklist";
+    }
+
+    @GetMapping("/{id}/checklist/stage2")
+    public String cargarStage2(@PathVariable Long id, Model model) {
+        Proyecto proyecto = proyectoServicio.buscarPorId(id);
+        if (proyecto == null) return "";
+
+        List<ElementoChecklist> elementosStage2 = checklistRepositorio.findByProyectoIdAndFase(id, "2. Stage 2");
+        model.addAttribute("elementos_stage2", elementosStage2);
+        return "fragments/checklist-stage2 :: stage2Content";
     }
     
     @GetMapping("/nuevo")

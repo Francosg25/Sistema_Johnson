@@ -8,4 +8,5 @@ import java.util.List;
 @Repository
 public interface ElementoChecklistRepositorio extends JpaRepository<ElementoChecklist, Long> {
     List<ElementoChecklist> findByProyectoId(Long proyectoId);
+    List<ElementoChecklist> findByProyectoIdAndFase(Long proyectoId, String fase);
 }
