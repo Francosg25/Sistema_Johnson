@@ -27,7 +27,6 @@ public class ChecklistSemilla {
     }
 
     // --- MÓDULO 1: PROGRAMA APQP (Hitos con Fechas) ---
-    // Fuente: F7100 APQP Checklist - Programa APQP.csv
     private void cargarProgramaAPQP(CatalogoElementoRepositorio repo) {
         List<CatalogoElemento> hitos = Arrays.asList(
             crear("HITO-01", "Equipo multifuncional / CFT (Kick-off)", "0. Programa", "HITO", "Inicio"),

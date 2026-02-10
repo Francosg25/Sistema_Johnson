@@ -7,6 +7,10 @@ import java.util.List;
 
 @Repository
 public interface ElementoChecklistRepositorio extends JpaRepository<ElementoChecklist, Long> {
+    
+    // Método para buscar por Proyecto
     List<ElementoChecklist> findByProyectoId(Long proyectoId);
-    List<ElementoChecklist> findByProyectoIdAndFase(Long proyectoId, String fase);
+
+    // Spring Data interpreta: "Busca por ProyectoId" Y "entra a Catalogo" Y "busca Fase" que empiece con...
+    List<ElementoChecklist> findByProyectoIdAndCatalogoFaseStartingWith(Long proyectoId, String fasePrefix);
 }

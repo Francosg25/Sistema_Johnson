@@ -31,10 +31,14 @@ public class ElementoChecklist {
      
     private String fase; 
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "catalogo_id")
     private CatalogoElemento catalogo;
 
     @Column(length = 1000) 
     private String comentario;
+
+    
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "responsable_id")
