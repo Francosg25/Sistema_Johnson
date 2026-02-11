@@ -1,69 +1,46 @@
-APP_DIR := johnson-sistema
-COMPOSE := docker compose
+# Johnson Electric - APQP System Makefile
+# Franco Sanchez
 
-.PHONY: help build docker-build up down restart logs logs-app shell db-shell seed test clean
+.PHONY: db dev build up down logs clean help
 
+# Ayuda: Muestra los comandos disponibles
 help:
-	@echo "Makefile targets:"
-	@echo "  make build        -> compila el JAR usando Maven"
-	@echo "  make docker-build -> construye imágenes con docker-compose"
-	@echo "  make up           -> levanta servicios (db + app) en background"
-	@echo "  make down         -> para y elimina contenedores y volúmenes"
-	@echo "  make restart      -> reinicia app"
-	@echo "  make logs         -> muestra logs de todos los servicios"
-	@echo "  make logs-app     -> muestra logs del servicio app"
-	@echo "  make shell        -> shell dentro del contenedor app"
-	@echo "  make db-shell     -> psql dentro del contenedor de postgres"
-	@echo "  make seed         -> intenta invocar /debug/crear-proyecto hasta que responda"
-	@echo "  make test         -> ejecuta tests con Maven"
-	@echo "  make clean        -> limpia build local y prune de docker"
+	@echo "Johnson Electric - Sistema de Gestión APQP"
+	@echo "------------------------------------------"
+	@echo "make db      - Inicia solo la base de datos (Postgres)"
+	@echo "make dev     - Inicia la DB y corre la App localmente (Modo Desarrollo)"
+	@echo "make build   - Compila el proyecto con Maven"
+	@echo "make up      - Levanta TODO el sistema en Docker (App + DB)"
+	@echo "make down    - Detiene todos los contenedores"
+	@echo "make logs    - Muestra los logs de la aplicación"
+	@echo "make clean   - Limpieza profunda (Maven + Docker Volumes)"
 
+# Inicia solo la base de datos en Docker (Persistente)
+db:
+	docker compose up -d db
+
+# Modo Desarrollo: Inicia la DB y corre Spring Boot en tu Windows (Más rápido para programar)
+dev: db
+	cd johnson-sistema && ./mvnw spring-boot:run
+
+# Compilación pura de Java
 build:
-	@echo "Compilando JAR con Maven..."
-	cd $(APP_DIR) && mvn -B -DskipTests package
+	cd johnson-sistema && ./mvnw clean install -DskipTests
 
-docker-build:
-	@echo "Construyendo imágenes con docker-compose..."
-	$(COMPOSE) build --pull
+# Levanta todo el stack (Ideal para demostraciones finales)
+up:
+	docker compose up --build -d
 
-up: docker-build
-	@echo "Levantando servicios..."
-	$(COMPOSE) up -d --remove-orphans
-
+# Detener el sistema
 down:
-	@echo "Parando servicios..."
-	$(COMPOSE) down -v --remove-orphans
+	docker compose down
 
-restart: down up
-
+# Ver qué está pasando en la App
 logs:
-	$(COMPOSE) logs -f --tail=200
+	docker compose logs -f app
 
-logs-app:
-	$(COMPOSE) logs -f --tail=200 app
-
-shell:
-	@echo "Abriendo shell en contenedor 'app' (si existe)"
-	$(COMPOSE) exec app /bin/sh
-
-db-shell:
-	@echo "Abriendo psql en contenedor 'db' (si existe)"
-	$(COMPOSE) exec db psql -U johnson -d johnsondb
-
-seed:
-	@echo "Invocando /debug/crear-proyecto hasta que responda..."
-	@count=0; \
-	while [ $$count -lt 30 ]; do \
-	  if curl -sSfS http://localhost:8080/debug/crear-proyecto > /dev/null; then \
-	    echo "Seed exitosa"; exit 0; \
-	  fi; \
-	  count=$$((count+1)); sleep 2; \
-	done; \
-	echo "No se pudo ejecutar endpoint de seed en 60s"; exit 1
-
-test:
-	cd $(APP_DIR) && mvn test
-
+# Limpieza total: Borra la DB (para empezar de cero) y archivos temporales de Java
 clean:
-	cd $(APP_DIR) && mvn clean
-	docker system prune -af || true
+	docker compose down -v
+	cd johnson-sistema && ./mvnw clean
+	docker system prune -f
