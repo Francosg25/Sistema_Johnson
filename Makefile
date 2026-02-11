@@ -21,7 +21,7 @@ db:
 
 # Modo Desarrollo: Inicia la DB y corre Spring Boot en tu Windows (Más rápido para programar)
 dev: db
-	cd johnson-sistema && ./mvnw spring-boot:run
+	cd johnson-sistema && mvnw.cmd spring-boot:run
 
 # Compilación pura de Java
 build:
@@ -41,6 +41,8 @@ logs:
 
 # Limpieza total: Borra la DB (para empezar de cero) y archivos temporales de Java
 clean:
+	# Busca la sección clean:
+clean:
 	docker compose down -v
-	cd johnson-sistema && ./mvnw clean
+	cd johnson-sistema && mvnw.cmd clean  
 	docker system prune -f
