@@ -51,74 +51,80 @@
                             <div th:if="${fase.nombre.contains('Programa')}" class="card border-0 shadow-sm">
                                 <div class="card-body p-0">
                                     <div class="table-responsive">
-                                        <table class="table table-hover table-bordered mb-0 align-middle" style="font-size: 0.85rem;">
+                                    <table class="table table-hover table-bordered mb-0 align-middle" style="font-size: 0.85rem;">
                                             <thead class="bg-light small text-uppercase text-muted fw-bold">
                                                 <tr>
-                                                    <th rowspan="2" style="width: 8%;" class="text-center align-middle">Champion</th>
-                                                    <th rowspan="2" style="width: 10%;" class="text-center align-middle">Stages</th>
-                                                    <th rowspan="2" style="width: 25%;" class="align-middle">Entregables</th>
+                                                    <th rowspan="2" style="width: 5%;" class="text-center align-middle">Champion</th>
+                                                    <th rowspan="2" style="width: 8%;" class="text-center align-middle">Etapas / Stages (APQP)</th>
+                                                    <th rowspan="2" style="width: 25%;" class="align-middle">Entregables / Deliverables</th>
                                                     <th colspan="2" style="width: 15%;" class="text-center">Fechas</th>
-                                                    <th rowspan="2" style="width: 20%;" class="text-center align-middle">Status</th>
-                                                    <th rowspan="2" style="width: 2%;" class="text-center align-middle">Calificación</th>
-                                                    <th rowspan="2" style="width: 12%;" class="align-middle">Observaciones</th>
+                                                    <th rowspan="2" style="width: 28%;" class="text-center align-middle">Status</th>
+                                                    <th rowspan="2" style="width: 10%;" class="text-center align-middle">Calificación / Score</th>
+                                                    <th rowspan="2" style="width: 14%;" class="align-middle">Observaciones / Remarks</th>
                                                 </tr>
                                                 <tr class="text-center">
-                                                    <th>Plan</th>
-                                                    <th>Real</th>
+                                                    <th style="width: 7.5%;">Plan</th>
+                                                    <th style="width: 7.5%;">Real</th>
                                                 </tr>
-                                            </thead>
-                                            <tbody>
-                                                <th:block th:each="item, iterStat : ${fase.items}">
-                                                    <tr th:if="${iterStat.index == 0 or !fase.items[iterStat.index - 1].etapaVisual.equals(item.etapaVisual)}" class="table-group-header">
-                                                        <td colspan="8" class="fw-bold text-uppercase py-2 px-3 text-dark">
-                                                            <i class="bi bi-collection me-2"></i><span th:text="${item.etapaVisual}"></span>
-                                                        </td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td class="text-center fw-bold" rowspan="2" style="vertical-align: middle;">
-                                                            <span class="badge w-100" th:classappend="${'champ-' + #strings.toLowerCase(item.champion.split('/')[0])}" th:text="${item.champion}"></span>
-                                                        </td>
-                                                        <td rowspan="2" style="vertical-align: middle;" class="small text-muted text-center" th:text="${item.etapaVisual}"></td>
-                                                        <td rowspan="2" style="vertical-align: middle;">
-                                                            <span class="d-block fw-bold text-dark" th:text="${item.nombre}"></span>
-                                                        </td>
-                                                        <td class="text-center">
-                                                            <input type="date" class="form-control form-control-sm border-0 bg-light-subtle text-center p-0" th:name="'fechaPlan-' + ${item.id}" th:value="${item.fechaPlan}">
-                                                        </td>
-                                                        <td class="text-center">
-                                                            <input type="date" class="form-control form-control-sm border-0 bg-light-subtle text-center p-0" th:name="'fechaReal-' + ${item.id}" th:value="${item.fechaReal}">
-                                                        </td>
-                                                        <td class="text-center" rowspan="2" style="vertical-align: middle;">
-                                                            <select class="form-select form-select-sm border-0 fw-bold" th:name="'controlEntregable-' + ${item.id}"
-                                                                    th:classappend="${
-                                                                        item.controlEntregable == 'Closed on time' ? 'status-on-time' :
-                                                                        (item.controlEntregable == 'Closed late' ? 'status-late' :
-                                                                        (item.controlEntregable == 'DECISION' ? 'status-decision' :
-                                                                        (item.controlEntregable == 'NEEDS ACTION' ? 'status-needs-action' : 'status-default')))}">
-                                                                <option th:selected="${item.controlEntregable == 'Closed on time'}" value="Closed on time">Closed on time</option>
-                                                                <option th:selected="${item.controlEntregable == 'Closed late'}" value="Closed late">Closed late</option>
-                                                                <option th:selected="${item.controlEntregable == 'DECISION'}" value="DECISION">DECISION</option>
-                                                                <option th:selected="${item.controlEntregable == 'NEEDS ACTION'}" value="NEEDS ACTION">NEEDS ACTION</option>
-                                                            </select>
-                                                        </td>
-                                                        <td class="text-center" rowspan="2" style="vertical-align: middle;">
-                                                            <select class="form-select form-select-sm border-0 fw-bold" th:name="'score-' + ${item.id}"
-                                                                    th:classappend="${item.score == 'OK' ? 'status-on-time' : 'status-default'}">
-                                                                <option th:selected="${item.score == 'OK'}" value="OK">OK</option>
-                                                                <option th:selected="${item.score == 'N/A'}" value="N/A">N/A</option>
-                                                            </select>
-                                                        </td>
-                                                        <td rowspan="2" style="vertical-align: middle;">
-                                                            <textarea class="form-control form-control-sm border-0 bg-light-subtle" rows="2" 
-                                                                      th:name="'comentario-' + ${item.id}"
-                                                                      th:text="${item.comentario}" placeholder="..."></textarea>
-                                                        </td>
-                                                    </tr>
-                                                    <!-- Segunda fila vacía para mantener la estructura visual de dos filas por item -->
-                                                    <tr></tr>
-                                                </th:block>
-                                            </tbody>
-                                        </table>
+                                            </thead>                                        <tbody>
+                                            <th:block th:each="item, iterStat : ${fase.items}">
+                                                <!-- Fila de Grupo -->
+                                                <tr th:if="${iterStat.index == 0 or !fase.items[iterStat.index - 1].etapaVisual.equals(item.etapaVisual)}" class="table-group-header">
+                                                    <td colspan="8" class="fw-bold text-uppercase py-2 px-3 text-dark">
+                                                        <i class="bi bi-collection me-2"></i><span th:text="${item.etapaVisual}"></span>
+                                                    </td>
+                                                </tr>
+                                                
+                                                <!-- Primera Fila (Plan) -->
+                                                <tr>
+                                                    <td class="text-center fw-bold" rowspan="2" style="vertical-align: middle;">
+                                                        <span class="badge w-100" th:classappend="${'champ-' + #strings.toLowerCase(item.champion.split('/')[0])}" th:text="${item.champion}"></span>
+                                                    </td>
+                                                    <td rowspan="2" style="vertical-align: middle;" class="small text-muted text-center" th:text="${item.etapaVisual}"></td>
+                                                    <td rowspan="2" style="vertical-align: middle; background-color: #fffacd;">
+                                                        <span class="d-block fw-bold text-dark" th:text="${item.nombre}"></span>
+                                                    </td>
+                                                    <td class="fw-bold small ps-2">Plan</td>
+                                                    <td class="text-center">
+                                                        <input type="date" class="form-control form-control-sm border-0 bg-transparent text-center p-0" th:name="'fechaPlan-' + ${item.id}" th:value="${item.fechaPlan}">
+                                                    </td>
+                                                    <td class="text-center" rowspan="2" style="vertical-align: middle;">
+                                                        <select class="form-select form-select-sm border-0 fw-bold" th:name="'controlEntregable-' + ${item.id}"
+                                                                th:classappend="${
+                                                                    item.controlEntregable == 'Closed on time' ? 'status-on-time' :
+                                                                    (item.controlEntregable == 'Closed late' ? 'status-late' :
+                                                                    (item.controlEntregable == 'DECISION' ? 'status-decision' :
+                                                                    (item.controlEntregable == 'NEEDS ACTION' ? 'status-needs-action' : 'status-default')))}">
+                                                            <option th:selected="${item.controlEntregable == 'Closed on time'}" value="Closed on time">Closed on time</option>
+                                                            <option th:selected="${item.controlEntregable == 'Closed late'}" value="Closed late">Closed late</option>
+                                                            <option th:selected="${item.controlEntregable == 'DECISION'}" value="DECISION">DECISION</option>
+                                                            <option th:selected="${item.controlEntregable == 'NEEDS ACTION'}" value="NEEDS ACTION">NEEDS ACTION</option>
+                                                        </select>
+                                                    </td>
+                                                    <td class="text-center" rowspan="2" style="vertical-align: middle;">
+                                                        <select class="form-select form-select-sm border-0 fw-bold" th:name="'score-' + ${item.id}"
+                                                                th:classappend="${item.score == 'OK' ? 'status-on-time' : 'status-default'}">
+                                                            <option th:selected="${item.score == 'OK'}" value="OK">OK</option>
+                                                            <option th:selected="${item.score == 'N/A'}" value="N/A">N/A</option>
+                                                        </select>
+                                                    </td>
+                                                    <td rowspan="2" style="vertical-align: middle;">
+                                                        <textarea class="form-control form-control-sm border-0 bg-light-subtle" rows="2" 
+                                                                  th:name="'comentario-' + ${item.id}"
+                                                                  th:text="${item.comentario}" placeholder="..."></textarea>
+                                                    </td>
+                                                </tr>
+                                                
+                                                <!-- Segunda Fila (Real) -->
+                                                <tr>
+                                                    <td class="fw-bold small ps-2">Real</td>
+                                                    <td class="text-center">
+                                                        <input type="date" class="form-control form-control-sm border-0 bg-light-subtle text-center p-0" th:name="'fechaReal-' + ${item.id}" th:value="${item.fechaReal}">
+                                                    </td>
+                                                </tr>
+                                            </th:block>
+                                        </tbody>
+                                    </table>
                                     </div>
                                 </div>
                             </div>
