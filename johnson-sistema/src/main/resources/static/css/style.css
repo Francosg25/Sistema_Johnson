@@ -89,8 +89,8 @@ body {
 
 /* Layout for sidebar + page content */
 html, body { height: 100%; margin: 0; padding: 0; overflow-x: hidden; }
-#sidebar-wrapper { position: fixed; top: 0; left: 0; bottom: 0; width: 280px; min-height: 100vh; transition: transform .25s ease, width .25s ease; z-index: 1030; }
-#page-content-wrapper { margin-left: 280px; width: calc(100% - 280px); box-sizing: border-box; transition: margin-left .25s ease, width .25s ease; }
+#sidebar-wrapper { position: fixed; top: 0; left: 0; bottom: 0; width: 240px; min-height: 100vh; transition: transform .25s ease, width .25s ease; z-index: 1030; }
+#page-content-wrapper { margin-left: 240px; width: calc(100% - 240px); box-sizing: border-box; transition: margin-left .25s ease, width .25s ease; }
 #sidebar-wrapper.collapsed { transform: translateX(-100%); }
 #page-content-wrapper.collapsed { margin-left: 0; width: 100%; }
 

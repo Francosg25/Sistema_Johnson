@@ -21,6 +21,9 @@ db:
 
 # Modo Desarrollo: Inicia la DB y corre Spring Boot en tu Windows (Más rápido para programar)
 dev: db
+	@echo "--- Base de datos iniciada. Esperando 15 segundos para que se estabilice... ---"
+	@timeout /t 15 /nobreak > NUL
+	@echo "--- Iniciando aplicacion Spring Boot... ---"
 	cd johnson-sistema && mvn spring-boot:run
 
 # Compilación pura de Java

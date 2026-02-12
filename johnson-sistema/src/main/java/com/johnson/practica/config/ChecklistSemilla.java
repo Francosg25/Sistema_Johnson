@@ -39,50 +39,51 @@ public class ChecklistSemilla {
 
     private void cargarProgramaAPQP(CatalogoElementoRepositorio repo) {
         List<CatalogoElemento> programa = Arrays.asList(
-            // ETAPA 2 / STAGE 2
-            crearE("PROJ",   "ETAPA 2", "Equipo multifuncional / CFT (JE Global and internal):"),
-            crearE("DE",     "ETAPA 2", "DFMEA:"),
-            crearE("DE",     "ETAPA 2", "Lista preliminar de materiales / Preliminary BOM:"),
-            crearE("DE",     "ETAPA 2", "Dibujos / Drawings:"),
-            crearE("QE/PE",  "ETAPA 2", "Lista de equipos, fixturas, herramietas, refacciones,gauges e instalaciones necesarias"),
-            crearE("PROJ",   "ETAPA 2", "Compromiso de Factibilidad del Equipo / Team Feasibility Commitment:"),
-            crearE("ALL",    "ETAPA 2", "Lecciones aprendidas/ Lessons learned."),
-            crearE("PROJ",   "ETAPA 2", "Manual de Proveedor / Customer Supplier Manual"),
-            crearE("DE",     "ETAPA 2", "Reporte de Validación del Diseño / DV Report"),
-            crearE("QE",     "ETAPA 2", "Lista preliminar de características del cliente / Preliminary Customer Characteristics List:"),
+            // ETAPA 2
+            crearE("P-01", "PROJ",   "ETAPA 2", "Equipo multifuncional / CFT (JE Global and internal):"),
+            crearE("P-02", "DE",     "ETAPA 2", "DFMEA:"),
+            crearE("P-03", "DE",     "ETAPA 2", "Lista preliminar de materiales / Preliminary BOM:"),
+            crearE("P-04", "DE",     "ETAPA 2", "Dibujos / Drawings:"),
+            crearE("P-05", "QE/PE",  "ETAPA 2", "Lista de equipos, fixturas, herramietas, refacciones,gauges e instalaciones necesarias"),
+            crearE("P-06", "PROJ",   "ETAPA 2", "Compromiso de Factibilidad del Equipo / Team Feasibility Commitment:"),
+            crearE("P-07", "ALL",    "ETAPA 2", "Lecciones aprendidas/ Lessons learned."),
+            crearE("P-08", "PROJ",   "ETAPA 2", "Manual de Proveedor / Customer Supplier Manual"),
+            crearE("P-09", "DE",     "ETAPA 2", "Reporte de Validación del Diseño / DV Report"),
+            crearE("P-10", "QE",     "ETAPA 2", "Lista preliminar de características del cliente / Preliminary Customer Characteristics List:"),
 
-            // ETAPA 3 / STAGE 3
-            crearE("QE/PE",  "ETAPA 3", "01.- Especificaciones de empaque"),
-            crearE("QE",     "ETAPA 3", "02.- Cambios en el SGC para fabricar el producto"),
-            crearE("PE",     "ETAPA 3", "03.- Process Flow Chart"),
-            crearE("PE",     "ETAPA 3", "04.- Floor plan layout"),
-            crearE("QE/PE",  "ETAPA 3", "05.- Characteristic Matrix"),
-            crearE("PE",     "ETAPA 3", "0.6- PFMEA"),
-            crearE("QE",     "ETAPA 3", "0.7- Control Plan Pre-launch"),
-            crearE("PE",     "ETAPA 3", "0.8- WI"),
-            crearE("QE",     "ETAPA 3", "0.9- MSA Plan"),
-            crearE("QE/PE",  "ETAPA 3", "10.- SPC Plan"),
-            crearE("PROJ",   "ETAPA 3", "11.- Minutas Juntas"),
-            crearE("PROJ",   "ETAPA 3", "Revisión de etapa (línea en México) / Stage Revision (line in Mexico):"),
+            // ETAPA 3
+            crearE("P-11", "QE",     "ETAPA 3", "01.- Especificaciones de empaque"),
+            crearE("P-12", "PE",     "ETAPA 3", "01.- Especificaciones de empaque"), // Duplicado según excel
+            crearE("P-13", "QE",     "ETAPA 3", "02.-Cambios en el SGC para fabricar el producto"),
+            crearE("P-14", "PE",     "ETAPA 3", "03.-Process Flow Chart"),
+            crearE("P-15", "PE",     "ETAPA 3", "04.-Floor plan layout"),
+            crearE("P-16", "QE/PE",  "ETAPA 3", "05.-Characteristic Matrix"),
+            crearE("P-17", "PE",     "ETAPA 3", "0.6- PFMEA"),
+            crearE("P-18", "QE",     "ETAPA 3", "0.7-Control Plan Pre-launch"),
+            crearE("P-19", "PE",     "ETAPA 3", "0.8- WI"),
+            crearE("P-20", "QE",     "ETAPA 3", "0.9- MSA Plan"),
+            crearE("P-21", "QE/PE",  "ETAPA 3", "10.-SPC Plan"),
+            crearE("P-22", "PROJ",   "ETAPA 3", "11.- Minutas Juntas"),
+            crearE("P-23", "QE",     "ETAPA 3", "11.- Minutas Juntas"), // Duplicado según excel
+            crearE("P-24", "PROJ",   "ETAPA 3", "Revisión de etapa (línea en México) / Stage Revision (line in Mexico):"),
 
-            // ETAPA 4 / STAGE 4
-            crearE("PROJ",   "ETAPA 4", "12.- Pilot Run"),
-            crearE("QE",     "ETAPA 4", "13.- MSA"),
-            crearE("QE/PE",  "ETAPA 4", "14.- Preliminary SPC"),
-            crearE("QE",     "ETAPA 4", "15.- PPAP"),
-            crearE("QE",     "ETAPA 4", "16.- Production Validation Testing"),
-            crearE("PE",     "ETAPA 4", "17.- Packaging evaluation"),
-            crearE("QE",     "ETAPA 4", "18.- Production Control Plan"),
-            crearE("PE",     "ETAPA 4", "04.- Floor plan layout"), 
-            crearE("PROJ",   "ETAPA 4", "19.- Sign-OFF"),
+            // ETAPA 4
+            crearE("P-25", "PROJ",   "ETAPA 4", "12.- Pilot Run"),
+            crearE("P-26", "QE",     "ETAPA 4", "13.- MSA"),
+            crearE("P-27", "QE/PE",  "ETAPA 4", "14.-Preliminary SPC"),
+            crearE("P-28", "QE",     "ETAPA 4", "15.- PPAP"),
+            crearE("P-29", "QE",     "ETAPA 4", "16.-Production Validation Testing"),
+            crearE("P-30", "PE",     "ETAPA 4", "17.-Packaging evaluation"),
+            crearE("P-31", "QE",     "ETAPA 4", "18.-Production Control Plan"),
+            crearE("P-32", "PE",     "ETAPA 4", "04.-Floor plan layout"), // Duplicado según excel
+            crearE("P-33", "PROJ",   "ETAPA 4", "19.- Sign-OFF"),
 
-            // ETAPA 5 / STAGE 5
-            crearE("QE/PE",  "ETAPA 5", "20.- Reduced Variation"),
-            crearE("QE",     "ETAPA 5", "21.- Improve customer satisfaction"),
-            crearE("QE",     "ETAPA 5", "22.- Improved delivery and service"),
-            crearE("QE/PE",  "ETAPA 5", "23.- Effective use of Lesson Learned/Best practice"),
-            crearE("PROJ",   "ETAPA 5", "25.- Entrega formal de proyecto a producción / Formal project delivery to production:"),
-            crearE("PROJ",   "ETAPA 5", "Revisión de etapa / Stage Revision")
+            // ETAPA 5
+            crearE("P-34", "QE/PE",  "ETAPA 5", "20.-Reduced Variation"),
+            crearE("P-35", "QE",     "ETAPA 5", "21.-Improve customer satisfaction"),
+            crearE("P-36", "QE",     "ETAPA 5", "22.- Improved delivery and service"),
+            crearE("P-37", "QE/PE",  "ETAPA 5", "23.- Effective use of Lesson Learned/Best practice"),
+            crearE("P-38", "PROJ",   "ETAPA 5", "25.- Entrega formal de proyecto a producción / Formal project delivery to production:")
         );
         repo.saveAll(programa);
     }
@@ -138,8 +139,9 @@ public class ChecklistSemilla {
 
     
     // --- HELPERS ---
-    private CatalogoElemento crearE(String champ, String etapa, String nom) {
+    private CatalogoElemento crearE(String cod, String champ, String etapa, String nom) {
         CatalogoElemento e = new CatalogoElemento();
+        e.setCodigo(cod);
         e.setNombre(nom); e.setFase("0. Programa"); e.setChampion(champ);
         e.setEtapaVisual(etapa); e.setTipoInput("HITO"); e.setGrupo("Master Plan");
         return e;

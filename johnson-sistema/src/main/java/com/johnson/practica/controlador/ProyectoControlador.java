@@ -68,20 +68,12 @@ public class ProyectoControlador {
         return "checklist";
     }
 
-    // --- 2. ACTUALIZAR ESTADO/COMENTARIO (AJAX) ---
-    @PostMapping("/checklist/actualizar/{id}")
-    @ResponseBody
-    public ResponseEntity<?> actualizarElemento(@PathVariable Long id,
-                                                @RequestParam(required = false) String estado,
-                                                @RequestParam(required = false) String comentario,
-                                                @RequestParam(required = false) String controlEntregable,
-                                                @RequestParam(required = false) String score) {
-        
-        checklistServicio.actualizarElemento(id, estado, comentario, controlEntregable, score);
-        
-        Map<String, Object> response = new HashMap<>();
-        response.put("status", "success");
-        return ResponseEntity.ok(response);
+    @PostMapping("/checklist/guardar-todo/{proyectoId}")
+    public String guardarChecklistCompleto(@PathVariable Long proyectoId, @RequestParam Map<String, String> allParams) {
+        if (allParams != null) {
+            checklistServicio.guardarChecklistCompleto(allParams);
+        }
+        return "redirect:/proyectos/checklist/" + proyectoId;
     }
 
     // --- 3. GESTIÓN DE PROYECTOS ---
