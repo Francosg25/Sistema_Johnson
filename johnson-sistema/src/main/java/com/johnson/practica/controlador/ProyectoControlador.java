@@ -36,7 +36,7 @@ public class ProyectoControlador {
         private List<ElementoChecklist> items;
     }
 
-    // --- 1. VER EL CHECKLIST (Aquí estaba el error) ---
+    // --- 1. VER EL CHECKLIST ---
     @GetMapping("/checklist/{id}")
     public String verChecklist(@PathVariable Long id, Model model, HttpServletRequest request) {
         Proyecto proyecto = proyectoServicio.buscarPorId(id);
@@ -48,10 +48,9 @@ public class ProyectoControlador {
         model.addAttribute("currentUri", request.getRequestURI());
         model.addAttribute("proyecto", proyecto);
 
-        // CONSTRUIMOS LA LISTA "FASES" QUE EL HTML ESPERA
         List<FaseVista> fases = new ArrayList<>();
         
-        // 1. Programa APQP (Hitos)
+        // 1. Programa APQP 
         fases.add(new FaseVista("prog", "Programa APQP", checklistServicio.obtenerHitosPrograma(id)));
         
         // 2. Stage 2 (Checklist Detallado)

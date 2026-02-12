@@ -20,27 +20,23 @@ public class ChecklistSemilla {
     CommandLineRunner initDatabase(CatalogoElementoRepositorio repositorio) {
         return args -> {
             try {
-                // 1. Limpieza segura (Hijos primero, luego Padres)
                 elementoRepo.deleteAll();
                 repositorio.deleteAll();
 
-                // 2. Cargas
-                cargarProgramaAPQP(repositorio); // Tu lista manual original
-                cargarStage2(repositorio);       // Checklist Detallado
+                cargarProgramaAPQP(repositorio); 
+                cargarStage2(repositorio);       
                 
-                // Gate Reviews (Simples)
                 cargarGateReview(repositorio, "3. Stage 3");
                 cargarGateReview(repositorio, "4. Stage 4");
                 cargarGateReview(repositorio, "5. Stage 5");
 
-                System.out.println("✅ SEMILLA CARGADA: Estructura original restaurada y Stages configurados.");
+                System.out.println("SEMILLA CARGADA: Estructura original restaurada y Stages configurados.");
             } catch (Exception e) {
-                System.err.println("❌ Error: " + e.getMessage());
+                System.err.println("Error: " + e.getMessage());
             }
         };
     }
 
-    // --- TU LISTA MANUAL ORIGINAL (Programa Maestro) ---
     private void cargarProgramaAPQP(CatalogoElementoRepositorio repo) {
         List<CatalogoElemento> programa = Arrays.asList(
             // ETAPA 2 / STAGE 2
@@ -94,7 +90,6 @@ public class ChecklistSemilla {
     // --- STAGE 2: CHECKLIST DETALLADO (COMPLETO 23 PUNTOS) ---
     private void cargarStage2(CatalogoElementoRepositorio repo) {
         List<CatalogoElemento> stage2 = Arrays.asList(
-            // --- Información Preliminar ---
             crearDetalle("S2-01", "¿Se cuenta con un CFT completado?", "2. Stage 2", "Información preliminar/ Preliminary information", "Project Engineer"),
             crearDetalle("S2-02", "¿Se cuenta con el DFMEA completo?", "2. Stage 2", "Información preliminar/ Preliminary information", "Design Engineer"),
             crearDetalle("S2-03", "¿Se cuenta con un BOM Preliminar?", "2. Stage 2", "Información preliminar/ Preliminary information", "Design Engineer"),
@@ -104,7 +99,6 @@ public class ChecklistSemilla {
             crearDetalle("S2-07", "¿Lecciones aprendidas documentadas?", "2. Stage 2", "Información preliminar/ Preliminary information", "QE/PE"),
             crearDetalle("S2-08", "¿Manual de Proveedor disponible?", "2. Stage 2", "Información preliminar/ Preliminary information", "Project Engineer"),
             
-            // --- LOS QUE FALTABAN (09 - 15) ---
             crearDetalle("S2-09", "¿Se proporcionó el Reporte DV?", "2. Stage 2", "Información preliminar/ Preliminary information", "Project Engineer"),
             crearDetalle("S2-10", "¿Plan de validación de diseño (DVP)?", "2. Stage 2", "Información preliminar/ Preliminary information", "Design Engineer"),
             crearDetalle("S2-11", "¿Plan de validación de proceso (PVP)?", "2. Stage 2", "Dibujos Ingenieriles / Engineering Drawings", "Quality Engineer"),
@@ -113,7 +107,6 @@ public class ChecklistSemilla {
             crearDetalle("S2-14", "¿Layout preliminar?", "2. Stage 2", "Dibujos Ingenieriles / Engineering Drawings", "Process Engineer"),
             crearDetalle("S2-15", "¿Plan de empaque preliminar?", "2. Stage 2", "Componentes nuevos / New components", "Process Engineer"),
 
-            // --- Abastecimiento (Sourcing) ---
             crearDetalle("S2-16", "¿Lista alineada con RFQ tracker?", "2. Stage 2", "Componentes nuevos / New components", "SCS Procurement"),
             crearDetalle("S2-17", "¿Proveedores de nuevos materiales conocidos?", "2. Stage 2", "Componentes nuevos / New components", "SCS Procurement"),
             crearDetalle("S2-18", "¿Características especiales identificadas?", "2. Stage 2", "Componentes nuevos / New components", "Project Engineer"),
@@ -121,7 +114,6 @@ public class ChecklistSemilla {
             crearDetalle("S2-20", "¿QRs para nuevos componentes disponibles?", "2. Stage 2", "Componentes nuevos / New components", "SCS Procurement"),
             crearDetalle("S2-21", "¿TP de nuevos componentes disponibles?", "2. Stage 2", "Componentes nuevos / New components", "Finance Rep"),
 
-            // --- Requerimientos del Cliente ---
             crearDetalle("S2-22", "¿Lista preliminar de características del cliente?", "2. Stage 2", "Lista preliminar de características del cliente / Preliminary Customer Characteristics List:", "Design Engineer"),
             crearDetalle("S2-23", "¿Lista avalada por firma del cliente?", "2. Stage 2", "Lista preliminar de características del cliente / Preliminary Customer Characteristics List:", "Design Engineer")
         );
@@ -131,12 +123,12 @@ public class ChecklistSemilla {
     
     private void cargarGateReview(CatalogoElementoRepositorio repo, String fase) {
         List<CatalogoElemento> gate = Arrays.asList(
-            // --- SUBSECCIÓN 1: VALIDACIÓN (PREGUNTAS DE ARRIBA) ---
+            // --- SUBSECCIÓN 1: VALIDACIÓN 
             crearGate("GATE-01", "¿Todos los puntos del APQP Checklist están cerrados?", fase, "Validación"),
             crearGate("GATE-02", "¿Entregables validados y auditados por el equipo?", fase, "Validación"),
             crearGate("GATE-03", "¿Entregables completados en tiempo?", fase, "Validación"),
 
-            // --- SUBSECCIÓN 2: CONCLUSIÓN (TABLA DE ABAJO) ---
+            // --- SUBSECCIÓN 2: CONCLUSIÓN
             crearGate("CONC-01", "CIERRE / CLOSE: El proyecto puede cerrarse.", fase, "Conclusión"),
             crearGate("CONC-02", "DESVIACIÓN / DEVIATION: Situaciones menores abiertas.", fase, "Conclusión"),
             crearGate("CONC-03", "ABIERTO / OPEN: Evidencia insuficiente.", fase, "Conclusión")

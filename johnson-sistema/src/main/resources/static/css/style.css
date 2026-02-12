@@ -6,7 +6,7 @@
     --je-bg-light: #f4f6f9;
 
     --bs-primary: var(--je-orange);
-    --bs-primary-rgb: 245, 130, 31; /* RGB values for #F5821F */
+    --bs-primary-rgb: 245, 130, 31; 
 }
 
 body {
@@ -14,7 +14,6 @@ body {
     background-color: var(--je-bg-light); 
 }
 
-/* New Johnson Electric Sidebar */
 .sidebar-je {
     background-color: var(--je-dark);
     color: var(--je-light-text);
@@ -23,7 +22,7 @@ body {
     color: var(--je-light-text);
     font-weight: 700;
     letter-spacing: 0.5px;
-    padding: 1.5rem 1rem;
+    padding: 1rem;
     text-align: center;
     border-bottom: 1px solid var(--je-dark-hover);
 }
@@ -119,6 +118,12 @@ html, body { height: 100%; margin: 0; padding: 0; overflow-x: hidden; }
 .status-decision    { background-color: #cce5ff; color: #004085; }
 .status-needs-action{ background-color: #fff3cd; color: #856404; }
 .status-default     { background-color: #e2e3e5; color: #383d41; }
+
+.brand-logo img {
+    max-width: 80%;
+    max-height: 50px;
+    margin-bottom: 10px;
+}
 
 .btn-je-primary {
     background-color: var(--je-dark);

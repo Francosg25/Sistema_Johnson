@@ -21,7 +21,7 @@ db:
 
 # Modo Desarrollo: Inicia la DB y corre Spring Boot en tu Windows (Más rápido para programar)
 dev: db
-	cd johnson-sistema && mvnw.cmd spring-boot:run
+	cd johnson-sistema && mvn spring-boot:run
 
 # Compilación pura de Java
 build:

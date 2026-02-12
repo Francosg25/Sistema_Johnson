@@ -21,7 +21,6 @@
                         <span class="ms-2 fw-bold text-dark fs-5" th:text="${proyecto.nombre}">Nombre</span>
                     </div>
                     <div>
-                        <a href="/" class="btn btn-outline-secondary btn-sm me-2">Volver</a>
                         <button class="btn btn-success btn-sm"><i class="bi bi-file-earmark-excel"></i> Exportar</button>
                     </div>
                 </div>
@@ -164,47 +163,92 @@
                         <div th:if="${!fase.nombre.contains('Programa') && !fase.nombre.contains('Stage 2')}" class="card border-0 shadow-sm">
                             <div class="card-body p-4">
                                 
+                                <!-- Project Info Header -->
+                                <div class="p-3 mb-4 rounded" style="background-color: #f8f9fa;">
+                                    <h4 class="fw-bold text-dark mb-3" th:text="'Revisión de Etapa / ' + ${fase.nombre}"></h4>
+                                    <div class="row g-3">
+                                        <div class="col-md-6"><strong class="me-2">Cliente/Customer:</strong> <span th:text="${proyecto.cliente}"></span></div>
+                                        <div class="col-md-6"><strong class="me-2">Fecha/Date:</strong> <span></span></div>
+                                        <div class="col-md-6"><strong class="me-2">Nombre del proyecto/Project Name:</strong> <span th:text="${proyecto.nombre}"></span></div>
+                                        <div class="col-md-6"><strong class="me-2">Número de parte/Part Number:</strong> <span th:text="${proyecto.numeroParte}"></span></div>
+                                    </div>
+                                </div>
+
+                                <!-- Validation Section -->
                                 <h6 class="text-uppercase fw-bold text-secondary mb-3 border-bottom pb-2">1. Validación de Requerimientos</h6>
                                 <div class="table-responsive mb-5">
                                     <table class="table table-bordered mb-0 align-middle">
                                         <thead class="bg-light small fw-bold text-center">
-                                            <tr><th style="width: 50%;">Requerimiento</th><th>Si</th><th>No</th><th>Comentarios</th></tr>
+                                            <tr>
+                                                <th style="width: 5%;">Si/Yes</th>
+                                                <th style="width: 5%;">No</th>
+                                                <th>Requerimiento/Requirement</th>
+                                                <th style="width: 30%;">Comentarios/Comments</th>
+                                            </tr>
                                         </thead>
                                         <tbody>
                                             <tr th:each="item : ${fase.items}" th:if="${item.grupo == 'Validación'}">
+                                                <td class="text-center"><input class="form-check-input" type="radio" th:name="'val_'+${item.id}" th:checked="${item.estado == 'OK'}"></td>
+                                                <td class="text-center"><input class="form-check-input" type="radio" th:name="'val_'+${item.id}" th:checked="${item.estado == 'NOK'}"></td>
                                                 <td class="fw-bold" th:text="${item.nombre}"></td>
-                                                <td class="text-center"><input type="radio" th:name="'val_'+${item.id}" th:checked="${item.estado == 'OK'}"></td>
-                                                <td class="text-center"><input type="radio" th:name="'val_'+${item.id}" th:checked="${item.estado == 'NOK'}"></td>
-                                                <td><textarea class="form-control form-control-sm border-0 bg-light" rows="1" th:text="${item.comentario}"></textarea></td>
+                                                <td><textarea class="form-control form-control-sm border-0 bg-light-subtle" rows="1" th:text="${item.comentario}"></textarea></td>
                                             </tr>
                                         </tbody>
                                     </table>
                                 </div>
 
+                                <!-- Conclusion Section -->
                                 <h6 class="text-uppercase fw-bold text-secondary mb-3 border-bottom pb-2">2. Conclusión de la Etapa</h6>
-                                <div class="table-responsive">
+                                <div class="table-responsive mb-5">
                                     <table class="table table-bordered mb-0 align-middle">
                                         <thead class="bg-light small fw-bold text-center">
-                                            <tr><th style="width: 15%;">Fecha</th><th style="width: 50%;">Conclusión</th><th>Selección</th><th>Comentarios</th></tr>
+                                            <tr>
+                                                <th style="width: 15%;">Fecha / Date</th>
+                                                <th style="width: 20%;">Conclusión / Conclusion</th>
+                                                <th>Descripción</th>
+                                                <th style="width: 25%;">Comentarios /Comments</th>
+                                            </tr>
                                         </thead>
                                         <tbody>
                                             <tr th:each="item : ${fase.items}" th:if="${item.grupo == 'Conclusión'}">
                                                 <td><input type="date" class="form-control form-control-sm border-0 text-center" th:value="${item.fechaReal}"></td>
-                                                <td>
-                                                    <span class="fw-bold" 
-                                                          th:classappend="${item.nombre.contains('CIERRE')} ? 'text-success' : 
-                                                                         (${item.nombre.contains('DESVI')} ? 'text-warning' : 'text-danger')"
-                                                          th:text="${item.nombre}"></span>
-                                                </td>
-                                                <td class="text-center">
-                                                    <input type="radio" class="form-check-input" th:name="'gate_'+${fase.id}" th:checked="${item.estado == 'OK'}">
-                                                </td>
-                                                <td><textarea class="form-control form-control-sm border-0 bg-light" rows="1" th:text="${item.comentario}"></textarea></td>
+                                                <td><strong th:text="${item.nombre.split(':')[0]}"></strong></td>
+                                                <td th:text="${item.nombre.split(':').length > 1 ? item.nombre.split(':')[1] : ''}"></td>
+                                                <td><textarea class="form-control form-control-sm border-0 bg-light-subtle" rows="1" th:text="${item.comentario}"></textarea></td>
                                             </tr>
                                         </tbody>
                                     </table>
                                 </div>
 
+                                <!-- Approvals Section -->
+                                <h6 class="text-uppercase fw-bold text-secondary mb-3 border-bottom pb-2">3. Aprobaciones / Approvals</h6>
+                                <div th:if="${fase.nombre == 'Stage 3'}">
+                                    <strong class="d-block mb-2">Stage 3 Responsibles</strong>
+                                    <table class="table table-sm table-bordered small">
+                                        <thead class="bg-light"><tr><th>Position</th><th>Name</th><th>Email</th></tr></thead>
+                                        <tbody>
+                                            <tr><td>Project Engineer</td><td>Eduardo Tejeida</td><td>eduardo.tejeida@johnsonelectric.com</td></tr>
+                                            <tr><td>Quality Engineer</td><td>Gabriel Romero</td><td>gabriel.romero@johnsonelectric.com</td></tr>
+                                            <tr><td>Process Engineer</td><td>Jesus Urena</td><td>jesus.urena@johnsonelectric.com</td></tr>
+                                            <tr><td>Project Leader</td><td>Eduardo Tejeida</td><td>eduardo.tejeida@johnsonelectric.com</td></tr>
+                                        </tbody>
+                                    </table>
+                                    <strong class="d-block mb-2 mt-4">Manufacturing site Management</strong>
+                                    <table class="table table-sm table-bordered small">
+                                        <thead class="bg-light"><tr><th>Position</th><th>Name</th><th>Email</th></tr></thead>
+                                        <tbody>
+                                            <tr><td>Operations Manager</td><td>Fermin Flores</td><td>fermin.flores@johnsonelectric.com</td></tr>
+                                            <tr><td>Quality Manager</td><td>Rodrigo Rabelo</td><td>rodrigo.rabelo@johnsonelectric.com</td></tr>
+                                            <tr><td>Materials Manager</td><td>Juan Carlos Arizpe</td><td>Juancarlos.arizpe@johnsonelectric.com</td></tr>
+                                            <tr><td>SCS Manager</td><td>Kevin Swisher</td><td>kevin.swisher@jonsonelectric.com</td></tr>
+                                            <tr><td>Finance Manager</td><td>Bernardo Marines</td><td>Bernardo.marines@johnsonelectric.com</td></tr>
+                                            <tr><td>HR Manager</td><td>Claudia Castañeda</td><td>claudia.castaneda@johnsonelectric.com</td></tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <div th:if="${fase.nombre != 'Stage 3'}" class="text-muted">
+                                    (Tabla de Aprobaciones para <span th:text="${fase.nombre}"></span> no definida)
+                                </div>
                             </div>
                         </div>
 

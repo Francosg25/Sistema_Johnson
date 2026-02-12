@@ -17,15 +17,11 @@
             </a>
         </li>
         <li class="nav-item">
-            <a href="#" class="nav-link disabled text-muted">
+            <a th:href="@{/reportes/}" class="nav-link" th:classappend="${currentUri.startsWith('/reportes')} ? 'active' : ''">
                 <i class="bi bi-graph-up"></i> Reportes
             </a>
         </li>
-        <li class="nav-item">
-            <a href="#" class="nav-link disabled text-muted">
-                <i class="bi bi-gear"></i> Configuración
-            </a>
-        </li>
+        
     </ul>
 
     <div class="sidebar-footer mt-auto">
