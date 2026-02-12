@@ -13,4 +13,7 @@ public interface ElementoChecklistRepositorio extends JpaRepository<ElementoChec
 
     // Spring Data interpreta: "Busca por ProyectoId" Y "entra a Catalogo" Y "busca Fase" que empiece con...
     List<ElementoChecklist> findByProyectoIdAndCatalogoFaseStartingWith(Long proyectoId, String fasePrefix);
+
+    // Método para contar cuántos elementos tiene un proyecto (Usado para saber si es nuevo o no)
+    long countByProyectoId(Long proyectoId);
 }

@@ -1,71 +1,86 @@
 package com.johnson.practica.servicio;
 
 import com.johnson.practica.model.*;
-import com.johnson.practica.repositorio.*; 
+import com.johnson.practica.repositorio.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
 
 @Service
-public class ProyectoServicio { 
+public class ProyectoServicio {
 
     @Autowired
-    private ProyectoRepositorio proyectoRepositorio; 
+    private ProyectoRepositorio proyectoRepositorio;
 
     @Autowired
-    private CatalogoElementoRepositorio catalogoRepositorio; 
+    private CatalogoElementoRepositorio catalogoRepositorio;
 
+    // Solo declaramos el repositorio UNA vez (borré la duplicada 'checklistRepositorio')
     @Autowired
-    private ElementoChecklistRepositorio checklistRepositorio; 
+    private ElementoChecklistRepositorio elementoRepositorio;
 
     @Transactional
     public Proyecto guardarProyecto(Proyecto proyecto) {
-        if (proyecto.getId() == null) {
-            // Aseguramos una fecha si no viene
-            proyecto.setFechaSOP(LocalDate.now().plusMonths(6)); 
-        }
-        Proyecto proyectoGuardado = proyectoRepositorio.save(proyecto);
+        //Guardamos el proyecto (
+        
+        Proyecto nuevoProyecto = proyectoRepositorio.save(proyecto);
 
-        if (checklistRepositorio.findByProyectoId(proyectoGuardado.getId()).isEmpty()) {
-            generarChecklistInicial(proyectoGuardado);
+       
+        long countChecklist = elementoRepositorio.countByProyectoId(nuevoProyecto.getId());
+        
+        if (countChecklist == 0) {
+            List<CatalogoElemento> plantillaCompleta = catalogoRepositorio.findAll();
+            System.out.println("DEBUG: Copiando " + plantillaCompleta.size() + " elementos al nuevo proyecto...");
+
+            for (CatalogoElemento molde : plantillaCompleta) {
+                ElementoChecklist item = new ElementoChecklist();
+                
+                // --- Vinculación ---
+                item.setProyecto(nuevoProyecto);
+                item.setCatalogo(molde);
+                
+                // --- Copia de Datos Estructurales (Vitales para Stages 2-5) ---
+                item.setCodigo(molde.getCodigo());
+                item.setNombre(molde.getNombre());
+                item.setGrupo(molde.getGrupo());       // IMPORTANTE: Para subtítulos en Stage 2
+                item.setFase(molde.getFase());         // IMPORTANTE: Para saber en qué pestaña va
+                item.setTipoInput(molde.getTipoInput()); // IMPORTANTE: Para saber si es Fecha o Si/No
+                
+                item.setChampion(molde.getChampion());
+                item.setEtapaVisual(molde.getEtapaVisual());
+                
+                // --- Inicialización de Valores por Defecto ---
+                item.setEstado("PENDING"); 
+                item.setScore(""); // Inicializamos vacío (String) como pediste
+                item.setControlEntregable("Open"); 
+
+                elementoRepositorio.save(item);
+            }
+            // Forzamos la escritura en DB para que estén listos inmediatamente
+            elementoRepositorio.flush(); 
         }
-        return proyectoGuardado;
+        
+        return nuevoProyecto;
     }
 
     public Proyecto buscarPorId(Long id) {
         return proyectoRepositorio.findById(id).orElse(null);
     }
 
-    private void generarChecklistInicial(Proyecto proyecto) {
-        List<CatalogoElemento> catalogo = catalogoRepositorio.findAll();
-        List<ElementoChecklist> nuevosElementos = new ArrayList<>();
-
-        for (CatalogoElemento itemBase : catalogo) {
-            ElementoChecklist elemento = new ElementoChecklist();
-            elemento.setProyecto(proyecto);
-            elemento.setTitulo(itemBase.getNombre());
-            elemento.setFase(itemBase.getFase());
-            elemento.setEstado("ABIERTO");
-            
-            nuevosElementos.add(elemento);
-        }
-        checklistRepositorio.saveAll(nuevosElementos);
-    }
-
     public List<Proyecto> obtenerTodos() {
         return proyectoRepositorio.findAll();
     }
 
-    @Transactional 
+    @Transactional
     public void eliminarProyecto(Long id) {
-        List<ElementoChecklist> items = checklistRepositorio.findByProyectoId(id);
-        checklistRepositorio.deleteAll(items);
+        // Primero borramos los items del checklist para evitar error de llave foránea
+        // Usamos el método que ya tienes en tu repo o uno genérico de borrado
+        List<ElementoChecklist> items = elementoRepositorio.findByProyectoIdAndCatalogoFaseStartingWith(id, ""); 
+        elementoRepositorio.deleteAll(items);
         
+        // Luego borramos el proyecto
         proyectoRepositorio.deleteById(id);
     }
-    
 }

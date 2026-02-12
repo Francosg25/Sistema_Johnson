@@ -18,4 +18,7 @@ public class DashboardControlador {
         model.addAttribute("titulo", "Dashboard de Proyectos APQP - Johnson Electric");
         return "index"; 
     }
+
+    
+
 }

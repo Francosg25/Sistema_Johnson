@@ -1,44 +1,27 @@
 package com.johnson.practica.model;
 
 import jakarta.persistence.*;
-import lombok.*;
-
+import lombok.Data;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-@Table(name = "proyectos")
 @Data
-@NoArgsConstructor
-@AllArgsConstructor
-@Builder
+@Table(name = "proyectos")
 public class Proyecto {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
     private String nombre;
-
     private String numeroParte;
-
     private String cliente;
-
-    private LocalDate fechaSOP;
-
-    private String estado; 
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "responsable_id")
-    private Usuario responsable;
-
-    private LocalDateTime creadoEn = LocalDateTime.now();
+    private LocalDate fechaInicio;
+    
+    // AGREGA ESTO PARA QUE DEJE DE DAR EL ERROR 500
+    private String liderProyecto; 
 
     @OneToMany(mappedBy = "proyecto", cascade = CascadeType.ALL, orphanRemoval = true)
-    @Builder.Default
-    private List<ElementoChecklist> elementosChecklist = new ArrayList<>();
-
-    
+    private List<ElementoChecklist> checklist = new ArrayList<>();
 }

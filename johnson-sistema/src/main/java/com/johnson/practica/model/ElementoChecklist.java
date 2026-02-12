@@ -1,58 +1,42 @@
 package com.johnson.practica.model;
 
 import jakarta.persistence.*;
-import lombok.*;
-
+import lombok.Data;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
 
 @Entity
-@Table(name = "elementos_checklist")
 @Data
-@NoArgsConstructor
-@AllArgsConstructor
-@Builder
+@Table(name = "elemento_checklist")
 public class ElementoChecklist {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(name = "proyecto_id")
     private Proyecto proyecto;
 
-    @Column(nullable = false)
-    private String titulo;
-
-    private String descripcion;
-
-    private String estado;
-     
-    private String fase; 
-
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(name = "catalogo_id")
     private CatalogoElemento catalogo;
 
-    @Column(length = 1000) 
+    // Datos descriptivos (Copiados del catálogo al crear)
+    private String codigo;
+    private String nombre;
+    private String grupo;
+    private String fase;
+    private String tipoInput;
+    private String champion;
+    private String etapaVisual;
+
+    // Datos de respuesta (Llenados por el usuario)
+    private String estado;      // OK, NOK, NA
     private String comentario;
-
+    private String score;       // Puntuación
+    private String controlEntregable; // Closed on time, etc.
     
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "responsable_id")
-    private Usuario responsable;
-
+    // ESTOS SON LOS QUE FALTABAN Y CAUSABAN EL ERROR:
     private LocalDate fechaPlan;
-
     private LocalDate fechaReal;
-
-    @OneToMany(mappedBy = "elementoChecklist", cascade = CascadeType.ALL, orphanRemoval = true)
-    @Builder.Default
-    private List<Adjunto> adjuntos = new ArrayList<>();
-
-    public CatalogoElemento getCatalogo() {
-        return catalogo;
-    }
 }

@@ -14,24 +14,44 @@ public class ChecklistServicio {
     @Autowired
     private ElementoChecklistRepositorio repositorio;
 
-    // Obtiene solo los HITOS (Programa APQP)
-    // CORRECCIÓN: Usamos 'CatalogoFase' porque la fase está dentro del Catálogo
+    // 1. Obtiene solo los HITOS (Programa APQP - Fase 0)
     @Transactional(readOnly = true)
     public List<ElementoChecklist> obtenerHitosPrograma(Long proyectoId) {
         return repositorio.findByProyectoIdAndCatalogoFaseStartingWith(proyectoId, "0");
     }
 
-    // Obtiene solo las PREGUNTAS de validación (Stage 2)
+    // 2. MÉTODO NUEVO: Sirve para Stage 2, 3, 4 y 5
     @Transactional(readOnly = true)
-    public List<ElementoChecklist> obtenerChecklistStage2(Long proyectoId) {
-        return repositorio.findByProyectoIdAndCatalogoFaseStartingWith(proyectoId, "2");
+    public List<ElementoChecklist> obtenerPorFase(Long proyectoId, String prefijoFase) {
+        return repositorio.findByProyectoIdAndCatalogoFaseStartingWith(proyectoId, prefijoFase);
     }
 
-    // Lógica para guardar cambios (Usado por el AJAX)
+    // 3. Obtiene solo Stage 2 (Lo dejamos por compatibilidad con tu código anterior)
+    @Transactional(readOnly = true)
+    public List<ElementoChecklist> obtenerChecklistStage2(Long proyectoId) {
+        return obtenerPorFase(proyectoId, "2");
+    }
+
+    @Transactional(readOnly = true)
+    public List<ElementoChecklist> obtenerChecklistStage3(Long proyectoId) {
+        return obtenerPorFase(proyectoId, "3");
+    }
+
+    @Transactional(readOnly = true)
+    public List<ElementoChecklist> obtenerChecklistStage4(Long proyectoId) {        
+        return obtenerPorFase(proyectoId, "4");
+    }
+
+    @Transactional(readOnly = true)
+    public List<ElementoChecklist> obtenerChecklistStage5(Long proyectoId) {
+        return obtenerPorFase(proyectoId, "5");
+    }
+
+
+    // 4. Guardar cambios
     @Transactional
     public ElementoChecklist actualizarElemento(Long id, String estado, String comentario) {
         ElementoChecklist elemento = repositorio.findById(id).orElse(null);
-        
         if (elemento != null) {
             if (estado != null) elemento.setEstado(estado);
             if (comentario != null) elemento.setComentario(comentario);
