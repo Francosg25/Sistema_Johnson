@@ -50,11 +50,13 @@ public class ChecklistServicio {
 
     // 4. Guardar cambios
     @Transactional
-    public ElementoChecklist actualizarElemento(Long id, String estado, String comentario) {
+    public ElementoChecklist actualizarElemento(Long id, String estado, String comentario, String controlEntregable, String score) {
         ElementoChecklist elemento = repositorio.findById(id).orElse(null);
         if (elemento != null) {
             if (estado != null) elemento.setEstado(estado);
             if (comentario != null) elemento.setComentario(comentario);
+            if (controlEntregable != null) elemento.setControlEntregable(controlEntregable);
+            if (score != null) elemento.setScore(score);
             return repositorio.save(elemento);
         }
         return null;

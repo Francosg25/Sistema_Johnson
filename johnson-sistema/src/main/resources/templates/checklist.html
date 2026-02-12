@@ -2,10 +2,11 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head th:replace="~{fragments/head :: head}"></head>
 <body class="bg-light">
-
+    
+</div>
     <div class="d-flex" id="wrapper">
         <div id="sidebar-wrapper">
-            <div th:replace="~{fragments/sidebar :: sidebar}"></div>
+            <div th:replace="~{fragments/sidebar :: sidebar(currentUri=${currentUri})}"></div>
         </div>
 
         <div id="page-content-wrapper" class="w-100">
@@ -28,7 +29,7 @@
                 <ul class="nav nav-tabs nav-fill mb-4 border-bottom-0" id="apqpTabs" role="tablist">
                     <li class="nav-item" role="presentation" th:each="fase, iter : ${fases}">
                         <button class="nav-link border-0 shadow-sm me-2" 
-                                th:classappend="${iter.index == 0} ? 'active fw-bold bg-white' : 'bg-light text-muted'"
+                                th:classappend="'bg-light text-muted'"
                                 th:id="'tab-' + ${fase.id}" 
                                 data-bs-toggle="tab" 
                                 th:data-bs-target="'#content-' + ${fase.id}" 
@@ -40,6 +41,7 @@
                 </ul>
 
                 <div class="tab-content" id="apqpTabsContent">
+                    
                     <div th:each="fase, iter : ${fases}" 
                          class="tab-pane fade" 
                          th:classappend="${iter.index == 0} ? 'show active'" 
@@ -48,53 +50,112 @@
 
                         <div th:if="${fase.nombre.contains('Programa')}" class="card border-0 shadow-sm">
                             <div class="card-body p-0">
-                                <table class="table table-hover mb-0 align-middle">
-                                    <thead class="bg-light small text-uppercase text-muted">
-                                        <tr><th>Champion</th><th>Etapa</th><th>Entregable</th><th>Plan Date</th><th>Status</th></tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr th:each="item : ${fase.items}">
-                                            <td class="text-center fw-bold text-primary" th:text="${item.champion}"></td>
-                                            <td class="text-center small" th:text="${item.etapaVisual}"></td>
-                                            <td class="fw-bold" th:text="${item.nombre}"></td>
-                                            <td class="text-center" th:text="${item.fechaPlan}"></td>
-                                            <td class="text-center"><span class="badge bg-success">Closed</span></td>
-                                        </tr>
-                                    </tbody>
-                                </table>
+                                <div class="table-responsive">
+                                    <table class="table table-hover mb-0 align-middle" style="font-size: 0.85rem;">
+                                        <thead class="bg-light small text-uppercase text-muted fw-bold">
+                                            <tr>
+                                                <th style="width: 8%;" class="text-center">Champion</th>
+                                                <th style="width: 35%;">Entregable</th>
+                                                <th style="width: 23%;" class="text-center">Status</th>
+                                                <th style="width: 5%;" class="text-center">Calificación/Score</th>
+                                                <th style="width: 27%;">Comentarios</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <th:block th:each="item, iStat : ${fase.items}">
+                                                <tr th:if="${iStat.index == 0 or item.etapaVisual != fase.items[iStat.index - 1].etapaVisual}" class="table-group-header">
+                                                    <td colspan="5" class="fw-bold text-uppercase py-2 px-3 text-dark">
+                                                        <i class="bi bi-collection me-2"></i><span th:text="${item.etapaVisual}"></span>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td class="text-center fw-bold">
+                                                        <span class="badge w-100" th:classappend="${'champ-' + #strings.toLowerCase(item.champion.split('/')[0])}" th:text="${item.champion}"></span>
+                                                    </td>
+                                                    <td>
+                                                        <span class="d-block fw-bold text-dark" th:text="${item.nombre}"></span>
+                                                    </td>
+                                                    <td class="text-center">
+                                                        <select class="form-select form-select-sm border-0 fw-bold" 
+                                                                th:classappend="${
+                                                                    item.controlEntregable == 'Closed on time' ? 'status-on-time' :
+                                                                    (item.controlEntregable == 'Closed late' ? 'status-late' :
+                                                                    (item.controlEntregable == 'DECISION' ? 'status-decision' :
+                                                                    (item.controlEntregable == 'NEEDS ACTION' ? 'status-needs-action' : 'status-default')))
+                                                                }"
+                                                                th:data-item-id="${item.id}"
+                                                                th:data-field-name="'controlEntregable'"
+                                                                onchange="guardarCampo(this)">
+                                                            <option th:selected="${item.controlEntregable == 'Closed on time'}" value="Closed on time">Closed on time</option>
+                                                            <option th:selected="${item.controlEntregable == 'Closed late'}" value="Closed late">Closed late</option>
+                                                            <option th:selected="${item.controlEntregable == 'DECISION'}" value="DECISION">DECISION</option>
+                                                            <option th:selected="${item.controlEntregable == 'NEEDS ACTION'}" value="NEEDS ACTION">NEEDS ACTION</option>
+                                                        </select>
+                                                    </td>
+                                                    <td class="text-center">
+                                                        <select class="form-select form-select-sm border-0 fw-bold" 
+                                                                th:classappend="${item.score == 'OK' ? 'status-on-time' : 'status-default'}"
+                                                                th:data-item-id="${item.id}"
+                                                                th:data-field-name="'score'"
+                                                                onchange="guardarCampo(this)">
+                                                            <option th:selected="${item.score == 'OK'}" value="OK">OK</option>
+                                                            <option th:selected="${item.score == 'N/A'}" value="N/A">N/A</option>
+                                                        </select>
+                                                    </td>
+                                                    <td>
+                                                        <textarea class="form-control form-control-sm border-0 bg-light-subtle" rows="1" 
+                                                                  th:data-item-id="${item.id}"
+                                                                  th:data-field-name="'comentario'"
+                                                                  th:text="${item.comentario}" 
+                                                                  placeholder="..."
+                                                                  onblur="guardarCampo(this)"></textarea>
+                                                    </td>
+                                                </tr>
+                                            </th:block>
+                                        </tbody>
+                                    </table>
+                                </div>
                             </div>
                         </div>
 
                         <div th:if="${fase.nombre.contains('Stage 2')}" class="card border-0 shadow-sm">
                             <div class="card-body p-0">
                                 <table class="table table-hover mb-0 align-middle" style="font-size: 0.85rem;">
-                                    <thead class="bg-light small fw-bold">
+                                    <thead class="bg-light small fw-bold text-uppercase">
                                         <tr>
-                                            <th>ID</th><th>Requisito</th><th class="text-center">Cumplimiento</th>
-                                            <th>Comentarios</th><th>Responsable</th><th>Fecha</th>
+                                            <th style="width: 10%;">ID</th>
+                                            <th style="width: 35%;">Requisito / Requirement</th>
+                                            <th style="width: 15%;">Cumplimiento</th>
+                                            <th style="width: 25%;">Comentarios</th>
+                                            <th style="width: 10%;">Responsable</th>
+                                            <th style="width: 10%;">Fecha</th>
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        <tr th:each="item : ${fase.items}">
-                                            <td class="text-muted fw-bold" th:text="${item.codigo}"></td>
-                                            <td>
-                                                <span class="d-block fw-bold text-dark" th:text="${item.nombre}"></span>
-                                                <small class="text-muted" th:text="${item.grupo}"></small>
-                                            </td>
-                                            <td class="text-center" style="min-width: 140px;">
-                                                <div class="btn-group btn-group-sm w-100">
-                                                    <input type="radio" class="btn-check" th:name="'s2_'+${item.id}" th:id="'si_'+${item.id}" th:checked="${item.estado == 'OK'}" onclick="actualizar(this, 'OK')">
-                                                    <label class="btn btn-outline-success" th:for="'si_'+${item.id}">Si</label>
-                                                    <input type="radio" class="btn-check" th:name="'s2_'+${item.id}" th:id="'no_'+${item.id}" th:checked="${item.estado == 'NOK'}" onclick="actualizar(this, 'NOK')">
-                                                    <label class="btn btn-outline-danger" th:for="'no_'+${item.id}">No</label>
-                                                    <input type="radio" class="btn-check" th:name="'s2_'+${item.id}" th:id="'na_'+${item.id}" th:checked="${item.estado == 'NA'}" onclick="actualizar(this, 'NA')">
-                                                    <label class="btn btn-outline-secondary" th:for="'na_'+${item.id}">NA</label>
-                                                </div>
-                                            </td>
-                                            <td><textarea class="form-control form-control-sm border-0 bg-light" rows="1" th:text="${item.comentario}" onblur="guardarComentario(this)"></textarea></td>
-                                            <td class="text-center small text-primary fw-bold" th:text="${item.champion}"></td>
-                                            <td class="text-center"><input type="date" class="form-control form-control-sm border-0 text-center p-0" th:value="${item.fechaReal}"></td>
-                                        </tr>
+                                        <th:block th:each="item, iStat : ${fase.items}">
+                                            <tr th:if="${iStat.index == 0 || item.grupo != fase.items[iStat.index - 1].grupo}" class="table-secondary">
+                                                <td colspan="6" class="fw-bold text-uppercase small py-1 px-3 text-dark">
+                                                    <i class="bi bi-folder2-open me-2"></i><span th:text="${item.grupo}">Grupo</span>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td class="text-muted fw-bold text-center" th:text="${item.codigo}"></td>
+                                                <td th:text="${item.nombre}" class="fw-bold text-dark"></td>
+                                                <td class="text-center">
+                                                    <div class="btn-group btn-group-sm w-100">
+                                                        <input type="radio" class="btn-check" th:name="'s2_'+${item.id}" th:id="'si_'+${item.id}" th:checked="${item.estado == 'OK'}" onclick="actualizar(this, 'OK')">
+                                                        <label class="btn btn-outline-success" th:for="'si_'+${item.id}">Si</label>
+                                                        <input type="radio" class="btn-check" th:name="'s2_'+${item.id}" th:id="'no_'+${item.id}" th:checked="${item.estado == 'NOK'}" onclick="actualizar(this, 'NOK')">
+                                                        <label class="btn btn-outline-danger" th:for="'no_'+${item.id}">No</label>
+                                                        <input type="radio" class="btn-check" th:name="'s2_'+${item.id}" th:id="'na_'+${item.id}" th:checked="${item.estado == 'NA'}" onclick="actualizar(this, 'NA')">
+                                                        <label class="btn btn-outline-secondary" th:for="'na_'+${item.id}">NA</label>
+                                                    </div>
+                                                </td>
+                                                <td><textarea class="form-control form-control-sm border-0 bg-light input-comment" rows="1" th:text="${item.comentario}" onblur="guardarComentario(this)"></textarea></td>
+                                                <td class="text-center small text-primary fw-bold" th:text="${item.champion}"></td>
+                                                <td class="text-center"><input type="date" class="form-control form-control-sm border-0 text-center p-0" th:value="${item.fechaReal}"></td>
+                                            </tr>
+                                        </th:block>
                                     </tbody>
                                 </table>
                             </div>
@@ -155,9 +216,101 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        // Funciones AJAX simplificadas para evitar conflictos
-        function actualizar(el, estado) { console.log('Actualizar estado: ' + estado); }
-        function guardarComentario(el) { console.log('Guardar comentario: ' + el.value); }
+        // Función para guardar el campo (actualizada para manejar select y textarea)
+        function guardarCampo(element) {
+            const itemId = element.dataset.itemId;
+            const fieldName = element.dataset.fieldName;
+            let value = element.value;
+
+            // Para los selects y textareas
+            const parentTd = element.closest('td');
+            const originalColor = parentTd.style.backgroundColor;
+            parentTd.style.backgroundColor = '#f0f0f0'; // "Guardando"
+
+            const formData = new FormData();
+            formData.append(fieldName, value);
+
+            fetch(`/proyectos/checklist/actualizar/${itemId}`, {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.ok ? response.json() : Promise.reject('Error en la respuesta'))
+            .then(data => {
+                if (data.status === 'success') {
+                    // Verde para indicar éxito
+                    parentTd.style.backgroundColor = '#d4edda'; 
+                    setTimeout(() => {
+                        parentTd.style.backgroundColor = originalColor;
+                        // Actualizar la clase del select para que el color se mantenga
+                        if (element.tagName === 'SELECT') {
+                            element.className = element.className.split(' ').filter(c => !c.startsWith('status-')).join(' '); // Remover clases viejas
+                            if (fieldName === 'controlEntregable') {
+                                if (value === 'Closed on time') element.classList.add('status-on-time');
+                                else if (value === 'Closed late') element.classList.add('status-late');
+                                else if (value === 'DECISION') element.classList.add('status-decision');
+                                else if (value === 'NEEDS ACTION') element.classList.add('status-needs-action');
+                                else element.classList.add('status-default');
+                            } else if (fieldName === 'score') {
+                                if (value === 'OK') element.classList.add('status-on-time');
+                                else element.classList.add('status-default');
+                            }
+                        }
+                    }, 500); // Duración más corta para el verde
+                } else {
+                    parentTd.style.backgroundColor = '#f8d7da'; // Rojo para indicar error
+                }
+            })
+            .catch(error => {
+                console.error('Error al guardar:', error);
+                parentTd.style.backgroundColor = '#f8d7da'; // Rojo para indicar error
+            });
+        }
+
+        // Lógica para recordar y activar la última pestaña seleccionada
+        document.addEventListener('DOMContentLoaded', function() {
+            const apqpTabs = document.getElementById('apqpTabs');
+            if (apqpTabs) {
+                const tabButtons = apqpTabs.querySelectorAll('button[data-bs-toggle="tab"]');
+                const lastActiveTabId = localStorage.getItem('lastActiveApqpTab');
+
+                let tabToActivate = null;
+
+                if (lastActiveTabId) {
+                    tabToActivate = document.getElementById(lastActiveTabId);
+                }
+
+                // Si no hay tab guardado o el guardado no existe, activar la primera
+                if (!tabToActivate || !apqpTabs.contains(tabToActivate)) {
+                    tabToActivate = tabButtons[0];
+                }
+
+                if (tabToActivate) {
+                    const bootstrapTab = new bootstrap.Tab(tabToActivate);
+                    bootstrapTab.show();
+                    // Actualizar las clases visuales de la primera pestaña para que se vea activa al cargar
+                    tabButtons.forEach(btn => {
+                        btn.classList.remove('active', 'fw-bold', 'bg-white');
+                        btn.classList.add('bg-light', 'text-muted');
+                    });
+                    tabToActivate.classList.add('active', 'fw-bold', 'bg-white');
+                    tabToActivate.classList.remove('bg-light', 'text-muted');
+                }
+
+                apqpTabs.addEventListener('click', function(event) {
+                    const clickedButton = event.target.closest('button[data-bs-toggle="tab"]');
+                    if (clickedButton) {
+                        localStorage.setItem('lastActiveApqpTab', clickedButton.id);
+                        // Asegurarse de que las clases visuales se actualicen correctamente
+                        tabButtons.forEach(btn => {
+                            btn.classList.remove('active', 'fw-bold', 'bg-white');
+                            btn.classList.add('bg-light', 'text-muted');
+                        });
+                        clickedButton.classList.add('active', 'fw-bold', 'bg-white');
+                        clickedButton.classList.remove('bg-light', 'text-muted');
+                    }
+                });
+            }
+        });
     </script>
 </body>
 </html>

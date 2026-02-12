@@ -23,46 +23,51 @@ public class ProyectoServicio {
 
     @Transactional
     public Proyecto guardarProyecto(Proyecto proyecto) {
-        //Guardamos el proyecto (
-        
-        Proyecto nuevoProyecto = proyectoRepositorio.save(proyecto);
+        boolean isNew = proyecto.getId() == null;
 
-       
-        long countChecklist = elementoRepositorio.countByProyectoId(nuevoProyecto.getId());
-        
-        if (countChecklist == 0) {
-            List<CatalogoElemento> plantillaCompleta = catalogoRepositorio.findAll();
-            System.out.println("DEBUG: Copiando " + plantillaCompleta.size() + " elementos al nuevo proyecto...");
+        // Si es un proyecto existente, simplemente lo guardamos y retornamos.
+        if (!isNew) {
+            return proyectoRepositorio.save(proyecto);
+        }
 
-            for (CatalogoElemento molde : plantillaCompleta) {
-                ElementoChecklist item = new ElementoChecklist();
-                
-                // --- Vinculación ---
-                item.setProyecto(nuevoProyecto);
-                item.setCatalogo(molde);
-                
-                // --- Copia de Datos Estructurales (Vitales para Stages 2-5) ---
-                item.setCodigo(molde.getCodigo());
-                item.setNombre(molde.getNombre());
-                item.setGrupo(molde.getGrupo());       // IMPORTANTE: Para subtítulos en Stage 2
-                item.setFase(molde.getFase());         // IMPORTANTE: Para saber en qué pestaña va
-                item.setTipoInput(molde.getTipoInput()); // IMPORTANTE: Para saber si es Fecha o Si/No
-                
-                item.setChampion(molde.getChampion());
-                item.setEtapaVisual(molde.getEtapaVisual());
-                
-                // --- Inicialización de Valores por Defecto ---
-                item.setEstado("PENDING"); 
-                item.setScore(""); // Inicializamos vacío (String) como pediste
-                item.setControlEntregable("Open"); 
+        // Si es un proyecto nuevo, primero lo guardamos para obtener un ID.
+        Proyecto proyectoGuardado = proyectoRepositorio.save(proyecto);
 
-                elementoRepositorio.save(item);
-            }
-            // Forzamos la escritura en DB para que estén listos inmediatamente
-            elementoRepositorio.flush(); 
+        List<CatalogoElemento> plantillaCompleta = catalogoRepositorio.findAll();
+        System.out.println("DEBUG: Creando checklist para nuevo proyecto. Plantillas encontradas: " + plantillaCompleta.size());
+
+        if (plantillaCompleta.isEmpty()) {
+            return proyectoGuardado; // No hay plantillas, no se puede crear checklist.
+        }
+
+        List<ElementoChecklist> nuevosItems = new java.util.ArrayList<>();
+        for (CatalogoElemento molde : plantillaCompleta) {
+            ElementoChecklist item = new ElementoChecklist();
+            
+            item.setProyecto(proyectoGuardado);
+            item.setCatalogo(molde);
+            
+            // Copiamos los datos de la plantilla al nuevo item
+            item.setCodigo(molde.getCodigo());
+            item.setNombre(molde.getNombre());
+            item.setGrupo(molde.getGrupo());
+            item.setFase(molde.getFase());
+            item.setTipoInput(molde.getTipoInput());
+            item.setChampion(molde.getChampion());
+            item.setEtapaVisual(molde.getEtapaVisual());
+            
+            // Inicializamos valores por defecto
+            item.setEstado("PENDING"); 
+            item.setScore("");
+            item.setControlEntregable("Open");
+
+            nuevosItems.add(item);
         }
         
-        return nuevoProyecto;
+        // Guardamos todos los nuevos items del checklist en una sola operación
+        elementoRepositorio.saveAll(nuevosItems);
+        
+        return proyectoGuardado;
     }
 
     public Proyecto buscarPorId(Long id) {

@@ -1,7 +1,65 @@
+:root {
+    --je-orange: #F5821F;
+    --je-dark: #212529;
+    --je-dark-hover: #343a40;
+    --je-light-text: #f8f9fa;
+    --je-bg-light: #f4f6f9;
+
+    --bs-primary: var(--je-orange);
+    --bs-primary-rgb: 245, 130, 31; /* RGB values for #F5821F */
+}
+
 body {
     font-family: 'Inter', sans-serif;
-    background-color: #f4f6f9; 
+    background-color: var(--je-bg-light); 
 }
+
+/* New Johnson Electric Sidebar */
+.sidebar-je {
+    background-color: var(--je-dark);
+    color: var(--je-light-text);
+}
+.sidebar-je .brand-logo {
+    color: var(--je-light-text);
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    padding: 1.5rem 1rem;
+    text-align: center;
+    border-bottom: 1px solid var(--je-dark-hover);
+}
+.sidebar-je .brand-logo .light {
+    font-weight: 300;
+    color: var(--je-orange);
+}
+.sidebar-je .nav-link {
+    color: #adb5bd;
+    padding: 0.9rem 1.5rem;
+    font-weight: 600;
+    font-size: 0.95rem;
+    border-left: 4px solid transparent;
+    transition: all 0.2s ease;
+}
+.sidebar-je .nav-link:hover {
+    background-color: var(--je-dark-hover);
+    color: var(--je-light-text);
+}
+.sidebar-je .nav-link.active {
+    background-color: var(--je-dark-hover);
+    color: var(--je-light-text);
+    border-left: 4px solid var(--je-orange);
+}
+.sidebar-je .nav-link i {
+    margin-right: 1rem;
+    font-size: 1.2rem;
+    width: 20px;
+    text-align: center;
+}
+.sidebar-je .sidebar-footer {
+    border-top: 1px solid var(--je-dark-hover);
+    padding: 1rem;
+}
+
+
 .card {
     border: none;
     border-radius: 12px; 
@@ -46,3 +104,38 @@ html, body { height: 100%; margin: 0; padding: 0; overflow-x: hidden; }
 
 /* Small helpers */
 .avatar-initial { width: 44px; height: 44px; display:inline-flex; align-items:center; justify-content:center; border-radius:8px; }
+
+/* Champion Pastel Colors */
+.champ-proj { background-color: #cce5ff; color: #004085; }
+.champ-de   { background-color: #d4edda; color: #155724; }
+.champ-qe   { background-color: #fff3cd; color: #856404; }
+.champ-pe   { background-color: #f8d7da; color: #721c24; }
+.champ-ops  { background-color: #e2e3e5; color: #383d41; }
+.champ-all  { background-color: #d1ecf1; color: #0c5460; }
+
+/* Status Pastel Colors */
+.status-on-time     { background-color: #d4edda; color: #155724; }
+.status-late        { background-color: #f8d7da; color: #721c24; }
+.status-decision    { background-color: #cce5ff; color: #004085; }
+.status-needs-action{ background-color: #fff3cd; color: #856404; }
+.status-default     { background-color: #e2e3e5; color: #383d41; }
+
+.btn-je-primary {
+    background-color: var(--je-dark);
+    border-color: var(--je-dark);
+    color: var(--je-light-text);
+    font-weight: 600;
+    padding: 0.6rem 1.2rem;
+    border-radius: 0.375rem; /* Standard Bootstrap radius */
+    transition: all 0.2s ease;
+}
+.btn-je-primary:hover {
+    background-color: var(--je-orange);
+    border-color: var(--je-orange);
+    color: var(--je-light-text);
+}
+
+.table-group-header td {
+    background-color: #e9ecef;
+    font-weight: 700;
+}

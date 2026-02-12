@@ -1,42 +1,42 @@
-<div th:fragment="sidebar" xmlns:th="http://www.thymeleaf.org">
-    <nav class="d-flex flex-column p-3 bg-black text-white" style="width: 230px; min-height:100vh;">
-        <a th:href="@{/}" class="d-flex align-items-center mb-3 mb-md-0 me-md-auto text-white text-decoration-none">
-            <i class="bi bi-shield-check-fill fs-3 me-2 text-primary"></i>
-            <span class="fs-4 fw-bold">Johnson <span class="text-primary">Electric</span></span>
-        </a>
+<div th:fragment="sidebar(currentUri)" class="d-flex flex-column sidebar-je" style="min-height:100vh;">
 
-        <hr class="text-white">
+    <div class="brand-logo">
+        <span class="fs-5">JOHNSON</span>
+        <span class="fs-5 light">ELECTRIC</span>
+    </div>
 
-        <ul class="nav nav-pills flex-column mb-auto">
-            <li class="nav-item">
-                <a th:href="@{/}" class="nav-link text-white">
-                    <i class="bi bi-speedometer2 me-2"></i> Dashboard
-                </a>
-            </li>
-            <li class="nav-item">
-                <a th:href="@{/proyectos}" class="nav-link text-white">
-                    <i class="bi bi-folder2-open me-2"></i> Proyectos
-                </a>
-            </li>
-            
-            <li class="nav-item">
-                <a th:href="@{/reportes}" class="nav-link text-white">
-                    <i class="bi bi-graph-up me-2"></i> Reportes
-                </a>
-            </li>
-        </ul>
-
-        <hr class="text-white">
-
-        <div class="dropdown mt-auto">
-            <a href="#" class="d-flex align-items-center text-white text-decoration-none dropdown-toggle" id="dropdownUser" data-bs-toggle="dropdown" aria-expanded="false">
-                <strong th:text="${#authentication?.name ?: 'Invitado'}">Usuario</strong>
+    <ul class="nav nav-pills flex-column mb-auto mt-3">
+        <li class="nav-item">
+            <a th:href="@{/}" class="nav-link" th:classappend="${currentUri == '/'} ? 'active' : ''">
+                <i class="bi bi-speedometer2"></i> Dashboard
             </a>
-            <ul class="dropdown-menu dropdown-menu-dark text-small shadow" aria-labelledby="dropdownUser">
-                <li><a class="dropdown-item" th:href="@{/perfil}">Perfil</a></li>
-                <li><hr class="dropdown-divider"></li>
-                <li><a class="dropdown-item" th:href="@{/logout}">Salir</a></li>
-            </ul>
+        </li>
+        <li class="nav-item">
+            <a th:href="@{/proyectos/}" class="nav-link" th:classappend="${currentUri.startsWith('/proyectos')} ? 'active' : ''">
+                <i class="bi bi-folder2-open"></i> Proyectos
+            </a>
+        </li>
+        <li class="nav-item">
+            <a href="#" class="nav-link disabled text-muted">
+                <i class="bi bi-graph-up"></i> Reportes
+            </a>
+        </li>
+        <li class="nav-item">
+            <a href="#" class="nav-link disabled text-muted">
+                <i class="bi bi-gear"></i> Configuración
+            </a>
+        </li>
+    </ul>
+
+    <div class="sidebar-footer mt-auto">
+        <div class="d-flex align-items-center">
+            <div class="avatar-initial bg-warning-subtle text-warning-emphasis rounded-circle me-3">
+                <strong th:text="${#strings.substring(#authentication?.name, 0, 1)}">U</strong>
+            </div>
+            <div>
+                <strong class="d-block" th:text="${#authentication?.name ?: 'Invitado'}">Usuario</strong>
+                <a th:href="@{/logout}" class="small text-decoration-none text-muted">Cerrar Sesión</a>
+            </div>
         </div>
-    </nav>
+    </div>
 </div>

@@ -5,7 +5,7 @@
 
     <div class="d-flex" id="wrapper">
         <div id="sidebar-wrapper">
-            <div th:replace="~{fragments/sidebar :: sidebar}"></div>
+            <div th:replace="~{fragments/sidebar :: sidebar(currentUri=${currentUri})}"></div>
         </div>
 
         <div id="page-content-wrapper" class="w-100">
@@ -14,31 +14,17 @@
             <main class="container-fluid p-4">
                 
                 <div class="d-flex justify-content-between align-items-center mb-4">
-                    <h4 class="fw-bold text-dark">Panel de Proyectos</h4>
-                    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalNuevoProyecto">
+                    <h5 class="fw-bold text-dark"><i class="bi bi-grid-fill me-2"></i>Panel de Proyectos</h5>
+                    <button class="btn btn-je-primary" data-bs-toggle="modal" data-bs-target="#modalNuevoProyecto">
                         <i class="bi bi-plus-lg me-2"></i>Nuevo Proyecto
                     </button>
                 </div>
 
-                <div class="row mb-4 g-3">
-                    <div class="col-md-4">
-                        <div class="card border-0 shadow-sm p-3 h-100 border-start border-4 border-primary">
-                            <div class="d-flex justify-content-between align-items-center">
-                                <div>
-                                    <p class="text-muted mb-1 small text-uppercase fw-bold">Proyectos Totales</p>
-                                    <h3 class="fw-bold mb-0" th:text="${proyectos != null ? proyectos.size() : 0}">0</h3>
-                                </div>
-                                <div class="bg-primary bg-opacity-10 p-3 rounded-circle text-primary">
-                                    <i class="bi bi-folder2-open fs-4"></i>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                
 
                 <div class="card border-0 shadow-sm">
                     <div class="card-header bg-white py-3 border-bottom">
-                        <h6 class="m-0 fw-bold text-primary"><i class="bi bi-table me-2"></i> Listado Activo</h6>
+                        <h6 class="m-0 fw-bold text-dark"><i class="bi bi-table me-2"></i> Listado Activo</h6>
                     </div>
                     <div class="card-body p-0">
                         <div class="table-responsive">
@@ -49,7 +35,8 @@
                                         <th>Proyecto</th>
                                         <th>Num. Parte</th>
                                         <th>Cliente</th>
-                                        <th>Líder</th> <th class="text-center">Inicio</th>
+                                        <th>Líder</th>
+                                        <th class="text-center">Inicio</th>
                                         <th class="text-end pe-4">Acciones</th>
                                     </tr>
                                 </thead>
@@ -65,8 +52,13 @@
                                         <td th:text="${p.liderProyecto}">Líder</td>
                                         <td class="text-center" th:text="${p.fechaInicio}">Fecha</td>
                                         <td class="text-end pe-4">
-                                            <a th:href="@{/proyectos/checklist/{id}(id=${p.id})}" class="btn btn-primary btn-sm rounded-pill px-3">
-                                                Ver Checklist <i class="bi bi-arrow-right ms-1"></i>
+                                            <a th:href="@{/proyectos/checklist/{id}(id=${p.id})}" class="btn btn-outline-dark btn-sm">
+                                                Ver Checklist
+                                            </a>
+                                            <a th:href="@{/proyectos/eliminar/{id}(id=${p.id})}"
+                                               class="btn btn-outline-danger btn-sm ms-1"
+                                               onclick="return confirm('¿Estás seguro de que deseas eliminar este proyecto y todos sus datos? Esta acción es irreversible.');">
+                                                <i class="bi bi-trash"></i>
                                             </a>
                                         </td>
                                     </tr>
@@ -83,38 +75,38 @@
     <div class="modal fade" id="modalNuevoProyecto" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content border-0 shadow">
-                <div class="modal-header bg-primary text-white">
-                    <h5 class="modal-title fw-bold">Crear Nuevo Proyecto</h5>
+                <div class="modal-header bg-dark text-white py-3">
+                    <h5 class="modal-title fw-bold"><i class="bi bi-folder-plus me-2"></i>Crear Nuevo Proyecto</h5>
                     <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <form action="/proyectos/guardar" method="post">
+                <form th:action="@{/proyectos/guardar}" method="post">
                     <div class="modal-body p-4">
                         <div class="mb-3">
-                            <label class="form-label fw-bold small text-muted">NOMBRE DEL PROYECTO</label>
-                            <input type="text" name="nombre" class="form-control" required>
+                            <label for="nombreProyecto" class="form-label fw-bold small text-muted mb-1">NOMBRE DEL PROYECTO</label>
+                            <input type="text" id="nombreProyecto" name="nombre" class="form-control form-control-lg" required>
                         </div>
                         <div class="row g-3">
                             <div class="col-md-6">
-                                <label class="form-label fw-bold small text-muted">NÚMERO DE PARTE</label>
-                                <input type="text" name="numeroParte" class="form-control" required>
+                                <label for="numeroParte" class="form-label fw-bold small text-muted mb-1">NÚMERO DE PARTE</label>
+                                <input type="text" id="numeroParte" name="numeroParte" class="form-control form-control-lg" required>
                             </div>
                             <div class="col-md-6">
-                                <label class="form-label fw-bold small text-muted">CLIENTE</label>
-                                <input type="text" name="cliente" class="form-control" required>
+                                <label for="cliente" class="form-label fw-bold small text-muted mb-1">CLIENTE</label>
+                                <input type="text" id="cliente" name="cliente" class="form-control form-control-lg" required>
                             </div>
                         </div>
                         <div class="mt-3">
-                            <label class="form-label fw-bold small text-muted">LÍDER DEL PROYECTO</label>
-                            <input type="text" name="liderProyecto" class="form-control">
+                            <label for="liderProyecto" class="form-label fw-bold small text-muted mb-1">LÍDER DEL PROYECTO</label>
+                            <input type="text" id="liderProyecto" name="liderProyecto" class="form-control form-control-lg">
                         </div>
                         <div class="mt-3">
-                            <label class="form-label fw-bold small text-muted">FECHA DE INICIO</label>
-                            <input type="date" name="fechaInicio" class="form-control" required>
+                            <label for="fechaInicio" class="form-label fw-bold small text-muted mb-1">FECHA DE INICIO</label>
+                            <input type="date" id="fechaInicio" name="fechaInicio" class="form-control form-control-lg" required>
                         </div>
                     </div>
-                    <div class="modal-footer bg-light">
+                    <div class="modal-footer bg-light py-3">
                         <button type="button" class="btn btn-link text-secondary text-decoration-none" data-bs-dismiss="modal">Cancelar</button>
-                        <button type="submit" class="btn btn-primary px-4">Guardar</button>
+                        <button type="submit" class="btn btn-je-primary">Guardar Proyecto</button>
                     </div>
                 </form>
             </div>

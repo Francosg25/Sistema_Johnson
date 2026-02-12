@@ -43,36 +43,50 @@ public class ChecklistSemilla {
     // --- TU LISTA MANUAL ORIGINAL (Programa Maestro) ---
     private void cargarProgramaAPQP(CatalogoElementoRepositorio repo) {
         List<CatalogoElemento> programa = Arrays.asList(
-            // ETAPA 2
-            crearE("PROJ", "ETAPA 2", "1. Equipo multifuncional / CFT Kick-off"),
-            crearE("DE",   "ETAPA 2", "2. DFMEA Completo"),
-            crearE("DE",   "ETAPA 2", "3. Lista preliminar de materiales (BOM)"),
-            crearE("DE",   "ETAPA 2", "4. Dibujos de Ingeniería (Drawings)"),
-            crearE("QE",   "ETAPA 2", "5. Listas de equipo / Equipment lists"),
-            crearE("PROJ", "ETAPA 2", "6. Compromiso de factibilidad (Team Feasibility)"),
-            crearE("ALL",  "ETAPA 2", "7. Lecciones aprendidas (Proyectos similares)"), // El cambio a ALL
-            crearE("PROJ", "ETAPA 2", "8. Plan de Proyecto y Timing Chart"),
-            // ETAPA 3
-            crearE("QE",   "ETAPA 3", "9. Revisión del sistema de calidad"),
-            crearE("PE",   "ETAPA 3", "10. Diagrama de flujo de proceso"),
-            crearE("PE",   "ETAPA 3", "11. Plano de distribución de planta"),
-            crearE("PE",   "ETAPA 3", "12. Matriz de características"),
-            crearE("PE",   "ETAPA 3", "13. AMEF de Proceso / PFMEA"),
-            crearE("QE",   "ETAPA 3", "14. Plan de Control de Pre-Lanzamiento"),
-            crearE("PE",   "ETAPA 3", "15. Instrucciones de Proceso / WI"),
-            crearE("QE",   "ETAPA 3", "16. Plan de MSA"),
-            crearE("QE",   "ETAPA 3", "17. Plan de SPC"),
-            // ETAPA 4
-            crearE("OPS",  "ETAPA 4", "18. Corrida significativa (Run @ Rate)"),
-            crearE("QE",   "ETAPA 4", "19. Resultados de MSA"),
-            crearE("QE",   "ETAPA 4", "20. Estudio de habilidad (Ppk)"),
-            crearE("QE",   "ETAPA 4", "21. Aprobación PPAP / PSW"),
-            crearE("QE",   "ETAPA 4", "22. Pruebas de Validación (PV)"),
-            crearE("PE",   "ETAPA 4", "23. Evaluación de Empaque"),
-            crearE("QE",   "ETAPA 4", "24. Plan de Control de Producción"),
-            crearE("QE",   "ETAPA 4", "25. Cierre de planeación de calidad"),
-            // ETAPA 5
-            crearE("PROJ", "ETAPA 5", "Inicio de Producción (SOP)")
+            // ETAPA 2 / STAGE 2
+            crearE("PROJ",   "ETAPA 2", "Equipo multifuncional / CFT (JE Global and internal):"),
+            crearE("DE",     "ETAPA 2", "DFMEA:"),
+            crearE("DE",     "ETAPA 2", "Lista preliminar de materiales / Preliminary BOM:"),
+            crearE("DE",     "ETAPA 2", "Dibujos / Drawings:"),
+            crearE("QE/PE",  "ETAPA 2", "Lista de equipos, fixturas, herramietas, refacciones,gauges e instalaciones necesarias"),
+            crearE("PROJ",   "ETAPA 2", "Compromiso de Factibilidad del Equipo / Team Feasibility Commitment:"),
+            crearE("ALL",    "ETAPA 2", "Lecciones aprendidas/ Lessons learned."),
+            crearE("PROJ",   "ETAPA 2", "Manual de Proveedor / Customer Supplier Manual"),
+            crearE("DE",     "ETAPA 2", "Reporte de Validación del Diseño / DV Report"),
+            crearE("QE",     "ETAPA 2", "Lista preliminar de características del cliente / Preliminary Customer Characteristics List:"),
+
+            // ETAPA 3 / STAGE 3
+            crearE("QE/PE",  "ETAPA 3", "01.- Especificaciones de empaque"),
+            crearE("QE",     "ETAPA 3", "02.- Cambios en el SGC para fabricar el producto"),
+            crearE("PE",     "ETAPA 3", "03.- Process Flow Chart"),
+            crearE("PE",     "ETAPA 3", "04.- Floor plan layout"),
+            crearE("QE/PE",  "ETAPA 3", "05.- Characteristic Matrix"),
+            crearE("PE",     "ETAPA 3", "0.6- PFMEA"),
+            crearE("QE",     "ETAPA 3", "0.7- Control Plan Pre-launch"),
+            crearE("PE",     "ETAPA 3", "0.8- WI"),
+            crearE("QE",     "ETAPA 3", "0.9- MSA Plan"),
+            crearE("QE/PE",  "ETAPA 3", "10.- SPC Plan"),
+            crearE("PROJ",   "ETAPA 3", "11.- Minutas Juntas"),
+            crearE("PROJ",   "ETAPA 3", "Revisión de etapa (línea en México) / Stage Revision (line in Mexico):"),
+
+            // ETAPA 4 / STAGE 4
+            crearE("PROJ",   "ETAPA 4", "12.- Pilot Run"),
+            crearE("QE",     "ETAPA 4", "13.- MSA"),
+            crearE("QE/PE",  "ETAPA 4", "14.- Preliminary SPC"),
+            crearE("QE",     "ETAPA 4", "15.- PPAP"),
+            crearE("QE",     "ETAPA 4", "16.- Production Validation Testing"),
+            crearE("PE",     "ETAPA 4", "17.- Packaging evaluation"),
+            crearE("QE",     "ETAPA 4", "18.- Production Control Plan"),
+            crearE("PE",     "ETAPA 4", "04.- Floor plan layout"), 
+            crearE("PROJ",   "ETAPA 4", "19.- Sign-OFF"),
+
+            // ETAPA 5 / STAGE 5
+            crearE("QE/PE",  "ETAPA 5", "20.- Reduced Variation"),
+            crearE("QE",     "ETAPA 5", "21.- Improve customer satisfaction"),
+            crearE("QE",     "ETAPA 5", "22.- Improved delivery and service"),
+            crearE("QE/PE",  "ETAPA 5", "23.- Effective use of Lesson Learned/Best practice"),
+            crearE("PROJ",   "ETAPA 5", "25.- Entrega formal de proyecto a producción / Formal project delivery to production:"),
+            crearE("PROJ",   "ETAPA 5", "Revisión de etapa / Stage Revision")
         );
         repo.saveAll(programa);
     }
@@ -81,35 +95,35 @@ public class ChecklistSemilla {
     private void cargarStage2(CatalogoElementoRepositorio repo) {
         List<CatalogoElemento> stage2 = Arrays.asList(
             // --- Información Preliminar ---
-            crearDetalle("S2-01", "¿Se cuenta con un CFT completado?", "2. Stage 2", "Inf. Preliminar", "Project Engineer"),
-            crearDetalle("S2-02", "¿Se cuenta con el DFMEA completo?", "2. Stage 2", "Inf. Preliminar", "Design Engineer"),
-            crearDetalle("S2-03", "¿Se cuenta con un BOM Preliminar?", "2. Stage 2", "Inf. Preliminar", "Design Engineer"),
-            crearDetalle("S2-04", "¿Los dibujos están disponibles?", "2. Stage 2", "Inf. Preliminar", "Design Engineer"),
-            crearDetalle("S2-05", "¿Listas de equipo disponibles?", "2. Stage 2", "Inf. Preliminar", "QE/PE"),
-            crearDetalle("S2-06", "¿Team Feasibility Commitment firmado?", "2. Stage 2", "Inf. Preliminar", "Project Engineer"),
-            crearDetalle("S2-07", "¿Lecciones aprendidas documentadas?", "2. Stage 2", "Inf. Preliminar", "QE/PE"),
-            crearDetalle("S2-08", "¿Manual de Proveedor disponible?", "2. Stage 2", "Inf. Preliminar", "Project Engineer"),
+            crearDetalle("S2-01", "¿Se cuenta con un CFT completado?", "2. Stage 2", "Información preliminar/ Preliminary information", "Project Engineer"),
+            crearDetalle("S2-02", "¿Se cuenta con el DFMEA completo?", "2. Stage 2", "Información preliminar/ Preliminary information", "Design Engineer"),
+            crearDetalle("S2-03", "¿Se cuenta con un BOM Preliminar?", "2. Stage 2", "Información preliminar/ Preliminary information", "Design Engineer"),
+            crearDetalle("S2-04", "¿Los dibujos están disponibles?", "2. Stage 2", "Información preliminar/ Preliminary information", "Design Engineer"),
+            crearDetalle("S2-05", "¿Listas de equipo disponibles?", "2. Stage 2", "Información preliminar/ Preliminary information", "QE/PE"),
+            crearDetalle("S2-06", "¿Team Feasibility Commitment firmado?", "2. Stage 2", "Información preliminar/ Preliminary information", "Project Engineer"),
+            crearDetalle("S2-07", "¿Lecciones aprendidas documentadas?", "2. Stage 2", "Información preliminar/ Preliminary information", "QE/PE"),
+            crearDetalle("S2-08", "¿Manual de Proveedor disponible?", "2. Stage 2", "Información preliminar/ Preliminary information", "Project Engineer"),
             
             // --- LOS QUE FALTABAN (09 - 15) ---
-            crearDetalle("S2-09", "¿Se proporcionó el Reporte DV?", "2. Stage 2", "Inf. Preliminar", "Project Engineer"),
-            crearDetalle("S2-10", "¿Plan de validación de diseño (DVP)?", "2. Stage 2", "Inf. Preliminar", "Design Engineer"),
-            crearDetalle("S2-11", "¿Plan de validación de proceso (PVP)?", "2. Stage 2", "Inf. Preliminar", "Quality Engineer"),
-            crearDetalle("S2-12", "¿Plan de control preliminar?", "2. Stage 2", "Inf. Preliminar", "Quality Engineer"),
-            crearDetalle("S2-13", "¿Diagrama de flujo de proceso preliminar?", "2. Stage 2", "Inf. Preliminar", "Process Engineer"),
-            crearDetalle("S2-14", "¿Layout preliminar?", "2. Stage 2", "Inf. Preliminar", "Process Engineer"),
-            crearDetalle("S2-15", "¿Plan de empaque preliminar?", "2. Stage 2", "Inf. Preliminar", "Process Engineer"),
+            crearDetalle("S2-09", "¿Se proporcionó el Reporte DV?", "2. Stage 2", "Información preliminar/ Preliminary information", "Project Engineer"),
+            crearDetalle("S2-10", "¿Plan de validación de diseño (DVP)?", "2. Stage 2", "Información preliminar/ Preliminary information", "Design Engineer"),
+            crearDetalle("S2-11", "¿Plan de validación de proceso (PVP)?", "2. Stage 2", "Dibujos Ingenieriles / Engineering Drawings", "Quality Engineer"),
+            crearDetalle("S2-12", "¿Plan de control preliminar?", "2. Stage 2", "Dibujos Ingenieriles / Engineering Drawings", "Quality Engineer"),
+            crearDetalle("S2-13", "¿Diagrama de flujo de proceso preliminar?", "2. Stage 2", "Dibujos Ingenieriles / Engineering Drawings", "Process Engineer"),
+            crearDetalle("S2-14", "¿Layout preliminar?", "2. Stage 2", "Dibujos Ingenieriles / Engineering Drawings", "Process Engineer"),
+            crearDetalle("S2-15", "¿Plan de empaque preliminar?", "2. Stage 2", "Componentes nuevos / New components", "Process Engineer"),
 
             // --- Abastecimiento (Sourcing) ---
-            crearDetalle("S2-16", "¿Lista alineada con RFQ tracker?", "2. Stage 2", "Abastecimiento", "SCS Procurement"),
-            crearDetalle("S2-17", "¿Proveedores de nuevos materiales conocidos?", "2. Stage 2", "Abastecimiento", "SCS Procurement"),
-            crearDetalle("S2-18", "¿Características especiales identificadas?", "2. Stage 2", "Abastecimiento", "Project Engineer"),
-            crearDetalle("S2-19", "¿Se consideró el tiempo de entrega (Lead Time)?", "2. Stage 2", "Abastecimiento", "SCS Procurement"),
-            crearDetalle("S2-20", "¿QRs para nuevos componentes disponibles?", "2. Stage 2", "Abastecimiento", "SCS Procurement"),
-            crearDetalle("S2-21", "¿TP de nuevos componentes disponibles?", "2. Stage 2", "Abastecimiento", "Finance Rep"),
+            crearDetalle("S2-16", "¿Lista alineada con RFQ tracker?", "2. Stage 2", "Componentes nuevos / New components", "SCS Procurement"),
+            crearDetalle("S2-17", "¿Proveedores de nuevos materiales conocidos?", "2. Stage 2", "Componentes nuevos / New components", "SCS Procurement"),
+            crearDetalle("S2-18", "¿Características especiales identificadas?", "2. Stage 2", "Componentes nuevos / New components", "Project Engineer"),
+            crearDetalle("S2-19", "¿Se consideró el tiempo de entrega (Lead Time)?", "2. Stage 2", "Componentes nuevos / New components", "SCS Procurement"),
+            crearDetalle("S2-20", "¿QRs para nuevos componentes disponibles?", "2. Stage 2", "Componentes nuevos / New components", "SCS Procurement"),
+            crearDetalle("S2-21", "¿TP de nuevos componentes disponibles?", "2. Stage 2", "Componentes nuevos / New components", "Finance Rep"),
 
             // --- Requerimientos del Cliente ---
-            crearDetalle("S2-22", "¿Lista preliminar de características del cliente?", "2. Stage 2", "Req. Cliente", "Design Engineer"),
-            crearDetalle("S2-23", "¿Lista avalada por firma del cliente?", "2. Stage 2", "Req. Cliente", "Design Engineer")
+            crearDetalle("S2-22", "¿Lista preliminar de características del cliente?", "2. Stage 2", "Lista preliminar de características del cliente / Preliminary Customer Characteristics List:", "Design Engineer"),
+            crearDetalle("S2-23", "¿Lista avalada por firma del cliente?", "2. Stage 2", "Lista preliminar de características del cliente / Preliminary Customer Characteristics List:", "Design Engineer")
         );
         repo.saveAll(stage2);
     }

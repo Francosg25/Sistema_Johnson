@@ -13,9 +13,10 @@ public class DashboardControlador {
     private ProyectoRepositorio proyectoRepositorio;
 
     @GetMapping("/")
-    public String index(Model model) {
+    public String index(Model model, jakarta.servlet.http.HttpServletRequest request) {
         model.addAttribute("proyectos", proyectoRepositorio.findAll());
         model.addAttribute("titulo", "Dashboard de Proyectos APQP - Johnson Electric");
+        model.addAttribute("currentUri", request.getRequestURI());
         return "index"; 
     }
 
