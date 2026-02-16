@@ -26,12 +26,14 @@
 
     <div class="sidebar-footer mt-auto">
         <div class="d-flex align-items-center">
-            <div class="avatar-initial bg-warning-subtle text-warning-emphasis rounded-circle me-3">
+            <div class="avatar-initial rounded-circle me-3">
                 <strong th:text="${#strings.substring(#authentication?.name, 0, 1)}">U</strong>
             </div>
             <div>
                 <strong class="d-block" th:text="${#authentication?.name ?: 'Invitado'}">Usuario</strong>
-                <a th:href="@{/logout}" class="small text-decoration-none text-muted">Cerrar Sesión</a>
+                <form th:action="@{/logout}" method="post" style="display:inline;">
+                    <button type="submit" class="btn btn-link p-0 m-0 border-0 align-baseline small text-decoration-none" style="color: rgb(245, 120, 32);">Cerrar Sesión</button>
+                </form>
             </div>
         </div>
     </div>

@@ -6,10 +6,11 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
-import org.springframework.security.crypto.password.NoOpPasswordEncoder; // Añadir este import
+
 
 @Configuration
 @EnableWebSecurity
@@ -45,9 +46,7 @@ public class SeguridadConfig {
 
     @Bean
     public PasswordEncoder passwordEncoder() {
-        // Para propósitos de depuración: NoOpPasswordEncoder no codifica contraseñas.
-        // Esto NO debe usarse en producción.
-        return NoOpPasswordEncoder.getInstance();
+        return new BCryptPasswordEncoder();
     }
 
     @Bean
