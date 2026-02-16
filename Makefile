@@ -46,6 +46,7 @@ logs:
 clean:
 	# Busca la sección clean:
 clean:
-	docker compose down -v
+	docker compose down
+	rd /s /q postgres_data # Eliminar el bind mount de forma explícita
 	cd johnson-sistema && mvnw.cmd clean  
 	docker system prune -f

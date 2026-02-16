@@ -1,8 +1,9 @@
 package com.johnson.practica.config;
 
-import com.johnson.practica.model.CatalogoElemento;
+import com.johnson.practica.modelo.CatalogoElemento;
 import com.johnson.practica.repositorio.CatalogoElementoRepositorio;
 import com.johnson.practica.repositorio.ElementoChecklistRepositorio;
+
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

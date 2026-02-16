@@ -1,7 +1,7 @@
 package com.johnson.practica.controlador;
 
-import com.johnson.practica.model.ElementoChecklist;
-import com.johnson.practica.model.Proyecto;
+import com.johnson.practica.modelo.ElementoChecklist;
+import com.johnson.practica.modelo.Proyecto;
 import com.johnson.practica.repositorio.ProyectoRepositorio;
 import com.johnson.practica.servicio.ChecklistServicio;
 import com.johnson.practica.servicio.ProyectoServicio;
@@ -62,7 +62,6 @@ public class ProyectoControlador {
         fases.add(new FaseVista("s4", "Stage 4", checklistServicio.obtenerPorFase(id, "4. Stage 4")));
         fases.add(new FaseVista("s5", "Stage 5", checklistServicio.obtenerPorFase(id, "5. Stage 5")));
 
-        // ¡ESTO ES LO IMPORTANTE! Enviamos "fases" al HTML
         model.addAttribute("fases", fases); 
 
         return "checklist";

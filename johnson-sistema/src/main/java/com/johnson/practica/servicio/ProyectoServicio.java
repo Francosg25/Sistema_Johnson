@@ -1,7 +1,8 @@
 package com.johnson.practica.servicio;
 
-import com.johnson.practica.model.*;
+import com.johnson.practica.modelo.*;
 import com.johnson.practica.repositorio.*;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

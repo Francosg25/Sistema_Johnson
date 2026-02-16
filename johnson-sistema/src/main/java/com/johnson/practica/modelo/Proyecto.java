@@ -1,4 +1,4 @@
-package com.johnson.practica.model;
+package com.johnson.practica.modelo;
 
 import jakarta.persistence.*;
 import lombok.Data;

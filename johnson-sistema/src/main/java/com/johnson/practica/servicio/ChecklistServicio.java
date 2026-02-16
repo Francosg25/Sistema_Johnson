@@ -1,7 +1,8 @@
 package com.johnson.practica.servicio;
 
-import com.johnson.practica.model.ElementoChecklist;
+import com.johnson.practica.modelo.ElementoChecklist;
 import com.johnson.practica.repositorio.ElementoChecklistRepositorio;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -28,7 +29,7 @@ public class ChecklistServicio {
         return repositorio.findByProyectoIdAndCatalogoFaseStartingWithOrderByCodigoAsc(proyectoId, prefijoFase);
     }
 
-    // 3. Obtiene solo Stage 2 (Lo dejamos por compatibilidad con tu código anterior)
+    // 3. Obtiene solo Stage 2 
     @Transactional(readOnly = true)
     public List<ElementoChecklist> obtenerChecklistStage2(Long proyectoId) {
         return obtenerPorFase(proyectoId, "2");
@@ -69,7 +70,7 @@ public class ChecklistServicio {
 
                     updatesById.computeIfAbsent(itemId, k -> new HashMap<>()).put(fieldName, value);
                 } catch (NumberFormatException e) {
-                    // Ignorar claves que no sigan el formato esperado, como "_csrf"
+                    
                 }
             }
         }

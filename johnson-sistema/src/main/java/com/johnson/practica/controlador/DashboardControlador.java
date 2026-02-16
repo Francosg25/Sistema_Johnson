@@ -1,10 +1,11 @@
 package com.johnson.practica.controlador;
 
-import com.johnson.practica.repositorio.ProyectoRepositorio;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+
+import com.johnson.practica.repositorio.ProyectoRepositorio;
 
 @Controller
 public class DashboardControlador {

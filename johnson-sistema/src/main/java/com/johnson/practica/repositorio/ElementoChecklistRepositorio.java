@@ -1,8 +1,10 @@
 package com.johnson.practica.repositorio;
 
-import com.johnson.practica.model.ElementoChecklist;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
+
+import com.johnson.practica.modelo.ElementoChecklist;
+
 import java.util.List;
 
 @Repository
