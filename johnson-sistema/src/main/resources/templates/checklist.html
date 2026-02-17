@@ -64,7 +64,7 @@
                                                 </tr>
                                                 <tr class="text-center">
                                                     <th style="width: 7.5%;">Plan</th>
-                                                    <th style="width: 7.5%;">Real</th>
+                                                    <th style="width: 7.5%;">Control</th>
                                                 </tr>
                                             </thead>                                        <tbody>
                                             <th:block th:each="item, iterStat : ${fase.items}">
@@ -78,7 +78,7 @@
                                                 <!-- Primera Fila (Plan) -->
                                                 <tr>
                                                     <td class="text-center fw-bold" rowspan="2" style="vertical-align: middle;">
-                                                        <span class="badge w-100" th:classappend="${'champ-' + #strings.toLowerCase(item.champion.split('/')[0])}" th:text="${item.champion}"></span>
+                                                        <span class="badge w-100" th:classappend="${item.champion == 'QE/PE' ? 'champ-qe-pe' : 'champ-' + #strings.toLowerCase(item.champion.split('/')[0])}" th:text="${item.champion}"></span>
                                                     </td>
 
                                                     <td rowspan="2" style="vertical-align: middle; background-color: #fffacd;">
@@ -302,6 +302,94 @@
                     }
                 });
             }
+        });
+    </script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Función para aplicar estilos dinámicamente a los selects de Status y Score
+            function applySelectStyle(selectElement) {
+                // Eliminar clases de estado previas
+                selectElement.classList.remove('status-on-time', 'status-late', 'status-decision', 'status-needs-action', 'status-default');
+                selectElement.classList.remove('bg-success', 'bg-danger', 'bg-warning', 'bg-info', 'bg-secondary');
+
+                const value = selectElement.value;
+                let newClass = 'status-default'; // Clase por defecto
+
+                if (selectElement.name.startsWith('controlEntregable')) {
+                    switch (value) {
+                        case 'Closed on time':
+                            newClass = 'status-on-time';
+                            break;
+                        case 'Closed late':
+                            newClass = 'status-late';
+                            break;
+                        case 'DECISION':
+                            newClass = 'status-decision';
+                            break;
+                        case 'NEEDS ACTION':
+                            newClass = 'status-needs-action';
+                            break;
+                    }
+                } else if (selectElement.name.startsWith('score')) {
+                    switch (value) {
+                        case 'OK':
+                            newClass = 'status-on-time'; // Reutilizamos para OK
+                            break;
+                        case 'N/A':
+                            newClass = 'status-default'; // o alguna otra clase si se necesita
+                            break;
+                    }
+                }
+                selectElement.classList.add(newClass);
+            }
+
+            // Función para aplicar estilos dinámicamente a los radio buttons de Estado
+            function applyRadioStyle(radioInput) {
+                const buttonGroup = radioInput.closest('.btn-group');
+                if (!buttonGroup) return;
+
+                // Remover clases activas de los labels en el mismo grupo
+                buttonGroup.querySelectorAll('label').forEach(label => {
+                    label.classList.remove('btn-success', 'btn-danger', 'btn-secondary'); // Remover clases de color
+                    // Restaurar clases outline si es necesario, o manejar con más granularidad
+                    if (!label.classList.contains('btn-outline-success') && !label.classList.contains('btn-outline-danger') && !label.classList.contains('btn-outline-secondary')) {
+                         // Aquí se puede añadir lógica para restaurar outlines si no están presentes
+                    }
+                });
+                
+                // Añadir clase de color al label del radio seleccionado
+                const label = buttonGroup.querySelector(`label[for="${radioInput.id}"]`);
+                if (label) {
+                    // Remover clases outline y añadir clases de color
+                    label.classList.remove('btn-outline-success', 'btn-outline-danger', 'btn-outline-secondary');
+                    switch (radioInput.value) {
+                        case 'OK':
+                            label.classList.add('btn-success');
+                            break;
+                        case 'NOK':
+                            label.classList.add('btn-danger');
+                            break;
+                        case 'NA':
+                            label.classList.add('btn-secondary');
+                            break;
+                    }
+                }
+            }
+
+
+            // Inicializar estilos al cargar la página para todos los selects
+            document.querySelectorAll('select[name^="controlEntregable-"], select[name^="score-"]').forEach(select => {
+                applySelectStyle(select);
+                select.addEventListener('change', () => applySelectStyle(select));
+            });
+
+            // Inicializar estilos al cargar la página para todos los radio buttons
+            document.querySelectorAll('input[type="radio"][name^="estado-"]').forEach(radio => {
+                if (radio.checked) {
+                    applyRadioStyle(radio);
+                }
+                radio.addEventListener('change', () => applyRadioStyle(radio));
+            });
         });
     </script>
 </body>

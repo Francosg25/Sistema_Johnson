@@ -2,9 +2,9 @@ package com.johnson.practica.servicio;
 
 import com.johnson.practica.dto.ReporteProgreso;
 import com.johnson.practica.modelo.ElementoChecklist;
-import com.johnson.practica.modelo.Proyecto; 
+import com.johnson.practica.modelo.Proyecto;
 import com.johnson.practica.repositorio.ElementoChecklistRepositorio;
-import com.johnson.practica.repositorio.ProyectoRepositorio; 
+import com.johnson.practica.repositorio.ProyectoRepositorio;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -36,7 +36,7 @@ public class ChecklistServicio {
         return repositorio.findByProyecto_IdAndFaseStartingWithOrderByCodigoAsc(proyectoId, prefijoFase);
     }
 
-    // 3. Obtiene solo Stage 2 
+    // 3. Obtiene solo Stage 2
     @Transactional(readOnly = true)
     public List<ElementoChecklist> obtenerChecklistStage2(Long proyectoId) {
         return obtenerPorFase(proyectoId, "2");
@@ -48,7 +48,7 @@ public class ChecklistServicio {
     }
 
     @Transactional(readOnly = true)
-    public List<ElementoChecklist> obtenerChecklistStage4(Long proyectoId) {        
+    public List<ElementoChecklist> obtenerChecklistStage4(Long proyectoId) {
         return obtenerPorFase(proyectoId, "4");
     }
 
@@ -77,7 +77,7 @@ public class ChecklistServicio {
 
                     updatesById.computeIfAbsent(itemId, k -> new HashMap<>()).put(fieldName, value);
                 } catch (NumberFormatException e) {
-                    
+
                 }
             }
         }
@@ -127,19 +127,19 @@ public class ChecklistServicio {
     }
 
     // --- 3. MÉTODOS DE REPORTES ---
-    
+
     public List<ReporteProgreso> generarReporteGlobal() {
         List<Proyecto> proyectos = proyectoRepositorio.findAll();
         List<ReporteProgreso> reporte = new ArrayList<>();
 
         for (Proyecto p : proyectos) {
             List<ElementoChecklist> items = repositorio.findByProyecto_IdAndFaseStartingWith(p.getId(), "");
-            
+
             int total = items.size();
             int ok = 0;
 
             for (ElementoChecklist item : items) {
-                if ("OK".equals(item.getEstado())) {
+                if (!"PENDING".equals(item.getEstado())) { // Count items that are not PENDING as 'completed'
                     ok++;
                 }
             }

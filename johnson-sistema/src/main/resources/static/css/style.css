@@ -105,19 +105,20 @@ html, body { height: 100%; margin: 0; padding: 0; overflow-x: hidden; }
 .avatar-initial { width: 44px; height: 44px; display:inline-flex; align-items:center; justify-content:center; border-radius:8px; }
 
 /* Champion Pastel Colors */
-.champ-proj { background-color: #cce5ff; color: #004085; }
-.champ-de   { background-color: #d4edda; color: #155724; }
-.champ-qe   { background-color: #fff3cd; color: #856404; }
-.champ-pe   { background-color: #f8d7da; color: #721c24; }
-.champ-ops  { background-color: #e2e3e5; color: #383d41; }
-.champ-all  { background-color: #d1ecf1; color: #0c5460; }
+.champ-proj     { background-color: #cce5ff; color: #004085; } /* Blue */
+.champ-de       { background-color: #e2e3e5; color: #383d41; } /* Gray */
+.champ-qe       { background-color: #f8d7da; color: #721c24; } /* Red */
+.champ-pe       { background-color: #fffacd; color: #856404; } /* Yellow */
+.champ-qe-pe    { background-color: #d4edda; color: #155724; } /* Green (new) */
+.champ-all      { background-color: #ffdcba; color: #663003; } /* Orange */
+.champ-ops      { background-color: #e0cffc; color: #4b0082; } /* Purple */
 
 /* Status Pastel Colors */
-.status-on-time     { background-color: #d4edda; color: #155724; }
-.status-late        { background-color: #f8d7da; color: #721c24; }
-.status-decision    { background-color: #cce5ff; color: #004085; }
-.status-needs-action{ background-color: #fff3cd; color: #856404; }
-.status-default     { background-color: #e2e3e5; color: #383d41; }
+.status-on-time     { background-color: #d4edda; color: #155724; transition: background-color 0.3s ease, color 0.3s ease; }
+.status-late        { background-color: #f8d7da; color: #721c24; transition: background-color 0.3s ease, color 0.3s ease; }
+.status-decision    { background-color: #cce5ff; color: #004085; transition: background-color 0.3s ease, color 0.3s ease; }
+.status-needs-action{ background-color: #fff3cd; color: #856404; transition: background-color 0.3s ease, color 0.3s ease; }
+.status-default     { background-color: #e2e3e5; color: #383d41; transition: background-color 0.3s ease, color 0.3s ease; }
 
 .brand-logo img {
     max-width: 80%;
@@ -143,4 +144,8 @@ html, body { height: 100%; margin: 0; padding: 0; overflow-x: hidden; }
 .table-group-header td {
     background-color: #e9ecef;
     font-weight: 700;
+}
+
+.btn {
+    transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
 }
