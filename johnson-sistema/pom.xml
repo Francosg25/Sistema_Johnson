@@ -72,7 +72,6 @@
 	<dependency>
     	<groupId>org.projectlombok</groupId>
     	<artifactId>lombok</artifactId>
-    	<optional>true</optional>
 		</dependency>
 	</dependencies>
 
@@ -83,6 +82,27 @@
 				<artifactId>spring-boot-maven-plugin</artifactId>
 				<version>3.5.10</version>
 			</plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.11.0</version>
+                <configuration>
+                    <annotationProcessorPaths>
+                        <path>
+                            <groupId>org.projectlombok</groupId>
+                            <artifactId>lombok</artifactId>
+                            <version>1.18.30</version>
+                        </path>
+                    </annotationProcessorPaths>
+                </configuration>
+                <dependencies> <!-- Add Lombok as a plugin dependency -->
+                    <dependency>
+                        <groupId>org.projectlombok</groupId>
+                        <artifactId>lombok</artifactId>
+                        <version>1.18.30</version>
+                    </dependency>
+                </dependencies>
+            </plugin>
 		</plugins>
 	</build>
 

@@ -13,8 +13,9 @@ public interface ElementoChecklistRepositorio extends JpaRepository<ElementoChec
     // Método para buscar por Proyecto
     List<ElementoChecklist> findByProyectoId(Long proyectoId);
 
-    // Spring Data interpreta: "Busca por ProyectoId" Y "entra a Catalogo" Y "busca Fase" que empiece con...
-    List<ElementoChecklist> findByProyectoIdAndCatalogoFaseStartingWithOrderByCodigoAsc(Long proyectoId, String fasePrefix);
+    // Métodos para buscar elementos por Proyecto y Fase, optimizados para la nueva estructura
+    List<ElementoChecklist> findByProyecto_IdAndFaseStartingWith(Long proyectoId, String fasePrefix);
+    List<ElementoChecklist> findByProyecto_IdAndFaseStartingWithOrderByCodigoAsc(Long proyectoId, String fasePrefix);
 
     // Método para contar cuántos elementos tiene un proyecto (Usado para saber si es nuevo o no)
     long countByProyectoId(Long proyectoId);

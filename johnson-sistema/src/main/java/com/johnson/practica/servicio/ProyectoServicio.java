@@ -83,7 +83,7 @@ public class ProyectoServicio {
     public void eliminarProyecto(Long id) {
         // Primero borramos los items del checklist para evitar error de llave foránea
         // Usamos el método que ya tienes en tu repo o uno genérico de borrado
-        List<ElementoChecklist> items = elementoRepositorio.findByProyectoIdAndCatalogoFaseStartingWithOrderByCodigoAsc(id, ""); 
+        List<ElementoChecklist> items = elementoRepositorio.findByProyecto_IdAndFaseStartingWithOrderByCodigoAsc(id, ""); 
         elementoRepositorio.deleteAll(items);
         
         // Luego borramos el proyecto

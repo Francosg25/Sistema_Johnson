@@ -1,8 +1,8 @@
 package com.johnson.practica.controlador;
 /*package com.johnson.practica.controlador;
 
-import com.johnson.practica.model.ElementoChecklist;
-import com.johnson.practica.model.Proyecto;
+import com.johnson.practica.modelo.ElementoChecklist;
+import com.johnson.practica.modelo.Proyecto;
 import com.johnson.practica.repositorio.ElementoChecklistRepositorio;
 import com.johnson.practica.servicio.ProyectoServicio;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,7 +39,7 @@ public class DebugController {
         Proyecto guardado = proyectoServicio.guardarProyecto(p);
 
         // Si no se generaron elementos (catalogo vacío), crear manualmente 19 elementos
-        List<ElementoChecklist> existentes = elementoRepositorio.findByProyectoId(guardado.getId());
+        List<ElementoChecklist> existentes = elementoRepositorio.findByProyecto_Id(guardado.getId()); // Corrected method name
         if (existentes == null || existentes.isEmpty()) {
             List<String> nombresPPAP = List.of(
                     "1. Registros de Diseño", "2. Cambios de Ingeniería", "3. Aprobación Ingeniería Cliente",
@@ -53,8 +53,7 @@ public class DebugController {
             for (String nombre : nombresPPAP) {
                 ElementoChecklist e = ElementoChecklist.builder()
                         .proyecto(guardado)
-                        .titulo(nombre)
-                        .descripcion("")
+                        .nombre(nombre) // Changed from .titulo to .nombre to match ElementoChecklist
                         .fase("4. PPAP")
                         .estado("ABIERTO")
                         .build();
@@ -67,5 +66,4 @@ public class DebugController {
     }
 }
 
-/*/ 
-    
+/*/
