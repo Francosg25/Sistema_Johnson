@@ -56,7 +56,7 @@
                                                     <th rowspan="2" style="width: 5%;" class="text-center align-middle">Champion</th>
                                                     <th rowspan="2" style="width: 23%;" class="align-middle">Entregables / Deliverables</th>
                                                     <th colspan="2" style="width: 10%;" class="text-center">Fechas</th>
-                                                    <th rowspan="2" style="width: 26%;" class="text-center align-middle">Status</th>
+                                                    <th rowspan="2" style="width: 29%;" class="text-center align-middle">Status</th>
                                                     <th rowspan="2" style="width: 9%;" class="text-center align-middle">Calificación / Score</th>
                                                     <th rowspan="2" style="width: 31%;" class="align-middle">Observaciones / Remarks</th>
                                                     <th rowspan="2" class="text-center align-middle" style="width: 50px;" title="Evidencias">
@@ -111,12 +111,12 @@
                                                         </select>
                                                     </td>
                                                     
-                                                    <td rowspan="2" style="max-width: 250px; vertical-align: middle;">
+                                                    <td rowspan="2" style="max-width: 125px; vertical-align: middle;">
                                                         <div class="d-flex justify-content-between align-items-center bg-white rounded p-1 border shadow-sm"
                                                              style="cursor: pointer;" th:onclick="abrirEditorComentarios([[${item.id}]], [[${item.codigo}]])">
                                                             <div class="text-truncate small ms-2 w-100" th:id="'preview-comentario-' + ${item.id}"
                                                                  th:classappend="${item.comentario == null or item.comentario.isEmpty() ? 'text-muted fst-italic' : 'text-dark fw-bold'}"
-                                                                 th:text="${item.comentario == null or item.comentario.isEmpty() ? 'Sin observaciones...' : item.comentario}">
+                                                                 th:text="${item.comentario == null or item.comentario.isEmpty() ? '' : item.comentario}">
                                                             </div>
                                                             <button type="button" th:id="'btn-comentario-' + ${item.id}" 
                                                                     class="btn btn-sm border-0 rounded-circle ms-1 flex-shrink-0"
@@ -195,7 +195,7 @@
                                                              style="cursor: pointer;" th:onclick="abrirEditorComentarios([[${item.id}]], [[${item.codigo}]])">
                                                             <div class="text-truncate small ms-2 w-100" th:id="'preview-comentario-' + ${item.id}"
                                                                  th:classappend="${item.comentario == null or item.comentario.isEmpty() ? 'text-muted fst-italic' : 'text-dark fw-bold'}"
-                                                                 th:text="${item.comentario == null or item.comentario.isEmpty() ? 'Sin observaciones...' : item.comentario}">
+                                                                 th:text="${item.comentario == null or item.comentario.isEmpty() ? '' : item.comentario}">
                                                             </div>
                                                             <button type="button" th:id="'btn-comentario-' + ${item.id}" 
                                                                     class="btn btn-sm border-0 rounded-circle ms-1 flex-shrink-0"
@@ -268,7 +268,7 @@
                                                              style="cursor: pointer;" th:onclick="abrirEditorComentarios([[${item.id}]], [[${item.codigo}]])">
                                                             <div class="text-truncate small ms-2 w-100" th:id="'preview-comentario-' + ${item.id}"
                                                                  th:classappend="${item.comentario == null or item.comentario.isEmpty() ? 'text-muted fst-italic' : 'text-dark fw-bold'}"
-                                                                 th:text="${item.comentario == null or item.comentario.isEmpty() ? 'Sin observaciones...' : item.comentario}">
+                                                                 th:text="${item.comentario == null or item.comentario.isEmpty() ? '' : item.comentario}">
                                                             </div>
                                                             <button type="button" th:id="'btn-comentario-' + ${item.id}" 
                                                                     class="btn btn-sm border-0 rounded-circle ms-1 flex-shrink-0"
@@ -306,7 +306,7 @@
                                                              style="cursor: pointer;" th:onclick="abrirEditorComentarios([[${item.id}]], [[${item.codigo}]])">
                                                             <div class="text-truncate small ms-2 w-100" th:id="'preview-comentario-' + ${item.id}"
                                                                  th:classappend="${item.comentario == null or item.comentario.isEmpty() ? 'text-muted fst-italic' : 'text-dark fw-bold'}"
-                                                                 th:text="${item.comentario == null or item.comentario.isEmpty() ? 'Sin observaciones...' : item.comentario}">
+                                                                 th:text="${item.comentario == null or item.comentario.isEmpty() ? '' : item.comentario}">
                                                             </div>
                                                             <button type="button" th:id="'btn-comentario-' + ${item.id}" 
                                                                     class="btn btn-sm border-0 rounded-circle ms-1 flex-shrink-0"
@@ -636,7 +636,7 @@
             const btnIcon = document.getElementById('btn-icon-comentario-' + id);
 
             if (nuevoTexto.trim() === '') {
-                previewEl.innerText = 'Sin observaciones...';
+                previewEl.innerText = '';
                 previewEl.className = 'text-truncate small ms-2 w-100 text-muted fst-italic';
                 btnEl.className = 'btn btn-sm btn-light text-secondary border-0 rounded-circle ms-1 flex-shrink-0';
                 btnIcon.className = 'bi bi-pencil';
