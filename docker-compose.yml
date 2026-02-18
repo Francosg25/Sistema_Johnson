@@ -5,7 +5,7 @@ services:
     environment:
       - POSTGRES_DB=johnsondb
       - POSTGRES_USER=admin
-      - POSTGRES_PASSWORD=Johnsonbase2026
+      - POSTGRES_PASSWORD=johnsonbase2026
     ports:
       - "5444:5432" # 
     volumes:
@@ -27,7 +27,7 @@ services:
       # Dentro de Docker, la comunicación es directa al 5432
       SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/johnsondb
       SPRING_DATASOURCE_USERNAME: admin
-      SPRING_DATASOURCE_PASSWORD: Johnsonbase2026
+      SPRING_DATASOURCE_PASSWORD: johnsonbase2026
       SPRING_JPA_HIBERNATE_DDL_AUTO: update
     ports:
       - "8081:8081"

@@ -30,7 +30,6 @@ public class ReporteProgreso {
         return porcentaje;
     }
 
-    // Setters (optional, but good practice if mutability is desired)
     public void setNombreProyecto(String nombreProyecto) {
         this.nombreProyecto = nombreProyecto;
     }

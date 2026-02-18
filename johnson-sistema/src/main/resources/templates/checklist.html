@@ -47,7 +47,6 @@
                              th:id="'content-' + ${fase.id}" 
                              role="tabpanel">
 
-                            <!-- Pestaña: Programa APQP -->
                             <div th:if="${fase.nombre.contains('Programa')}" class="card border-0 shadow-sm">
                                 <div class="card-body p-0">
                                     <div class="table-responsive">
@@ -55,27 +54,28 @@
                                             <thead class="bg-light small text-uppercase text-muted fw-bold">
                                                 <tr>
                                                     <th rowspan="2" style="width: 5%;" class="text-center align-middle">Champion</th>
-
                                                     <th rowspan="2" style="width: 23%;" class="align-middle">Entregables / Deliverables</th>
                                                     <th colspan="2" style="width: 10%;" class="text-center">Fechas</th>
                                                     <th rowspan="2" style="width: 26%;" class="text-center align-middle">Status</th>
                                                     <th rowspan="2" style="width: 9%;" class="text-center align-middle">Calificación / Score</th>
                                                     <th rowspan="2" style="width: 31%;" class="align-middle">Observaciones / Remarks</th>
+                                                    <th rowspan="2" class="text-center align-middle" style="width: 50px;" title="Evidencias">
+                                                        <i class="bi bi-paperclip fs-5 text-secondary"></i>
+                                                    </th>
                                                 </tr>
                                                 <tr class="text-center">
                                                     <th style="width: 7.5%;">Plan</th>
                                                     <th style="width: 7.5%;">Control</th>
                                                 </tr>
-                                            </thead>                                        <tbody>
+                                            </thead>                                        
+                                            <tbody>
                                             <th:block th:each="item, iterStat : ${fase.items}">
-                                                <!-- Fila de Grupo -->
                                                 <tr th:if="${iterStat.index == 0 or !fase.items[iterStat.index - 1].etapaVisual.equals(item.etapaVisual)}" class="table-group-header">
-                                                    <td colspan="7" class="fw-bold text-uppercase py-2 px-3 text-dark">
+                                                    <td colspan="8" class="fw-bold text-uppercase py-2 px-3 text-dark">
                                                         <i class="bi bi-collection me-2"></i><span th:text="${item.etapaVisual}"></span>
                                                     </td>
                                                 </tr>
                                                 
-                                                <!-- Primera Fila (Plan) -->
                                                 <tr>
                                                     <td class="text-center fw-bold" rowspan="2" style="vertical-align: middle;">
                                                         <span class="badge w-100" th:classappend="${item.champion == 'QE/PE' ? 'champ-qe-pe' : 'champ-' + #strings.toLowerCase(item.champion.split('/')[0])}" th:text="${item.champion}"></span>
@@ -95,6 +95,7 @@
                                                                     (item.controlEntregable == 'Closed late' ? 'status-late' :
                                                                     (item.controlEntregable == 'DECISION' ? 'status-decision' :
                                                                     (item.controlEntregable == 'NEEDS ACTION' ? 'status-needs-action' : 'status-default')))}">
+                                                            <option value="" th:selected="${item.controlEntregable == '' || item.controlEntregable == null}"></option> 
                                                             <option th:selected="${item.controlEntregable == 'Closed on time'}" value="Closed on time">ON TIME</option>
                                                             <option th:selected="${item.controlEntregable == 'Closed late'}" value="Closed late">LATE</option>
                                                             <option th:selected="${item.controlEntregable == 'DECISION'}" value="DECISION">DECISION</option>
@@ -103,7 +104,8 @@
                                                     </td>
                                                     <td class="text-center" rowspan="2" style="vertical-align: middle;">
                                                         <select class="form-select form-select-sm border-0 fw-bold" th:name="'score-' + ${item.id}"
-                                                                th:classappend="${item.score == 'OK' ? 'status-on-time' : 'status-default'}">
+                                                                th:classappend="${item.score == 'OK' ? 'status-on-time' : (item.score == 'N/A' ? 'status-default' : 'status-default')}">
+                                                            <option value="" th:selected="${item.score == '' || item.score == null}"></option> 
                                                             <option th:selected="${item.score == 'OK'}" value="OK">OK</option>
                                                             <option th:selected="${item.score == 'N/A'}" value="N/A">N/A</option>
                                                         </select>
@@ -113,9 +115,17 @@
                                                                   th:name="'comentario-' + ${item.id}"
                                                                   th:text="${item.comentario}" placeholder="..."></textarea>
                                                     </td>
+                                                    
+                                                    <td class="text-center" rowspan="2" style="vertical-align: middle;">
+                                                        <button type="button" class="btn btn-sm btn-light border shadow-sm rounded-circle" 
+                                                                data-bs-toggle="modal" 
+                                                                th:data-bs-target="'#modalEvidencia_' + ${item.id}"
+                                                                title="Subir/Ver Evidencia">
+                                                            <i class="bi bi-cloud-arrow-up-fill text-primary"></i>
+                                                        </button>
+                                                    </td>
                                                 </tr>
                                                 
-                                                <!-- Segunda Fila (Real) -->
                                                 <tr>
                                                     <td class="fw-bold small ps-2">Real</td>
                                                     <td class="text-center">
@@ -129,9 +139,9 @@
                                 </div>
                             </div>
 
-                            <!-- Pestaña: Stage 2 -->
                             <div th:if="${fase.nombre.contains('Stage 2')}" class="card border-0 shadow-sm">
                                 <div class="card-body p-0">
+                                    <div class="table-responsive">
                                     <table class="table table-hover mb-0 align-middle" style="font-size: 0.85rem;">
                                         <thead class="bg-light small fw-bold text-uppercase">
                                             <tr>
@@ -141,12 +151,15 @@
                                                 <th style="width: 25%;">Comentarios</th>
                                                 <th style="width: 10%;">Responsable</th>
                                                 <th style="width: 10%;">Fecha</th>
+                                                <th class="text-center" style="width: 50px;" title="Evidencias">
+                                                    <i class="bi bi-paperclip fs-5 text-secondary"></i>
+                                                </th>
                                             </tr>
                                         </thead>
                                         <tbody>
                                             <th:block th:each="item, iterStat : ${fase.items}">
                                                 <tr th:if="${iterStat.index == 0 || !fase.items[iterStat.index - 1].grupo.equals(item.grupo)}" class="table-secondary">
-                                                    <td colspan="6" class="fw-bold text-uppercase small py-1 px-3 text-dark">
+                                                    <td colspan="7" class="fw-bold text-uppercase small py-1 px-3 text-dark">
                                                         <i class="bi bi-folder2-open me-2"></i><span th:text="${item.grupo}">Grupo</span>
                                                     </td>
                                                 </tr>
@@ -166,14 +179,23 @@
                                                     <td><textarea class="form-control form-control-sm border-0 bg-light-subtle" rows="1" th:name="'comentario-' + ${item.id}" th:text="${item.comentario}"></textarea></td>
                                                     <td class="text-center small text-primary fw-bold" th:text="${item.champion}"></td>
                                                     <td class="text-center"><input type="date" class="form-control form-control-sm border-0 text-center p-0" th:name="'fechaReal-' + ${item.id}" th:value="${item.fechaReal}"></td>
+                                                    
+                                                    <td class="text-center">
+                                                        <button type="button" class="btn btn-sm btn-light border shadow-sm rounded-circle" 
+                                                                data-bs-toggle="modal" 
+                                                                th:data-bs-target="'#modalEvidencia_' + ${item.id}"
+                                                                title="Subir/Ver Evidencia">
+                                                            <i class="bi bi-cloud-arrow-up-fill text-primary"></i>
+                                                        </button>
+                                                    </td>
                                                 </tr>
                                             </th:block>
                                         </tbody>
                                     </table>
+                                    </div>
                                 </div>
                             </div>
 
-                            <!-- Pestaña: Gate Reviews -->
                             <div th:if="${!fase.nombre.contains('Programa') && !fase.nombre.contains('Stage 2')}" class="card border-0 shadow-sm">
                                <div class="card-body p-4">
                                     <div class="p-3 mb-4 rounded" style="background-color: #f8f9fa;">
@@ -190,6 +212,7 @@
                                         <table class="table table-bordered mb-0 align-middle">
                                             <thead class="bg-light small fw-bold text-center">
                                                 <tr>
+                                                    <th style="width: 50px;" title="Evidencias"><i class="bi bi-paperclip fs-5 text-secondary"></i></th>
                                                     <th style="width: 5%;">Si/Yes</th>
                                                     <th style="width: 5%;">No</th>
                                                     <th>Requerimiento/Requirement</th>
@@ -198,6 +221,13 @@
                                             </thead>
                                             <tbody>
                                                 <tr th:each="item : ${fase.items}" th:if="${item.grupo == 'Validación'}">
+                                                    <td class="text-center align-middle">
+                                                        <button type="button" class="btn btn-sm btn-light border shadow-sm rounded-circle" 
+                                                                data-bs-toggle="modal" 
+                                                                th:data-bs-target="'#modalEvidencia_' + ${item.id}">
+                                                            <i class="bi bi-cloud-arrow-up-fill text-primary"></i>
+                                                        </button>
+                                                    </td>
                                                     <td class="text-center"><input class="form-check-input" type="radio" th:name="'estado-' + ${item.id}" value="OK" th:checked="${item.estado == 'OK'}"></td>
                                                     <td class="text-center"><input class="form-check-input" type="radio" th:name="'estado-' + ${item.id}" value="NOK" th:checked="${item.estado == 'NOK'}"></td>
                                                     <td class="fw-bold" th:text="${item.nombre}"></td>
@@ -259,7 +289,57 @@
                             </div>
                         </div>
                     </div>
-                </form>
+                </form> <th:block th:each="fase : ${fases}">
+                    <th:block th:each="item : ${fase.items}">
+                        <div class="modal fade" th:id="'modalEvidencia_' + ${item.id}" tabindex="-1" aria-hidden="true">
+                            <div class="modal-dialog modal-dialog-centered">
+                                <div class="modal-content border-0 shadow-lg">
+                                    <div class="modal-header bg-light border-bottom-0 pb-0">
+                                        <div>
+                                            <h5 class="modal-title fw-bold text-dark mb-0">
+                                                <i class="bi bi-folder-check text-primary me-2"></i>Evidencia
+                                            </h5>
+                                            <p class="text-muted small mb-0 mt-1" th:text="${item.codigo} + ' - ' + ${item.nombre}"></p>
+                                        </div>
+                                        <button type="button" class="btn-close shadow-none" data-bs-dismiss="modal" aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body pt-4">
+                             <div th:id="'alerta-' + ${item.id}"></div>
+                                    <form th:action="@{'/evidencias/subir-ajax/' + ${item.id}}" th:data-item-id="${item.id}" method="post" enctype="multipart/form-data" class="mb-4 form-evidencia-ajax">
+                            <div class="p-3 border rounded bg-white text-center border-primary border-opacity-25" style="border-style: dashed !important;">
+                                        <i class="bi bi-cloud-upload fs-1 text-primary mb-2 d-block"></i>
+                                        <label th:for="'archivo_' + ${item.id}" class="form-label fw-bold mb-1">Selecciona un archivo</label>
+                                        <p class="text-muted small mb-3">PDF, Excel, Word (Max 15MB)</p>
+                                        <input class="form-control form-control-sm" type="file" th:id="'archivo_' + ${item.id}" name="archivo" required>
+                                        <button type="submit" class="btn btn-primary btn-sm w-100 mt-3 fw-bold shadow-sm btn-subir">Subir Archivo</button>
+                                    </div>
+                            </form>
+
+                            <h6 class="fw-bold small mb-3 text-secondary border-bottom pb-2">ARCHIVOS ADJUNTOS</h6>
+    
+                                        <ul class="list-group list-group-flush small" th:id="'lista-' + ${item.id}">
+        
+                                        <li th:if="${item.adjuntos == null or item.adjuntos.isEmpty()}" th:id="'msg-vacio-' + ${item.id}" class="list-group-item d-flex justify-content-between align-items-center px-0 bg-transparent border-bottom-dashed text-muted fst-italic">
+                                           No hay evidencias subidas aún.
+                                        </li>
+
+                                    <li th:each="adj : ${item.adjuntos}" class="list-group-item d-flex justify-content-between align-items-center px-0 bg-transparent border-bottom-dashed">
+                                        <div class="d-flex align-items-center text-truncate pe-3">
+                                                <i class="bi bi-file-earmark-check-fill text-success fs-5 me-2"></i>
+                                                <span class="text-truncate fw-bold text-dark" th:text="${adj.nombreArchivo}"></span>
+                                            </div>
+                                        <div class="d-flex gap-2">
+                                    <button type="button" class="btn btn-sm btn-outline-secondary border-0" title="Subido"><i class="bi bi-check2"></i></button>
+                                            </div>
+                                        </li>
+                                       </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </th:block>
+                </th:block>
+
             </main>
         </div>
     </div>
@@ -306,89 +386,142 @@
     </script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            // Función para aplicar estilos dinámicamente a los selects de Status y Score
             function applySelectStyle(selectElement) {
-                // Eliminar clases de estado previas
                 selectElement.classList.remove('status-on-time', 'status-late', 'status-decision', 'status-needs-action', 'status-default');
                 selectElement.classList.remove('bg-success', 'bg-danger', 'bg-warning', 'bg-info', 'bg-secondary');
-
                 const value = selectElement.value;
-                let newClass = 'status-default'; // Clase por defecto
-
+                let newClass = 'status-default';
                 if (selectElement.name.startsWith('controlEntregable')) {
                     switch (value) {
-                        case 'Closed on time':
-                            newClass = 'status-on-time';
-                            break;
-                        case 'Closed late':
-                            newClass = 'status-late';
-                            break;
-                        case 'DECISION':
-                            newClass = 'status-decision';
-                            break;
-                        case 'NEEDS ACTION':
-                            newClass = 'status-needs-action';
-                            break;
+                        case 'Closed on time': newClass = 'status-on-time'; break;
+                        case 'Closed late': newClass = 'status-late'; break;
+                        case 'DECISION': newClass = 'status-decision'; break;
+                        case 'NEEDS ACTION': newClass = 'status-needs-action'; break;
                     }
                 } else if (selectElement.name.startsWith('score')) {
                     switch (value) {
-                        case 'OK':
-                            newClass = 'status-on-time'; // Reutilizamos para OK
-                            break;
-                        case 'N/A':
-                            newClass = 'status-default'; // o alguna otra clase si se necesita
-                            break;
+                        case 'OK': newClass = 'status-on-time'; break;
+                        case 'N/A': newClass = 'status-default'; break;
                     }
                 }
                 selectElement.classList.add(newClass);
             }
 
-            // Función para aplicar estilos dinámicamente a los radio buttons de Estado
             function applyRadioStyle(radioInput) {
                 const buttonGroup = radioInput.closest('.btn-group');
                 if (!buttonGroup) return;
-
-                // Remover clases activas de los labels en el mismo grupo
                 buttonGroup.querySelectorAll('label').forEach(label => {
-                    label.classList.remove('btn-success', 'btn-danger', 'btn-secondary'); // Remover clases de color
-                    // Restaurar clases outline si es necesario, o manejar con más granularidad
-                    if (!label.classList.contains('btn-outline-success') && !label.classList.contains('btn-outline-danger') && !label.classList.contains('btn-outline-secondary')) {
-                         // Aquí se puede añadir lógica para restaurar outlines si no están presentes
-                    }
+                    label.classList.remove('btn-success', 'btn-danger', 'btn-secondary');
                 });
-                
-                // Añadir clase de color al label del radio seleccionado
                 const label = buttonGroup.querySelector(`label[for="${radioInput.id}"]`);
                 if (label) {
-                    // Remover clases outline y añadir clases de color
                     label.classList.remove('btn-outline-success', 'btn-outline-danger', 'btn-outline-secondary');
                     switch (radioInput.value) {
-                        case 'OK':
-                            label.classList.add('btn-success');
-                            break;
-                        case 'NOK':
-                            label.classList.add('btn-danger');
-                            break;
-                        case 'NA':
-                            label.classList.add('btn-secondary');
-                            break;
+                        case 'OK': label.classList.add('btn-success'); break;
+                        case 'NOK': label.classList.add('btn-danger'); break;
+                        case 'NA': label.classList.add('btn-secondary'); break;
                     }
                 }
             }
 
-
-            // Inicializar estilos al cargar la página para todos los selects
             document.querySelectorAll('select[name^="controlEntregable-"], select[name^="score-"]').forEach(select => {
                 applySelectStyle(select);
                 select.addEventListener('change', () => applySelectStyle(select));
             });
 
-            // Inicializar estilos al cargar la página para todos los radio buttons
             document.querySelectorAll('input[type="radio"][name^="estado-"]').forEach(radio => {
-                if (radio.checked) {
-                    applyRadioStyle(radio);
-                }
+                if (radio.checked) applyRadioStyle(radio);
                 radio.addEventListener('change', () => applyRadioStyle(radio));
+            });
+        });
+    </script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            document.querySelectorAll('.form-evidencia-ajax').forEach(form => {
+                form.addEventListener('submit', function(e) {
+                    e.preventDefault(); 
+                    
+                    let url = this.getAttribute('action'); 
+                    let itemId = this.getAttribute('data-item-id'); // Obtenemos el ID del entregable
+                    let formData = new FormData(this);     
+                    let btnSubmit = this.querySelector('.btn-subir');
+                    let originalText = btnSubmit.innerHTML;
+                    
+                    // Contenedores visuales
+                    let alertaDiv = document.getElementById('alerta-' + itemId);
+                    let listaUl = document.getElementById('lista-' + itemId);
+                    let msgVacio = document.getElementById('msg-vacio-' + itemId);
+                    
+                    btnSubmit.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span> Subiendo...';
+                    btnSubmit.disabled = true;
+
+                    fetch(url, {
+                        method: 'POST',
+                        body: formData
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if(data.exito) {
+                            // 1. Mostrar Alerta Elegante de Bootstrap
+                            alertaDiv.innerHTML = `
+                                <div class="alert alert-success alert-dismissible fade show small py-2 shadow-sm" role="alert">
+                                    <i class="bi bi-check-circle-fill me-2"></i> ${data.mensaje}
+                                    <button type="button" class="btn-close py-2" data-bs-dismiss="alert" aria-label="Close"></button>
+                                </div>
+                            `;
+                            
+                            // 2. Ocultar el texto "No hay evidencias..." si existía
+                            if(msgVacio) msgVacio.style.display = 'none';
+
+                            // 3. Agregar el nuevo archivo a la lista visualmente
+                            let nombreArchivo = formData.get('archivo').name;
+                            let nuevoLi = document.createElement('li');
+                            nuevoLi.className = 'list-group-item d-flex justify-content-between align-items-center px-0 bg-transparent border-bottom-dashed fadeIn-animation';
+                            nuevoLi.innerHTML = `
+                                <div class="d-flex align-items-center text-truncate pe-3">
+                                    <i class="bi bi-file-earmark-check-fill text-success fs-5 me-2"></i>
+                                    <span class="text-truncate fw-bold text-dark">${nombreArchivo}</span>
+                                </div>
+                                <div class="d-flex gap-2">
+                                    <button type="button" class="btn btn-sm btn-outline-success border-0"><i class="bi bi-cloud-check"></i></button>
+                                </div>
+                            `;
+                            listaUl.appendChild(nuevoLi);
+
+                            this.reset(); // Limpia el input del archivo
+                        } else {
+                            // Alerta de Error
+                            alertaDiv.innerHTML = `
+                                <div class="alert alert-danger alert-dismissible fade show small py-2" role="alert">
+                                    <i class="bi bi-exclamation-triangle-fill me-2"></i> ${data.mensaje}
+                                    <button type="button" class="btn-close py-2" data-bs-dismiss="alert" aria-label="Close"></button>
+                                </div>
+                            `;
+                        }
+                    })
+                    .catch(error => {
+                        alertaDiv.innerHTML = `
+                            <div class="alert alert-danger alert-dismissible fade show small py-2" role="alert">
+                                <i class="bi bi-wifi-off me-2"></i> Error de conexión con el servidor.
+                                <button type="button" class="btn-close py-2" data-bs-dismiss="alert" aria-label="Close"></button>
+                            </div>
+                        `;
+                    })
+                    .finally(() => {
+                        btnSubmit.innerHTML = originalText;
+                        btnSubmit.disabled = false;
+                        
+                        // Ocultar la alerta de éxito automáticamente después de 4 segundos
+                        setTimeout(() => {
+                            let alertElement = alertaDiv.querySelector('.alert-success');
+                            if(alertElement) {
+                                let bsAlert = new bootstrap.Alert(alertElement);
+                                bsAlert.close();
+                            }
+                        }, 4000);
+                    });
+                });
             });
         });
     </script>

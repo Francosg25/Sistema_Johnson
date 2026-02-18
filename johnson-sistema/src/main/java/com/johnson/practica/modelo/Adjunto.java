@@ -36,4 +36,5 @@ public class Adjunto {
     private ElementoChecklist elementoChecklist;
 
     private LocalDateTime subidoEn = LocalDateTime.now();
+    
 }

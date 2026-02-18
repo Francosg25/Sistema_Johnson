@@ -1,6 +1,7 @@
 package com.johnson.practica.servicio;
 
 import com.johnson.practica.dto.ReporteProgreso;
+import com.johnson.practica.dto.ReporteEstadoGlobal; // Importar el nuevo DTO
 import com.johnson.practica.modelo.ElementoChecklist;
 import com.johnson.practica.modelo.Proyecto;
 import com.johnson.practica.repositorio.ElementoChecklistRepositorio;
@@ -12,7 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Map;
-import java.util.ArrayList; // Added import
+import java.util.ArrayList;
 import java.util.HashMap;
 
 @Service
@@ -22,7 +23,7 @@ public class ChecklistServicio {
     private ElementoChecklistRepositorio repositorio;
 
     @Autowired
-    private ProyectoRepositorio proyectoRepositorio; // Added autowired field
+    private ProyectoRepositorio proyectoRepositorio; 
 
     // 1. Obtiene solo los HITOS (Programa APQP - Fase 0)
     @Transactional(readOnly = true)
@@ -133,13 +134,15 @@ public class ChecklistServicio {
         List<ReporteProgreso> reporte = new ArrayList<>();
 
         for (Proyecto p : proyectos) {
-            List<ElementoChecklist> items = repositorio.findByProyecto_IdAndFaseStartingWith(p.getId(), "");
-
-            int total = items.size();
+            List<ElementoChecklist> items = repositorio.findByProyecto_IdAndFaseStartingWithOrderByCodigoAsc(p.getId(), "0");
+            int total = items.size(); 
             int ok = 0;
 
             for (ElementoChecklist item : items) {
-                if (!"PENDING".equals(item.getEstado())) { // Count items that are not PENDING as 'completed'
+                String score = item.getScore(); // Usamos el campo 'score' según lo especificado
+            
+                // Contamos como avance si el score es "OK" 
+                if ("OK".equalsIgnoreCase(score)){
                     ok++;
                 }
             }
@@ -148,10 +151,64 @@ public class ChecklistServicio {
             if (total > 0) {
                 porcentaje = ((double) ok / total) * 100;
             }
+        
+            // Redondeo a 1 decimal
             porcentaje = Math.round(porcentaje * 10.0) / 10.0;
 
+            // Creamos el objeto DTO para la vista
             reporte.add(new ReporteProgreso(p.getNombre(), total, ok, porcentaje));
         }
+        return reporte;
+    }
+
+    public ReporteEstadoGlobal generarReporteEstadoGlobal() {
+        List<Proyecto> proyectos = proyectoRepositorio.findAll();
+        
+        int totalRelevantDeliverables = 0;
+        int onTimeCount = 0;
+        int needsActionCount = 0;
+        int lateCount = 0;
+        int decisionCount = 0;
+
+        for (Proyecto p : proyectos) {
+            List<ElementoChecklist> items = repositorio.findByProyecto_IdAndFaseStartingWithOrderByCodigoAsc(p.getId(), "0");
+            
+            for (ElementoChecklist item : items) {
+                totalRelevantDeliverables++;
+                String controlEntregable = item.getControlEntregable();
+                
+                if (controlEntregable != null && !controlEntregable.trim().isEmpty()) {
+                    // Convertimos a mayúsculas para evitar problemas de minúsculas/mayúsculas
+                    String estadoControl = controlEntregable.toUpperCase().trim();
+                    
+                    // Usamos contains() para que sea flexible (ej. detecta "CLOSED ON TIME" y "ON TIME")
+                    if (estadoControl.contains("ON TIME")) {
+                        onTimeCount++;
+                    } else if (estadoControl.contains("NEEDS ACTION")) {
+                        needsActionCount++;
+                    } else if (estadoControl.contains("LATE")) {
+                        lateCount++;
+                    } else if (estadoControl.contains("DECISION")) {
+                        decisionCount++;
+                    }
+                }
+            }
+        }
+
+        ReporteEstadoGlobal reporte = new ReporteEstadoGlobal();
+
+        if (totalRelevantDeliverables > 0) {
+            reporte.setOnTimePercentage(Math.round(((double) onTimeCount / totalRelevantDeliverables) * 10000.0) / 100.0);
+            reporte.setLatePercentage(Math.round(((double) lateCount / totalRelevantDeliverables) * 10000.0) / 100.0);
+            reporte.setNeedsActionPercentage(Math.round(((double) needsActionCount / totalRelevantDeliverables) * 10000.0) / 100.0);
+            reporte.setDecisionPercentage(Math.round(((double) decisionCount / totalRelevantDeliverables) * 10000.0) / 100.0);
+        } else {
+            reporte.setOnTimePercentage(0.0);
+            reporte.setLatePercentage(0.0);
+            reporte.setNeedsActionPercentage(0.0);
+            reporte.setDecisionPercentage(0.0);
+        }
+        
         return reporte;
     }
 }

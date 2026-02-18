@@ -3,6 +3,7 @@ package com.johnson.practica.modelo;
 import jakarta.persistence.*;
 import lombok.Data;
 import java.time.LocalDate;
+import java.util.List;
 
 @Entity
 @Data
@@ -34,9 +35,14 @@ public class ElementoChecklist {
     private String estado;      // OK, NOK, NA
     private String comentario;
     private String score;       // Puntuación
-    private String controlEntregable; // Closed on time, etc.
+    private String controlEntregable; 
     
     // ESTOS SON LOS QUE FALTABAN Y CAUSABAN EL ERROR:
     private LocalDate fechaPlan;
     private LocalDate fechaReal;
+
+
+    @OneToMany(mappedBy = "elementoChecklist")
+    private List<Adjunto> adjuntos;
+
 }

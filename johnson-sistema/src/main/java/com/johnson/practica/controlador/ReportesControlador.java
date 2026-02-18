@@ -1,5 +1,6 @@
 package com.johnson.practica.controlador;
 
+import com.johnson.practica.dto.ReporteEstadoGlobal; // Importar el nuevo DTO
 import com.johnson.practica.servicio.ChecklistServicio;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -16,11 +17,13 @@ public class ReportesControlador {
 
     @GetMapping
     public String verReportes(Model model) {
-        // Obtenemos los datos calculados
+        // Obtenemos los datos calculados para el reporte global por proyecto
         var datos = checklistServicio.generarReporteGlobal();
-        
-        // Los mandamos a la vista
         model.addAttribute("datosGrafica", datos);
+        
+        // Obtenemos los datos calculados para el reporte global por estado
+        ReporteEstadoGlobal datosEstadoGlobal = checklistServicio.generarReporteEstadoGlobal();
+        model.addAttribute("datosEstadoGlobal", datosEstadoGlobal);
         
         return "reportes"; // Nombre del archivo HTML
     }

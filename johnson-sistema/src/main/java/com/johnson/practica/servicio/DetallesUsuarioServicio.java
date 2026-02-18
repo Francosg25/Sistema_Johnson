@@ -1,4 +1,4 @@
-package com.johnson.practica.seguridad;
+package com.johnson.practica.servicio;
 
 import com.johnson.practica.modelo.Usuario;
 import com.johnson.practica.repositorio.UsuarioRepositorio;

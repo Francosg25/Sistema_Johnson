@@ -1,0 +1,140 @@
+package com.johnson.practica.controlador;
+
+import com.johnson.practica.modelo.Adjunto;
+import com.johnson.practica.modelo.ElementoChecklist;
+import com.johnson.practica.repositorio.AdjuntoRepositorio;
+import com.johnson.practica.repositorio.ElementoChecklistRepositorio;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.time.LocalDateTime;
+import java.util.HashMap;
+import java.util.Map;
+
+@Controller
+@RequestMapping("/evidencias")
+public class EvidenciaControlador {
+
+    @Autowired
+    private ElementoChecklistRepositorio elementoRepositorio;
+
+    @Autowired
+    private AdjuntoRepositorio adjuntoRepositorio;
+
+    // Carpeta donde se guardarán los archivos físicamente
+    private static final String UPLOAD_DIR = "uploads/";
+
+    @PostMapping("/subir/{itemId}")
+    public String subirEvidencia(@PathVariable Long itemId, 
+                                 @RequestParam("archivo") MultipartFile archivo,
+                                 RedirectAttributes redirectAttributes) {
+        
+        // 1. Buscar a qué entregable pertenece este archivo
+        ElementoChecklist item = elementoRepositorio.findById(itemId).orElse(null);
+        if (item == null) {
+            return "redirect:/"; // Si no existe, regresamos al inicio
+        }
+
+        Long proyectoId = item.getProyecto().getId();
+
+        // 2. Validar que no envíen un archivo vacío
+        if (archivo.isEmpty()) {
+            redirectAttributes.addFlashAttribute("error", "Por favor selecciona un archivo válido.");
+            return "redirect:/proyectos/checklist/" + proyectoId;
+        }
+
+        try {
+            // 3. Crear la carpeta 'uploads' si es la primera vez que subimos algo
+            File directorio = new File(UPLOAD_DIR);
+            if (!directorio.exists()) {
+                directorio.mkdirs();
+            }
+
+            // 4. Guardar el archivo físicamente en el servidor
+            // Le ponemos los milisegundos al nombre para que no se sobreescriban archivos con el mismo nombre
+            String nombreArchivoReal = System.currentTimeMillis() + "_" + archivo.getOriginalFilename();
+            Path rutaDestino = Paths.get(UPLOAD_DIR + nombreArchivoReal);
+            Files.write(rutaDestino, archivo.getBytes());
+
+            // 5. Guardar el registro en la Base de Datos (PostgreSQL)
+            Adjunto adjunto = new Adjunto();
+            adjunto.setNombreArchivo(archivo.getOriginalFilename());
+            adjunto.setTipoContenido(archivo.getContentType());
+            adjunto.setRuta(rutaDestino.toString());
+            adjunto.setElementoChecklist(item);
+            adjunto.setProyecto(item.getProyecto());
+            adjunto.setSubidoEn(LocalDateTime.now());
+            
+            adjuntoRepositorio.save(adjunto);
+
+        } catch (IOException e) {
+            e.printStackTrace();
+            redirectAttributes.addFlashAttribute("error", "Error interno al guardar el archivo.");
+        }
+
+        // 6. Recargar la página del checklist para que el usuario siga trabajando
+        return "redirect:/proyectos/checklist/" + proyectoId;
+    }
+
+
+    // Importa estas librerías arriba si no las tienes:
+    // import org.springframework.http.ResponseEntity;
+    // import java.util.HashMap;
+    // import java.util.Map;
+
+    @PostMapping("/subir-ajax/{itemId}")
+    @ResponseBody
+    public ResponseEntity<Map<String, Object>> subirEvidenciaAjax(
+            @PathVariable Long itemId, 
+            @RequestParam("archivo") MultipartFile archivo) {
+        
+        Map<String, Object> response = new HashMap<>();
+        
+        ElementoChecklist item = elementoRepositorio.findById(itemId).orElse(null);
+        if (item == null || archivo.isEmpty()) {
+            response.put("exito", false);
+            response.put("mensaje", "Error: Archivo o entregable no válido");
+            return ResponseEntity.badRequest().body(response);
+        }
+
+        try {
+            File directorio = new File(UPLOAD_DIR);
+            if (!directorio.exists()) directorio.mkdirs();
+
+            String nombreArchivoReal = System.currentTimeMillis() + "_" + archivo.getOriginalFilename();
+            Path rutaDestino = Paths.get(UPLOAD_DIR + nombreArchivoReal);
+            Files.write(rutaDestino, archivo.getBytes());
+
+            Adjunto adjunto = new Adjunto();
+            adjunto.setNombreArchivo(archivo.getOriginalFilename());
+            adjunto.setTipoContenido(archivo.getContentType());
+            adjunto.setRuta(rutaDestino.toString());
+            adjunto.setElementoChecklist(item);
+            adjunto.setProyecto(item.getProyecto());
+            adjunto.setSubidoEn(LocalDateTime.now());
+            
+            adjuntoRepositorio.save(adjunto);
+
+            response.put("exito", true);
+            response.put("mensaje", "Archivo guardado con éxito");
+            return ResponseEntity.ok(response);
+
+        } catch (IOException e) {
+            response.put("exito", false);
+            response.put("mensaje", "Error interno al guardar");
+            return ResponseEntity.status(500).body(response);
+        }
+    }
+
+
+
+}
