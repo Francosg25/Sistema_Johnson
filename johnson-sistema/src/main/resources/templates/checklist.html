@@ -110,10 +110,23 @@
                                                             <option th:selected="${item.score == 'N/A'}" value="N/A">N/A</option>
                                                         </select>
                                                     </td>
-                                                    <td rowspan="2" style="vertical-align: middle;">
-                                                        <textarea class="form-control form-control-sm border-0 bg-light-subtle" rows="2" 
-                                                                  th:name="'comentario-' + ${item.id}"
-                                                                  th:text="${item.comentario}" placeholder="..."></textarea>
+                                                    
+                                                    <td rowspan="2" style="max-width: 250px; vertical-align: middle;">
+                                                        <div class="d-flex justify-content-between align-items-center bg-white rounded p-1 border shadow-sm"
+                                                             style="cursor: pointer;" th:onclick="abrirEditorComentarios([[${item.id}]], [[${item.codigo}]])">
+                                                            <div class="text-truncate small ms-2 w-100" th:id="'preview-comentario-' + ${item.id}"
+                                                                 th:classappend="${item.comentario == null or item.comentario.isEmpty() ? 'text-muted fst-italic' : 'text-dark fw-bold'}"
+                                                                 th:text="${item.comentario == null or item.comentario.isEmpty() ? 'Sin observaciones...' : item.comentario}">
+                                                            </div>
+                                                            <button type="button" th:id="'btn-comentario-' + ${item.id}" 
+                                                                    class="btn btn-sm border-0 rounded-circle ms-1 flex-shrink-0"
+                                                                    th:classappend="${item.comentario == null or item.comentario.isEmpty() ? 'btn-light text-secondary' : 'bg-primary-subtle text-primary'}"
+                                                                    title="Ver/Editar Observaciones">
+                                                                <i th:id="'btn-icon-comentario-' + ${item.id}" 
+                                                                   th:class="${item.comentario == null or item.comentario.isEmpty() ? 'bi bi-pencil' : 'bi bi-chat-text-fill'}"></i>
+                                                            </button>
+                                                        </div>
+                                                        <textarea class="d-none" th:name="'comentario-' + ${item.id}" th:id="'real-comentario-' + ${item.id}" th:text="${item.comentario}"></textarea>
                                                     </td>
                                                     
                                                     <td class="text-center" rowspan="2" style="vertical-align: middle;">
@@ -176,7 +189,25 @@
                                                             <label class="btn btn-outline-secondary" th:for="'na_'+${item.id}">NA</label>
                                                         </div>
                                                     </td>
-                                                    <td><textarea class="form-control form-control-sm border-0 bg-light-subtle" rows="1" th:name="'comentario-' + ${item.id}" th:text="${item.comentario}"></textarea></td>
+                                                    
+                                                    <td style="max-width: 250px; vertical-align: middle;">
+                                                        <div class="d-flex justify-content-between align-items-center bg-white rounded p-1 border shadow-sm"
+                                                             style="cursor: pointer;" th:onclick="abrirEditorComentarios([[${item.id}]], [[${item.codigo}]])">
+                                                            <div class="text-truncate small ms-2 w-100" th:id="'preview-comentario-' + ${item.id}"
+                                                                 th:classappend="${item.comentario == null or item.comentario.isEmpty() ? 'text-muted fst-italic' : 'text-dark fw-bold'}"
+                                                                 th:text="${item.comentario == null or item.comentario.isEmpty() ? 'Sin observaciones...' : item.comentario}">
+                                                            </div>
+                                                            <button type="button" th:id="'btn-comentario-' + ${item.id}" 
+                                                                    class="btn btn-sm border-0 rounded-circle ms-1 flex-shrink-0"
+                                                                    th:classappend="${item.comentario == null or item.comentario.isEmpty() ? 'btn-light text-secondary' : 'bg-primary-subtle text-primary'}"
+                                                                    title="Ver/Editar Observaciones">
+                                                                <i th:id="'btn-icon-comentario-' + ${item.id}" 
+                                                                   th:class="${item.comentario == null or item.comentario.isEmpty() ? 'bi bi-pencil' : 'bi bi-chat-text-fill'}"></i>
+                                                            </button>
+                                                        </div>
+                                                        <textarea class="d-none" th:name="'comentario-' + ${item.id}" th:id="'real-comentario-' + ${item.id}" th:text="${item.comentario}"></textarea>
+                                                    </td>
+
                                                     <td class="text-center small text-primary fw-bold" th:text="${item.champion}"></td>
                                                     <td class="text-center"><input type="date" class="form-control form-control-sm border-0 text-center p-0" th:name="'fechaReal-' + ${item.id}" th:value="${item.fechaReal}"></td>
                                                     
@@ -231,7 +262,24 @@
                                                     <td class="text-center"><input class="form-check-input" type="radio" th:name="'estado-' + ${item.id}" value="OK" th:checked="${item.estado == 'OK'}"></td>
                                                     <td class="text-center"><input class="form-check-input" type="radio" th:name="'estado-' + ${item.id}" value="NOK" th:checked="${item.estado == 'NOK'}"></td>
                                                     <td class="fw-bold" th:text="${item.nombre}"></td>
-                                                    <td><textarea class="form-control form-control-sm border-0 bg-light-subtle" rows="1" th:name="'comentario-' + ${item.id}" th:text="${item.comentario}"></textarea></td>
+                                                    
+                                                    <td style="max-width: 250px; vertical-align: middle;">
+                                                        <div class="d-flex justify-content-between align-items-center bg-white rounded p-1 border shadow-sm"
+                                                             style="cursor: pointer;" th:onclick="abrirEditorComentarios([[${item.id}]], [[${item.codigo}]])">
+                                                            <div class="text-truncate small ms-2 w-100" th:id="'preview-comentario-' + ${item.id}"
+                                                                 th:classappend="${item.comentario == null or item.comentario.isEmpty() ? 'text-muted fst-italic' : 'text-dark fw-bold'}"
+                                                                 th:text="${item.comentario == null or item.comentario.isEmpty() ? 'Sin observaciones...' : item.comentario}">
+                                                            </div>
+                                                            <button type="button" th:id="'btn-comentario-' + ${item.id}" 
+                                                                    class="btn btn-sm border-0 rounded-circle ms-1 flex-shrink-0"
+                                                                    th:classappend="${item.comentario == null or item.comentario.isEmpty() ? 'btn-light text-secondary' : 'bg-primary-subtle text-primary'}"
+                                                                    title="Ver/Editar Observaciones">
+                                                                <i th:id="'btn-icon-comentario-' + ${item.id}" 
+                                                                   th:class="${item.comentario == null or item.comentario.isEmpty() ? 'bi bi-pencil' : 'bi bi-chat-text-fill'}"></i>
+                                                            </button>
+                                                        </div>
+                                                        <textarea class="d-none" th:name="'comentario-' + ${item.id}" th:id="'real-comentario-' + ${item.id}" th:text="${item.comentario}"></textarea>
+                                                    </td>
                                                 </tr>
                                             </tbody>
                                         </table>
@@ -252,7 +300,24 @@
                                                     <td><input type="date" class="form-control form-control-sm border-0 text-center" th:name="'fechaReal-' + ${item.id}" th:value="${item.fechaReal}"></td>
                                                     <td><strong th:text="${item.nombre.split(':')[0]}"></strong></td>
                                                     <td th:text="${item.nombre.split(':').length > 1 ? item.nombre.split(':')[1] : ''}"></td>
-                                                    <td><textarea class="form-control form-control-sm border-0 bg-light-subtle" rows="1" th:name="'comentario-' + ${item.id}" th:text="${item.comentario}"></textarea></td>
+                                                    
+                                                    <td style="max-width: 250px; vertical-align: middle;">
+                                                        <div class="d-flex justify-content-between align-items-center bg-white rounded p-1 border shadow-sm"
+                                                             style="cursor: pointer;" th:onclick="abrirEditorComentarios([[${item.id}]], [[${item.codigo}]])">
+                                                            <div class="text-truncate small ms-2 w-100" th:id="'preview-comentario-' + ${item.id}"
+                                                                 th:classappend="${item.comentario == null or item.comentario.isEmpty() ? 'text-muted fst-italic' : 'text-dark fw-bold'}"
+                                                                 th:text="${item.comentario == null or item.comentario.isEmpty() ? 'Sin observaciones...' : item.comentario}">
+                                                            </div>
+                                                            <button type="button" th:id="'btn-comentario-' + ${item.id}" 
+                                                                    class="btn btn-sm border-0 rounded-circle ms-1 flex-shrink-0"
+                                                                    th:classappend="${item.comentario == null or item.comentario.isEmpty() ? 'btn-light text-secondary' : 'bg-primary-subtle text-primary'}"
+                                                                    title="Ver/Editar Observaciones">
+                                                                <i th:id="'btn-icon-comentario-' + ${item.id}" 
+                                                                   th:class="${item.comentario == null or item.comentario.isEmpty() ? 'bi bi-pencil' : 'bi bi-chat-text-fill'}"></i>
+                                                            </button>
+                                                        </div>
+                                                        <textarea class="d-none" th:name="'comentario-' + ${item.id}" th:id="'real-comentario-' + ${item.id}" th:text="${item.comentario}"></textarea>
+                                                    </td>
                                                 </tr>
                                             </tbody>
                                         </table>
@@ -289,7 +354,9 @@
                             </div>
                         </div>
                     </div>
-                </form> <th:block th:each="fase : ${fases}">
+                </form> 
+                
+                <th:block th:each="fase : ${fases}">
                     <th:block th:each="item : ${fase.items}">
                         <div class="modal fade" th:id="'modalEvidencia_' + ${item.id}" tabindex="-1" aria-hidden="true">
                             <div class="modal-dialog modal-dialog-centered">
@@ -304,35 +371,32 @@
                                         <button type="button" class="btn-close shadow-none" data-bs-dismiss="modal" aria-label="Close"></button>
                                     </div>
                                     <div class="modal-body pt-4">
-                             <div th:id="'alerta-' + ${item.id}"></div>
-                                    <form th:action="@{'/evidencias/subir-ajax/' + ${item.id}}" th:data-item-id="${item.id}" method="post" enctype="multipart/form-data" class="mb-4 form-evidencia-ajax">
-                            <div class="p-3 border rounded bg-white text-center border-primary border-opacity-25" style="border-style: dashed !important;">
-                                        <i class="bi bi-cloud-upload fs-1 text-primary mb-2 d-block"></i>
-                                        <label th:for="'archivo_' + ${item.id}" class="form-label fw-bold mb-1">Selecciona un archivo</label>
-                                        <p class="text-muted small mb-3">PDF, Excel, Word (Max 15MB)</p>
-                                        <input class="form-control form-control-sm" type="file" th:id="'archivo_' + ${item.id}" name="archivo" required>
-                                        <button type="submit" class="btn btn-primary btn-sm w-100 mt-3 fw-bold shadow-sm btn-subir">Subir Archivo</button>
-                                    </div>
-                            </form>
+                                        <div th:id="'alerta-' + ${item.id}"></div>
+                                        <form th:action="@{'/evidencias/subir-ajax/' + ${item.id}}" th:data-item-id="${item.id}" method="post" enctype="multipart/form-data" class="mb-4 form-evidencia-ajax">
+                                            <div class="p-3 border rounded bg-white text-center border-primary border-opacity-25" style="border-style: dashed !important;">
+                                                <i class="bi bi-cloud-upload fs-1 text-primary mb-2 d-block"></i>
+                                                <label th:for="'archivo_' + ${item.id}" class="form-label fw-bold mb-1">Selecciona un archivo</label>
+                                                <p class="text-muted small mb-3">PDF, Excel, Word (Max 15MB)</p>
+                                                <input class="form-control form-control-sm" type="file" th:id="'archivo_' + ${item.id}" name="archivo" required>
+                                                <button type="submit" class="btn btn-primary btn-sm w-100 mt-3 fw-bold shadow-sm btn-subir">Subir Archivo</button>
+                                            </div>
+                                        </form>
 
-                            <h6 class="fw-bold small mb-3 text-secondary border-bottom pb-2">ARCHIVOS ADJUNTOS</h6>
-    
+                                        <h6 class="fw-bold small mb-3 text-secondary border-bottom pb-2">ARCHIVOS ADJUNTOS</h6>
                                         <ul class="list-group list-group-flush small" th:id="'lista-' + ${item.id}">
-        
-                                        <li th:if="${item.adjuntos == null or item.adjuntos.isEmpty()}" th:id="'msg-vacio-' + ${item.id}" class="list-group-item d-flex justify-content-between align-items-center px-0 bg-transparent border-bottom-dashed text-muted fst-italic">
-                                           No hay evidencias subidas aún.
-                                        </li>
-
-                                    <li th:each="adj : ${item.adjuntos}" class="list-group-item d-flex justify-content-between align-items-center px-0 bg-transparent border-bottom-dashed">
-                                        <div class="d-flex align-items-center text-truncate pe-3">
-                                                <i class="bi bi-file-earmark-check-fill text-success fs-5 me-2"></i>
-                                                <span class="text-truncate fw-bold text-dark" th:text="${adj.nombreArchivo}"></span>
-                                            </div>
-                                        <div class="d-flex gap-2">
-                                    <button type="button" class="btn btn-sm btn-outline-secondary border-0" title="Subido"><i class="bi bi-check2"></i></button>
-                                            </div>
-                                        </li>
-                                       </ul>
+                                            <li th:if="${item.adjuntos == null or item.adjuntos.isEmpty()}" th:id="'msg-vacio-' + ${item.id}" class="list-group-item d-flex justify-content-between align-items-center px-0 bg-transparent border-bottom-dashed text-muted fst-italic">
+                                                No hay evidencias subidas aún.
+                                            </li>
+                                            <li th:each="adj : ${item.adjuntos}" class="list-group-item d-flex justify-content-between align-items-center px-0 bg-transparent border-bottom-dashed">
+                                                <div class="d-flex align-items-center text-truncate pe-3">
+                                                    <i class="bi bi-file-earmark-check-fill text-success fs-5 me-2"></i>
+                                                    <span class="text-truncate fw-bold text-dark" th:text="${adj.nombreArchivo}"></span>
+                                                </div>
+                                                <div class="d-flex gap-2">
+                                                    <button type="button" class="btn btn-sm btn-outline-secondary border-0" title="Subido"><i class="bi bi-check2"></i></button>
+                                                </div>
+                                            </li>
+                                        </ul>
                                     </div>
                                 </div>
                             </div>
@@ -340,13 +404,41 @@
                     </th:block>
                 </th:block>
 
+                <div class="modal fade" id="modalEditorComentarios" tabindex="-1" aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered modal-lg">
+                        <div class="modal-content shadow-lg border-0">
+                            <div class="modal-header bg-light border-bottom-0 pb-3">
+                                <h5 class="modal-title fw-bold text-dark">
+                                    <i class="bi bi-card-text text-primary me-2"></i>Observaciones / Remarks
+                                    <span id="editor-codigo" class="badge bg-secondary ms-2 fw-normal"></span>
+                                </h5>
+                                <button type="button" class="btn-close shadow-none" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body pt-0 bg-light">
+                                <div class="p-3 bg-white rounded border">
+                                    <p class="small text-muted mb-2"><i class="bi bi-info-circle me-1"></i> Puedes usar múltiples líneas, listas y fechas.</p>
+                                    <input type="hidden" id="editor-item-id">
+                                    <textarea id="editor-textarea" class="form-control shadow-none border-secondary-subtle" rows="8" 
+                                              placeholder="Ejemplo:&#10;1. Actualizar formato oficial - 7 Jun&#10;2. RFQ cotización Mauro..."></textarea>
+                                </div>
+                            </div>
+                            <div class="modal-footer bg-light border-top-0">
+                                <button type="button" class="btn btn-outline-secondary btn-sm fw-bold px-3" data-bs-dismiss="modal">Cancelar</button>
+                                <button type="button" class="btn btn-primary btn-sm fw-bold px-4 shadow-sm" onclick="guardarComentarioModal()">
+                                    <i class="bi bi-check2-circle me-1"></i> Aplicar al Checklist
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
             </main>
         </div>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
     <script>
-        // Lógica para recordar y activar la última pestaña seleccionada
         document.addEventListener('DOMContentLoaded', function() {
             const apqpTabs = document.getElementById('apqpTabs');
             if (apqpTabs) {
@@ -384,6 +476,7 @@
             }
         });
     </script>
+    
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             function applySelectStyle(selectElement) {
@@ -443,12 +536,11 @@
                     e.preventDefault(); 
                     
                     let url = this.getAttribute('action'); 
-                    let itemId = this.getAttribute('data-item-id'); // Obtenemos el ID del entregable
+                    let itemId = this.getAttribute('data-item-id'); 
                     let formData = new FormData(this);     
                     let btnSubmit = this.querySelector('.btn-subir');
                     let originalText = btnSubmit.innerHTML;
                     
-                    // Contenedores visuales
                     let alertaDiv = document.getElementById('alerta-' + itemId);
                     let listaUl = document.getElementById('lista-' + itemId);
                     let msgVacio = document.getElementById('msg-vacio-' + itemId);
@@ -463,7 +555,6 @@
                     .then(response => response.json())
                     .then(data => {
                         if(data.exito) {
-                            // 1. Mostrar Alerta Elegante de Bootstrap
                             alertaDiv.innerHTML = `
                                 <div class="alert alert-success alert-dismissible fade show small py-2 shadow-sm" role="alert">
                                     <i class="bi bi-check-circle-fill me-2"></i> ${data.mensaje}
@@ -471,10 +562,8 @@
                                 </div>
                             `;
                             
-                            // 2. Ocultar el texto "No hay evidencias..." si existía
                             if(msgVacio) msgVacio.style.display = 'none';
 
-                            // 3. Agregar el nuevo archivo a la lista visualmente
                             let nombreArchivo = formData.get('archivo').name;
                             let nuevoLi = document.createElement('li');
                             nuevoLi.className = 'list-group-item d-flex justify-content-between align-items-center px-0 bg-transparent border-bottom-dashed fadeIn-animation';
@@ -489,9 +578,8 @@
                             `;
                             listaUl.appendChild(nuevoLi);
 
-                            this.reset(); // Limpia el input del archivo
+                            this.reset(); 
                         } else {
-                            // Alerta de Error
                             alertaDiv.innerHTML = `
                                 <div class="alert alert-danger alert-dismissible fade show small py-2" role="alert">
                                     <i class="bi bi-exclamation-triangle-fill me-2"></i> ${data.mensaje}
@@ -512,7 +600,6 @@
                         btnSubmit.innerHTML = originalText;
                         btnSubmit.disabled = false;
                         
-                        // Ocultar la alerta de éxito automáticamente después de 4 segundos
                         setTimeout(() => {
                             let alertElement = alertaDiv.querySelector('.alert-success');
                             if(alertElement) {
@@ -524,6 +611,46 @@
                 });
             });
         });
+    </script>
+
+    <script>
+        function abrirEditorComentarios(id, codigo) {
+            document.getElementById('editor-item-id').value = id;
+            document.getElementById('editor-codigo').innerText = codigo || 'N/A';
+            
+            const textoActual = document.getElementById('real-comentario-' + id).value;
+            document.getElementById('editor-textarea').value = textoActual;
+
+            const modal = new bootstrap.Modal(document.getElementById('modalEditorComentarios'));
+            modal.show();
+        }
+
+        function guardarComentarioModal() {
+            const id = document.getElementById('editor-item-id').value;
+            const nuevoTexto = document.getElementById('editor-textarea').value;
+
+            document.getElementById('real-comentario-' + id).value = nuevoTexto;
+
+            const previewEl = document.getElementById('preview-comentario-' + id);
+            const btnEl = document.getElementById('btn-comentario-' + id);
+            const btnIcon = document.getElementById('btn-icon-comentario-' + id);
+
+            if (nuevoTexto.trim() === '') {
+                previewEl.innerText = 'Sin observaciones...';
+                previewEl.className = 'text-truncate small ms-2 w-100 text-muted fst-italic';
+                btnEl.className = 'btn btn-sm btn-light text-secondary border-0 rounded-circle ms-1 flex-shrink-0';
+                btnIcon.className = 'bi bi-pencil';
+            } else {
+                previewEl.innerText = nuevoTexto.replace(/\n/g, ' / '); 
+                previewEl.className = 'text-truncate small ms-2 w-100 text-dark fw-bold';
+                btnEl.className = 'btn btn-sm bg-primary-subtle text-primary border-0 rounded-circle ms-1 flex-shrink-0';
+                btnIcon.className = 'bi bi-chat-text-fill';
+            }
+
+            const modalEl = document.getElementById('modalEditorComentarios');
+            const modal = bootstrap.Modal.getInstance(modalEl);
+            modal.hide();
+        }
     </script>
 </body>
 </html>
