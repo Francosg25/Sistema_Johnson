@@ -2,21 +2,20 @@
 FROM maven:3.8.5-openjdk-17 AS build
 WORKDIR /app
 
-# COPIAMOS TODO EL CONTEXTO
+# Copiamos todo el contenido de la raíz al contenedor
 COPY . .
 
-# CAMBIAMOS AL DIRECTORIO DONDE ESTÁ EL POM.XML
-# Según tus archivos, la carpeta es 'johnson-sistema'
+# Entramos a la carpeta donde está el pom.xml
 WORKDIR /app/johnson-sistema
 
-# Ejecutamos la compilación desde esa carpeta
+# Compilamos
 RUN mvn -B -DskipTests package
 
 # Etapa de ejecución
 FROM eclipse-temurin:17-jre
 WORKDIR /app
 
-# Copiamos el archivo .jar generado desde la carpeta target de la subcarpeta
+# Copiamos el .jar generado (ajustando la ruta de origen)
 COPY --from=build /app/johnson-sistema/target/*.jar app.jar
 
 EXPOSE 8081
