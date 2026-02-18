@@ -387,13 +387,19 @@
                                             <li th:if="${item.adjuntos == null or item.adjuntos.isEmpty()}" th:id="'msg-vacio-' + ${item.id}" class="list-group-item d-flex justify-content-between align-items-center px-0 bg-transparent border-bottom-dashed text-muted fst-italic">
                                                 No hay evidencias subidas aún.
                                             </li>
-                                            <li th:each="adj : ${item.adjuntos}" class="list-group-item d-flex justify-content-between align-items-center px-0 bg-transparent border-bottom-dashed">
-                                                <div class="d-flex align-items-center text-truncate pe-3">
-                                                    <i class="bi bi-file-earmark-check-fill text-success fs-5 me-2"></i>
-                                                    <span class="text-truncate fw-bold text-dark" th:text="${adj.nombreArchivo}"></span>
-                                                </div>
-                                                <div class="d-flex gap-2">
-                                                    <button type="button" class="btn btn-sm btn-outline-secondary border-0" title="Subido"><i class="bi bi-check2"></i></button>
+                                           <li th:each="adj : ${item.adjuntos}" class="list-group-item d-flex justify-content-between align-items-center px-0 bg-transparent border-bottom-dashed">
+                                        <div class="d-flex align-items-center text-truncate pe-3">
+                                                <i class="bi bi-file-earmark-check-fill text-success fs-5 me-2"></i>
+                                                <span class="text-truncate fw-bold text-dark" th:text="${adj.nombreArchivo}"></span>
+                                        </div>
+                                            <div class="d-flex gap-2">
+                                                        <a th:href="@{'/evidencias/descargar/' + ${adj.id}}" class="btn btn-sm btn-outline-primary border-0 rounded-circle shadow-sm" title="Descargar">
+                                                            <i class="bi bi-download"></i>
+                                                        </a>
+                                                    <button type="button" class="btn btn-sm btn-outline-danger border-0 rounded-circle shadow-sm" title="Eliminar" 
+                                                th:onclick="'eliminarEvidenciaAjax(' + ${adj.id} + ', this, ' + ${item.id} + ')'">
+                                            <i class="bi bi-trash"></i>
+                                                    </button>
                                                 </div>
                                             </li>
                                         </ul>
@@ -435,6 +441,22 @@
             </main>
         </div>
     </div>
+
+    <div class="modal fade" id="modalConfirmarEliminacion" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-sm">
+        <div class="modal-content border-0 shadow">
+            <div class="modal-body text-center p-4">
+                <i class="bi bi-exclamation-circle text-danger display-4 mb-3 d-block"></i>
+                <h6 class="fw-bold text-dark mb-2">¿Eliminar Evidencia?</h6>
+                <p class="text-muted small mb-4">El archivo se borrará permanentemente.</p>
+                <div class="d-flex justify-content-center gap-2">
+                    <button type="button" class="btn btn-light btn-sm px-3 border shadow-sm" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-danger btn-sm px-4 fw-bold shadow-sm" id="btnConfirmarEliminar">Eliminar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     
@@ -504,7 +526,7 @@
                 const buttonGroup = radioInput.closest('.btn-group');
                 if (!buttonGroup) return;
                 buttonGroup.querySelectorAll('label').forEach(label => {
-                    label.classList.remove('btn-success', 'btn-danger', 'btn-secondary');
+                    label.classList.remove('btn-success', 'btn-danger','btn-secondary');
                 });
                 const label = buttonGroup.querySelector(`label[for="${radioInput.id}"]`);
                 if (label) {
@@ -562,7 +584,10 @@
                                 </div>
                             `;
                             
-                            if(msgVacio) msgVacio.style.display = 'none';
+                            if(msgVacio) {
+                                msgVacio.classList.remove('d-flex');
+                                msgVacio.classList.add('d-none');
+                            }
 
                             let nombreArchivo = formData.get('archivo').name;
                             let nuevoLi = document.createElement('li');
@@ -573,7 +598,13 @@
                                     <span class="text-truncate fw-bold text-dark">${nombreArchivo}</span>
                                 </div>
                                 <div class="d-flex gap-2">
-                                    <button type="button" class="btn btn-sm btn-outline-success border-0"><i class="bi bi-cloud-check"></i></button>
+                                    <a href="/evidencias/descargar/${data.adjuntoId}" class="btn btn-sm btn-outline-primary border-0 rounded-circle shadow-sm" title="Descargar">
+                                        <i class="bi bi-download"></i>
+                                    </a>
+                                    <button type="button" class="btn btn-sm btn-outline-danger border-0 rounded-circle shadow-sm" title="Eliminar" 
+                                            onclick="eliminarEvidenciaAjax(${data.adjuntoId}, this, ${itemId})">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
                                 </div>
                             `;
                             listaUl.appendChild(nuevoLi);
@@ -591,7 +622,7 @@
                     .catch(error => {
                         alertaDiv.innerHTML = `
                             <div class="alert alert-danger alert-dismissible fade show small py-2" role="alert">
-                                <i class="bi bi-wifi-off me-2"></i> Error de conexión con el servidor.
+                                <i class="bi bi-wifi-off me-2"></i> Error de conexión.
                                 <button type="button" class="btn-close py-2" data-bs-dismiss="alert" aria-label="Close"></button>
                             </div>
                         `;
@@ -614,43 +645,70 @@
     </script>
 
     <script>
-        function abrirEditorComentarios(id, codigo) {
-            document.getElementById('editor-item-id').value = id;
-            document.getElementById('editor-codigo').innerText = codigo || 'N/A';
-            
-            const textoActual = document.getElementById('real-comentario-' + id).value;
-            document.getElementById('editor-textarea').value = textoActual;
+        // Variable global para manejar el modal de Bootstrap
+        let modalConfirmacionEliminar = null;
 
-            const modal = new bootstrap.Modal(document.getElementById('modalEditorComentarios'));
-            modal.show();
-        }
-
-        function guardarComentarioModal() {
-            const id = document.getElementById('editor-item-id').value;
-            const nuevoTexto = document.getElementById('editor-textarea').value;
-
-            document.getElementById('real-comentario-' + id).value = nuevoTexto;
-
-            const previewEl = document.getElementById('preview-comentario-' + id);
-            const btnEl = document.getElementById('btn-comentario-' + id);
-            const btnIcon = document.getElementById('btn-icon-comentario-' + id);
-
-            if (nuevoTexto.trim() === '') {
-                previewEl.innerText = '';
-                previewEl.className = 'text-truncate small ms-2 w-100 text-muted fst-italic';
-                btnEl.className = 'btn btn-sm btn-light text-secondary border-0 rounded-circle ms-1 flex-shrink-0';
-                btnIcon.className = 'bi bi-pencil';
-            } else {
-                previewEl.innerText = nuevoTexto.replace(/\n/g, ' / '); 
-                previewEl.className = 'text-truncate small ms-2 w-100 text-dark fw-bold';
-                btnEl.className = 'btn btn-sm bg-primary-subtle text-primary border-0 rounded-circle ms-1 flex-shrink-0';
-                btnIcon.className = 'bi bi-chat-text-fill';
+        function eliminarEvidenciaAjax(adjuntoId, botonElemento, itemId) {
+            // 1. Inicializar el modal si aún no existe en memoria
+            if (!modalConfirmacionEliminar) {
+                modalConfirmacionEliminar = new bootstrap.Modal(document.getElementById('modalConfirmarEliminacion'));
             }
 
-            const modalEl = document.getElementById('modalEditorComentarios');
-            const modal = bootstrap.Modal.getInstance(modalEl);
-            modal.hide();
+            // 2. Mostrar el modal elegante
+            modalConfirmacionEliminar.show();
+
+            // 3. Asignar la función de borrado al botón rojo "Eliminar" DENTRO del modal
+            document.getElementById('btnConfirmarEliminar').onclick = function() {
+                
+                // Ocultar el modal inmediatamente después de hacer clic
+                modalConfirmacionEliminar.hide();
+
+                // Animación de carga en el botón original de la lista
+                let iconoOriginal = botonElemento.innerHTML;
+                botonElemento.innerHTML = '<span class="spinner-border spinner-border-sm"></span>';
+                botonElemento.disabled = true;
+
+                // TRUCO DE SEGURIDAD (CSRF)
+                let formData = new FormData();
+                let csrfTokenInput = document.querySelector('input[name="_csrf"]');
+                if (csrfTokenInput) {
+                    formData.append('_csrf', csrfTokenInput.value);
+                }
+
+                // Ejecutar la petición al servidor
+                fetch('/evidencias/eliminar-ajax/' + adjuntoId, {
+                    method: 'POST',
+                    body: formData
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if(data.exito) {
+                        // A. Eliminar el archivo de la vista
+                        let liElement = botonElemento.closest('li');
+                        liElement.remove();
+
+                        // B. Verificar si hay que mostrar el mensaje de "No hay evidencias"
+                        let listaUl = document.getElementById('lista-' + itemId);
+                        let archivosRestantes = listaUl.querySelectorAll('li:not([id^="msg-vacio-"])').length;
+                        
+                        if (archivosRestantes === 0) {
+                            let msgVacio = document.getElementById('msg-vacio-' + itemId);
+                            if (msgVacio) {
+                                msgVacio.classList.remove('d-none');
+                                msgVacio.classList.add('d-flex');
+                            }
+                        }
+                    } else {
+                        alert('Error: ' + data.mensaje);
+                        botonElemento.innerHTML = iconoOriginal;
+                        botonElemento.disabled = false;
+                    }
+                })
+                .catch(error => {
+                    alert('Error de conexión al intentar eliminar el archivo.');
+                    botonElemento.innerHTML = iconoOriginal;
+                    botonElemento.disabled = false;
+                });
+            };
         }
     </script>
-</body>
-</html>

@@ -10,6 +10,11 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 
 import java.io.File;
 import java.io.IOException;
@@ -126,14 +131,69 @@ public class EvidenciaControlador {
 
             response.put("exito", true);
             response.put("mensaje", "Archivo guardado con éxito");
+            response.put("adjuntoId", adjunto.getId()); 
+            
             return ResponseEntity.ok(response);
-
         } catch (IOException e) {
             response.put("exito", false);
             response.put("mensaje", "Error interno al guardar");
             return ResponseEntity.status(500).body(response);
         }
     }
+
+
+   
+    @GetMapping("/descargar/{adjuntoId}")
+    public ResponseEntity<Resource> descargarEvidencia(@PathVariable Long adjuntoId) {
+        try {
+            Adjunto adjunto = adjuntoRepositorio.findById(adjuntoId).orElse(null);
+            if (adjunto == null) return ResponseEntity.notFound().build();
+
+            Path rutaArchivo = Paths.get(adjunto.getRuta());
+            Resource recurso = new UrlResource(rutaArchivo.toUri());
+
+            if (recurso.exists() && recurso.isReadable()) {
+                return ResponseEntity.ok()
+                        .contentType(MediaType.parseMediaType(adjunto.getTipoContenido()))
+                        .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + adjunto.getNombreArchivo() + "\"")
+                        .body(recurso);
+            } else {
+                return ResponseEntity.notFound().build();
+            }
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().build();
+        }
+    }
+
+
+    @PostMapping("/eliminar-ajax/{adjuntoId}")
+    @ResponseBody
+    public ResponseEntity<Map<String, Object>> eliminarEvidenciaAjax(@PathVariable Long adjuntoId) {
+        Map<String, Object> response = new HashMap<>();
+        try {
+            Adjunto adjunto = adjuntoRepositorio.findById(adjuntoId).orElse(null);
+            if (adjunto != null) {
+                // 1. Borrar el archivo físico del disco duro
+                Path rutaArchivo = Paths.get(adjunto.getRuta());
+                Files.deleteIfExists(rutaArchivo);
+                
+                // 2. Borrar el registro de PostgreSQL
+                adjuntoRepositorio.delete(adjunto);
+                
+                response.put("exito", true);
+                return ResponseEntity.ok(response);
+            }
+            response.put("exito", false);
+            response.put("mensaje", "Archivo no encontrado");
+            return ResponseEntity.badRequest().body(response);
+            
+        } catch (Exception e) {
+            response.put("exito", false);
+            response.put("mensaje", "Error al eliminar el archivo");
+            return ResponseEntity.status(500).body(response);
+        }
+    }
+
 
 
 
