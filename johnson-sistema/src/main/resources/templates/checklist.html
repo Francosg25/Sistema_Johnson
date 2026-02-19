@@ -1,6 +1,5 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
-<head th:replace="~{fragments/head :: head}"></head>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security"><head th:replace="~{fragments/head :: head}"></head>
 <body class="bg-light">
 
     <div class="d-flex" id="wrapper">
@@ -22,7 +21,9 @@
                         </div>
                         <div>
                             <a href="/" class="btn btn-outline-secondary btn-sm me-2">Volver</a>
-                            <button type="submit" class="btn btn-je-primary btn-sm"><i class="bi bi-save me-2"></i>Guardar Cambios</button>
+                            <button type="submit" class="btn btn-je-primary btn-sm" sec:authorize="hasAnyRole('ADMIN', 'CHAMPION')">
+                                <i class="bi bi-save me-2"></i>Guardar Cambios
+                            </button>
                         </div>
                     </div>
 
@@ -372,7 +373,7 @@
                                     </div>
                                     <div class="modal-body pt-4">
                                         <div th:id="'alerta-' + ${item.id}"></div>
-                                        <form th:action="@{'/evidencias/subir-ajax/' + ${item.id}}" th:data-item-id="${item.id}" method="post" enctype="multipart/form-data" class="mb-4 form-evidencia-ajax">
+                                        <form th:action="@{'/evidencias/subir-ajax/' + ${item.id}}" th:data-item-id="${item.id}" method="post" enctype="multipart/form-data" class="mb-4 form-evidencia-ajax" sec:authorize="hasAnyRole('ADMIN', 'CHAMPION')">
                                             <div class="p-3 border rounded bg-white text-center border-primary border-opacity-25" style="border-style: dashed !important;">
                                                 <i class="bi bi-cloud-upload fs-1 text-primary mb-2 d-block"></i>
                                                 <label th:for="'archivo_' + ${item.id}" class="form-label fw-bold mb-1">Selecciona un archivo</label>
@@ -397,7 +398,8 @@
                                                             <i class="bi bi-download"></i>
                                                         </a>
                                                     <button type="button" class="btn btn-sm btn-outline-danger border-0 rounded-circle shadow-sm" title="Eliminar" 
-                                                th:onclick="'eliminarEvidenciaAjax(' + ${adj.id} + ', this, ' + ${item.id} + ')'">
+                                                th:onclick="'eliminarEvidenciaAjax(' + ${adj.id} + ', this, ' + ${item.id} + ')'"
+                                                    sec:authorize="hasAnyRole('ADMIN', 'CHAMPION')">
                                             <i class="bi bi-trash"></i>
                                                     </button>
                                                 </div>

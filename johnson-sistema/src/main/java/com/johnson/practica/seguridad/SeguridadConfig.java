@@ -27,6 +27,7 @@ public class SeguridadConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
+            .csrf(csrf -> csrf.disable()) // <--- 1. DESACTIVAR CSRF TEMPORALMENTE
             .authorizeHttpRequests(authorize -> authorize
                 .requestMatchers("/css/**", "/js/**", "/img/**", "/login").permitAll()
                 .anyRequest().authenticated()
@@ -41,7 +42,7 @@ public class SeguridadConfig {
                 .logoutSuccessUrl("/login?logout")
                 .permitAll()
             )
-            .userDetailsService(detallesUsuarioServicio); // Set our custom UserDetailsService
+            .userDetailsService(detallesUsuarioServicio);
 
         return http.build();
     }

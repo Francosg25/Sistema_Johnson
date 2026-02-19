@@ -12,8 +12,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.HashSet;
+import java.util.Optional;
 import java.util.Set;
-import java.util.stream.Collectors; 
 
 @Component
 public class CargadorDatos implements CommandLineRunner {
@@ -34,27 +34,52 @@ public class CargadorDatos implements CommandLineRunner {
         logger.info("Cargando datos iniciales...");
         usuarioServicio.inicializarRoles();
 
-        if (usuarioServicio.buscarPorUsername("admin").isEmpty()) {
+        Optional<Usuario> adminOpt = usuarioServicio.buscarPorUsername("admin");
+        if (adminOpt.isEmpty()) {
             logger.info("Creando usuario 'admin'...");
             Usuario admin = new Usuario();
             admin.setUsername("admin");
-            admin.setPassword("adminpass"); // Contraseña en texto plano
+            admin.setPassword("adminpass"); 
             admin.setCorreo("admin@example.com");
             admin.setEnabled(true);
-            logger.debug("Detalles del usuario 'admin': username={}, password={}, correo={}, enabled={}",
-                         admin.getUsername(), admin.getPassword(), admin.getCorreo(), admin.isEnabled());
 
             Set<Rol> roles = new HashSet<>();
             roles.add(rolRepositorio.findByNombre("ROLE_ADMIN").get());
             roles.add(rolRepositorio.findByNombre("ROLE_CHAMPION").get());
             roles.add(rolRepositorio.findByNombre("ROLE_VIEWER").get());
             admin.setRoles(roles);
-            logger.debug("Roles del usuario 'admin': {}", roles.stream().map(Rol::getNombre).collect(Collectors.joining(", ")));
 
-            usuarioServicio.guardarUsuario(admin); // Usar la capa de servicio
+            usuarioServicio.guardarUsuario(admin);
             logger.info("Usuario 'admin' creado y guardado.");
         } else {
-            logger.info("El usuario 'admin' ya existe. Omitiendo la creación.");
+            logger.info("Forzando re-encriptación de contraseña del admin...");
+            Usuario admin = adminOpt.get();
+            admin.setPassword("adminpass");
+            usuarioServicio.guardarUsuario(admin);
+        }
+
+        // --- 2. CONFIGURAR VISITANTE ---
+        Optional<Usuario> visitanteOpt = usuarioServicio.buscarPorUsername("visitante");
+        if (visitanteOpt.isEmpty()) {
+            logger.info("Creando usuario 'visitante'...");
+            Usuario visitante = new Usuario();
+            visitante.setUsername("visitante");
+            visitante.setPassword("visitantepass"); 
+            visitante.setCorreo("visitante@example.com");
+            visitante.setEnabled(true);
+
+            Set<Rol> rolesVis = new HashSet<>();
+            rolesVis.add(rolRepositorio.findByNombre("ROLE_VIEWER").get());
+            visitante.setRoles(rolesVis);
+
+            usuarioServicio.guardarUsuario(visitante);
+            logger.info("Usuario 'visitante' creado y guardado.");
+        } else {
+            // FORZAR ACTUALIZACIÓN SIEMPRE
+            logger.info("Forzando re-encriptación de contraseña del visitante...");
+            Usuario visitante = visitanteOpt.get();
+            visitante.setPassword("visitantepass");
+            usuarioServicio.guardarUsuario(visitante);
         }
     }
 }

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security"></html>
 <head th:replace="~{fragments/head :: head}"></head>
 <body class="bg-light">
 
@@ -15,12 +15,10 @@
                 
                 <div class="d-flex justify-content-between align-items-center mb-4">
                     <h5 class="fw-bold text-dark"><i class="bi bi-grid-fill me-2"></i>Panel de Proyectos</h5>
-                    <button class="btn btn-je-primary" data-bs-toggle="modal" data-bs-target="#modalNuevoProyecto">
+                    <button class="btn btn-je-primary" data-bs-toggle="modal" data-bs-target="#modalNuevoProyecto" sec:authorize="hasRole('ADMIN')">
                         <i class="bi bi-plus-lg me-2"></i>Nuevo Proyecto
                     </button>
                 </div>
-
-                
 
                 <div class="card border-0 shadow-sm">
                     <div class="card-header bg-white py-3 border-bottom">
@@ -56,8 +54,9 @@
                                                 Ver Checklist
                                             </a>
                                             <a th:href="@{/proyectos/eliminar/{id}(id=${p.id})}"
-                                               class="btn btn-outline-danger btn-sm ms-1"
-                                               onclick="return confirm('¿Estás seguro de que deseas eliminar este proyecto y todos sus datos? Esta acción es irreversible.');">
+                                                class="btn btn-outline-danger btn-sm ms-1"
+                                                onclick="return confirm('¿Estás seguro...?');"
+                                                sec:authorize="hasRole('ADMIN')">
                                                 <i class="bi bi-trash"></i>
                                             </a>
                                         </td>
@@ -73,40 +72,70 @@
     </div>
 
     <div class="modal fade" id="modalNuevoProyecto" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content border-0 shadow">
-                <div class="modal-header bg-dark text-white py-3">
-                    <h5 class="modal-title fw-bold"><i class="bi bi-folder-plus me-2"></i>Crear Nuevo Proyecto</h5>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content border-0 shadow-lg">
+                
+                <div class="modal-header bg-dark text-white border-bottom-0 pb-3">
+                    <div>
+                        <h5 class="modal-title fw-bold mb-0">
+                            <i class="bi bi-folder-plus text-primary me-2"></i>Registrar Nuevo Proyecto
+                        </h5>
+                        <p class="small text-light text-opacity-75 mb-0 mt-1">
+                            Ingresa los datos generales para inicializar el APQP Checklist (38 entregables).
+                        </p>
+                    </div>
+                    <button type="button" class="btn-close btn-close-white shadow-none" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
+                
                 <form th:action="@{/proyectos/guardar}" method="post">
-                    <div class="modal-body p-4">
-                        <div class="mb-3">
-                            <label for="nombreProyecto" class="form-label fw-bold small text-muted mb-1">NOMBRE DEL PROYECTO</label>
-                            <input type="text" id="nombreProyecto" name="nombre" class="form-control form-control-lg" required>
-                        </div>
-                        <div class="row g-3">
-                            <div class="col-md-6">
-                                <label for="numeroParte" class="form-label fw-bold small text-muted mb-1">NÚMERO DE PARTE</label>
-                                <input type="text" id="numeroParte" name="numeroParte" class="form-control form-control-lg" required>
+                    <div class="modal-body p-4 bg-light">
+                        
+                        <div class="bg-white p-4 rounded border shadow-sm">
+                            <h6 class="text-uppercase fw-bold text-secondary mb-4 border-bottom pb-2">Información General</h6>
+                            
+                            <div class="row g-4">
+                                <div class="col-md-12">
+                                    <label for="nombreProyecto" class="form-label fw-bold small text-dark mb-1">Nombre del Proyecto <span class="text-danger">*</span></label>
+                                    <input type="text" id="nombreProyecto" name="nombre" class="form-control shadow-none" placeholder="Ej: Dahlia Valve Stellantis" required>
+                                </div>
+                                
+                                <div class="col-md-6">
+                                    <label for="numeroParte" class="form-label fw-bold small text-dark mb-1">Número de Parte <span class="text-danger">*</span></label>
+                                    <input type="text" id="numeroParte" name="numeroParte" class="form-control shadow-none" placeholder="Ej: 1722-EJB0033" required>
+                                </div>
+                                
+                                <div class="col-md-6">
+                                    <label for="cliente" class="form-label fw-bold small text-dark mb-1">Cliente <span class="text-danger">*</span></label>
+                                    <div class="input-group">
+                                        <span class="input-group-text bg-light border-end-0"><i class=""></i></span>
+                                        <input type="text" id="cliente" name="cliente" class="form-control shadow-none border-start-0 ps-2" placeholder=>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-6">
+                                    <label for="liderProyecto" class="form-label fw-bold small text-dark mb-1">Líder del Proyecto</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text bg-light border-end-0"><i class="bi bi-person text-secondary"></i></span>
+                                        <input type="text" id="liderProyecto" name="liderProyecto" class="form-control shadow-none border-start-0 ps-2" placeholder="Nombre del responsable">
+                                    </div>
+                                </div>
+                                
+                                <div class="col-md-6">
+                                    <label for="fechaInicio" class="form-label fw-bold small text-dark mb-1">Fecha de Inicio (SOP) <span class="text-danger">*</span></label>
+                                    <div class="input-group">
+                                        <span class="input-group-text bg-light border-end-0"><i class="bi bi-calendar3 text-secondary"></i></span>
+                                        <input type="date" id="fechaInicio" name="fechaInicio" class="form-control shadow-none border-start-0 ps-2" required>
+                                    </div>
+                                </div>
                             </div>
-                            <div class="col-md-6">
-                                <label for="cliente" class="form-label fw-bold small text-muted mb-1">CLIENTE</label>
-                                <input type="text" id="cliente" name="cliente" class="form-control form-control-lg" required>
-                            </div>
-                        </div>
-                        <div class="mt-3">
-                            <label for="liderProyecto" class="form-label fw-bold small text-muted mb-1">LÍDER DEL PROYECTO</label>
-                            <input type="text" id="liderProyecto" name="liderProyecto" class="form-control form-control-lg">
-                        </div>
-                        <div class="mt-3">
-                            <label for="fechaInicio" class="form-label fw-bold small text-muted mb-1">FECHA DE INICIO</label>
-                            <input type="date" id="fechaInicio" name="fechaInicio" class="form-control form-control-lg" required>
                         </div>
                     </div>
-                    <div class="modal-footer bg-light py-3">
-                        <button type="button" class="btn btn-link text-secondary text-decoration-none" data-bs-dismiss="modal">Cancelar</button>
-                        <button type="submit" class="btn btn-je-primary">Guardar Proyecto</button>
+                    
+                    <div class="modal-footer bg-light border-top-0 pt-0 pb-4 pe-4">
+                        <button type="button" class="btn btn-outline-secondary btn-sm fw-bold px-4" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="submit" class="btn btn-primary btn-sm fw-bold px-4 shadow-sm">
+                            <i class="bi bi-check2-circle me-1"></i> Crear Proyecto
+                        </button>
                     </div>
                 </form>
             </div>

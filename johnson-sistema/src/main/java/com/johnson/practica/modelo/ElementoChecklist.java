@@ -4,10 +4,14 @@ import jakarta.persistence.*;
 import lombok.Data;
 import java.time.LocalDate;
 import java.util.List;
+import lombok.Getter;
+import lombok.Setter;
 
 @Entity
-@Data
 @Table(name = "elemento_checklist")
+@Getter
+@Setter
+
 public class ElementoChecklist {
 
     @Id
