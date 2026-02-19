@@ -24,7 +24,11 @@ public class ReportesControlador {
         // Obtenemos los datos calculados para el reporte global por estado
         ReporteEstadoGlobal datosEstadoGlobal = checklistServicio.generarReporteEstadoGlobal();
         model.addAttribute("datosEstadoGlobal", datosEstadoGlobal);
+
+        var datosCascada = checklistServicio.generarReporteCascada();
+        model.addAttribute("datosCascada", datosCascada);
         
-        return "reportes"; // Nombre del archivo HTML
+        return "reportes";
     }
 }
+    

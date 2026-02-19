@@ -1,7 +1,8 @@
 package com.johnson.practica.servicio;
 
 import com.johnson.practica.dto.ReporteProgreso;
-import com.johnson.practica.dto.ReporteEstadoGlobal; // Importar el nuevo DTO
+import com.johnson.practica.dto.ReporteCascada;
+import com.johnson.practica.dto.ReporteEstadoGlobal; 
 import com.johnson.practica.modelo.ElementoChecklist;
 import com.johnson.practica.modelo.Proyecto;
 import com.johnson.practica.repositorio.ElementoChecklistRepositorio;
@@ -15,6 +16,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Arrays; 
 
 @Service
 public class ChecklistServicio {
@@ -109,7 +111,6 @@ public class ChecklistServicio {
                                     elemento.setFechaReal(java.time.LocalDate.parse(fieldValue));
                                 }
                             } catch (java.time.format.DateTimeParseException e) {
-                                // Ignorar si el formato de fecha no es válido
                             }
                             break;
                         case "fechaPlan":
@@ -118,7 +119,6 @@ public class ChecklistServicio {
                                     elemento.setFechaPlan(java.time.LocalDate.parse(fieldValue));
                                 }
                             } catch (java.time.format.DateTimeParseException e) {
-                                // Ignorar si el formato de fecha no es válido
                             }
                             break;
                     }
@@ -139,9 +139,8 @@ public class ChecklistServicio {
             int ok = 0;
 
             for (ElementoChecklist item : items) {
-                String score = item.getScore(); // Usamos el campo 'score' según lo especificado
+                String score = item.getScore();
             
-                // Contamos como avance si el score es "OK" 
                 if ("OK".equalsIgnoreCase(score)){
                     ok++;
                 }
@@ -152,10 +151,8 @@ public class ChecklistServicio {
                 porcentaje = ((double) ok / total) * 100;
             }
         
-            // Redondeo a 1 decimal
             porcentaje = Math.round(porcentaje * 10.0) / 10.0;
 
-            // Creamos el objeto DTO para la vista
             reporte.add(new ReporteProgreso(p.getNombre(), total, ok, porcentaje));
         }
         return reporte;
@@ -178,10 +175,8 @@ public class ChecklistServicio {
                 String controlEntregable = item.getControlEntregable();
                 
                 if (controlEntregable != null && !controlEntregable.trim().isEmpty()) {
-                    // Convertimos a mayúsculas para evitar problemas de minúsculas/mayúsculas
                     String estadoControl = controlEntregable.toUpperCase().trim();
                     
-                    // Usamos contains() para que sea flexible (ej. detecta "CLOSED ON TIME" y "ON TIME")
                     if (estadoControl.contains("ON TIME")) {
                         onTimeCount++;
                     } else if (estadoControl.contains("NEEDS ACTION")) {
@@ -210,5 +205,49 @@ public class ChecklistServicio {
         }
         
         return reporte;
+    }
+
+    public List<ReporteCascada> generarReporteCascada() {
+        List<Proyecto> proyectos = proyectoRepositorio.findAll();
+        List<ReporteCascada> reporte = new ArrayList<>();
+        List<String> etapasVisuales = Arrays.asList("ETAPA 2", "ETAPA 3", "ETAPA 4", "ETAPA 5");
+
+        for (Proyecto p : proyectos) {
+            List<Double> porcentajes = new ArrayList<>();
+            List<ElementoChecklist> elementosProgramaAPQP = repositorio.findByProyecto_IdAndFaseStartingWithOrderByCodigoAsc(p.getId(), "0");
+
+            for (String etapa : etapasVisuales) {
+                porcentajes.add(calcularPorcentajeEtapaVisual(elementosProgramaAPQP, etapa));
+            }
+            reporte.add(new ReporteCascada(p.getNombre(), porcentajes));
+        }
+        return reporte;
+    }
+
+    private double calcularPorcentajeEtapaVisual(List<ElementoChecklist> elementos, String etapaVisual) {
+        List<ElementoChecklist> itemsEnEtapa = new ArrayList<>();
+        for (ElementoChecklist item : elementos) {
+            if (item.getEtapaVisual() != null && item.getEtapaVisual().equalsIgnoreCase(etapaVisual)) {
+                itemsEnEtapa.add(item);
+            }
+        }
+
+        int total = itemsEnEtapa.size();
+        int ok = 0;
+
+        for (ElementoChecklist item : itemsEnEtapa) {
+            String score = item.getScore();
+            if (score != null && "OK".equalsIgnoreCase(score.trim())) {
+                ok++;
+            }
+        }
+
+        if (total == 0) return 0.0;
+        double pct = ((double) ok / total) * 100.0;
+        // Ensure percentage does not exceed 100.0
+        if (pct > 100.0) {
+            pct = 100.0;
+        }
+        return Math.round(pct * 10.0) / 10.0;
     }
 }

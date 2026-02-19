@@ -53,9 +53,12 @@
                                             <a th:href="@{/proyectos/checklist/{id}(id=${p.id})}" class="btn btn-outline-dark btn-sm">
                                                 Ver Checklist
                                             </a>
-                                            <a th:href="@{/proyectos/eliminar/{id}(id=${p.id})}"
-                                                class="btn btn-outline-danger btn-sm ms-1"
-                                                onclick="return confirm('¿Estás seguro...?');"
+                                            <a href="#"
+                                                data-bs-toggle="modal" 
+                                                data-bs-target="#confirmDeleteProjectModal" 
+                                                th:data-project-id="${p.id}"
+                                                th:data-project-name="${p.nombre}"
+                                                class="btn btn-outline-danger btn-sm ms-1 btn-delete-project"
                                                 sec:authorize="hasRole('ADMIN')">
                                                 <i class="bi bi-trash"></i>
                                             </a>
@@ -142,6 +145,50 @@
         </div>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-</body>
-</html>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+        <!-- Modal de Confirmación de Eliminación de Proyecto -->
+        <div class="modal fade" id="confirmDeleteProjectModal" tabindex="-1" aria-labelledby="confirmDeleteProjectModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content border-0 shadow-lg">
+                    <div class="modal-header bg-danger text-white border-bottom-0 pb-3">
+                        <h5 class="modal-title fw-bold" id="confirmDeleteProjectModalLabel"><i class="bi bi-exclamation-triangle-fill me-2"></i>Confirmar Eliminación</h5>
+                        <button type="button" class="btn-close btn-close-white shadow-none" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body p-4 bg-light">
+                        <p class="mb-0 text-dark">¿Estás seguro de que quieres eliminar el proyecto "<span id="projectNameToDelete" class="fw-bold"></span>"?</p>
+                        <p class="small text-danger mt-1">¡Esta acción es irreversible y eliminará todos los datos asociados!</p>
+                    </div>
+                    <div class="modal-footer bg-light border-top-0 pt-0 pb-4 pe-4">
+                        <button type="button" class="btn btn-outline-secondary btn-sm fw-bold px-4" data-bs-dismiss="modal">Cancelar</button>
+                        <a href="#" id="confirmDeleteButton" class="btn btn-danger btn-sm fw-bold px-4 shadow-sm">
+                            <i class="bi bi-trash me-1"></i>Eliminar Proyecto
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    
+        <script th:inline="javascript">
+            /*<![CDATA[*/
+            document.addEventListener('DOMContentLoaded', function () {
+                const confirmDeleteProjectModal = new bootstrap.Modal(document.getElementById('confirmDeleteProjectModal'));
+                const deleteButtons = document.querySelectorAll('.btn-delete-project');
+                const projectNameToDeleteSpan = document.getElementById('projectNameToDelete');
+                const confirmDeleteButton = document.getElementById('confirmDeleteButton');
+    
+                deleteButtons.forEach(button => {
+                    button.addEventListener('click', function () {
+                        const projectId = this.dataset.projectId;
+                        const projectName = this.dataset.projectName;
+    
+                        projectNameToDeleteSpan.textContent = projectName;
+                        confirmDeleteButton.href = /*[[@{/proyectos/eliminar/{id}(id='')}]]*/ + projectId;
+                    });
+                });
+            });
+            /*]]>*/
+        </script>
+    </body>
+    </html>
+    

@@ -20,6 +20,8 @@ document.addEventListener('DOMContentLoaded', function() {
       } else {
         page.classList.remove('collapsed');
       }
+      // Dispatch a custom event after sidebar state changes
+      window.dispatchEvent(new CustomEvent('sidebarToggled', { detail: { isCollapsed: isCollapsed } }));
     });
   }
 
