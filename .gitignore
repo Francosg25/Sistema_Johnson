@@ -35,3 +35,5 @@ build/
 postgres_data/
 
 uploads/
+
+.env
