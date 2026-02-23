@@ -158,19 +158,23 @@ public class ChecklistServicio {
         return reporte;
     }
 
+    @Transactional(readOnly = true)
     public List<ReporteCascada> generarReporteCascada() {
         List<Proyecto> proyectos = proyectoRepositorio.findAll();
         List<ReporteCascada> reporte = new ArrayList<>();
-        List<String> etapasVisuales = Arrays.asList("ETAPA 1",  "ETAPA 2", "ETAPA 3", "ETAPA 4", "ETAPA 5");
+        List<String> etapas = Arrays.asList("ETAPA 1", "ETAPA 2", "ETAPA 3", "ETAPA 4", "ETAPA 5");
 
         for (Proyecto p : proyectos) {
             List<Double> porcentajes = new ArrayList<>();
-            List<ElementoChecklist> elementosProgramaAPQP = repositorio.findByProyecto_IdAndFaseStartingWithOrderByCodigoAsc(p.getId(), "0");
-
-            for (String etapa : etapasVisuales) {
-                porcentajes.add(calcularPorcentajeEtapaVisual(elementosProgramaAPQP, etapa));
+            List<ElementoChecklist> items = repositorio.findByProyecto_IdAndFaseStartingWithOrderByCodigoAsc(p.getId(), "0");
+            
+            for (String etapa : etapas) {
+                porcentajes.add(calcularPorcentajeEtapaVisual(items, etapa));
             }
-            reporte.add(new ReporteCascada(p.getNombre(), porcentajes));
+            
+            // SOLUCIÓN: Convertir a String antes de instanciar el DTO
+            String fechaSop = (p.getSop() != null) ? p.getSop().toString() : "Sin SOP";
+            reporte.add(new ReporteCascada(p.getNombre(), porcentajes, fechaSop));
         }
         return reporte;
     }
