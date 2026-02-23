@@ -103,9 +103,11 @@
             });
         }
 
-        // 2. GRÁFICA DE CASCADA (ESTILO ESCALERA / FLOATING BARS)
+       // 2. GRÁFICA DE CASCADA (ESTILO ESCALERA / FLOATING BARS CON 5 ETAPAS)
         const projectNamesCascada = datosCascada.map(d => d.nombreProyecto);
 
+        // Agregamos el arreglo para la nueva Etapa 1
+        const s1Data = [];
         const s2Data = [];
         const s3Data = [];
         const s4Data = [];
@@ -113,41 +115,48 @@
         const totalData = [];
 
         datosCascada.forEach(d => {
-            // Aseguramos que los porcentajes brutos del backend no excedan el 100%
             const cappedPorcentajesPorFase = d.porcentajesPorFase.map(pct => Math.min(pct, 100));
 
-            console.log('Project: ', d.nombreProyecto, ' Raw percentages (JS-capped): ', cappedPorcentajesPorFase); // DEBUG LINE
+            // Ahora dividimos entre 5 porque tenemos 5 etapas (cada una aporta max 20% al total global)
+            let p1 = (cappedPorcentajesPorFase[0] || 0) / 5;
+            let p2 = (cappedPorcentajesPorFase[1] || 0) / 5;
+            let p3 = (cappedPorcentajesPorFase[2] || 0) / 5;
+            let p4 = (cappedPorcentajesPorFase[3] || 0) / 5;
+            let p5 = (cappedPorcentajesPorFase[4] || 0) / 5;
 
-            let p2 = (cappedPorcentajesPorFase[0] || 0) / 4;
-            let p3 = (cappedPorcentajesPorFase[1] || 0) / 4;
-            let p4 = (cappedPorcentajesPorFase[2] || 0) / 4;
-            let p5 = (cappedPorcentajesPorFase[3] || 0) / 4;
+            // Asegurar que no excedan el 20% de aportación cada una
+            p1 = Math.min(p1, 20);
+            p2 = Math.min(p2, 20);
+            p3 = Math.min(p3, 20);
+            p4 = Math.min(p4, 20);
+            p5 = Math.min(p5, 20);
 
-            // Ensure pX values also don't exceed their maximum allowed contribution (25 each)
-            p2 = Math.min(p2, 25);
-            p3 = Math.min(p3, 25);
-            p4 = Math.min(p4, 25);
-            p5 = Math.min(p5, 25);
-
-            let end2 = p2;
+            // Calcular dónde empieza y termina cada bloque (efecto escalera)
+            let end1 = p1;
+            let end2 = end1 + p2;
             let end3 = end2 + p3;
             let end4 = end3 + p4;
             let end5 = end4 + p5;
 
-            s2Data.push(p2 > 0 ? [0, end2] : null);
+            // Pusheamos los bloques de inicio y fin para cada etapa
+            s1Data.push(p1 > 0 ? [0, end1] : null);
+            s2Data.push(p2 > 0 ? [end1, end2] : null);
             s3Data.push(p3 > 0 ? [end2, end3] : null);
             s4Data.push(p4 > 0 ? [end3, end4] : null);
             s5Data.push(p5 > 0 ? [end4, end5] : null);
             
+            // La barra gris total
             totalData.push([0, end5]); 
         });
 
+        // Agregamos la Etapa 1 a los datasets y aprovechamos la paleta de 5 colores
         const cascadaDatasets = [
-            { label: 'ETAPA 2', data: s2Data, backgroundColor: paletaColores[0], borderRadius: 3 },
-            { label: 'ETAPA 3', data: s3Data, backgroundColor: paletaColores[1], borderRadius: 3 },
-            { label: 'ETAPA 4', data: s4Data, backgroundColor: paletaColores[2], borderRadius: 3 },
-            { label: 'ETAPA 5', data: s5Data, backgroundColor: paletaColores[3], borderRadius: 3 },
-            { label: 'TOTAL',   data: totalData, backgroundColor: '#808080', borderRadius: 3 } // Changed TOTAL bar color to gray
+            { label: 'ETAPA 1', data: s1Data, backgroundColor: paletaColores[0], borderRadius: 3 },
+            { label: 'ETAPA 2', data: s2Data, backgroundColor: paletaColores[1], borderRadius: 3 },
+            { label: 'ETAPA 3', data: s3Data, backgroundColor: paletaColores[2], borderRadius: 3 },
+            { label: 'ETAPA 4', data: s4Data, backgroundColor: paletaColores[3], borderRadius: 3 },
+            { label: 'ETAPA 5', data: s5Data, backgroundColor: paletaColores[4], borderRadius: 3 },
+            { label: 'TOTAL',   data: totalData, backgroundColor: '#808080', borderRadius: 3 }
         ];
 
         const ctxCascada = document.getElementById('chartCascada');
@@ -176,12 +185,11 @@
                                     
                                     let aportacion = raw[1] - raw[0]; 
                                     
-                                    if (context.dataset.label === 'Total') {
-                                        return ' 🚀 AVANCE GLOBAL: ' + raw[1].toFixed(1) + '%';
+                                    if (context.dataset.label === 'TOTAL') {
+                                        return 'AVANCE GLOBAL: ' + raw[1].toFixed(1) + '%';
                                     }
                                     
-                                    // Multiplicamos por 4 para decirle al usuario al cuánto % va ESA etapa específicamente
-                                    let avanceRealEtapa = aportacion * 4; 
+                                    let avanceRealEtapa = aportacion * 5; 
                                     return ` ${context.dataset.label}: ${avanceRealEtapa.toFixed(1)}% completado (Aporta +${aportacion.toFixed(1)}% al global)`;
                                 }
                             }
@@ -193,7 +201,7 @@
                     },
                     scales: {
                         x: {
-                            max: 100, // Topado matemáticamente al 100%
+                            max: 100,
                             title: { display: true, text: 'Progreso Acumulado (%)', font: { weight: 'bold', size: 12 }, color: '#adb5bd' },
                             grid: { color: '#e9ecef', borderDash: [5, 5] },
                             ticks: { callback: function(value) { return value + '%'; } }
@@ -206,7 +214,6 @@
                 }
             });
         }
-
    
         const ctx3 = document.getElementById('chartVolumen');
         if (datosEstadoGlobal) {

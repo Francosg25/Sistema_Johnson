@@ -31,7 +31,7 @@ public class ChecklistSemilla {
                 cargarGateReview(repositorio, "4. Stage 4");
                 cargarGateReview(repositorio, "5. Stage 5");
 
-                System.out.println("SEMILLA CARGADA: Estructura original restaurada y Stages configurados.");
+                System.out.println("SEMILLA CARGADA: Estructura original restaurada, Etapa 1 añadida y Stages configurados.");
             } catch (Exception e) {
                 System.err.println("Error: " + e.getMessage());
             }
@@ -40,7 +40,15 @@ public class ChecklistSemilla {
 
     private void cargarProgramaAPQP(CatalogoElementoRepositorio repo) {
         List<CatalogoElemento> programa = Arrays.asList(
-            // ETAPA 2
+            // --- ETAPA 1 --
+            crearE("1.1", "QE",    "ETAPA 1", "Planificación y Definición del CFT"),
+            crearE("1.2", "DE", "ETAPA 1", "Definición del Alcance del Proyecto"),
+            crearE("1.3", "DE", "ETAPA 1", "Establecer juntas 'Equipo a Equipo'"),
+            crearE("1.4", "ALL",   "ETAPA 1", "Formación (Identificar necesidades de capacitación)"),
+            crearE("1.5", "DE",                       "ETAPA 1", "Solución de Preocupaciones/Problemas"),
+            crearE("1.6", "DE", "ETAPA 1", "Línea de Tiempo / Gantt"),
+
+            // --- ETAPA 2 ---
             crearE("P-01", "PROJ",   "ETAPA 2", "Equipo multifuncional / CFT (JE Global and internal):"),
             crearE("P-02", "DE",     "ETAPA 2", "DFMEA:"),
             crearE("P-03", "DE",     "ETAPA 2", "Lista preliminar de materiales / Preliminary BOM:"),
@@ -52,7 +60,7 @@ public class ChecklistSemilla {
             crearE("P-09", "DE",     "ETAPA 2", "Reporte de Validación del Diseño / DV Report"),
             crearE("P-10", "QE",     "ETAPA 2", "Lista preliminar de características del cliente / Preliminary Customer Characteristics List:"),
 
-            // ETAPA 3
+            // --- ETAPA 3 ---
             crearE("P-11", "QE",     "ETAPA 3", "01.- Especificaciones de empaque"),
             crearE("P-12", "PE",     "ETAPA 3", "01.- Especificaciones de empaque"), // Duplicado según excel
             crearE("P-13", "QE",     "ETAPA 3", "02.-Cambios en el SGC para fabricar el producto"),
@@ -68,7 +76,7 @@ public class ChecklistSemilla {
             crearE("P-23", "QE",     "ETAPA 3", "11.- Minutas Juntas"), // Duplicado según excel
             crearE("P-24", "PROJ",   "ETAPA 3", "Revisión de etapa (línea en México) / Stage Revision (line in Mexico):"),
 
-            // ETAPA 4
+            // --- ETAPA 4 ---
             crearE("P-25", "PROJ",   "ETAPA 4", "12.- Pilot Run"),
             crearE("P-26", "QE",     "ETAPA 4", "13.- MSA"),
             crearE("P-27", "QE/PE",  "ETAPA 4", "14.-Preliminary SPC"),
@@ -79,7 +87,7 @@ public class ChecklistSemilla {
             crearE("P-32", "PE",     "ETAPA 4", "04.-Floor plan layout"), // Duplicado según excel
             crearE("P-33", "PROJ",   "ETAPA 4", "19.- Sign-OFF"),
 
-            // ETAPA 5
+            // --- ETAPA 5 ---
             crearE("P-34", "QE/PE",  "ETAPA 5", "20.-Reduced Variation"),
             crearE("P-35", "QE",     "ETAPA 5", "21.-Improve customer satisfaction"),
             crearE("P-36", "QE",     "ETAPA 5", "22.- Improved delivery and service"),
@@ -122,7 +130,6 @@ public class ChecklistSemilla {
         repo.saveAll(stage2);
     }
 
-    
     private void cargarGateReview(CatalogoElementoRepositorio repo, String fase) {
         List<CatalogoElemento> gate = Arrays.asList(
             // --- SUBSECCIÓN 1: VALIDACIÓN 
@@ -138,7 +145,6 @@ public class ChecklistSemilla {
         repo.saveAll(gate);
     }
 
-    
     // --- HELPERS ---
     private CatalogoElemento crearE(String cod, String champ, String etapa, String nom) {
         CatalogoElemento e = new CatalogoElemento();
