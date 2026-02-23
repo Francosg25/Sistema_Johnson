@@ -16,6 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Map;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Arrays; 
@@ -262,21 +263,44 @@ public class ChecklistServicio {
         for (Proyecto p : proyectos) {
             groups.add(new TimelineGrupo(p.getId(), p.getNombre()));
 
-            
-            List<ElementoChecklist> hitos = repositorio.findByProyecto_IdAndFaseStartingWithOrderByCodigoAsc(p.getId(), "0");
+            List<ElementoChecklist> todosElementos = repositorio.findByProyecto_Id(p.getId());
 
-            for (ElementoChecklist hito : hitos) {
-                // Solo dibujamos si el entregable tiene una fecha planificada
-                if (hito.getFechaPlan() != null) {
-                    items.add(new TimelineItem(
-                        hito.getId(),
-                        p.getId(),
-                        hito.getNombre(),
-                        hito.getFechaPlan().toString(),
-                        "point" // Formato de rombo
-                    ));
+            for (ElementoChecklist item : todosElementos) {
+                LocalDate fecha = (item.getFechaPlan() != null) ? item.getFechaPlan() : item.getFechaReal();
+
+                if (fecha != null) {
+                    boolean esMilestone = "HITO".equals(item.getTipoInput()) || 
+                                          (item.getFase() != null && item.getFase().contains("Programa"));
+
+                    boolean isDelayed = false;
+                    if ("LATE".equalsIgnoreCase(item.getControlEntregable())) {
+                        isDelayed = true;
+                    } else if (item.getFechaPlan() != null && item.getFechaPlan().isBefore(LocalDate.now()) && !"OK".equalsIgnoreCase(item.getScore())) {
+                        // Si la fecha plan ya pasó y no tiene score "OK", está atrasado
+                        isDelayed = true;
+                    }
+
+                    String contenido = esMilestone ? item.getNombre() : item.getCodigo();
+                    String claseCSS = "";
+
+                    if (esMilestone) {
+                        claseCSS = "vis-milestone";
+                    } else {
+                        boolean esExt = item.getChampion() != null && (item.getChampion().contains("Compras") || item.getChampion().contains("Cliente"));
+                        claseCSS = esExt ? "vis-event-external" : "vis-event-internal";
+                    }
+
+                    if (isDelayed) {
+                        claseCSS += " delayed-item"; // Nueva clase CSS para el borde rojo
+                        contenido = "<i class='bi bi-exclamation-circle-fill text-danger me-1 fs-6'></i> " + contenido;
+                    }
+
+                    // 5. Agregar al Timeline
+                    String tipoForma = esMilestone ? "point" : "box";
+                    items.add(new TimelineItem(item.getId(), p.getId(), contenido, fecha.toString(), tipoForma, claseCSS));
                 }
             }
+
         }
 
         Map<String, Object> data = new HashMap<>();
@@ -284,6 +308,8 @@ public class ChecklistServicio {
         data.put("items", items);
         return data;
     }
-
-
 }
+
+
+
+

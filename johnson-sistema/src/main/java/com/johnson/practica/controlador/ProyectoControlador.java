@@ -36,7 +36,6 @@ public class ProyectoControlador {
         private List<ElementoChecklist> items;
     }
 
-    // --- 1. VER EL CHECKLIST ---
     @GetMapping("/checklist/{id}")
     public String verChecklist(@PathVariable Long id, Model model, HttpServletRequest request) {
         Proyecto proyecto = proyectoServicio.buscarPorId(id);
@@ -75,7 +74,6 @@ public class ProyectoControlador {
         return "redirect:/proyectos/checklist/" + proyectoId;
     }
 
-    // --- 3. GESTIÓN DE PROYECTOS ---
     
     @PostMapping("/guardar")
     public String guardarProyecto(@ModelAttribute Proyecto proyecto) {

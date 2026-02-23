@@ -147,7 +147,6 @@
 
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     
-        <!-- Modal de Confirmación de Eliminación de Proyecto -->
         <div class="modal fade" id="confirmDeleteProjectModal" tabindex="-1" aria-labelledby="confirmDeleteProjectModalLabel" aria-hidden="true">
             <div class="modal-dialog modal-dialog-centered">
                 <div class="modal-content border-0 shadow-lg">
@@ -169,26 +168,26 @@
             </div>
         </div>
     
-        <script th:inline="javascript">
-            /*<![CDATA[*/
-            document.addEventListener('DOMContentLoaded', function () {
-                const confirmDeleteProjectModal = new bootstrap.Modal(document.getElementById('confirmDeleteProjectModal'));
-                const deleteButtons = document.querySelectorAll('.btn-delete-project');
-                const projectNameToDeleteSpan = document.getElementById('projectNameToDelete');
-                const confirmDeleteButton = document.getElementById('confirmDeleteButton');
-    
-                deleteButtons.forEach(button => {
-                    button.addEventListener('click', function () {
-                        const projectId = this.dataset.projectId;
-                        const projectName = this.dataset.projectName;
-    
-                        projectNameToDeleteSpan.textContent = projectName;
-                        confirmDeleteButton.href = /*[[@{/proyectos/eliminar/{id}(id='')}]]*/ + projectId;
-                    });
+        <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const deleteButtons = document.querySelectorAll('.btn-delete-project');
+            const projectNameToDeleteSpan = document.getElementById('projectNameToDelete');
+            const confirmDeleteButton = document.getElementById('confirmDeleteButton');
+
+            deleteButtons.forEach(button => {
+                button.addEventListener('click', function () {
+                    const projectId = this.dataset.projectId;
+                    const projectName = this.dataset.projectName;
+
+                    // 1. Ponemos el nombre en el texto del modal
+                    projectNameToDeleteSpan.textContent = projectName;
+                    
+                    // 2. Construimos la URL limpia y exacta para el botón
+                    confirmDeleteButton.href = '/proyectos/eliminar/' + projectId;
                 });
             });
-            /*]]>*/
-        </script>
+        });
+    </script>
     </body>
     </html>
     

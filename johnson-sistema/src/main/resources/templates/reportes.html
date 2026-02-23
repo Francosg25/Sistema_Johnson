@@ -75,7 +75,6 @@
         Chart.defaults.font.size = 13; 
         Chart.defaults.color = '#495057'; 
         Chart.defaults.devicePixelRatio = window.devicePixelRatio || 1;
-        // 1. GRÁFICA DE COMPARATIVA DE AVANCE
         const paletaColores = ['#74B9FF', '#77DD77', '#FFB347', '#FF6961', '#B19CD9'];
         const paletaBordes = ['#0984E3', '#00B894', '#E17055', '#D63031', '#6C5CE7'];
 
@@ -144,10 +143,10 @@
         });
 
         const cascadaDatasets = [
-            { label: 'STAGE 2', data: s2Data, backgroundColor: paletaColores[0], borderRadius: 3 },
-            { label: 'STAGE 3', data: s3Data, backgroundColor: paletaColores[1], borderRadius: 3 },
-            { label: 'STAGE 4', data: s4Data, backgroundColor: paletaColores[2], borderRadius: 3 },
-            { label: 'STAGE 5', data: s5Data, backgroundColor: paletaColores[3], borderRadius: 3 },
+            { label: 'ETAPA 2', data: s2Data, backgroundColor: paletaColores[0], borderRadius: 3 },
+            { label: 'ETAPA 3', data: s3Data, backgroundColor: paletaColores[1], borderRadius: 3 },
+            { label: 'ETAPA 4', data: s4Data, backgroundColor: paletaColores[2], borderRadius: 3 },
+            { label: 'ETAPA 5', data: s5Data, backgroundColor: paletaColores[3], borderRadius: 3 },
             { label: 'TOTAL',   data: totalData, backgroundColor: '#808080', borderRadius: 3 } // Changed TOTAL bar color to gray
         ];
 
