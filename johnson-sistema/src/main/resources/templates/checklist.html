@@ -119,13 +119,15 @@
                                                                  th:classappend="${item.comentario == null or item.comentario.isEmpty() ? 'text-muted fst-italic' : 'text-dark fw-bold'}"
                                                                  th:text="${item.comentario == null or item.comentario.isEmpty() ? '' : item.comentario}">
                                                             </div>
-                                                            <button type="button" th:id="'btn-comentario-' + ${item.id}" 
-                                                                    class="btn btn-sm border-0 rounded-circle ms-1 flex-shrink-0"
-                                                                    th:classappend="${item.comentario == null or item.comentario.isEmpty() ? 'btn-light text-secondary' : 'bg-primary-subtle text-primary'}"
-                                                                    title="Ver/Editar Observaciones">
-                                                                <i th:id="'btn-icon-comentario-' + ${item.id}" 
-                                                                   th:class="${item.comentario == null or item.comentario.isEmpty() ? 'bi bi-pencil' : 'bi bi-chat-text-fill'}"></i>
-                                                            </button>
+                                                            <button type="button" 
+        th:id="'btn-comentario-' + ${item.id}"
+        th:class="${item.comentario != null and !item.comentario.empty} ? 
+                  'btn btn-sm btn-primary border-0 rounded-circle ms-1 shadow-sm flex-shrink-0' : 
+                  'btn btn-sm btn-light text-secondary border-0 rounded-circle ms-1 shadow-sm flex-shrink-0'"
+        th:attr="onclick=|abrirEditorComentarios('${item.id}', '${item.codigo}')|">
+    <i th:id="'btn-icon-comentario-' + ${item.id}" 
+       th:class="${item.comentario != null and !item.comentario.empty} ? 'bi bi-chat-text-fill' : 'bi bi-pencil'"></i>
+</button>
                                                         </div>
                                                         <textarea class="d-none" th:name="'comentario-' + ${item.id}" th:id="'real-comentario-' + ${item.id}" th:text="${item.comentario}"></textarea>
                                                     </td>
@@ -433,7 +435,7 @@
                             <div class="modal-footer bg-light border-top-0">
                                 <button type="button" class="btn btn-outline-secondary btn-sm fw-bold px-3" data-bs-dismiss="modal">Cancelar</button>
                                 <button type="button" class="btn btn-primary btn-sm fw-bold px-4 shadow-sm" onclick="guardarComentarioModal()">
-                                    <i class="bi bi-check2-circle me-1"></i> Aplicar al Checklist
+                                    <i class="bi bi-check2-circle me-2"></i> Aplicar al Checklist
                                 </button>
                             </div>
                         </div>
@@ -647,30 +649,78 @@
     </script>
 
     <script>
+        function abrirEditorComentarios(itemId, codigo) {
+            const textareaReal = document.getElementById('real-comentario-' + itemId);
+            const modalTextarea = document.getElementById('editor-textarea');
+            const modalCodigo = document.getElementById('editor-codigo');
+            const modalItemId = document.getElementById('editor-item-id');
+
+            if(textareaReal) modalTextarea.value = textareaReal.value;
+            if(modalCodigo) modalCodigo.innerText = codigo;
+            if(modalItemId) modalItemId.value = itemId;
+
+            const myModal = new bootstrap.Modal(document.getElementById('modalEditorComentarios'));
+            myModal.show();
+        }
+
+        function guardarComentarioModal() {
+            const itemId = document.getElementById('editor-item-id').value;
+            const nuevoTexto = document.getElementById('editor-textarea').value;
+            
+            const textareaReal = document.getElementById('real-comentario-' + itemId);
+            const previewDiv = document.getElementById('preview-comentario-' + itemId);
+            const btnIcon = document.getElementById('btn-icon-comentario-' + itemId);
+            const btnContenedor = document.getElementById('btn-comentario-' + itemId);
+
+            // 1. Actualizar el input oculto
+            if(textareaReal) textareaReal.value = nuevoTexto;
+
+            // 2. Actualizar visualmente el botón y el preview
+            if (nuevoTexto.trim() === "") {
+                if(previewDiv) {
+                    previewDiv.innerText = "";
+                    previewDiv.classList.add('text-muted', 'fst-italic');
+                }
+                if(btnIcon) btnIcon.className = 'bi bi-pencil';
+                if(btnContenedor) btnContenedor.className = 'btn btn-sm btn-light text-secondary border-0 rounded-circle ms-1 shadow-sm flex-shrink-0';
+            } else {
+                if(previewDiv) {
+                    previewDiv.innerText = nuevoTexto;
+                    previewDiv.classList.remove('text-muted', 'fst-italic');
+                    previewDiv.classList.add('text-dark', 'fw-bold');
+                }
+                if(btnIcon) btnIcon.className = 'bi bi-chat-text-fill';
+                // Siempre azul pequeño con texto
+                if(btnContenedor) btnContenedor.className = 'btn btn-sm btn-primary border-0 rounded-circle ms-1 shadow-sm flex-shrink-0';
+            }
+
+            // Cerrar modal
+            const modalElement = document.getElementById('modalEditorComentarios');
+            const modalInstance = bootstrap.Modal.getInstance(modalElement);
+            modalInstance.hide();
+        }
+    </script>
+
+
+    <script>
         // Variable global para manejar el modal de Bootstrap
         let modalConfirmacionEliminar = null;
 
         function eliminarEvidenciaAjax(adjuntoId, botonElemento, itemId) {
-            // 1. Inicializar el modal si aún no existe en memoria
             if (!modalConfirmacionEliminar) {
                 modalConfirmacionEliminar = new bootstrap.Modal(document.getElementById('modalConfirmarEliminacion'));
             }
 
-            // 2. Mostrar el modal elegante
             modalConfirmacionEliminar.show();
 
-            // 3. Asignar la función de borrado al botón rojo "Eliminar" DENTRO del modal
             document.getElementById('btnConfirmarEliminar').onclick = function() {
                 
-                // Ocultar el modal inmediatamente después de hacer clic
                 modalConfirmacionEliminar.hide();
 
-                // Animación de carga en el botón original de la lista
                 let iconoOriginal = botonElemento.innerHTML;
                 botonElemento.innerHTML = '<span class="spinner-border spinner-border-sm"></span>';
                 botonElemento.disabled = true;
 
-                // TRUCO DE SEGURIDAD (CSRF)
                 let formData = new FormData();
                 let csrfTokenInput = document.querySelector('input[name="_csrf"]');
                 if (csrfTokenInput) {

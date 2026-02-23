@@ -12,8 +12,8 @@
             </a>
         </li>
         <li class="nav-item">
-            <a th:href="@{/proyectos/}" class="nav-link" th:classappend="${currentUri.startsWith('/proyectos')} ? 'active' : ''">
-                <i class="bi bi-folder2-open"></i> Proyectos
+            <a th:href="@{/timeline}" class="nav-link" th:classappend="${currentUri != null and currentUri.startsWith('/timeline')} ? 'active' : ''">
+                <i class="bi bi-calendar3-range"></i> Project Timeline
             </a>
         </li>
         <li class="nav-item">

@@ -1,6 +1,8 @@
 package com.johnson.practica.servicio;
 
 import com.johnson.practica.dto.ReporteProgreso;
+import com.johnson.practica.dto.TimelineGrupo;
+import com.johnson.practica.dto.TimelineItem;
 import com.johnson.practica.dto.ReporteCascada;
 import com.johnson.practica.dto.ReporteEstadoGlobal; 
 import com.johnson.practica.modelo.ElementoChecklist;
@@ -250,4 +252,38 @@ public class ChecklistServicio {
         }
         return Math.round(pct * 10.0) / 10.0;
     }
+
+    @Transactional(readOnly = true)
+    public Map<String, Object> obtenerDatosTimeline() {
+        List<Proyecto> proyectos = proyectoRepositorio.findAll();
+        List<TimelineGrupo> groups = new ArrayList<>();
+        List<TimelineItem> items = new ArrayList<>();
+
+        for (Proyecto p : proyectos) {
+            groups.add(new TimelineGrupo(p.getId(), p.getNombre()));
+
+            
+            List<ElementoChecklist> hitos = repositorio.findByProyecto_IdAndFaseStartingWithOrderByCodigoAsc(p.getId(), "0");
+
+            for (ElementoChecklist hito : hitos) {
+                // Solo dibujamos si el entregable tiene una fecha planificada
+                if (hito.getFechaPlan() != null) {
+                    items.add(new TimelineItem(
+                        hito.getId(),
+                        p.getId(),
+                        hito.getNombre(),
+                        hito.getFechaPlan().toString(),
+                        "point" // Formato de rombo
+                    ));
+                }
+            }
+        }
+
+        Map<String, Object> data = new HashMap<>();
+        data.put("groups", groups);
+        data.put("items", items);
+        return data;
+    }
+
+
 }
