@@ -7,6 +7,7 @@ public class TimelineItem {
     private String start;
     private String type;
     private String className; 
+    private Double progress;
 
     public TimelineItem(Long id, Long group, String content, String start, String type, String className) {
         this.id = id;
@@ -17,10 +18,16 @@ public class TimelineItem {
         this.className = className; 
     }
 
+    public TimelineItem(Long id, Long group, String content, String start, String type, String className, Double progress) {
+        this(id, group, content, start, type, className);
+        this.progress = progress;
+    }
+
     public Long getId() { return id; }
     public Long getGroup() { return group; }
     public String getContent() { return content; }
     public String getStart() { return start; }
     public String getType() { return type; }
     public String getClassName() { return className; }
+    public Double getProgress() { return progress; }
 }

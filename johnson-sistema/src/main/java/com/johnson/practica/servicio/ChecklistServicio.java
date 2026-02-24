@@ -30,6 +30,9 @@ public class ChecklistServicio {
     @Autowired
     private ProyectoRepositorio proyectoRepositorio;
 
+    @Autowired
+    private com.johnson.practica.repositorio.HitoProyectoRepositorio hitoProyectoRepositorio;
+
     @Transactional(readOnly = true)
     public List<ElementoChecklist> obtenerHitosPrograma(Long proyectoId) {
         return repositorio.findByProyecto_IdAndFaseStartingWithOrderByCodigoAsc(proyectoId, "0");
@@ -112,50 +115,52 @@ public class ChecklistServicio {
     public ReporteEstadoGlobal generarReporteEstadoGlobal() {
         List<Proyecto> proyectos = proyectoRepositorio.findAll();
         
-        int totalRelevantDeliverables = 0;
-        int onTimeCount = 0;
-        int needsActionCount = 0;
-        int lateCount = 0;
-        int decisionCount = 0;
+        int total = 0;
+        int onTime = 0;
+        int late = 0;
+        int needsAction = 0;
+        int decision = 0;
+        int fulfilled = 0;
 
         for (Proyecto p : proyectos) {
-            List<ElementoChecklist> items = repositorio.findByProyecto_IdAndFaseStartingWithOrderByCodigoAsc(p.getId(), "0");
-            
+            List<ElementoChecklist> items = repositorio.findByProyecto_Id(p.getId());
             for (ElementoChecklist item : items) {
-                totalRelevantDeliverables++;
-                String controlEntregable = item.getControlEntregable();
-                
-                if (controlEntregable != null && !controlEntregable.trim().isEmpty()) {
-                    String estadoControl = controlEntregable.toUpperCase().trim();
-                    
-                    if (estadoControl.contains("ON TIME")) {
-                        onTimeCount++;
-                    } else if (estadoControl.contains("NEEDS ACTION")) {
-                        needsActionCount++;
-                    } else if (estadoControl.contains("LATE")) {
-                        lateCount++;
-                    } else if (estadoControl.contains("DECISION")) {
-                        decisionCount++;
-                    }
+                total++;
+                String score = item.getScore();
+                String control = item.getControlEntregable();
+
+                if ("OK".equalsIgnoreCase(score)) {
+                    fulfilled++;
+                }
+
+                if (control != null) {
+                    String c = control.toUpperCase();
+                    if (c.contains("ON TIME")) onTime++;
+                    else if (c.contains("LATE")) late++;
+                    else if (c.contains("NEEDS ACTION")) needsAction++;
+                    else if (c.contains("DECISION")) decision++;
                 }
             }
         }
 
-        ReporteEstadoGlobal reporte = new ReporteEstadoGlobal();
+        ReporteEstadoGlobal r = new ReporteEstadoGlobal();
+        r.setTotalDeliverables(total);
+        r.setOnTimeCount(onTime);
+        r.setDelayedCount(late);
+        r.setFulfilledCount(fulfilled);
+        r.setEscalationCount(needsAction);
 
-        if (totalRelevantDeliverables > 0) {
-            reporte.setOnTimePercentage(Math.round(((double) onTimeCount / totalRelevantDeliverables) * 10000.0) / 100.0);
-            reporte.setLatePercentage(Math.round(((double) lateCount / totalRelevantDeliverables) * 10000.0) / 100.0);
-            reporte.setNeedsActionPercentage(Math.round(((double) needsActionCount / totalRelevantDeliverables) * 10000.0) / 100.0);
-            reporte.setDecisionPercentage(Math.round(((double) decisionCount / totalRelevantDeliverables) * 10000.0) / 100.0);
-        } else {
-            reporte.setOnTimePercentage(0.0);
-            reporte.setLatePercentage(0.0);
-            reporte.setNeedsActionPercentage(0.0);
-            reporte.setDecisionPercentage(0.0);
+        if (total > 0) {
+            r.setOnTimePercentage(Math.round((double) onTime / total * 100));
+            r.setLatePercentage(Math.round((double) late / total * 100));
+            r.setNeedsActionPercentage(Math.round((double) needsAction / total * 100));
+            r.setDecisionPercentage(Math.round((double) decision / total * 100));
         }
+
+        r.setRiskHigh(late);
+        r.setRiskLow(onTime);
         
-        return reporte;
+        return r;
     }
 
     @Transactional(readOnly = true)
@@ -166,13 +171,12 @@ public class ChecklistServicio {
 
         for (Proyecto p : proyectos) {
             List<Double> porcentajes = new ArrayList<>();
-            List<ElementoChecklist> items = repositorio.findByProyecto_IdAndFaseStartingWithOrderByCodigoAsc(p.getId(), "0");
+            List<ElementoChecklist> items = repositorio.findByProyecto_Id(p.getId()); // Cambio: usar findByProyecto_Id
             
             for (String etapa : etapas) {
                 porcentajes.add(calcularPorcentajeEtapaVisual(items, etapa));
             }
             
-            // SOLUCIÓN: Convertir a String antes de instanciar el DTO
             String fechaSop = (p.getSop() != null) ? p.getSop().toString() : "Sin SOP";
             reporte.add(new ReporteCascada(p.getNombre(), porcentajes, fechaSop));
         }
@@ -199,14 +203,13 @@ public class ChecklistServicio {
 
         if (total == 0) return 0.0;
         double pct = ((double) ok / total) * 100.0;
-        // Ensure percentage does not exceed 100.0
         if (pct > 100.0) {
             pct = 100.0;
         }
         return Math.round(pct * 10.0) / 10.0;
     }
 
-    @Transactional(readOnly = true)
+   @Transactional(readOnly = true)
     public Map<String, Object> obtenerDatosTimeline() {
         List<Proyecto> proyectos = proyectoRepositorio.findAll();
         List<TimelineGrupo> groups = new ArrayList<>();
@@ -216,43 +219,50 @@ public class ChecklistServicio {
             groups.add(new TimelineGrupo(p.getId(), p.getNombre()));
 
             List<ElementoChecklist> todosElementos = repositorio.findByProyecto_Id(p.getId());
+            List<com.johnson.practica.modelo.HitoProyecto> hitosManuales = hitoProyectoRepositorio.findByProyecto_Id(p.getId());
 
-            for (ElementoChecklist item : todosElementos) {
-                LocalDate fecha = (item.getFechaPlan() != null) ? item.getFechaPlan() : item.getFechaReal();
-
-                if (fecha != null) {
-                    boolean esMilestone = "HITO".equals(item.getTipoInput()) || 
-                                          (item.getFase() != null && item.getFase().contains("Programa"));
-
-                    boolean isDelayed = false;
-                    if ("LATE".equalsIgnoreCase(item.getControlEntregable())) {
-                        isDelayed = true;
-                    } else if (item.getFechaPlan() != null && item.getFechaPlan().isBefore(LocalDate.now()) && !"OK".equalsIgnoreCase(item.getScore())) {
-                        // Si la fecha plan ya pasó y no tiene score "OK", está atrasado
-                        isDelayed = true;
-                    }
-
-                    String contenido = esMilestone ? item.getNombre() : item.getCodigo();
-                    String claseCSS = "";
-
-                    if (esMilestone) {
-                        claseCSS = "vis-milestone";
-                    } else {
-                        boolean esExt = item.getChampion() != null && (item.getChampion().contains("Compras") || item.getChampion().contains("Cliente"));
-                        claseCSS = esExt ? "vis-event-external" : "vis-event-internal";
-                    }
-
-                    if (isDelayed) {
-                        claseCSS += " delayed-item"; // Nueva clase CSS para el borde rojo
-                        contenido = "<i class='bi bi-exclamation-circle-fill text-danger me-1 fs-6'></i> " + contenido;
-                    }
-
-                    // 5. Agregar al Timeline
-                    String tipoForma = esMilestone ? "point" : "box";
-                    items.add(new TimelineItem(item.getId(), p.getId(), contenido, fecha.toString(), tipoForma, claseCSS));
+            // 1. HITOS MANUALES (Milestones - Rombos a la mitad de la línea)
+            for (com.johnson.practica.modelo.HitoProyecto hito : hitosManuales) {
+                double progresoActual = 0.0;
+                if (hito.getEtapaAsociada() != null && !hito.getEtapaAsociada().isEmpty()) {
+                    progresoActual = calcularPorcentajeEtapaVisual(todosElementos, hito.getEtapaAsociada());
                 }
+
+                boolean isLate = hito.getFecha() != null && hito.getFecha().isBefore(LocalDate.now()) && progresoActual < 100;
+                String colorDiamante = isLate ? "#dc3545" : "#f58220"; // Rojo o Naranja
+                String colorTexto = progresoActual >= 100 ? "#28a745" : (isLate ? "#dc3545" : "#3f6ad8");
+
+                // SVG perfecto de 16x16
+                String svgDiamond = "<svg width='16' height='16' viewBox='0 0 24 24'><polygon points='12,0 24,12 12,24 0,12' fill='" + colorDiamante + "' stroke='#ffffff' stroke-width='2'/></svg>";
+                
+                String htmlContent = "<div class='milestone-wrapper'>" +
+                                     svgDiamond +
+                                     "<div class='milestone-text'>" + hito.getEtapaAsociada() + " <span style='color: " + colorTexto + ";'>" + (int)progresoActual + "%</span><br><span style='font-size: 9px; color: #6c757d;'>" + hito.getFecha() + "</span></div>" +
+                                     "</div>";
+
+                // Mandamos el Hito como "point" y clase "vis-milestone-premium"
+                items.add(new TimelineItem(hito.getId() * -1, p.getId(), htmlContent, hito.getFecha().toString(), "point", "vis-milestone-premium"));
             }
 
+            // 2. MAIN EVENTS (Eventos Principales del APQP)
+            for (ElementoChecklist item : todosElementos) {
+                if (!item.isEsMainEvent()) continue;
+
+                LocalDate fecha = (item.getFechaPlan() != null) ? item.getFechaPlan() : item.getFechaReal();
+                if (fecha != null) {
+                    boolean esExterno = item.getChampion() != null && (item.getChampion().contains("SCS") || item.getChampion().contains("Cliente") || item.getChampion().contains("Proveedor"));
+                    boolean isDelayed = item.getFechaPlan() != null && item.getFechaPlan().isBefore(LocalDate.now()) && !"OK".equalsIgnoreCase(item.getScore());
+
+                    String claseCSS = esExterno ? "vis-event-external" : "vis-event-internal";
+                    if (isDelayed) claseCSS += " event-delayed";
+
+                    String alertIcon = isDelayed ? "<i class='bi bi-exclamation-triangle-fill text-white me-1'></i>" : "";
+                    String htmlBox = "<div class='event-content'>" + alertIcon + item.getCodigo() + "</div>";
+
+                    // Mandamos el Main Event como "box" y clase "vis-event-..."
+                    items.add(new TimelineItem(item.getId(), p.getId(), htmlBox, fecha.toString(), "box", claseCSS));
+                }
+            }
         }
 
         Map<String, Object> data = new HashMap<>();

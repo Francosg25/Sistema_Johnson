@@ -15,12 +15,17 @@ public class TimelineControlador {
     @Autowired
     private ChecklistServicio checklistServicio;
 
+    @Autowired
+    private com.johnson.practica.repositorio.ProyectoRepositorio proyectoRepo;
+
     @GetMapping
     public String verTimeline(Model model) {
         Map<String, Object> datos = checklistServicio.obtenerDatosTimeline();
         
         model.addAttribute("timelineGroups", datos.get("groups"));
         model.addAttribute("timelineItems", datos.get("items"));
+        model.addAttribute("proyectos", proyectoRepo.findAll());
+        model.addAttribute("statusGlobal", checklistServicio.generarReporteEstadoGlobal());
         
         return "timeline";
     }

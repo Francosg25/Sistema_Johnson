@@ -7,6 +7,7 @@ import java.util.List;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.format.annotation.DateTimeFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
 @Table(name = "proyectos")
@@ -31,5 +32,10 @@ public class Proyecto {
     private LocalDate sop;
 
     @OneToMany(mappedBy = "proyecto", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnore
     private List<ElementoChecklist> checklist = new ArrayList<>();
+
+    @OneToMany(mappedBy = "proyecto", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnore
+    private List<HitoProyecto> hitos = new ArrayList<>();
 }

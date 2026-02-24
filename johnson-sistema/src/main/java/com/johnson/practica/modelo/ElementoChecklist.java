@@ -45,6 +45,7 @@ public class ElementoChecklist {
     private LocalDate fechaPlan;
     private LocalDate fechaReal;
 
+    private boolean esMainEvent = false;
 
     @OneToMany(mappedBy = "elementoChecklist")
     private List<Adjunto> adjuntos;
