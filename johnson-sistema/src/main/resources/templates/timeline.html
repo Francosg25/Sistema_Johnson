@@ -9,7 +9,6 @@
     <style>
         /* KPIs y Fondos */
         .kpi-card { border-radius: 12px; padding: 1.5rem; color: white; box-shadow: 0 4px 6px rgba(0,0,0,0.1); position: relative; overflow: hidden; }
-        .kpi-card::after { content: ''; position: absolute; top: -50%; right: -20%; width: 100px; height: 100px; background: rgba(255,255,255,0.1); border-radius: 50%; }
         .bg-ontime { background: linear-gradient(135deg, #3ac47d 0%, #28a745 100%); }
         .bg-fulfilled { background: linear-gradient(135deg, #3f6ad8 0%, #0056b3 100%); }
         .bg-delayed { background: linear-gradient(135deg, #f7b924 0%, #fd7e14 100%); }
@@ -23,20 +22,46 @@
         .vis-time-axis .vis-text { font-weight: 800; color: #495057; font-size: 11px; padding-top: 4px; }
         .vis-time-axis .vis-text.vis-major { font-size: 13px; color: #3f6ad8; font-weight: 900; }
 
-        /* --- HITOS A LA MITAD DE LA LÍNEA --- */
-        .vis-item.vis-point.vis-milestone-premium { background: transparent !important; border: none !important; }
-        .vis-item.vis-point.vis-milestone-premium .vis-dot { display: none !important; } /* Oculta punto feo */
-        .vis-item.vis-point.vis-milestone-premium .vis-item-content {
-            padding: 0; background: transparent;
-            transform: translateX(-50%); /* Centra SVG en la fecha */
-            margin-top: -8px; /* Lo sube para que la línea gris lo cruce por en medio */
+        /* --- MAGIA DEL ROMBO (CSS PURO) --- */
+        /* 1. Hacemos transparente el recuadro principal */
+        .vis-item.vis-point.hito-completado,
+        .vis-item.vis-point.hito-pendiente,
+        .vis-item.vis-point.hito-atrasado { 
+            background: transparent !important; 
+            border: none !important; 
+        }
+
+        /* 2. Transformamos el punto nativo (círculo) en un Rombo a la mitad de la línea */
+        .vis-item.vis-point.hito-completado .vis-dot,
+        .vis-item.vis-point.hito-pendiente .vis-dot,
+        .vis-item.vis-point.hito-atrasado .vis-dot {
+            border-radius: 0 !important; 
+            transform: rotate(45deg); 
+            width: 14px; 
+            height: 14px;
+            top: 50% !important; 
+            margin-top: -7px !important; /* Lo centra en la línea gris */
+            box-shadow: 1px 1px 3px rgba(0,0,0,0.3);
+        }
+
+        /* Colores dinámicos del rombo */
+        .vis-item.vis-point.hito-completado .vis-dot { background-color: #28a745; border: 2px solid #fff; }
+        .vis-item.vis-point.hito-pendiente .vis-dot { background-color: #f58220; border: 2px solid #fff; }
+        .vis-item.vis-point.hito-atrasado .vis-dot { background-color: #dc3545; border: 2px solid #fff; animation: palpitar 1.5s infinite; }
+
+        /* 3. Acomodamos el texto para que quede volando justo encima del rombo */
+        .vis-item.vis-point .vis-item-content {
+            padding: 0; 
+            background: transparent;
+            transform: translateX(-50%); /* Centra el texto sobre el rombo */
+            margin-top: -10px; /* Sube el recuadro de texto */
         }
         
-        .milestone-wrapper { display: flex; flex-direction: column; align-items: center; cursor: pointer; }
         .milestone-text { 
             font-size: 10px; font-weight: bold; color: #343a40; text-align: center; 
-            margin-top: 6px; line-height: 1.1; background: rgba(255,255,255,0.9); 
-            padding: 2px 4px; border-radius: 4px; box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+            line-height: 1.1; background: rgba(255,255,255,0.9); 
+            padding: 3px 8px; border-radius: 4px; box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            white-space: nowrap; cursor: pointer;
         }
 
         /* --- MAIN EVENTS --- */
@@ -51,7 +76,14 @@
         .event-delayed { background-color: #dc3545 !important; color: white !important; }
 
         .event-content { font-size: 0.75rem; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 150px; }
+        
         .status-key-box { background: #fff; border: 1px solid #e9ecef; border-radius: 8px; padding: 12px 20px; display: flex; gap: 25px; align-items: center; }
+
+        @keyframes palpitar {
+            0% { transform: rotate(45deg) scale(1); }
+            50% { transform: rotate(45deg) scale(1.3); }
+            100% { transform: rotate(45deg) scale(1); }
+        }
     </style>
 </head>
 <body class="bg-light">
@@ -71,11 +103,35 @@
                     </div>
                 </div>
 
-                <div class="row g-3 mb-4">
-                    <div class="col-md-3"><div class="kpi-card bg-ontime h-100"><h6 class="text-white opacity-75 mb-1 text-uppercase fw-bold">On Time</h6><h2 class="fw-bold mb-0">113 <span class="fs-6 opacity-75">/ 45%</span></h2></div></div>
-                    <div class="col-md-3"><div class="kpi-card bg-fulfilled h-100"><h6 class="text-white opacity-75 mb-1 text-uppercase fw-bold">Fulfilled</h6><h2 class="fw-bold mb-0">50 <span class="fs-6 opacity-75">/ 20%</span></h2></div></div>
-                    <div class="col-md-3"><div class="kpi-card bg-delayed h-100"><h6 class="text-white opacity-75 mb-1 text-uppercase fw-bold">Delayed</h6><h2 class="fw-bold mb-0">75 <span class="fs-6 opacity-75">/ 30%</span></h2></div></div>
-                    <div class="col-md-3"><div class="kpi-card bg-escalation h-100"><h6 class="text-white opacity-75 mb-1 text-uppercase fw-bold">Escalation</h6><h2 class="fw-bold mb-0">12 <span class="fs-6 opacity-75">/ 5%</span></h2></div></div>
+                <div class="row g-3 mb-4" th:if="${statusGlobal != null}">
+                    <div class="col-md-3">
+                        <div class="kpi-card bg-ontime h-100">
+                            <h6 class="text-white opacity-75 mb-1 text-uppercase fw-bold">On Time</h6>
+                            <h2 class="fw-bold mb-0" th:text="${statusGlobal.onTimeCount}">0</h2>
+                            <span class="fs-6 opacity-75" th:text="${statusGlobal.onTimePercentage + '%'}">0%</span>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="kpi-card bg-fulfilled h-100">
+                            <h6 class="text-white opacity-75 mb-1 text-uppercase fw-bold">Fulfilled</h6>
+                            <h2 class="fw-bold mb-0" th:text="${statusGlobal.fulfilledCount}">0</h2>
+                            <span class="fs-6 opacity-75" th:text="${(statusGlobal.totalDeliverables > 0 ? (statusGlobal.fulfilledCount * 100 / statusGlobal.totalDeliverables) : 0) + '%'}">0%</span>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="kpi-card bg-delayed h-100">
+                            <h6 class="text-white opacity-75 mb-1 text-uppercase fw-bold">Delayed</h6>
+                            <h2 class="fw-bold mb-0" th:text="${statusGlobal.delayedCount}">0</h2>
+                            <span class="fs-6 opacity-75" th:text="${statusGlobal.latePercentage + '%'}">0%</span>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="kpi-card bg-escalation h-100">
+                            <h6 class="text-white opacity-75 mb-1 text-uppercase fw-bold">Escalation</h6>
+                            <h2 class="fw-bold mb-0" th:text="${statusGlobal.escalationCount}">0</h2>
+                            <span class="fs-6 opacity-75" th:text="${statusGlobal.needsActionPercentage + '%'}">0%</span>
+                        </div>
+                    </div>
                 </div>
 
                 <div class="d-flex flex-wrap justify-content-between align-items-center mb-3 gap-3">
@@ -170,8 +226,12 @@
                                         <option value="ETAPA 5">ETAPA 5</option>
                                     </select>
                                 </div>
-                                <div class="col-md-2 d-flex align-items-end">
-                                    <button class="btn btn-primary w-100 fw-bold" onclick="guardarHito()"><i class="bi bi-plus-circle me-1"></i> Programar</button>
+                                <div class="col-md-1">
+                                    <label class="form-label small fw-bold">Meta %</label>
+                                    <input type="number" id="hitoPorcentaje" class="form-control shadow-none" value="100" min="0" max="100">
+                                </div>
+                                <div class="col-md-1 d-flex align-items-end">
+                                    <button class="btn btn-primary w-100 fw-bold" onclick="guardarHito()"><i class="bi bi-plus-circle"></i></button>
                                 </div>
                             </div>
                             <div class="table-responsive">
@@ -203,8 +263,12 @@
         document.addEventListener('DOMContentLoaded', function() {
             var container = document.getElementById('visualization');
 
-            var rawGroups = /*[[${timelineGroups != null ? timelineGroups : '[]'}]]*/ [];
-            var rawItems = /*[[${timelineItems != null ? timelineItems : '[]'}]]*/ [];
+            var rawGroups = /*[[${timelineGroups}]]*/ [];
+            var rawItems = /*[[${timelineItems}]]*/ [];
+
+            // A prueba de fallos: Evita que la pantalla quede en blanco si falla el JSON
+            if (!Array.isArray(rawGroups)) rawGroups = [];
+            if (!Array.isArray(rawItems)) rawItems = [];
 
             var groups = new vis.DataSet(rawGroups);
             var items = new vis.DataSet(rawItems);
@@ -215,21 +279,20 @@
                     var showMainEvents = document.getElementById('chkMainEvents').checked;
                     var cName = item.className || "";
 
-                    // FILTRO CORREGIDO PARA QUE DETECTE AMBOS
-                    if (cName.includes('vis-milestone') && showMilestones) return true;
+                    // Ahora detecta los nuevos nombres generados desde Java
+                    if (cName.includes('hito-') && showMilestones) return true;
                     if (cName.includes('vis-event') && showMainEvents) return true;
                     
                     return false;
                 }
             });
 
-            // Opciones Nativas y Limpias
             var options = {
                 groupOrder: 'id',
                 editable: false,
-                margin: { item: {horizontal: 10, vertical: 20}, axis: 35 }, 
+                margin: { item: {horizontal: 10, vertical: 25}, axis: 35 }, 
                 orientation: 'top',
-                timeAxis: {scale: 'month', step: 1}, // <--- Meses Automáticos de la Librería
+                timeAxis: {scale: 'month', step: 1},
                 horizontalScroll: true,       
                 zoomKey: 'ctrlKey',          
                 zoomMin: 1000 * 60 * 60 * 24 * 30 * 2, 
@@ -255,9 +318,7 @@
                     var opcionesFecha = { timeZone: 'UTC', weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
                     document.getElementById('detalle-fecha').innerText = fechaObj.toLocaleDateString('es-ES', opcionesFecha);
                     
-                    var modalEl = document.getElementById('modalDetalleTimeline');
-                    var modalObj = bootstrap.Modal.getOrCreateInstance(modalEl);
-                    modalObj.show();
+                    bootstrap.Modal.getOrCreateInstance(document.getElementById('modalDetalleTimeline')).show();
                 }
             });
 
@@ -277,7 +338,10 @@
                     tbody.innerHTML = '';
                     hitos.forEach(h => {
                         const tr = document.createElement('tr');
-                        tr.innerHTML = `<td><span class="fw-bold">${h.nombre}</span></td><td class="text-primary fw-bold">${h.fecha}</td><td><span class="badge bg-secondary">${h.etapaAsociada}</span></td><td class="text-center"><button class="btn btn-outline-danger btn-sm border-0 py-0" onclick="eliminarHito(${h.id})"><i class="bi bi-trash-fill"></i></button></td>`;
+                        tr.innerHTML = `<td><span class="fw-bold">${h.nombre}</span></td>
+                                        <td class="text-primary fw-bold">${h.fecha}</td>
+                                        <td><span class="badge bg-secondary">${h.etapaAsociada}</span> <span class="badge bg-info">${h.porcentajeObjetivo}% Meta</span></td>
+                                        <td class="text-center"><button class="btn btn-outline-danger btn-sm border-0 py-0" onclick="eliminarHito(${h.id})"><i class="bi bi-trash-fill"></i></button></td>`;
                         tbody.appendChild(tr);
                     });
                 });
@@ -315,7 +379,13 @@
             };
 
             window.guardarHito = function() {
-                const payload = { proyectoId: selProyecto.value, nombre: document.getElementById('hitoNombre').value, fecha: document.getElementById('hitoFecha').value, etapa: document.getElementById('hitoEtapa').value };
+                const payload = { 
+                    proyectoId: selProyecto.value, 
+                    nombre: document.getElementById('hitoNombre').value, 
+                    fecha: document.getElementById('hitoFecha').value, 
+                    etapa: document.getElementById('hitoEtapa').value,
+                    porcentaje: document.getElementById('hitoPorcentaje').value
+                };
                 if (!payload.proyectoId || !payload.nombre || !payload.fecha) { alert('Completar campos requeridos'); return; }
                 fetch('/api/hitos/guardar', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) })
                 .then(r => { if (r.ok) { cargarHitos(); location.reload(); } });

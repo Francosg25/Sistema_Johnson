@@ -221,27 +221,30 @@ public class ChecklistServicio {
             List<ElementoChecklist> todosElementos = repositorio.findByProyecto_Id(p.getId());
             List<com.johnson.practica.modelo.HitoProyecto> hitosManuales = hitoProyectoRepositorio.findByProyecto_Id(p.getId());
 
-            // 1. HITOS MANUALES (Milestones - Rombos a la mitad de la línea)
+            // 1. HITOS MANUALES (Milestones) - Envío limpio sin SVG
             for (com.johnson.practica.modelo.HitoProyecto hito : hitosManuales) {
                 double progresoActual = 0.0;
                 if (hito.getEtapaAsociada() != null && !hito.getEtapaAsociada().isEmpty()) {
                     progresoActual = calcularPorcentajeEtapaVisual(todosElementos, hito.getEtapaAsociada());
                 }
 
-                boolean isLate = hito.getFecha() != null && hito.getFecha().isBefore(LocalDate.now()) && progresoActual < 100;
-                String colorDiamante = isLate ? "#dc3545" : "#f58220"; // Rojo o Naranja
-                String colorTexto = progresoActual >= 100 ? "#28a745" : (isLate ? "#dc3545" : "#3f6ad8");
-
-                // SVG perfecto de 16x16
-                String svgDiamond = "<svg width='16' height='16' viewBox='0 0 24 24'><polygon points='12,0 24,12 12,24 0,12' fill='" + colorDiamante + "' stroke='#ffffff' stroke-width='2'/></svg>";
+                int objetivo = (hito.getPorcentajeObjetivo() != null) ? hito.getPorcentajeObjetivo() : 100;
+                boolean completado = progresoActual >= objetivo;
+                boolean isLate = hito.getFecha() != null && hito.getFecha().isBefore(LocalDate.now()) && !completado;
                 
-                String htmlContent = "<div class='milestone-wrapper'>" +
-                                     svgDiamond +
-                                     "<div class='milestone-text'>" + hito.getEtapaAsociada() + " <span style='color: " + colorTexto + ";'>" + (int)progresoActual + "%</span><br><span style='font-size: 9px; color: #6c757d;'>" + hito.getFecha() + "</span></div>" +
+                // Definimos color del texto y la clase que dibujará el rombo en CSS
+                String colorTexto = completado ? "#28a745" : (isLate ? "#dc3545" : "#3f6ad8");
+                String claseCSS = completado ? "hito-completado" : (isLate ? "hito-atrasado" : "hito-pendiente");
+                
+                String labelPrincipal = (hito.getNombre() != null && !hito.getNombre().isEmpty()) ? hito.getNombre() : hito.getEtapaAsociada();
+                
+                String htmlContent = "<div class='milestone-text'>" + 
+                                        "<strong>" + labelPrincipal + "</strong><br>" +
+                                        "<span style='color: " + colorTexto + ";'>" + (int)progresoActual + "% / " + objetivo + "%</span><br>" +
+                                        "<span class='text-muted small'>" + hito.getFecha() + "</span>" +
                                      "</div>";
 
-                // Mandamos el Hito como "point" y clase "vis-milestone-premium"
-                items.add(new TimelineItem(hito.getId() * -1, p.getId(), htmlContent, hito.getFecha().toString(), "point", "vis-milestone-premium"));
+                items.add(new TimelineItem(hito.getId() * -1, p.getId(), htmlContent, hito.getFecha().toString(), "point", claseCSS));
             }
 
             // 2. MAIN EVENTS (Eventos Principales del APQP)
@@ -257,9 +260,10 @@ public class ChecklistServicio {
                     if (isDelayed) claseCSS += " event-delayed";
 
                     String alertIcon = isDelayed ? "<i class='bi bi-exclamation-triangle-fill text-white me-1'></i>" : "";
-                    String htmlBox = "<div class='event-content'>" + alertIcon + item.getCodigo() + "</div>";
+                    String htmlBox = "<div class='event-content' title='" + item.getNombre() + "'>" + 
+                                     alertIcon + "<strong>" + item.getCodigo() + "</strong> " + item.getNombre() + 
+                                     "</div>";
 
-                    // Mandamos el Main Event como "box" y clase "vis-event-..."
                     items.add(new TimelineItem(item.getId(), p.getId(), htmlBox, fecha.toString(), "box", claseCSS));
                 }
             }
@@ -271,7 +275,6 @@ public class ChecklistServicio {
         return data;
     }
 }
-
 
 
 
