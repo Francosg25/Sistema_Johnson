@@ -7,14 +7,12 @@
     <script src="https://unpkg.com/vis-timeline@latest/standalone/umd/vis-timeline-graph2d.min.js"></script>
 
     <style>
-        /* KPIs y Fondos */
         .kpi-card { border-radius: 12px; padding: 1.5rem; color: white; box-shadow: 0 4px 6px rgba(0,0,0,0.1); position: relative; overflow: hidden; }
         .bg-ontime { background: linear-gradient(135deg, #3ac47d 0%, #28a745 100%); }
         .bg-fulfilled { background: linear-gradient(135deg, #3f6ad8 0%, #0056b3 100%); }
         .bg-delayed { background: linear-gradient(135deg, #f7b924 0%, #fd7e14 100%); }
         .bg-escalation { background: linear-gradient(135deg, #d92550 0%, #dc3545 100%); }
 
-        /* CONTENEDOR TIMELINE Y MESES VISIBLES */
         #visualization { width: 100%; min-height: 550px; border: none; background-color: #ffffff; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
         .vis-timeline { border: none !important; }
         .vis-labelset .vis-label { font-weight: 800; color: #495057; font-size: 0.9rem; padding-left: 15px !important; background-color: #f8f9fa; border-bottom: 1px solid #e9ecef; display: flex; align-items: center; }
@@ -22,61 +20,79 @@
         .vis-time-axis .vis-text { font-weight: 800; color: #495057; font-size: 11px; padding-top: 4px; }
         .vis-time-axis .vis-text.vis-major { font-size: 13px; color: #3f6ad8; font-weight: 900; }
 
-        /* --- MAGIA DEL ROMBO (CSS PURO) --- */
-        /* 1. Hacemos transparente el recuadro principal */
-        .vis-item.vis-point.hito-completado,
+\        .vis-item.vis-point.hito-completado,
         .vis-item.vis-point.hito-pendiente,
         .vis-item.vis-point.hito-atrasado { 
             background: transparent !important; 
             border: none !important; 
         }
 
-        /* 2. Transformamos el punto nativo (círculo) en un Rombo a la mitad de la línea */
         .vis-item.vis-point.hito-completado .vis-dot,
         .vis-item.vis-point.hito-pendiente .vis-dot,
         .vis-item.vis-point.hito-atrasado .vis-dot {
             border-radius: 0 !important; 
             transform: rotate(45deg); 
-            width: 14px; 
-            height: 14px;
+            width: 10px; 
+            height: 10px;
             top: 50% !important; 
-            margin-top: -7px !important; /* Lo centra en la línea gris */
-            box-shadow: 1px 1px 3px rgba(0,0,0,0.3);
+            margin-top: -5px !important; 
+            box-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+            z-index: 5;
         }
 
-        /* Colores dinámicos del rombo */
-        .vis-item.vis-point.hito-completado .vis-dot { background-color: #28a745; border: 2px solid #fff; }
-        .vis-item.vis-point.hito-pendiente .vis-dot { background-color: #f58220; border: 2px solid #fff; }
-        .vis-item.vis-point.hito-atrasado .vis-dot { background-color: #dc3545; border: 2px solid #fff; animation: palpitar 1.5s infinite; }
+        .vis-item.vis-point.hito-completado .vis-dot { background-color: #28a745; border: 1.5px solid #fff; animation: palpitar 20s infinite;}
+        .vis-item.vis-point.hito-pendiente .vis-dot { background-color: #f58220; border: 1.5px solid #fff; animation: palpitar 20s infinite;}
+        .vis-item.vis-point.hito-atrasado .vis-dot { background-color: #dc3545; border: 1.5px solid #fff; animation: palpitar 1.5s infinite;}
 
-        /* 3. Acomodamos el texto para que quede volando justo encima del rombo */
         .vis-item.vis-point .vis-item-content {
             padding: 0; 
             background: transparent;
-            transform: translateX(-50%); /* Centra el texto sobre el rombo */
-            margin-top: -10px; /* Sube el recuadro de texto */
-        }
-        
-        .milestone-text { 
-            font-size: 10px; font-weight: bold; color: #343a40; text-align: center; 
-            line-height: 1.1; background: rgba(255,255,255,0.9); 
-            padding: 3px 8px; border-radius: 4px; box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-            white-space: nowrap; cursor: pointer;
+            transform: translateX(13%); 
+            margin-top: 10px !important;
         }
 
-        /* --- MAIN EVENTS --- */
+        .milestone-text { 
+            font-size: 8px !important; 
+            font-weight: 800 !important; 
+            color: #343a40 !important; 
+            text-align: center !important; 
+            line-height: 1.1 !important; 
+            background: rgba(255,255,255,0.95) !important; 
+            padding: 2px 5px !important; 
+            border-radius: 4px !important; 
+            box-shadow: 0 1px 3px rgba(0,0,0,0.15) !important;
+            white-space: nowrap !important; 
+            cursor: pointer !important;
+        }
+
+        /* --- MAIN EVENTS (CAJAS FLOTANTES SIN LÍNEA) --- */
         .vis-item.vis-box {
-            border-radius: 4px !important; border: none !important; box-shadow: 0 2px 4px rgba(0,0,0,0.1) !important;
-            padding: 4px 10px !important; transition: transform 0.2s; cursor: pointer;
+            border-radius: 4px !important; 
+            border: none !important; 
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1) !important;
+            padding: 2px 5px !important; /* Más pequeño */
+            transition: transform 0.2s; 
+            cursor: pointer;
+            margin-top: 5px; 
         }
         .vis-item.vis-box:hover { transform: translateY(-2px); box-shadow: 0 4px 8px rgba(0,0,0,0.2) !important; z-index: 10 !important; }
         
+        /* Ocultar la línea y el punto conector de los Main Events */
+        .vis-item.vis-box .vis-line, 
+        .vis-item.vis-box .vis-dot {
+            display: none !important;
+        }
+        
         .vis-event-internal { background-color: #3f6ad8 !important; color: white !important; } 
         .vis-event-external { background-color: #f7b924 !important; color: #212529 !important; } 
-        .event-delayed { background-color: #dc3545 !important; color: white !important; }
+        .event-delayed { background-color: #dc3545 !important; color: white !important; animation: palpitar 2s infinite; }
 
-        .event-content { font-size: 0.75rem; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 150px; }
-        
+        .event-content { 
+            font-size: 8px !important; /* Más pequeño */
+            font-weight: 700 !important; 
+            white-space: nowrap !important; 
+        }
+
         .status-key-box { background: #fff; border: 1px solid #e9ecef; border-radius: 8px; padding: 12px 20px; display: flex; gap: 25px; align-items: center; }
 
         @keyframes palpitar {
@@ -138,13 +154,13 @@
                     <div class="status-key-box shadow-sm">
                         <div class="small fw-bold text-muted text-uppercase border-end pe-3">Status Key</div>
                         <div class="d-flex align-items-center gap-2 small fw-bold text-dark">
-                            <div style="width: 14px; height: 14px; background: #f58220; border: 1px solid #fff; outline: 1px solid #ccc; transform: rotate(45deg);"></div> Milestones
+                            <div style="width: 10px; height: 10px; background: #f58220; border: 1px solid #fff; outline: 1px solid #ccc; transform: rotate(45deg);"></div> Milestones
                         </div>
                         <div class="d-flex align-items-center gap-2 small fw-bold text-dark">
-                            <div style="width: 16px; height: 16px; background: #3f6ad8; border-radius: 3px;"></div> Main Events (Internal)
+                            <div style="width: 12px; height: 12px; background: #3f6ad8; border-radius: 2px;"></div> Main Events (Internal)
                         </div>
                         <div class="d-flex align-items-center gap-2 small fw-bold text-dark">
-                            <div style="width: 16px; height: 16px; background: #f7b924; border-radius: 3px;"></div> Main Events (External)
+                            <div style="width: 12px; height: 12px; background: #f7b924; border-radius: 2px;"></div> Main Events (External)
                         </div>
                     </div>
 
@@ -157,8 +173,8 @@
                             <input class="form-check-input filter-checkbox" type="checkbox" id="chkMainEvents" checked>
                             <label class="form-check-label fw-bold small" for="chkMainEvents">Main Events</label>
                         </div>
-                        <button class="btn btn-dark btn-sm fw-bold ms-3" data-bs-toggle="modal" data-bs-target="#modalConfigHitos">
-                            <i class="bi bi-gear-fill me-1"></i> Configurar
+                        <button class="btn btn-dark btn-sm fw-bold ms-1" data-bs-toggle="modal" data-bs-target="#modalConfigHitos">
+                            <i></i> Milestones
                         </button>
                     </div>
                 </div>
@@ -242,10 +258,32 @@
                             </div>
                         </div>
                         <div class="tab-pane fade" id="tabMainEvents">
+                            <div class="row mb-3">
+                                <div class="col-md-12">
+                                    <div class="input-group input-group-sm">
+                                        <span class="input-group-text bg-white border-end-0"><i class="bi bi-search"></i></span>
+                                        <input type="text" id="searchMainEvents" class="form-control border-start-0 shadow-none" placeholder="Buscar entregable por nombre o código...">
+                                    </div>
+                                </div>
+                            </div>
                             <div class="table-responsive" style="max-height: 400px; overflow-y: auto;">
                                 <table class="table table-hover table-sm align-middle border">
-                                    <thead class="table-light sticky-top"><tr class="small text-muted"><th>Cód</th><th>Entregable</th><th>Fase / Grupo</th><th class="text-center">Destacar</th></tr></thead>
-                                    <tbody id="listaElementosMain"></tbody>
+                                    <thead class="table-light sticky-top">
+                                        <tr class="small text-muted">
+                                            <th>Cód</th>
+                                            <th>Entregable</th>
+                                            <th>Fase / Grupo</th>
+                                            <th class="text-center">Destacar</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="listaElementosMain">
+                                        <tr>
+                                            <td colspan="4" class="text-center py-5 text-muted">
+                                                <i class="bi bi-arrow-up-circle d-block fs-2 mb-2"></i>
+                                                Seleccione un proyecto para cargar los entregables
+                                            </td>
+                                        </tr>
+                                    </tbody>
                                 </table>
                             </div>
                         </div>
@@ -266,7 +304,6 @@
             var rawGroups = /*[[${timelineGroups}]]*/ [];
             var rawItems = /*[[${timelineItems}]]*/ [];
 
-            // A prueba de fallos: Evita que la pantalla quede en blanco si falla el JSON
             if (!Array.isArray(rawGroups)) rawGroups = [];
             if (!Array.isArray(rawItems)) rawItems = [];
 
@@ -279,7 +316,6 @@
                     var showMainEvents = document.getElementById('chkMainEvents').checked;
                     var cName = item.className || "";
 
-                    // Ahora detecta los nuevos nombres generados desde Java
                     if (cName.includes('hito-') && showMilestones) return true;
                     if (cName.includes('vis-event') && showMainEvents) return true;
                     
@@ -290,7 +326,10 @@
             var options = {
                 groupOrder: 'id',
                 editable: false,
-                margin: { item: {horizontal: 10, vertical: 25}, axis: 35 }, 
+                margin: { 
+                    item: {horizontal: 10, vertical: 20}, 
+                    axis: 40 
+                }, 
                 orientation: 'top',
                 timeAxis: {scale: 'month', step: 1},
                 horizontalScroll: true,       
@@ -308,11 +347,23 @@
                     var itemId = properties.items[0];
                     var itemData = items.get(itemId); 
                     
-                    var div = document.createElement("div");
-                    div.innerHTML = itemData.content;
-                    var textContent = div.textContent || div.innerText || "";
+                    var tempDiv = document.createElement("div");
+                    tempDiv.innerHTML = itemData.content;
                     
-                    document.getElementById('detalle-nombre').innerText = textContent.trim();
+                    // Verificamos si es un Main Event con un nombre oculto
+                    var eventBox = tempDiv.querySelector('.event-content');
+                    var realName = eventBox ? eventBox.getAttribute('data-realname') : null;
+
+                    var finalName = "";
+                    if (realName) {
+                        finalName = realName; // Usa el nombre original del entregable
+                    } else {
+                        // Para los Milestones regulares
+                        var titleEl = tempDiv.querySelector('.milestone-text') || tempDiv;
+                        finalName = titleEl.textContent || titleEl.innerText || "";
+                    }
+                    
+                    document.getElementById('detalle-nombre').innerText = finalName.trim();
                     
                     var fechaObj = new Date(itemData.start);
                     var opcionesFecha = { timeZone: 'UTC', weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
@@ -326,9 +377,20 @@
                 checkbox.addEventListener('change', function() { view.refresh(); });
             });
 
-            // GESTIÓN DE API (Modal Configuración)
             const selProyecto = document.getElementById('selProyecto');
-            if(selProyecto){ selProyecto.addEventListener('change', () => { cargarHitos(); cargarElementosParaMain(); }); }
+            if(selProyecto){ 
+                selProyecto.addEventListener('change', () => { 
+                    cargarHitos(); 
+                    cargarElementosParaMain(); 
+                }); 
+            }
+
+            const searchInput = document.getElementById('searchMainEvents');
+            if(searchInput) {
+                searchInput.addEventListener('input', () => {
+                    filtrarTablaMainEvents();
+                });
+            }
 
             function cargarHitos() {
                 const proyectoId = selProyecto.value;
@@ -347,21 +409,70 @@
                 });
             }
 
+            let allElementosData = [];
+
             function cargarElementosParaMain() {
                 const proyectoId = selProyecto.value;
-                if (!proyectoId) { document.getElementById('listaElementosMain').innerHTML = ''; return; }
+                const tbody = document.getElementById('listaElementosMain');
+                
+                if (!proyectoId) { 
+                    tbody.innerHTML = '<tr><td colspan="4" class="text-center py-4 text-muted">Seleccione un proyecto primero</td></tr>'; 
+                    return; 
+                }
+
+                tbody.innerHTML = '<tr><td colspan="4" class="text-center py-4 text-primary"><div class="spinner-border spinner-border-sm me-2"></div> Cargando entregables...</td></tr>';
+                
                 fetch(`/api/hitos/proyecto/${proyectoId}/elementos`).then(r => r.json()).then(elementos => {
-                    const tbody = document.getElementById('listaElementosMain');
-                    tbody.innerHTML = '';
-                    elementos.forEach(el => {
-                        const tr = document.createElement('tr');
-                        const iconClass = el.esMainEvent ? 'bi-star-fill text-warning' : 'bi-star';
-                        const btnClass = el.esMainEvent ? 'btn-warning' : 'btn-outline-secondary';
-                        tr.innerHTML = `<td class="small fw-bold">${el.codigo}</td><td class="small">${el.nombre}</td><td class="small text-muted">${el.fase} / ${el.grupo}</td><td class="text-center"><button class="btn btn-sm ${btnClass} shadow-none" onclick="toggleMainEvent(${el.id}, this)"><i class="bi ${iconClass}"></i></button></td>`;
-                        tbody.appendChild(tr);
-                    });
+                    allElementosData = elementos;
+                    renderizarTablaMainEvents(elementos);
+                }).catch(err => {
+                    tbody.innerHTML = '<tr><td colspan="4" class="text-center py-4 text-danger">Error al cargar datos. Intente de nuevo.</td></tr>';
                 });
             }
+
+            function renderizarTablaMainEvents(elementos) {
+                const tbody = document.getElementById('listaElementosMain');
+                tbody.innerHTML = '';
+                
+                if (elementos.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="4" class="text-center py-4 text-muted">No se encontraron entregables para este proyecto.</td></tr>';
+                    return;
+                }
+
+                elementos.forEach(el => {
+                    const tr = document.createElement('tr');
+                    const iconClass = el.esMainEvent ? 'bi-star-fill text-warning' : 'bi-star';
+                    const btnClass = el.esMainEvent ? 'btn-warning' : 'btn-outline-secondary';
+                    tr.innerHTML = `<td class="small fw-bold">${el.codigo}</td>
+                                    <td class="small">${el.nombre}</td>
+                                    <td class="small text-muted">${el.fase} / ${el.grupo}</td>
+                                    <td class="text-center">
+                                        <button class="btn btn-sm ${btnClass} shadow-none" onclick="toggleMainEvent(${el.id}, this)">
+                                            <i class="bi ${iconClass}"></i>
+                                        </button>
+                                    </td>`;
+                    tbody.appendChild(tr);
+                });
+            }
+
+            function filtrarTablaMainEvents() {
+                const term = searchInput.value.toLowerCase().trim();
+                const filtrados = allElementosData.filter(el => 
+                    el.nombre.toLowerCase().includes(term) || 
+                    el.codigo.toLowerCase().includes(term) ||
+                    el.fase.toLowerCase().includes(term) ||
+                    el.grupo.toLowerCase().includes(term)
+                );
+                renderizarTablaMainEvents(filtrados);
+            }
+
+            const modalHitos = document.getElementById('modalConfigHitos');
+            modalHitos.addEventListener('shown.bs.modal', () => {
+                if(selProyecto.value) {
+                    cargarHitos();
+                    cargarElementosParaMain();
+                }
+            });
 
             window.toggleMainEvent = function(id, btn) {
                 fetch(`/api/hitos/toggle-main-event/${id}`, { method: 'POST' }).then(r => {

@@ -221,7 +221,6 @@ public class ChecklistServicio {
             List<ElementoChecklist> todosElementos = repositorio.findByProyecto_Id(p.getId());
             List<com.johnson.practica.modelo.HitoProyecto> hitosManuales = hitoProyectoRepositorio.findByProyecto_Id(p.getId());
 
-            // 1. HITOS MANUALES (Milestones) - Envío limpio sin SVG
             for (com.johnson.practica.modelo.HitoProyecto hito : hitosManuales) {
                 double progresoActual = 0.0;
                 if (hito.getEtapaAsociada() != null && !hito.getEtapaAsociada().isEmpty()) {
@@ -232,7 +231,6 @@ public class ChecklistServicio {
                 boolean completado = progresoActual >= objetivo;
                 boolean isLate = hito.getFecha() != null && hito.getFecha().isBefore(LocalDate.now()) && !completado;
                 
-                // Definimos color del texto y la clase que dibujará el rombo en CSS
                 String colorTexto = completado ? "#28a745" : (isLate ? "#dc3545" : "#3f6ad8");
                 String claseCSS = completado ? "hito-completado" : (isLate ? "hito-atrasado" : "hito-pendiente");
                 
@@ -247,24 +245,28 @@ public class ChecklistServicio {
                 items.add(new TimelineItem(hito.getId() * -1, p.getId(), htmlContent, hito.getFecha().toString(), "point", claseCSS));
             }
 
-            // 2. MAIN EVENTS (Eventos Principales del APQP)
+            int contadorMainEvent = 1; 
             for (ElementoChecklist item : todosElementos) {
                 if (!item.isEsMainEvent()) continue;
 
                 LocalDate fecha = (item.getFechaPlan() != null) ? item.getFechaPlan() : item.getFechaReal();
                 if (fecha != null) {
+                    
                     boolean esExterno = item.getChampion() != null && (item.getChampion().contains("SCS") || item.getChampion().contains("Cliente") || item.getChampion().contains("Proveedor"));
                     boolean isDelayed = item.getFechaPlan() != null && item.getFechaPlan().isBefore(LocalDate.now()) && !"OK".equalsIgnoreCase(item.getScore());
-
-                    String claseCSS = esExterno ? "vis-event-external" : "vis-event-internal";
-                    if (isDelayed) claseCSS += " event-delayed";
+                    
+                    String claseCSS = esExterno ? "vis-event-external" : "vis-event-internal"; 
+                    if (isDelayed) claseCSS += " event-delayed"; 
 
                     String alertIcon = isDelayed ? "<i class='bi bi-exclamation-triangle-fill text-white me-1'></i>" : "";
-                    String htmlBox = "<div class='event-content' title='" + item.getNombre() + "'>" + 
-                                     alertIcon + "<strong>" + item.getCodigo() + "</strong> " + item.getNombre() + 
+                    
+                    String htmlBox = "<div class='event-content' data-realname='" + item.getNombre() + "' title='" + item.getNombre() + "'>" + 
+                                     alertIcon + "Main event " + contadorMainEvent + 
                                      "</div>";
 
                     items.add(new TimelineItem(item.getId(), p.getId(), htmlBox, fecha.toString(), "box", claseCSS));
+                    
+                    contadorMainEvent++; 
                 }
             }
         }
