@@ -40,8 +40,8 @@
             z-index: 5;
         }
 
-        .vis-item.vis-point.hito-completado .vis-dot { background-color: #28a745; border: 1.5px solid #fff; animation: palpitar 20s infinite;}
-        .vis-item.vis-point.hito-pendiente .vis-dot { background-color: #f58220; border: 1.5px solid #fff; animation: palpitar 20s infinite;}
+        .vis-item.vis-point.hito-completado .vis-dot { background-color: #28a745; border: 1.5px solid #fff; animation: palpitar 5s infinite;}
+        .vis-item.vis-point.hito-pendiente .vis-dot { background-color: #f58220; border: 1.5px solid #fff; animation: palpitar 5s infinite;}
         .vis-item.vis-point.hito-atrasado .vis-dot { background-color: #dc3545; border: 1.5px solid #fff; animation: palpitar 1.5s infinite;}
 
         .vis-item.vis-point .vis-item-content {
@@ -66,32 +66,42 @@
         }
 
         /* --- MAIN EVENTS (CAJAS FLOTANTES SIN LÍNEA) --- */
+        
         .vis-item.vis-box {
             border-radius: 4px !important; 
             border: none !important; 
             box-shadow: 0 1px 3px rgba(0,0,0,0.1) !important;
-            padding: 2px 5px !important; /* Más pequeño */
+            padding: 2px 5px !important; 
             transition: transform 0.2s; 
             cursor: pointer;
             margin-top: 5px; 
         }
-        .vis-item.vis-box:hover { transform: translateY(-2px); box-shadow: 0 4px 8px rgba(0,0,0,0.2) !important; z-index: 10 !important; }
-        
-        /* Ocultar la línea y el punto conector de los Main Events */
-        .vis-item.vis-box .vis-line, 
-        .vis-item.vis-box .vis-dot {
+
+      
+        .vis-item.vis-line, 
+        .vis-item.vis-dot {
             display: none !important;
         }
+
+        .vis-item.vis-point .vis-dot {
+            display: block !important;
+        }
+
+
+        .vis-item.vis-box:hover { transform: translateY(-2px); box-shadow: 0 4px 8px rgba(0,0,0,0.2) !important; z-index: 10 !important; }
+        
         
         .vis-event-internal { background-color: #3f6ad8 !important; color: white !important; } 
         .vis-event-external { background-color: #f7b924 !important; color: #212529 !important; } 
         .event-delayed { background-color: #dc3545 !important; color: white !important; animation: palpitar 2s infinite; }
 
         .event-content { 
-            font-size: 8px !important; /* Más pequeño */
+            font-size: 8px !important; 
             font-weight: 700 !important; 
             white-space: nowrap !important; 
         }
+
+    
 
         .status-key-box { background: #fff; border: 1px solid #e9ecef; border-radius: 8px; padding: 12px 20px; display: flex; gap: 25px; align-items: center; }
 
@@ -157,11 +167,9 @@
                             <div style="width: 10px; height: 10px; background: #f58220; border: 1px solid #fff; outline: 1px solid #ccc; transform: rotate(45deg);"></div> Milestones
                         </div>
                         <div class="d-flex align-items-center gap-2 small fw-bold text-dark">
-                            <div style="width: 12px; height: 12px; background: #3f6ad8; border-radius: 2px;"></div> Main Events (Internal)
+                            <div style="width: 12px; height: 12px; background: #3f6ad8; border-radius: 2px;"></div> Main Events
                         </div>
-                        <div class="d-flex align-items-center gap-2 small fw-bold text-dark">
-                            <div style="width: 12px; height: 12px; background: #f7b924; border-radius: 2px;"></div> Main Events (External)
-                        </div>
+                        
                     </div>
 
                     <div class="d-flex gap-3 align-items-center bg-white p-2 rounded border shadow-sm px-3">
