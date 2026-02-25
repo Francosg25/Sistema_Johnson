@@ -1,40 +1,138 @@
-<div th:fragment="sidebar(currentUri)" class="d-flex flex-column sidebar-je" style="min-height:100vh;">
+<div th:fragment="sidebar(currentUri)" class="d-flex flex-column sidebar-premium shadow-sm bg-white border-end" style="width: 240px; min-height: 100vh;">
+    
+    <style>
+        .sidebar-premium {
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            flex-shrink: 0; 
+        }
+        
+        .sidebar-brand {
+            padding: 1.67rem 1.67rem;
+            border-bottom: 1px solid rgba(0,0,0,0.05);
+        }
+        .brand-title {
+            font-weight: 900;
+            letter-spacing: -0.5px;
+            color: #1e293b;
+            font-size: 1.1rem;
+            line-height: 1;
+        }
+        .brand-subtitle {
+            font-size: 0.65rem;
+            font-weight: 700;
+            color: #1e293b;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            margin-top: 2px;
+        }
 
-    <div class="brand-logo">
-        <span class="fs-5">JOHNSON</span>
-        <span class="fs-5 light">ELECTRIC</span>
+        .sidebar-nav {
+            padding: 1rem 0.8rem;
+        }
+        .nav-link-premium {
+            display: flex;
+            align-items: center;
+            padding: 0.7rem 1rem;
+            border-radius: 8px;
+            color: #64748b;
+            font-weight: 600;
+            font-size: 0.9rem;
+            transition: all 0.2s ease;
+            margin-bottom: 0.2rem;
+            text-decoration: none;
+        }
+        .nav-link-premium i {
+            font-size: 1.1rem;
+            margin-right: 10px;
+            color: #94a3b8;
+            transition: all 0.2s ease;
+        }
+        
+        .nav-link-premium:hover {
+            background-color: #f8fafc;
+            color: #0f172a;
+            transform: translateX(2px);
+        }
+        .nav-link-premium:hover i {
+            color: #f57820;
+        }
+        
+        .nav-link-premium.active {
+            background: linear-gradient(135deg, #f57820 0%, #f57820 100%);
+            color: #ffffff !important;
+            box-shadow: 0 4px 10px rgba(59, 130, 246, 0.2);
+        }
+        .nav-link-premium.active i {
+            color: #ffffff !important;
+        }
+
+        .sidebar-footer-premium {
+            padding: 1rem 1.2rem;
+            border-top: 1px solid rgba(0,0,0,0.05);
+            background-color: #fdfdfd;
+        }
+        .avatar-premium {
+            width: 36px;
+            height: 36px;
+            background: linear-gradient(135deg, #f57820 0%, #e0600d 100%);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 1rem;
+            box-shadow: 0 2px 6px rgba(245, 120, 32, 0.2);
+        }
+        .logout-btn-premium {
+            color: #f57820;
+            font-size: 0.75rem;
+            font-weight: 700;
+            transition: color 0.2s;
+        }
+        .logout-btn-premium:hover {
+            color: #c95d12;
+            text-decoration: underline !important;
+        }
+    </style>
+
+    <div class="sidebar-brand d-flex align-items-center">
+        <div class="d-flex flex-column">
+            <span class="brand-title">JOHNSON <span style="font-weight: 400;">ELECTRIC</span></span>
+        </div>
     </div>
 
-    <ul class="nav nav-pills flex-column mb-auto mt-3">
+    <ul class="nav flex-column mb-auto sidebar-nav w-100">
         <li class="nav-item">
-            <a th:href="@{/}" class="nav-link" th:classappend="${currentUri == '/'} ? 'active' : ''">
+            <a th:href="@{/}" class="nav-link-premium" th:classappend="${currentUri == '/' || currentUri == '/index'} ? 'active' : ''">
                 <i class="bi bi-speedometer2"></i> Dashboard
             </a>
         </li>
         <li class="nav-item">
-            <a th:href="@{/timeline}" class="nav-link" th:classappend="${currentUri != null and currentUri.startsWith('/timeline')} ? 'active' : ''">
+            <a th:href="@{/timeline}" class="nav-link-premium" th:classappend="${currentUri != null and currentUri.startsWith('/timeline')} ? 'active' : ''">
                 <i class="bi bi-calendar3-range"></i> Project Timeline
             </a>
         </li>
         <li class="nav-item">
-            <a th:href="@{/reportes}" class="nav-link" th:classappend="${currentUri.startsWith('/reportes')} ? 'active' : ''">
+            <a th:href="@{/reportes}" class="nav-link-premium" th:classappend="${currentUri != null and currentUri.startsWith('/reportes')} ? 'active' : ''">
                 <i class="bi bi-graph-up"></i> Reportes
             </a>
         </li>
-        
     </ul>
 
-    <div class="sidebar-footer mt-auto">
+    <div class="sidebar-footer-premium mt-auto">
         <div class="d-flex align-items-center">
-            <div class="avatar-initial rounded-circle me-3">
-                <strong th:text="${#strings.substring(#authentication?.name, 0, 1)}">U</strong>
+            <div class="avatar-premium rounded-circle me-2">
+                <span th:text="${#strings.substring(#authentication?.name != null ? #authentication.name : 'U', 0, 1).toUpperCase()}">U</span>
             </div>
-            <div>
-                <strong class="d-block" th:text="${#authentication?.name ?: 'Invitado'}">Usuario</strong>
-                <form th:action="@{/logout}" method="post" style="display:inline;">
-                    <button type="submit" class="btn btn-link p-0 m-0 border-0 align-baseline small text-decoration-none" style="color: rgb(245, 120, 32);">Cerrar Sesión</button>
+            <div class="d-flex flex-column text-truncate" style="max-width: 150px;">
+                <span class="fw-bold text-dark text-truncate" style="font-size: 0.85rem; line-height: 1.1;" th:text="${#authentication?.name ?: 'Invitado'}">Usuario</span>
+                <form th:action="@{/logout}" method="post" class="m-0 p-0 mt-1">
+                    <button type="submit" class="btn btn-link p-0 m-0 border-0 align-baseline text-decoration-none logout-btn-premium">
+                        <i class="bi bi-box-arrow-right me-1"></i>Cerrar Sesión
+                    </button>
                 </form>
             </div>
         </div>
     </div>
+    
 </div>
