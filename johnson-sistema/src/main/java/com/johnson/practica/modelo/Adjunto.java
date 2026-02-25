@@ -2,7 +2,6 @@ package com.johnson.practica.modelo;
 
 import jakarta.persistence.*;
 import lombok.*;
-
 import java.time.LocalDateTime;
 
 @Entity
@@ -21,8 +20,8 @@ public class Adjunto {
 
     private String tipoContenido;
 
-    @Column(nullable = false)
-    private String ruta; 
+    @Column(name = "datos", nullable = false)
+    private byte[] datos;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "subido_por_id")
@@ -37,5 +36,4 @@ public class Adjunto {
     private ElementoChecklist elementoChecklist;
 
     private LocalDateTime subidoEn = LocalDateTime.now();
-    
 }

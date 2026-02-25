@@ -308,7 +308,6 @@ public class ChecklistServicio {
 
         if (needsAction == 0 && pendientesNormales == 0) return 0.0;
 
-        // Evaluar el Eje del Tiempo
         LocalDate hoy = LocalDate.now();
         LocalDate sop = p.getSop();
 

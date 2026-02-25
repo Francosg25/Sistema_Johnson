@@ -3,8 +3,8 @@
     --je-primary-orange: rgb(245, 120, 32);
     --je-primary-orange-hover: rgb(200, 100, 20);
     --je-text-dark: #000000;
-    --je-sidebar-bg: #212529; /* Dark background for the sidebar */
-    --je-sidebar-text: #f8f9fa; /* Light text for contrast */
+    --je-sidebar-bg: #212529; 
+    --je-sidebar-text: #f8f9fa; 
 }
 
 .sidebar-je {
@@ -33,7 +33,7 @@
 .sidebar-je .nav-link:hover,
 .sidebar-je .nav-link.active {
     background-color: var(--je-primary-orange);
-    color: #ffffff; /* White text on orange hover */
+    color: #ffffff;
 }
 
 .sidebar-je .nav-link i {
@@ -50,7 +50,7 @@
     width: 40px;
     height: 40px;
     background-color: var(--je-primary-orange); /* Orange background for avatar */
-    color: #ffffff; /* White text for initial */
+    color: #ffffff; 
     display: flex;
     justify-content: center;
     align-items: center;

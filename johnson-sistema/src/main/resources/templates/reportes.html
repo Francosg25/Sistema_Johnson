@@ -179,7 +179,7 @@
         const paletteWaterfall = ['#3b82f6', '#0ea5e9', '#10b981', '#f59e0b', '#8b5cf6'];
         const paletteStatus = ['#10b981', '#ef4444', '#f59e0b', '#3b82f6']; 
 
-        // --- 1. GRAFICA DE BARRAS ---
+        //1. GRAFICA DE BARRAS 
         const ctx1 = document.getElementById('chartProgreso');
         if(ctx1 && nombres.length > 0) {
             const context1 = ctx1.getContext('2d');
@@ -235,7 +235,7 @@
             });
         }
 
-        // --- 2. GRAFICA CASCADA ---
+        //2. GRAFICA CASCADA 
         const ctxCascada = document.getElementById('chartCascada');
         if (ctxCascada && datosCascada.length > 0) {
             
@@ -309,7 +309,7 @@
             });
         }
    
-        // --- 3. GRAFICA DONA ---
+        //3. GRAFICA DONA 
         const ctx3 = document.getElementById('chartVolumen');
         if (ctx3 && datosEstadoGlobal) {
             chartVolumenInstance = new Chart(ctx3, {
@@ -328,23 +328,21 @@
             });
         }
 
-        // --- 4. MEDIDOR DE RIESGO INDIVIDUAL Y GLOBAL  ---
+        //4. MEDIDOR DE RIESGO INDIVIDUAL
         const ctxRiesgo = document.getElementById('chartRiesgo');
         const selectRiesgo = document.getElementById('selectRiesgoProyecto');
 
-        if (ctxRiesgo && datosEstadoGlobal) {
+        if (ctxRiesgo) {
+            let currentRiskScore = 0;
             
-            let scoreRiesgoGlobal = parseFloat((datosEstadoGlobal.latePercentage).toFixed(1)); 
-            
-            let currentRiskScore = scoreRiesgoGlobal;
-            
-            function getRiskProps(score) {
+            function getRiskProps(score, isDefault) {
+                if (isDefault) return { color: '#e2e8f0', label: 'SIN SELECCIÓN' }; 
                 if (score >= 50) return { color: '#ef4444', label: 'ALTO RIESGO' };
                 if (score >= 20) return { color: '#f59e0b', label: 'RIESGO MEDIO' };
                 return { color: '#10b981', label: 'BAJO RIESGO' };
             }
 
-            let initProps = getRiskProps(currentRiskScore);
+            let initProps = getRiskProps(currentRiskScore, true);
             let currentRiskColor = initProps.color;
             let currentRiskLabel = initProps.label;
 
@@ -357,7 +355,10 @@
                     ctx.fillStyle = currentRiskColor;
                     ctx.textAlign = "center";
                     ctx.textBaseline = "middle";
-                    ctx.fillText(currentRiskScore + "%", width / 2, height - 40);
+                    
+                    let textValue = currentRiskScore === 0 && selectRiesgo.value === "" ? "--%" : currentRiskScore + "%";
+                    
+                    ctx.fillText(textValue, width / 2, height - 40);
                     ctx.font = "bold 14px 'Inter', sans-serif";
                     ctx.fillStyle = "#64748b";
                     ctx.fillText(currentRiskLabel, width / 2, height - 10);
@@ -370,7 +371,7 @@
                 data: {
                     labels: ['Riesgo', 'Seguro'],
                     datasets: [{
-                        data: [currentRiskScore, 100 - currentRiskScore],
+                        data: [currentRiskScore, 100], 
                         backgroundColor: [currentRiskColor, '#f1f5f9'], 
                         borderWidth: 0, borderRadius: 5,
                     }]
@@ -383,29 +384,24 @@
                 }
             });
 
-            if (selectRiesgo && reportes.length > 0) {
-                selectRiesgo.innerHTML = '<option value="GLOBAL">Global</option>';
+            if (selectRiesgo) {
+                selectRiesgo.innerHTML = '<option value="" selected disabled>Seleccione un proyecto</option>';
 
                 reportes.forEach((repo, index) => {
                     let opt = document.createElement('option');
                     opt.value = index; 
                     let n = repo.nombreProyecto;
-                    opt.textContent = n.length > 15 ? n.substring(0, 15) + '...' : n; 
+                    opt.textContent = n.length > 25 ? n.substring(0, 25) + '...' : n; 
                     selectRiesgo.appendChild(opt);
                 });
 
                 selectRiesgo.addEventListener('change', function() {
                     const val = this.value;
 
-                    if (val === 'GLOBAL') {
-                        currentRiskScore = scoreRiesgoGlobal;
-                    } else {
-                        
-                        let riesgoInd = reportes[val].riesgo;
-                        currentRiskScore = (riesgoInd !== undefined && riesgoInd !== null) ? parseFloat(riesgoInd.toFixed(1)) : 0; 
-                    }
+                    let riesgoInd = reportes[val].riesgo;
+                    currentRiskScore = (riesgoInd !== undefined && riesgoInd !== null) ? parseFloat(riesgoInd.toFixed(1)) : 0; 
 
-                    let newProps = getRiskProps(currentRiskScore);
+                    let newProps = getRiskProps(currentRiskScore, false);
                     currentRiskColor = newProps.color;
                     currentRiskLabel = newProps.label;
 
