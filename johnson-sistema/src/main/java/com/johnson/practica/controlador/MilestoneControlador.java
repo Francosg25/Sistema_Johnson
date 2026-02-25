@@ -32,7 +32,6 @@ public class MilestoneControlador {
         return hitoRepo.findByProyecto_Id(id);
     }
 
-    // CORRECCIÓN: Evita el error de recursión infinita creando un mapa limpio solo con lo que ocupa el HTML
     @GetMapping("/proyecto/{id}/elementos")
     public ResponseEntity<List<Map<String, Object>>> obtenerElementosProyecto(@PathVariable Long id) {
         List<com.johnson.practica.modelo.ElementoChecklist> elementos = elementoRepo.findByProyecto_Id(id);

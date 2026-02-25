@@ -17,11 +17,9 @@ public class ReportesControlador {
 
     @GetMapping
     public String verReportes(Model model) {
-        // Obtenemos los datos calculados para el reporte global por proyecto
         var datos = checklistServicio.generarReporteGlobal();
         model.addAttribute("datosGrafica", datos);
         
-        // Obtenemos los datos calculados para el reporte global por estado
         ReporteEstadoGlobal datosEstadoGlobal = checklistServicio.generarReporteEstadoGlobal();
         model.addAttribute("datosEstadoGlobal", datosEstadoGlobal);
 

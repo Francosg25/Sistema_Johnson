@@ -5,15 +5,16 @@ public class ReporteProgreso {
     private int totalEntregables;
     private int completados;
     private double porcentaje;
+    private Double riesgo; 
 
     public ReporteProgreso(String nombreProyecto, int totalEntregables, int completados, double porcentaje) {
         this.nombreProyecto = nombreProyecto;
         this.totalEntregables = totalEntregables;
         this.completados = completados;
         this.porcentaje = porcentaje;
+        this.riesgo = riesgo;
     }
 
-    // Getters
     public String getNombreProyecto() {
         return nombreProyecto;
     }
@@ -45,4 +46,13 @@ public class ReporteProgreso {
     public void setPorcentaje(double porcentaje) {
         this.porcentaje = porcentaje;
     }
+
+    public Double getRiesgo() { return riesgo; }
+
+    public void setRiesgo(Double riesgo) { 
+        this.riesgo = riesgo; 
+    }
+
+
+
 }

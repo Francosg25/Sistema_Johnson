@@ -49,14 +49,13 @@ public class ProyectoControlador {
 
         List<FaseVista> fases = new ArrayList<>();
         
-        // 1. Programa APQP 
+        // Programa APQP 
         fases.add(new FaseVista("prog", "Programa APQP", checklistServicio.obtenerHitosPrograma(id)));
         
-        // 2. Stage 2 (Checklist Detallado)
-        // Asegúrate que en la BD la fase se guardó como "2. Stage 2"
+        // Stage 2 
         fases.add(new FaseVista("s2", "Stage 2", checklistServicio.obtenerPorFase(id, "2. Stage 2")));
         
-        // 3. Gate Reviews (Validación + Conclusión)
+        // Stage 3, Stage 4, Stage 5 
         fases.add(new FaseVista("s3", "Stage 3", checklistServicio.obtenerPorFase(id, "3. Stage 3")));
         fases.add(new FaseVista("s4", "Stage 4", checklistServicio.obtenerPorFase(id, "4. Stage 4")));
         fases.add(new FaseVista("s5", "Stage 5", checklistServicio.obtenerPorFase(id, "5. Stage 5")));

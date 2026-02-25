@@ -1,5 +1,167 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security"><head th:replace="~{fragments/head :: head}"></head>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <div th:replace="~{fragments/head :: head}"></div>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        body {
+            font-family: 'Inter', system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background-color: #f4f6f9; 
+            color: #495057; 
+        }
+        h1, h2, h3, h4, h5, h6, .h1, .h2, .h3, .h4, .h5, .h6 {
+            color: #2b3035;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+        }
+
+        .card {
+            border: none !important;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.04), 0 1px 4px rgba(0, 0, 0, 0.06) !important;
+            background-color: #fff;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            overflow: hidden; 
+        }
+
+        .nav-tabs {
+            border-bottom: 2px solid #e9ecef !important;
+            gap: 4px; 
+        }
+        .nav-tabs .nav-link {
+            border: none !important;
+            color: #6c757d;
+            font-weight: 600;
+            padding: 0.8rem 1.5rem;
+            border-radius: 10px 10px 0 0 !important;
+            background-color: #f1f3f5 !important;
+            transition: all 0.2s ease;
+        }
+        .nav-tabs .nav-link:hover {
+            color: #0d6efd;
+            background-color: #e9ecef !important;
+        }
+        .nav-tabs .nav-link.active {
+            color: #0d6efd !important;
+            background-color: #fff !important;
+            border-bottom: 3px solid #0d6efd !important;
+            box-shadow: 0 -4px 10px rgba(0,0,0,0.02) !important;
+        }
+
+        .table {
+            border-collapse: separate;
+            border-spacing: 0;
+            margin-bottom: 0;
+        }
+        .table thead th {
+            border-bottom: 2px solid #edf2f7 !important;
+            font-weight: 700;
+            color: #6c757d;
+            letter-spacing: 0.03em;
+            background-color: #f8f9fa !important;
+        }
+        .table td, .table th {
+            border-color: #f0f0f0;
+        }
+        .table-hover tbody tr:hover td {
+            background-color: #f9fafb !important; 
+        }
+        .table-group-header td {
+            background-color: #f1f3f5 !important;
+            border-top: 2px solid #e9ecef !important;
+            border-bottom: 2px solid #e9ecef !important;
+            letter-spacing: 0.02em;
+        }
+
+        .form-control, .form-select {
+            border-radius: 6px;
+            transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+        }
+        .form-control:focus, .form-select:focus {
+            border-color: #ec9d6b;
+            box-shadow: 0 0 0 3px rgba(13, 110, 253, 0.12);
+        }
+        .border-0:focus {
+            box-shadow: 0 0 0 2px rgba(13, 110, 253, 0.25) inset !important;
+            border-radius: 6px !important;
+            background-color: #fff !important;
+        }
+
+        /* --- BOTONES --- */
+        .btn {
+            font-weight: 600;
+            border-radius: 8px;
+            transition: all 0.2s ease;
+        }
+        .btn-sm { border-radius: 6px; }
+        
+        .btn-je-primary, .btn-primary {
+            background: linear-gradient(to bottom, #f5831fd6, #f5831fd6) !important;
+            border: none !important;
+            color: white !important;
+            box-shadow: 0 2px 6px rgba(13, 110, 253, 0.3) !important;
+        }
+        .btn-je-primary:hover, .btn-primary:hover {
+            background: linear-gradient(to bottom, #f5831fd6, #f5831fd6) !important;
+            box-shadow: 0 4px 10px rgba(13, 110, 253, 0.4) !important;
+            transform: translateY(-1px);
+        }
+
+        /* --- BOTONES DE RADIO (SI / NO / NA) --- */
+        .btn-group .btn {
+            border-radius: 6px;
+            margin: 0 2px;
+            box-shadow: none !important;
+        }
+        .btn-check:checked + .btn {
+            box-shadow: 0 2px 5px rgba(0,0,0,0.15) !important;
+            transform: scale(1.02);
+            font-weight: 800;
+        }
+
+        /* --- MODALES SUAVES --- */
+        .modal-content {
+            border-radius: 16px;
+            border: none;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+        .modal-header { border-radius: 16px 16px 0 0; }
+
+        /* =========================================
+           COLORES CHAMPION (EXCLUSIVAMENTE LOS DE TU CLASE JAVA)
+           ========================================= */
+        .badge { padding: 0.4em 0.6em; border-radius: 6px; font-weight: 700; letter-spacing: 0.02em; }
+        
+        /* Calidad */
+        .champ-qe, .champ-quality-engineer { background-color: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        /* Diseño */
+        .champ-de, .champ-design-engineer { background-color: #cce5ff; color: #004085; border: 1px solid #b8daff; }
+        /* Procesos */
+        .champ-pe, .champ-process-engineer { background-color: #fff3cd; color: #856404; border: 1px solid #ffeeba; }
+        /* Calidad / Procesos Mixto */
+        .champ-qe-pe { background-color: #d1ecf1; color: #0c5460; border: 1px solid #bee5eb; }
+        /* Proyectos */
+        .champ-proj, .champ-project-engineer { background-color: #e2e3e5; color: #383d41; border: 1px solid #d6d8db; }
+        /* Compras */
+        .champ-scs-procurement { background-color: #e6e6fa; color: #6f42c1; border: 1px solid #d6d6f5; }
+        /* Finanzas */
+        .champ-finance-rep { background-color: #d5f5e3; color: #27ae60; border: 1px solid #abebc6; }
+        /* Todos / NA */
+        .champ-all { background-color: #f8f9fa; color: #6c757d; border: 1px solid #e9ecef; }
+        .champ-n-a { background-color: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+        
+        /* COLORES DE STATUS - FUERTES Y CLAROS */
+        .status-on-time { color: #198754 !important; font-weight: 800 !important; }
+        .status-late { color: #dc3545 !important; font-weight: 800 !important; }
+        .status-decision { color: #0dcaf0 !important; font-weight: 800 !important; }
+        .status-needs-action { color: #ffc107 !important; font-weight: 800 !important; text-shadow: 0px 0px 1px rgba(255,193,7,0.5); }
+        .status-default { color: #6c757d !important; font-weight: 600 !important; }
+    </style>
+</head>
 <body class="bg-light">
 
     <div class="d-flex" id="wrapper">
@@ -16,12 +178,12 @@
                     <div class="d-flex justify-content-between align-items-end mb-4">
                         <div>
                             <h6 class="text-uppercase text-muted small fw-bold mb-1">Proyecto Activo</h6>
-                            <span class="badge bg-secondary fs-6" th:text="${proyecto.numeroParte}">NUM</span>
+                            <span class="badge bg-secondary fs-6 shadow-sm" th:text="${proyecto.numeroParte}">NUM</span>
                             <span class="ms-2 fw-bold text-dark fs-5" th:text="${proyecto.nombre}">Nombre</span>
                         </div>
                         <div>
-                            <a href="/" class="btn btn-outline-secondary btn-sm me-2">Volver</a>
-                            <button type="submit" class="btn btn-je-primary btn-sm" sec:authorize="hasAnyRole('ADMIN', 'CHAMPION')">
+                            <a href="/" class="btn btn-outline-secondary btn-sm me-2 shadow-sm fw-bold">Volver</a>
+                            <button type="submit" class="btn btn-je-primary btn-sm shadow-sm" sec:authorize="hasAnyRole('ADMIN', 'CHAMPION')">
                                 <i class="bi bi-save me-2"></i>Guardar Cambios
                             </button>
                         </div>
@@ -73,24 +235,24 @@
                                             <th:block th:each="item, iterStat : ${fase.items}">
                                                 <tr th:if="${iterStat.index == 0 or !fase.items[iterStat.index - 1].etapaVisual.equals(item.etapaVisual)}" class="table-group-header">
                                                     <td colspan="8" class="fw-bold text-uppercase py-2 px-3 text-dark">
-                                                        <i class="bi bi-collection me-2"></i><span th:text="${item.etapaVisual}"></span>
+                                                        <i class="bi bi-collection me-2 text-primary"></i><span th:text="${item.etapaVisual}"></span>
                                                     </td>
                                                 </tr>
                                                 
                                                 <tr>
                                                     <td class="text-center fw-bold" rowspan="2" style="vertical-align: middle;">
-                                                        <span class="badge w-100" th:classappend="${item.champion == 'QE/PE' ? 'champ-qe-pe' : 'champ-' + #strings.toLowerCase(item.champion.split('/')[0])}" th:text="${item.champion}"></span>
+                                                        <span class="badge w-100 shadow-sm" th:classappend="'champ-' + ${#strings.toLowerCase(#strings.replace(item.champion, ' ', '-')).replace('/', '-')}" th:text="${item.champion}"></span>
                                                     </td>
 
                                                     <td rowspan="2" style="vertical-align: middle; background-color: #fffacd;">
                                                         <span class="d-block fw-bold text-dark" th:text="${item.nombre}"></span>
                                                     </td>
-                                                    <td class="fw-bold small ps-2">Plan</td>
+                                                    <td class="fw-bold small ps-2 text-muted">Plan</td>
                                                     <td class="text-center">
-                                                        <input type="date" class="form-control form-control-sm border-0 bg-transparent text-center p-0" th:name="'fechaPlan-' + ${item.id}" th:value="${item.fechaPlan}">
+                                                        <input type="date" class="form-control form-control-sm border-0 bg-transparent text-center p-0 fw-bold text-secondary" th:name="'fechaPlan-' + ${item.id}" th:value="${item.fechaPlan}">
                                                     </td>
                                                     <td class="text-center" rowspan="2" style="vertical-align: middle;">
-                                                        <select class="form-select form-select-sm border-0 fw-bold" th:name="'controlEntregable-' + ${item.id}"
+                                                        <select class="form-select form-select-sm border-0 fw-bold text-center" th:name="'controlEntregable-' + ${item.id}"
                                                                 th:classappend="${
                                                                     item.controlEntregable == 'Closed on time' ? 'status-on-time' :
                                                                     (item.controlEntregable == 'Closed late' ? 'status-late' :
@@ -104,7 +266,7 @@
                                                         </select>
                                                     </td>
                                                     <td class="text-center" rowspan="2" style="vertical-align: middle;">
-                                                        <select class="form-select form-select-sm border-0 fw-bold" th:name="'score-' + ${item.id}"
+                                                        <select class="form-select form-select-sm border-0 fw-bold text-center" th:name="'score-' + ${item.id}"
                                                                 th:classappend="${item.score == 'OK' ? 'status-on-time' : (item.score == 'N/A' ? 'status-default' : 'status-default')}">
                                                             <option value="" th:selected="${item.score == '' || item.score == null}"></option> 
                                                             <option th:selected="${item.score == 'OK'}" value="OK">OK</option>
@@ -114,20 +276,20 @@
                                                     
                                                     <td rowspan="2" style="max-width: 125px; vertical-align: middle;">
                                                         <div class="d-flex justify-content-between align-items-center bg-white rounded p-1 border shadow-sm"
-                                                             style="cursor: pointer;" th:onclick="abrirEditorComentarios([[${item.id}]], [[${item.codigo}]])">
+                                                             style="cursor: pointer; transition: 0.2s;" onmouseover="this.style.borderColor='#80bdff'" onmouseout="this.style.borderColor='#dee2e6'" th:onclick="abrirEditorComentarios([[${item.id}]], [[${item.codigo}]])">
                                                             <div class="text-truncate small ms-2 w-100" th:id="'preview-comentario-' + ${item.id}"
                                                                  th:classappend="${item.comentario == null or item.comentario.isEmpty() ? 'text-muted fst-italic' : 'text-dark fw-bold'}"
                                                                  th:text="${item.comentario == null or item.comentario.isEmpty() ? '' : item.comentario}">
                                                             </div>
                                                             <button type="button" 
-        th:id="'btn-comentario-' + ${item.id}"
-        th:class="${item.comentario != null and !item.comentario.empty} ? 
-                  'btn btn-sm btn-primary border-0 rounded-circle ms-1 shadow-sm flex-shrink-0' : 
-                  'btn btn-sm btn-light text-secondary border-0 rounded-circle ms-1 shadow-sm flex-shrink-0'"
-        th:attr="onclick=|abrirEditorComentarios('${item.id}', '${item.codigo}')|">
-    <i th:id="'btn-icon-comentario-' + ${item.id}" 
-       th:class="${item.comentario != null and !item.comentario.empty} ? 'bi bi-chat-text-fill' : 'bi bi-pencil'"></i>
-</button>
+                                                                    th:id="'btn-comentario-' + ${item.id}"
+                                                                    th:class="${item.comentario != null and !item.comentario.empty} ? 
+                                                                              'btn btn-sm btn-primary border-0 rounded-circle ms-1 shadow-sm flex-shrink-0' : 
+                                                                              'btn btn-sm btn-light text-secondary border-0 rounded-circle ms-1 shadow-sm flex-shrink-0'"
+                                                                    th:attr="onclick=|abrirEditorComentarios('${item.id}', '${item.codigo}')|">
+                                                                <i th:id="'btn-icon-comentario-' + ${item.id}" 
+                                                                   th:class="${item.comentario != null and !item.comentario.empty} ? 'bi bi-chat-text-fill' : 'bi bi-pencil'"></i>
+                                                            </button>
                                                         </div>
                                                         <textarea class="d-none" th:name="'comentario-' + ${item.id}" th:id="'real-comentario-' + ${item.id}" th:text="${item.comentario}"></textarea>
                                                     </td>
@@ -143,9 +305,9 @@
                                                 </tr>
                                                 
                                                 <tr>
-                                                    <td class="fw-bold small ps-2">Real</td>
+                                                    <td class="fw-bold small ps-2 text-muted">Real</td>
                                                     <td class="text-center">
-                                                        <input type="date" class="form-control form-control-sm border-0 bg-light-subtle text-center p-0" th:name="'fechaReal-' + ${item.id}" th:value="${item.fechaReal}">
+                                                        <input type="date" class="form-control form-control-sm border-0 bg-light-subtle text-center p-0 fw-bold" th:name="'fechaReal-' + ${item.id}" th:value="${item.fechaReal}">
                                                     </td>
                                                 </tr>
                                             </th:block>
@@ -161,12 +323,12 @@
                                     <table class="table table-hover mb-0 align-middle" style="font-size: 0.85rem;">
                                         <thead class="bg-light small fw-bold text-uppercase">
                                             <tr>
-                                                <th style="width: 10%;">ID</th>
+                                                <th style="width: 10%;" class="text-center">ID</th>
                                                 <th style="width: 35%;">Requisito / Requirement</th>
-                                                <th style="width: 15%;">Cumplimiento</th>
-                                                <th style="width: 25%;">Comentarios</th>
-                                                <th style="width: 10%;">Responsable</th>
-                                                <th style="width: 10%;">Fecha</th>
+                                                <th style="width: 15%;" class="text-center">Cumplimiento</th>
+                                                <th style="width: 20%;">Comentarios</th>
+                                                <th style="width: 10%;" class="text-center">Responsable</th>
+                                                <th style="width: 10%;" class="text-center">Fecha</th>
                                                 <th class="text-center" style="width: 50px;" title="Evidencias">
                                                     <i class="bi bi-paperclip fs-5 text-secondary"></i>
                                                 </th>
@@ -174,35 +336,35 @@
                                         </thead>
                                         <tbody>
                                             <th:block th:each="item, iterStat : ${fase.items}">
-                                                <tr th:if="${iterStat.index == 0 || !fase.items[iterStat.index - 1].grupo.equals(item.grupo)}" class="table-secondary">
-                                                    <td colspan="7" class="fw-bold text-uppercase small py-1 px-3 text-dark">
-                                                        <i class="bi bi-folder2-open me-2"></i><span th:text="${item.grupo}">Grupo</span>
+                                                <tr th:if="${iterStat.index == 0 || !fase.items[iterStat.index - 1].grupo.equals(item.grupo)}" class="table-group-header">
+                                                    <td colspan="7" class="fw-bold text-uppercase small py-2 px-3 text-dark">
+                                                        <i class="bi bi-folder2-open me-2 text-primary"></i><span th:text="${item.grupo}">Grupo</span>
                                                     </td>
                                                 </tr>
                                                 <tr>
                                                     <td class="text-muted fw-bold text-center" th:text="${item.codigo}"></td>
                                                     <td th:text="${item.nombre}" class="fw-bold text-dark"></td>
                                                     <td class="text-center">
-                                                        <div class="btn-group btn-group-sm w-100">
+                                                        <div class="btn-group btn-group-sm w-100 shadow-sm">
                                                             <input type="radio" class="btn-check" th:name="'estado-' + ${item.id}" value="OK" th:id="'si_'+${item.id}" th:checked="${item.estado == 'OK'}">
-                                                            <label class="btn btn-outline-success" th:for="'si_'+${item.id}">Si</label>
+                                                            <label class="btn btn-outline-success fw-bold" th:for="'si_'+${item.id}">Si</label>
                                                             <input type="radio" class="btn-check" th:name="'estado-' + ${item.id}" value="NOK" th:id="'no_'+${item.id}" th:checked="${item.estado == 'NOK'}">
-                                                            <label class="btn btn-outline-danger" th:for="'no_'+${item.id}">No</label>
+                                                            <label class="btn btn-outline-danger fw-bold" th:for="'no_'+${item.id}">No</label>
                                                             <input type="radio" class="btn-check" th:name="'estado-' + ${item.id}" value="NA" th:id="'na_'+${item.id}" th:checked="${item.estado == 'NA'}">
-                                                            <label class="btn btn-outline-secondary" th:for="'na_'+${item.id}">NA</label>
+                                                            <label class="btn btn-outline-secondary fw-bold" th:for="'na_'+${item.id}">NA</label>
                                                         </div>
                                                     </td>
                                                     
                                                     <td style="max-width: 250px; vertical-align: middle;">
                                                         <div class="d-flex justify-content-between align-items-center bg-white rounded p-1 border shadow-sm"
-                                                             style="cursor: pointer;" th:onclick="abrirEditorComentarios([[${item.id}]], [[${item.codigo}]])">
+                                                             style="cursor: pointer; transition: 0.2s;" onmouseover="this.style.borderColor='#80bdff'" onmouseout="this.style.borderColor='#dee2e6'" th:onclick="abrirEditorComentarios([[${item.id}]], [[${item.codigo}]])">
                                                             <div class="text-truncate small ms-2 w-100" th:id="'preview-comentario-' + ${item.id}"
                                                                  th:classappend="${item.comentario == null or item.comentario.isEmpty() ? 'text-muted fst-italic' : 'text-dark fw-bold'}"
                                                                  th:text="${item.comentario == null or item.comentario.isEmpty() ? '' : item.comentario}">
                                                             </div>
                                                             <button type="button" th:id="'btn-comentario-' + ${item.id}" 
-                                                                    class="btn btn-sm border-0 rounded-circle ms-1 flex-shrink-0"
-                                                                    th:classappend="${item.comentario == null or item.comentario.isEmpty() ? 'btn-light text-secondary' : 'bg-primary-subtle text-primary'}"
+                                                                    class="btn btn-sm border-0 rounded-circle ms-1 flex-shrink-0 shadow-sm"
+                                                                    th:classappend="${item.comentario == null or item.comentario.isEmpty() ? 'btn-light text-secondary' : 'btn-primary text-white'}"
                                                                     title="Ver/Editar Observaciones">
                                                                 <i th:id="'btn-icon-comentario-' + ${item.id}" 
                                                                    th:class="${item.comentario == null or item.comentario.isEmpty() ? 'bi bi-pencil' : 'bi bi-chat-text-fill'}"></i>
@@ -211,8 +373,10 @@
                                                         <textarea class="d-none" th:name="'comentario-' + ${item.id}" th:id="'real-comentario-' + ${item.id}" th:text="${item.comentario}"></textarea>
                                                     </td>
 
-                                                    <td class="text-center small text-primary fw-bold" th:text="${item.champion}"></td>
-                                                    <td class="text-center"><input type="date" class="form-control form-control-sm border-0 text-center p-0" th:name="'fechaReal-' + ${item.id}" th:value="${item.fechaReal}"></td>
+                                                    <td class="text-center fw-bold">
+                                                        <span class="badge w-100 shadow-sm" th:classappend="'champ-' + ${#strings.toLowerCase(#strings.replace(item.champion, ' ', '-')).replace('/', '-')}" th:text="${item.champion}"></span>
+                                                    </td>
+                                                    <td class="text-center"><input type="date" class="form-control form-control-sm border-0 text-center p-0 fw-bold text-dark bg-transparent" th:name="'fechaReal-' + ${item.id}" th:value="${item.fechaReal}"></td>
                                                     
                                                     <td class="text-center">
                                                         <button type="button" class="btn btn-sm btn-light border shadow-sm rounded-circle" 
@@ -232,24 +396,24 @@
 
                             <div th:if="${!fase.nombre.contains('Programa') && !fase.nombre.contains('Stage 2')}" class="card border-0 shadow-sm">
                                <div class="card-body p-4">
-                                    <div class="p-3 mb-4 rounded" style="background-color: #f8f9fa;">
-                                        <h4 class="fw-bold text-dark mb-3" th:text="'Revisión de Etapa / ' + ${fase.nombre}"></h4>
-                                        <div class="row g-3">
-                                            <div class="col-md-6"><strong class="me-2">Cliente/Customer:</strong> <span th:text="${proyecto.cliente}"></span></div>
-                                            <div class="col-md-6"><strong class="me-2">Fecha/Date:</strong> <span></span></div>
-                                            <div class="col-md-6"><strong class="me-2">Nombre del proyecto/Project Name:</strong> <span th:text="${proyecto.nombre}"></span></div>
-                                            <div class="col-md-6"><strong class="me-2">Número de parte/Part Number:</strong> <span th:text="${proyecto.numeroParte}"></span></div>
+                                    <div class="p-3 mb-4 rounded shadow-sm border" style="background-color: #f8f9fa;">
+                                        <h5 class="fw-bold text-dark mb-3"><i class="bi bi-search text-primary me-2"></i>Revisión de Etapa / <span class="text-primary" th:text="${fase.nombre}"></span></h5>
+                                        <div class="row g-3 small">
+                                            <div class="col-md-6"><strong class="me-2 text-muted">Cliente/Customer:</strong> <span class="fw-bold" th:text="${proyecto.cliente}"></span></div>
+                                            <div class="col-md-6"><strong class="me-2 text-muted">Fecha/Date:</strong> <span class="fw-bold"></span></div>
+                                            <div class="col-md-6"><strong class="me-2 text-muted">Nombre del proyecto:</strong> <span class="fw-bold" th:text="${proyecto.nombre}"></span></div>
+                                            <div class="col-md-6"><strong class="me-2 text-muted">Número de parte:</strong> <span class="fw-bold" th:text="${proyecto.numeroParte}"></span></div>
                                         </div>
                                     </div>
                                     <h6 class="text-uppercase fw-bold text-secondary mb-3 border-bottom pb-2">1. Validación de Requerimientos</h6>
-                                    <div class="table-responsive mb-5">
-                                        <table class="table table-bordered mb-0 align-middle">
+                                    <div class="table-responsive mb-5 card shadow-sm border-0">
+                                        <table class="table table-hover mb-0 align-middle">
                                             <thead class="bg-light small fw-bold text-center">
                                                 <tr>
                                                     <th style="width: 50px;" title="Evidencias"><i class="bi bi-paperclip fs-5 text-secondary"></i></th>
-                                                    <th style="width: 5%;">Si/Yes</th>
-                                                    <th style="width: 5%;">No</th>
-                                                    <th>Requerimiento/Requirement</th>
+                                                    <th style="width: 8%;">Si / Yes</th>
+                                                    <th style="width: 8%;">No</th>
+                                                    <th class="text-start ps-3">Requerimiento/Requirement</th>
                                                     <th style="width: 30%;">Comentarios/Comments</th>
                                                 </tr>
                                             </thead>
@@ -262,20 +426,24 @@
                                                             <i class="bi bi-cloud-arrow-up-fill text-primary"></i>
                                                         </button>
                                                     </td>
-                                                    <td class="text-center"><input class="form-check-input" type="radio" th:name="'estado-' + ${item.id}" value="OK" th:checked="${item.estado == 'OK'}"></td>
-                                                    <td class="text-center"><input class="form-check-input" type="radio" th:name="'estado-' + ${item.id}" value="NOK" th:checked="${item.estado == 'NOK'}"></td>
-                                                    <td class="fw-bold" th:text="${item.nombre}"></td>
+                                                    <td class="text-center">
+                                                        <input class="form-check-input fs-5 shadow-sm border-success" type="radio" th:name="'estado-' + ${item.id}" value="OK" th:checked="${item.estado == 'OK'}">
+                                                    </td>
+                                                    <td class="text-center">
+                                                        <input class="form-check-input fs-5 shadow-sm border-danger" type="radio" th:name="'estado-' + ${item.id}" value="NOK" th:checked="${item.estado == 'NOK'}">
+                                                    </td>
+                                                    <td class="fw-bold text-dark ps-3" th:text="${item.nombre}"></td>
                                                     
-                                                    <td style="max-width: 250px; vertical-align: middle;">
+                                                    <td style="max-width: 250px; vertical-align: middle; padding-right: 15px;">
                                                         <div class="d-flex justify-content-between align-items-center bg-white rounded p-1 border shadow-sm"
-                                                             style="cursor: pointer;" th:onclick="abrirEditorComentarios([[${item.id}]], [[${item.codigo}]])">
+                                                             style="cursor: pointer; transition: 0.2s;" onmouseover="this.style.borderColor='#80bdff'" onmouseout="this.style.borderColor='#dee2e6'" th:onclick="abrirEditorComentarios([[${item.id}]], [[${item.codigo}]])">
                                                             <div class="text-truncate small ms-2 w-100" th:id="'preview-comentario-' + ${item.id}"
                                                                  th:classappend="${item.comentario == null or item.comentario.isEmpty() ? 'text-muted fst-italic' : 'text-dark fw-bold'}"
                                                                  th:text="${item.comentario == null or item.comentario.isEmpty() ? '' : item.comentario}">
                                                             </div>
                                                             <button type="button" th:id="'btn-comentario-' + ${item.id}" 
-                                                                    class="btn btn-sm border-0 rounded-circle ms-1 flex-shrink-0"
-                                                                    th:classappend="${item.comentario == null or item.comentario.isEmpty() ? 'btn-light text-secondary' : 'bg-primary-subtle text-primary'}"
+                                                                    class="btn btn-sm border-0 rounded-circle ms-1 flex-shrink-0 shadow-sm"
+                                                                    th:classappend="${item.comentario == null or item.comentario.isEmpty() ? 'btn-light text-secondary' : 'btn-primary text-white'}"
                                                                     title="Ver/Editar Observaciones">
                                                                 <i th:id="'btn-icon-comentario-' + ${item.id}" 
                                                                    th:class="${item.comentario == null or item.comentario.isEmpty() ? 'bi bi-pencil' : 'bi bi-chat-text-fill'}"></i>
@@ -288,32 +456,32 @@
                                         </table>
                                     </div>
                                     <h6 class="text-uppercase fw-bold text-secondary mb-3 border-bottom pb-2">2. Conclusión de la Etapa</h6>
-                                    <div class="table-responsive mb-5">
-                                        <table class="table table-bordered mb-0 align-middle">
+                                    <div class="table-responsive mb-5 card shadow-sm border-0">
+                                        <table class="table table-hover mb-0 align-middle">
                                             <thead class="bg-light small fw-bold text-center">
                                                 <tr>
                                                     <th style="width: 15%;">Fecha / Date</th>
                                                     <th style="width: 20%;">Conclusión / Conclusion</th>
-                                                    <th>Descripción</th>
-                                                    <th style="width: 25%;">Comentarios /Comments</th>
+                                                    <th class="text-start ps-3">Descripción</th>
+                                                    <th style="width: 30%;">Comentarios /Comments</th>
                                                 </tr>
                                             </thead>
                                             <tbody>
                                                 <tr th:each="item : ${fase.items}" th:if="${item.grupo == 'Conclusión'}">
-                                                    <td><input type="date" class="form-control form-control-sm border-0 text-center" th:name="'fechaReal-' + ${item.id}" th:value="${item.fechaReal}"></td>
-                                                    <td><strong th:text="${item.nombre.split(':')[0]}"></strong></td>
-                                                    <td th:text="${item.nombre.split(':').length > 1 ? item.nombre.split(':')[1] : ''}"></td>
+                                                    <td class="text-center"><input type="date" class="form-control form-control-sm border shadow-sm text-center fw-bold text-primary" th:name="'fechaReal-' + ${item.id}" th:value="${item.fechaReal}"></td>
+                                                    <td class="text-center"><span class="badge bg-secondary px-3 py-2 shadow-sm" th:text="${item.nombre.split(':')[0]}"></span></td>
+                                                    <td class="text-muted fw-bold ps-3" th:text="${item.nombre.split(':').length > 1 ? item.nombre.split(':')[1] : ''}"></td>
                                                     
-                                                    <td style="max-width: 250px; vertical-align: middle;">
+                                                    <td style="max-width: 250px; vertical-align: middle; padding-right: 15px;">
                                                         <div class="d-flex justify-content-between align-items-center bg-white rounded p-1 border shadow-sm"
-                                                             style="cursor: pointer;" th:onclick="abrirEditorComentarios([[${item.id}]], [[${item.codigo}]])">
+                                                             style="cursor: pointer; transition: 0.2s;" onmouseover="this.style.borderColor='#80bdff'" onmouseout="this.style.borderColor='#dee2e6'" th:onclick="abrirEditorComentarios([[${item.id}]], [[${item.codigo}]])">
                                                             <div class="text-truncate small ms-2 w-100" th:id="'preview-comentario-' + ${item.id}"
                                                                  th:classappend="${item.comentario == null or item.comentario.isEmpty() ? 'text-muted fst-italic' : 'text-dark fw-bold'}"
                                                                  th:text="${item.comentario == null or item.comentario.isEmpty() ? '' : item.comentario}">
                                                             </div>
                                                             <button type="button" th:id="'btn-comentario-' + ${item.id}" 
-                                                                    class="btn btn-sm border-0 rounded-circle ms-1 flex-shrink-0"
-                                                                    th:classappend="${item.comentario == null or item.comentario.isEmpty() ? 'btn-light text-secondary' : 'bg-primary-subtle text-primary'}"
+                                                                    class="btn btn-sm border-0 rounded-circle ms-1 flex-shrink-0 shadow-sm"
+                                                                    th:classappend="${item.comentario == null or item.comentario.isEmpty() ? 'btn-light text-secondary' : 'btn-primary text-white'}"
                                                                     title="Ver/Editar Observaciones">
                                                                 <i th:id="'btn-icon-comentario-' + ${item.id}" 
                                                                    th:class="${item.comentario == null or item.comentario.isEmpty() ? 'bi bi-pencil' : 'bi bi-chat-text-fill'}"></i>
@@ -326,32 +494,43 @@
                                         </table>
                                     </div>
                                     <h6 class="text-uppercase fw-bold text-secondary mb-3 border-bottom pb-2">3. Aprobaciones / Approvals</h6>
-                                    <div th:if="${fase.nombre == 'Stage 3'}">
-                                        <strong class="d-block mb-2">Stage 3 Responsibles</strong>
-                                        <table class="table table-sm table-bordered small">
-                                            <thead class="bg-light"><tr><th>Position</th><th>Name</th><th>Email</th></tr></thead>
-                                            <tbody>
-                                                <tr><td>Project Engineer</td><td>Eduardo Tejeida</td><td>eduardo.tejeida@johnsonelectric.com</td></tr>
-                                                <tr><td>Quality Engineer</td><td>Gabriel Romero</td><td>gabriel.romero@johnsonelectric.com</td></tr>
-                                                <tr><td>Process Engineer</td><td>Jesus Urena</td><td>jesus.urena@johnsonelectric.com</td></tr>
-                                                <tr><td>Project Leader</td><td>Eduardo Tejeida</td><td>eduardo.tejeida@johnsonelectric.com</td></tr>
-                                            </tbody>
-                                        </table>
-                                        <strong class="d-block mb-2 mt-4">Manufacturing site Management</strong>
-                                        <table class="table table-sm table-bordered small">
-                                            <thead class="bg-light"><tr><th>Position</th><th>Name</th><th>Email</th></tr></thead>
-                                            <tbody>
-                                                <tr><td>Operations Manager</td><td>Fermin Flores</td><td>fermin.flores@johnsonelectric.com</td></tr>
-                                                <tr><td>Quality Manager</td><td>Rodrigo Rabelo</td><td>rodrigo.rabelo@johnsonelectric.com</td></tr>
-                                                <tr><td>Materials Manager</td><td>Juan Carlos Arizpe</td><td>Juancarlos.arizpe@johnsonelectric.com</td></tr>
-                                                <tr><td>SCS Manager</td><td>Kevin Swisher</td><td>kevin.swisher@jonsonelectric.com</td></tr>
-                                                <tr><td>Finance Manager</td><td>Bernardo Marines</td><td>Bernardo.marines@johnsonelectric.com</td></tr>
-                                                <tr><td>HR Manager</td><td>Claudia Castañeda</td><td>claudia.castaneda@johnsonelectric.com</td></tr>
-                                            </tbody>
-                                        </table>
+                                    <div th:if="${fase.nombre == 'Stage 3'}" class="row g-4">
+                                        <div class="col-md-6">
+                                            <div class="card shadow-sm border-0 h-100">
+                                                <div class="card-header bg-light fw-bold text-primary"><i class="bi bi-people-fill me-2"></i>Stage 3 Responsibles</div>
+                                                <div class="card-body p-0">
+                                                    <table class="table table-hover table-sm mb-0 small border-0">
+                                                        <tbody>
+                                                            <tr><td class="fw-bold text-muted ps-3 w-50 border-0">Project Engineer</td><td class="fw-bold border-0">Eduardo Tejeida</td></tr>
+                                                            <tr><td class="fw-bold text-muted ps-3">Quality Engineer</td><td class="fw-bold">Gabriel Romero</td></tr>
+                                                            <tr><td class="fw-bold text-muted ps-3">Process Engineer</td><td class="fw-bold">Jesus Urena</td></tr>
+                                                            <tr><td class="fw-bold text-muted ps-3">Project Leader</td><td class="fw-bold">Eduardo Tejeida</td></tr>
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="card shadow-sm border-0 h-100">
+                                                <div class="card-header bg-light fw-bold text-primary"><i class="bi bi-building me-2"></i>Manufacturing Site Management</div>
+                                                <div class="card-body p-0">
+                                                    <table class="table table-hover table-sm mb-0 small border-0">
+                                                        <tbody>
+                                                            <tr><td class="fw-bold text-muted ps-3 w-50 border-0">Operations Manager</td><td class="fw-bold border-0">Fermin Flores</td></tr>
+                                                            <tr><td class="fw-bold text-muted ps-3">Quality Manager</td><td class="fw-bold">Rodrigo Rabelo</td></tr>
+                                                            <tr><td class="fw-bold text-muted ps-3">Materials Manager</td><td class="fw-bold">Juan Carlos Arizpe</td></tr>
+                                                            <tr><td class="fw-bold text-muted ps-3">SCS Manager</td><td class="fw-bold">Kevin Swisher</td></tr>
+                                                            <tr><td class="fw-bold text-muted ps-3">Finance Manager</td><td class="fw-bold">Bernardo Marines</td></tr>
+                                                            <tr><td class="fw-bold text-muted ps-3 border-bottom-0">HR Manager</td><td class="fw-bold border-bottom-0">Claudia Castañeda</td></tr>
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                            </div>
+                                        </div>
                                     </div>
-                                    <div th:if="${fase.nombre != 'Stage 3'}" class="text-muted">
-                                        (Tabla de Aprobaciones para <span th:text="${fase.nombre}"></span> no definida)
+                                    <div th:if="${fase.nombre != 'Stage 3'}" class="text-muted text-center py-4 bg-light rounded border border-dashed">
+                                        <i class="bi bi-journal-x fs-2 d-block mb-2 opacity-50"></i>
+                                        Tabla de Aprobaciones para <strong th:text="${fase.nombre}"></strong> no requerida en esta vista.
                                     </div>
                                 </div>
                             </div>
@@ -376,11 +555,11 @@
                                     <div class="modal-body pt-4">
                                         <div th:id="'alerta-' + ${item.id}"></div>
                                         <form th:action="@{'/evidencias/subir-ajax/' + ${item.id}}" th:data-item-id="${item.id}" method="post" enctype="multipart/form-data" class="mb-4 form-evidencia-ajax" sec:authorize="hasAnyRole('ADMIN', 'CHAMPION')">
-                                            <div class="p-3 border rounded bg-white text-center border-primary border-opacity-25" style="border-style: dashed !important;">
+                                            <div class="p-4 border rounded bg-light text-center border-primary border-opacity-25" style="border-style: dashed !important; border-width: 2px !important;">
                                                 <i class="bi bi-cloud-upload fs-1 text-primary mb-2 d-block"></i>
                                                 <label th:for="'archivo_' + ${item.id}" class="form-label fw-bold mb-1">Selecciona un archivo</label>
                                                 <p class="text-muted small mb-3">PDF, Excel, Word (Max 15MB)</p>
-                                                <input class="form-control form-control-sm" type="file" th:id="'archivo_' + ${item.id}" name="archivo" required>
+                                                <input class="form-control form-control-sm shadow-sm" type="file" th:id="'archivo_' + ${item.id}" name="archivo" required>
                                                 <button type="submit" class="btn btn-primary btn-sm w-100 mt-3 fw-bold shadow-sm btn-subir">Subir Archivo</button>
                                             </div>
                                         </form>
@@ -390,19 +569,19 @@
                                             <li th:if="${item.adjuntos == null or item.adjuntos.isEmpty()}" th:id="'msg-vacio-' + ${item.id}" class="list-group-item d-flex justify-content-between align-items-center px-0 bg-transparent border-bottom-dashed text-muted fst-italic">
                                                 No hay evidencias subidas aún.
                                             </li>
-                                           <li th:each="adj : ${item.adjuntos}" class="list-group-item d-flex justify-content-between align-items-center px-0 bg-transparent border-bottom-dashed">
-                                        <div class="d-flex align-items-center text-truncate pe-3">
-                                                <i class="bi bi-file-earmark-check-fill text-success fs-5 me-2"></i>
-                                                <span class="text-truncate fw-bold text-dark" th:text="${adj.nombreArchivo}"></span>
-                                        </div>
-                                            <div class="d-flex gap-2">
-                                                        <a th:href="@{'/evidencias/descargar/' + ${adj.id}}" class="btn btn-sm btn-outline-primary border-0 rounded-circle shadow-sm" title="Descargar">
-                                                            <i class="bi bi-download"></i>
-                                                        </a>
-                                                    <button type="button" class="btn btn-sm btn-outline-danger border-0 rounded-circle shadow-sm" title="Eliminar" 
-                                                th:onclick="'eliminarEvidenciaAjax(' + ${adj.id} + ', this, ' + ${item.id} + ')'"
-                                                    sec:authorize="hasAnyRole('ADMIN', 'CHAMPION')">
-                                            <i class="bi bi-trash"></i>
+                                           <li th:each="adj : ${item.adjuntos}" class="list-group-item d-flex justify-content-between align-items-center px-0 bg-transparent border-bottom-dashed py-2">
+                                                <div class="d-flex align-items-center text-truncate pe-3">
+                                                        <i class="bi bi-file-earmark-check-fill text-success fs-4 me-2"></i>
+                                                        <span class="text-truncate fw-bold text-dark" th:text="${adj.nombreArchivo}"></span>
+                                                </div>
+                                                <div class="d-flex gap-2">
+                                                    <a th:href="@{'/evidencias/descargar/' + ${adj.id}}" class="btn btn-sm btn-light border rounded-circle shadow-sm text-primary" title="Descargar">
+                                                        <i class="bi bi-download"></i>
+                                                    </a>
+                                                    <button type="button" class="btn btn-sm btn-light border rounded-circle shadow-sm text-danger" title="Eliminar" 
+                                                            th:onclick="'eliminarEvidenciaAjax(' + ${adj.id} + ', this, ' + ${item.id} + ')'"
+                                                            sec:authorize="hasAnyRole('ADMIN', 'CHAMPION')">
+                                                        <i class="bi bi-trash"></i>
                                                     </button>
                                                 </div>
                                             </li>
@@ -420,12 +599,12 @@
                             <div class="modal-header bg-light border-bottom-0 pb-3">
                                 <h5 class="modal-title fw-bold text-dark">
                                     <i class="bi bi-card-text text-primary me-2"></i>Observaciones / Remarks
-                                    <span id="editor-codigo" class="badge bg-secondary ms-2 fw-normal"></span>
+                                    <span id="editor-codigo" class="badge bg-secondary ms-2 fw-normal shadow-sm"></span>
                                 </h5>
                                 <button type="button" class="btn-close shadow-none" data-bs-dismiss="modal" aria-label="Close"></button>
                             </div>
                             <div class="modal-body pt-0 bg-light">
-                                <div class="p-3 bg-white rounded border">
+                                <div class="p-3 bg-white rounded border shadow-sm">
                                     <p class="small text-muted mb-2"><i class="bi bi-info-circle me-1"></i> Puedes usar múltiples líneas, listas y fechas.</p>
                                     <input type="hidden" id="editor-item-id">
                                     <textarea id="editor-textarea" class="form-control shadow-none border-secondary-subtle" rows="8" 
@@ -433,7 +612,7 @@
                                 </div>
                             </div>
                             <div class="modal-footer bg-light border-top-0">
-                                <button type="button" class="btn btn-outline-secondary btn-sm fw-bold px-3" data-bs-dismiss="modal">Cancelar</button>
+                                <button type="button" class="btn btn-outline-secondary btn-sm fw-bold px-3 shadow-sm" data-bs-dismiss="modal">Cancelar</button>
                                 <button type="button" class="btn btn-primary btn-sm fw-bold px-4 shadow-sm" onclick="guardarComentarioModal()">
                                     <i class="bi bi-check2-circle me-2"></i> Aplicar al Checklist
                                 </button>
@@ -448,13 +627,13 @@
 
     <div class="modal fade" id="modalConfirmarEliminacion" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered modal-sm">
-        <div class="modal-content border-0 shadow">
+        <div class="modal-content border-0 shadow-lg">
             <div class="modal-body text-center p-4">
                 <i class="bi bi-exclamation-circle text-danger display-4 mb-3 d-block"></i>
                 <h6 class="fw-bold text-dark mb-2">¿Eliminar Evidencia?</h6>
                 <p class="text-muted small mb-4">El archivo se borrará permanentemente.</p>
                 <div class="d-flex justify-content-center gap-2">
-                    <button type="button" class="btn btn-light btn-sm px-3 border shadow-sm" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-light btn-sm px-3 border shadow-sm fw-bold" data-bs-dismiss="modal">Cancelar</button>
                     <button type="button" class="btn btn-danger btn-sm px-4 fw-bold shadow-sm" id="btnConfirmarEliminar">Eliminar</button>
                 </div>
             </div>
@@ -530,15 +709,15 @@
                 const buttonGroup = radioInput.closest('.btn-group');
                 if (!buttonGroup) return;
                 buttonGroup.querySelectorAll('label').forEach(label => {
-                    label.classList.remove('btn-success', 'btn-danger','btn-secondary');
+                    label.classList.remove('btn-success', 'btn-danger','btn-secondary', 'text-white');
                 });
                 const label = buttonGroup.querySelector(`label[for="${radioInput.id}"]`);
                 if (label) {
                     label.classList.remove('btn-outline-success', 'btn-outline-danger', 'btn-outline-secondary');
                     switch (radioInput.value) {
-                        case 'OK': label.classList.add('btn-success'); break;
-                        case 'NOK': label.classList.add('btn-danger'); break;
-                        case 'NA': label.classList.add('btn-secondary'); break;
+                        case 'OK': label.classList.add('btn-success', 'text-white'); break;
+                        case 'NOK': label.classList.add('btn-danger', 'text-white'); break;
+                        case 'NA': label.classList.add('btn-secondary', 'text-white'); break;
                     }
                 }
             }
@@ -595,17 +774,17 @@
 
                             let nombreArchivo = formData.get('archivo').name;
                             let nuevoLi = document.createElement('li');
-                            nuevoLi.className = 'list-group-item d-flex justify-content-between align-items-center px-0 bg-transparent border-bottom-dashed fadeIn-animation';
+                            nuevoLi.className = 'list-group-item d-flex justify-content-between align-items-center px-0 bg-transparent border-bottom-dashed py-2';
                             nuevoLi.innerHTML = `
                                 <div class="d-flex align-items-center text-truncate pe-3">
-                                    <i class="bi bi-file-earmark-check-fill text-success fs-5 me-2"></i>
+                                    <i class="bi bi-file-earmark-check-fill text-success fs-4 me-2"></i>
                                     <span class="text-truncate fw-bold text-dark">${nombreArchivo}</span>
                                 </div>
                                 <div class="d-flex gap-2">
-                                    <a href="/evidencias/descargar/${data.adjuntoId}" class="btn btn-sm btn-outline-primary border-0 rounded-circle shadow-sm" title="Descargar">
+                                    <a href="/evidencias/descargar/${data.adjuntoId}" class="btn btn-sm btn-light border rounded-circle shadow-sm text-primary" title="Descargar">
                                         <i class="bi bi-download"></i>
                                     </a>
-                                    <button type="button" class="btn btn-sm btn-outline-danger border-0 rounded-circle shadow-sm" title="Eliminar" 
+                                    <button type="button" class="btn btn-sm btn-light border rounded-circle shadow-sm text-danger" title="Eliminar" 
                                             onclick="eliminarEvidenciaAjax(${data.adjuntoId}, this, ${itemId})">
                                         <i class="bi bi-trash"></i>
                                     </button>
@@ -672,14 +851,13 @@
             const btnIcon = document.getElementById('btn-icon-comentario-' + itemId);
             const btnContenedor = document.getElementById('btn-comentario-' + itemId);
 
-            // 1. Actualizar el input oculto
             if(textareaReal) textareaReal.value = nuevoTexto;
 
-            // 2. Actualizar visualmente el botón y el preview
             if (nuevoTexto.trim() === "") {
                 if(previewDiv) {
                     previewDiv.innerText = "";
                     previewDiv.classList.add('text-muted', 'fst-italic');
+                    previewDiv.classList.remove('text-dark', 'fw-bold');
                 }
                 if(btnIcon) btnIcon.className = 'bi bi-pencil';
                 if(btnContenedor) btnContenedor.className = 'btn btn-sm btn-light text-secondary border-0 rounded-circle ms-1 shadow-sm flex-shrink-0';
@@ -689,12 +867,10 @@
                     previewDiv.classList.remove('text-muted', 'fst-italic');
                     previewDiv.classList.add('text-dark', 'fw-bold');
                 }
-                if(btnIcon) btnIcon.className = 'bi bi-chat-text-fill';
-                // Siempre azul pequeño con texto
+                if(btnIcon) btnIcon.className = 'bi bi-chat-text-fill text-white';
                 if(btnContenedor) btnContenedor.className = 'btn btn-sm btn-primary border-0 rounded-circle ms-1 shadow-sm flex-shrink-0';
             }
 
-            // Cerrar modal
             const modalElement = document.getElementById('modalEditorComentarios');
             const modalInstance = bootstrap.Modal.getInstance(modalElement);
             modalInstance.hide();
@@ -703,7 +879,6 @@
 
 
     <script>
-        // Variable global para manejar el modal de Bootstrap
         let modalConfirmacionEliminar = null;
 
         function eliminarEvidenciaAjax(adjuntoId, botonElemento, itemId) {
@@ -727,7 +902,6 @@
                     formData.append('_csrf', csrfTokenInput.value);
                 }
 
-                // Ejecutar la petición al servidor
                 fetch('/evidencias/eliminar-ajax/' + adjuntoId, {
                     method: 'POST',
                     body: formData
@@ -735,11 +909,9 @@
                 .then(response => response.json())
                 .then(data => {
                     if(data.exito) {
-                        // A. Eliminar el archivo de la vista
                         let liElement = botonElemento.closest('li');
                         liElement.remove();
 
-                        // B. Verificar si hay que mostrar el mensaje de "No hay evidencias"
                         let listaUl = document.getElementById('lista-' + itemId);
                         let archivosRestantes = listaUl.querySelectorAll('li:not([id^="msg-vacio-"])').length;
                         
@@ -764,3 +936,5 @@
             };
         }
     </script>
+</body>
+</html>

@@ -17,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.Map;
 import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Arrays; 
@@ -83,18 +84,21 @@ public class ChecklistServicio {
 
     // --- 3. MÉTODOS DE REPORTES ---
 
-    public List<ReporteProgreso> generarReporteGlobal() {
+   public List<ReporteProgreso> generarReporteGlobal() {
         List<Proyecto> proyectos = proyectoRepositorio.findAll();
         List<ReporteProgreso> reporte = new ArrayList<>();
 
         for (Proyecto p : proyectos) {
-            List<ElementoChecklist> items = repositorio.findByProyecto_IdAndFaseStartingWithOrderByCodigoAsc(p.getId(), "0");
-            int total = items.size(); 
+           
+            List<ElementoChecklist> todosLosItemsDelProyecto = repositorio.findByProyecto_Id(p.getId());
+            
+            List<ElementoChecklist> itemsFase0 = repositorio.findByProyecto_IdAndFaseStartingWithOrderByCodigoAsc(p.getId(), "0");
+            
+            int total = itemsFase0.size(); 
             int ok = 0;
 
-            for (ElementoChecklist item : items) {
+            for (ElementoChecklist item : itemsFase0) {
                 String score = item.getScore();
-            
                 if ("OK".equalsIgnoreCase(score)){
                     ok++;
                 }
@@ -104,10 +108,15 @@ public class ChecklistServicio {
             if (total > 0) {
                 porcentaje = ((double) ok / total) * 100;
             }
-        
             porcentaje = Math.round(porcentaje * 10.0) / 10.0;
 
-            reporte.add(new ReporteProgreso(p.getNombre(), total, ok, porcentaje));
+            ReporteProgreso reporteProgreso = new ReporteProgreso(p.getNombre(), total, ok, porcentaje);
+            
+            double riesgo = calcularRiesgoDinamico(p, todosLosItemsDelProyecto);
+            
+            reporteProgreso.setRiesgo(riesgo);
+
+            reporte.add(reporteProgreso);
         }
         return reporte;
     }
@@ -276,7 +285,64 @@ public class ChecklistServicio {
         data.put("items", items);
         return data;
     }
+
+    private double calcularRiesgoDinamico(Proyecto p, List<ElementoChecklist> elementos) {
+        if (elementos == null || elementos.isEmpty()) return 0.0;
+
+        // Filtrar solo las etapas pre-SOP (Etapa 1 a 4)
+        List<ElementoChecklist> preSop = elementos.stream()
+                .filter(e -> e.getEtapaVisual() != null && !e.getEtapaVisual().toUpperCase().contains("ETAPA 5"))
+                .toList();
+
+        long totalTareas = preSop.size();
+        if (totalTareas == 0) return 0.0;
+
+        // Conteo de tareas por estatus
+        long needsAction = preSop.stream()
+                .filter(e -> "NEEDS ACTION".equalsIgnoreCase(e.getControlEntregable()))
+                .count();
+
+        long pendientesNormales = preSop.stream()
+                .filter(e -> !"OK".equalsIgnoreCase(e.getScore()) && !"NEEDS ACTION".equalsIgnoreCase(e.getControlEntregable()))
+                .count();
+
+        if (needsAction == 0 && pendientesNormales == 0) return 0.0;
+
+        // Evaluar el Eje del Tiempo
+        LocalDate hoy = LocalDate.now();
+        LocalDate sop = p.getSop();
+
+        if (sop == null) {
+            return Math.min(100.0, ((needsAction * 2.0 + pendientesNormales) * 100.0) / totalTareas);
+        }
+
+        long diasParaSop = ChronoUnit.DAYS.between(hoy, sop);
+
+        if (diasParaSop <= 0) return 100.0;
+
+        // Lógica del Multiplicador de Urgencia basado en el tiempo restante
+        double multiplicadorTiempo = 1.0;
+
+        if (diasParaSop <= 7) {
+            multiplicadorTiempo = 3.0;  
+        } else if (diasParaSop <= 15) {
+            multiplicadorTiempo = 1.8;  
+        } else if (diasParaSop <= 30) {
+            multiplicadorTiempo = 1.0;  
+        } else {
+            multiplicadorTiempo = 0.4; 
+        }
+
+        double riesgoTotal = 0.0;
+
+        // El porcentaje de tareas que faltan se multiplica por la urgencia del calendario
+        double porcentajeFaltante = (pendientesNormales * 100.0) / totalTareas;
+        riesgoTotal += (porcentajeFaltante * multiplicadorTiempo);
+
+        // Los "Needs Action" exigen escalación, por lo que suman riesgo directo 
+        double castigoNeedsAction = (needsAction * 100.0 / totalTareas) * 2.5; 
+        riesgoTotal += castigoNeedsAction;
+
+        return Math.min(100.0, Math.round(riesgoTotal * 10.0) / 10.0);
+    }
 }
-
-
-

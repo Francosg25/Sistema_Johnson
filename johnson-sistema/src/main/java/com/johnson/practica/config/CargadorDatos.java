@@ -75,7 +75,6 @@ public class CargadorDatos implements CommandLineRunner {
             usuarioServicio.guardarUsuario(visitante);
             logger.info("Usuario 'visitante' creado y guardado.");
         } else {
-            // FORZAR ACTUALIZACIÓN SIEMPRE
             logger.info("Forzando re-encriptación de contraseña del visitante...");
             Usuario visitante = visitanteOpt.get();
             visitante.setPassword("visitantepass");

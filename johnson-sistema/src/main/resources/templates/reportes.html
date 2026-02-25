@@ -1,7 +1,70 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-<head th:replace="~{fragments/head :: head}"></head>
-<body class="bg-light">
+<head>
+    <div th:replace="~{fragments/head :: head}"></div>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&display=swap" rel="stylesheet">
+    
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f4f6f9;
+        }
+        
+        .premium-card {
+            border: none;
+            border-radius: 16px;
+            background: #ffffff;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.04), 0 1px 3px rgba(0,0,0,0.02);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            height: 100%; 
+        }
+        .premium-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 25px rgba(0, 0, 0, 0.08);
+        }
+        .premium-header {
+            background: transparent;
+            border-bottom: 1px solid rgba(0,0,0,0.04);
+            padding: 1.25rem 1.5rem;
+        }
+        .premium-title {
+            font-size: 1.05rem;
+            font-weight: 700;
+            color: #2b3035;
+            letter-spacing: -0.01em;
+            display: flex;
+            align-items: center;
+        }
+        .premium-icon {
+            padding: 8px 10px;
+            border-radius: 10px;
+            background: rgba(63, 106, 216, 0.1);
+            color: #3f6ad8;
+            margin-right: 12px;
+            font-size: 1.1rem;
+        }
+        
+        /* Contenedores de Gráficos con Scroll Inteligente */
+        .chart-container {
+            position: relative;
+            padding: 1.5rem;
+            width: 100%;
+        }
+        .waterfall-container {
+            overflow-y: auto; 
+            overflow-x: hidden;
+            padding-right: 10px;
+        }
+        /* Custom Scrollbar */
+        .waterfall-container::-webkit-scrollbar { width: 8px; }
+        .waterfall-container::-webkit-scrollbar-track { background: #f1f1f1; border-radius: 10px; }
+        .waterfall-container::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+        .waterfall-container::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+    </style>
+</head>
+<body>
 
     <div class="d-flex" id="wrapper">
         <div id="sidebar-wrapper"><div th:replace="~{fragments/sidebar :: sidebar(currentUri='reportes')}"></div></div>
@@ -11,14 +74,17 @@
 
             <main class="container-fluid p-4">
 
-                <div class="row g-4 mt-2 mb-5">
+                <div class="row mb-4">
                     <div class="col-12">
-                        <div class="card border-0 shadow-sm">
-                            <div class="card-header bg-white py-3">
-                                <h6 class="m-0 fw-bold text-primary"><i class="bi bi-bar-chart-line me-2"></i>Progreso por Etapas y Proyectos</h6>
+                        <div class="card premium-card">
+                            <div class="card-header premium-header">
+                                <h6 class="m-0 premium-title">
+                                    <i></i>
+                                    Progreso por Etapas y Proyectos
+                                </h6>
                             </div>
-                            <div class="card-body">
-                                <div style="min-height: 450px; height: 450px; width: 100%;">
+                            <div class="card-body waterfall-container" style="max-height: 600px;">
+                                <div id="cascadaInnerContainer" style="position: relative; width: 100%;">
                                     <canvas id="chartCascada"></canvas>
                                 </div>
                             </div>
@@ -26,20 +92,55 @@
                     </div>
                 </div>
 
-                <div class="row g-4">
-                    <div class="col-lg-8">
-                        <div class="card border-0 shadow-sm h-100">
-                            <div class="card-header bg-white py-3">
-                                <h6 class="m-0 fw-bold text-primary"><i class="bi bi-bar-chart-fill me-2"></i>Comparativa de Avance (%)</h6>
+                <div class="row mb-4">
+                    <div class="col-12">
+                        <div class="card premium-card">
+                            <div class="card-header premium-header">
+                                <h6 class="m-0 premium-title">
+                                    <i class="bi bi-bar-chart-fill premium-icon" style="background: rgba(59, 130, 246, 0.1); color: #3b82f6;"></i>
+                                    Comparativa de Avance Global (%)
+                                </h6>
                             </div>
-                            <div class="card-body">
+                            <div class="card-body chart-container" style="height: 400px;">
                                 <canvas id="chartProgreso"></canvas>
                             </div>
                         </div>
                     </div>
+                </div>
 
+                <div class="row g-4 mb-5">
                     
-                    
+                    <div class="col-md-6">
+                        <div class="card premium-card">
+                            <div class="card-header premium-header">
+                                <h6 class="m-0 premium-title">
+                                    <i class="bi bi-pie-chart-fill premium-icon" style="background: rgba(16, 185, 129, 0.1); color: #10b981;"></i>
+                                    Salud de Tareas
+                                </h6>
+                            </div>
+                            <div class="card-body chart-container d-flex align-items-center justify-content-center" style="height: 350px;">
+                                <canvas id="chartVolumen" style="max-height: 280px;"></canvas>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="card premium-card">
+                            <div class="card-header premium-header d-flex justify-content-between align-items-center">
+                                <h6 class="m-0 premium-title">
+                                    <i class="bi bi-speedometer2 premium-icon" style="background: rgba(239, 68, 68, 0.1); color: #ef4444;"></i>
+                                    Riesgo
+                                </h6>
+                                <select id="selectRiesgoProyecto" class="form-select form-select-sm border-0 bg-light fw-bold text-secondary shadow-none" style="width: auto; max-width: 600px; cursor: pointer;">
+                                    <option value="GLOBAL">Global</option>
+                                </select>
+                            </div>
+                            <div class="card-body chart-container d-flex align-items-center justify-content-center flex-column pb-4" style="height: 350px;">
+                                <canvas id="chartRiesgo" style="max-height: 250px;"></canvas>
+                            </div>
+                        </div>
+                    </div>
+
                 </div>
 
             </main>
@@ -59,225 +160,261 @@
         var nombres = reportes.map(r => r.nombreProyecto);
         var porcentajes = reportes.map(r => r.porcentaje);
 
-        // Global Chart instances
         let chartProgresoInstance = null;
         let chartCascadaInstance = null;
         let chartVolumenInstance = null;
+        let chartRiesgoInstance = null;
       
-        const fuenteNativa = window.getComputedStyle(document.body).fontFamily;
-        Chart.defaults.font.family = fuenteNativa;
+        Chart.defaults.font.family = "'Inter', sans-serif";
         Chart.defaults.font.size = 13; 
-        Chart.defaults.color = '#495057'; 
-        Chart.defaults.devicePixelRatio = window.devicePixelRatio || 1;
-        const paletaColores = ['#74B9FF', '#77DD77', '#FFB347', '#FF6961', '#B19CD9'];
-        const paletaBordes = ['#0984E3', '#00B894', '#E17055', '#D63031', '#6C5CE7'];
+        Chart.defaults.color = '#64748b'; 
+        
+        Chart.defaults.plugins.tooltip.backgroundColor = 'rgba(15, 23, 42, 0.95)';
+        Chart.defaults.plugins.tooltip.titleFont = { size: 14, weight: 'bold' };
+        Chart.defaults.plugins.tooltip.bodyFont = { size: 13 };
+        Chart.defaults.plugins.tooltip.padding = 12;
+        Chart.defaults.plugins.tooltip.cornerRadius = 8;
+        Chart.defaults.plugins.tooltip.usePointStyle = true;
 
-        const coloresBarras = nombres.map((_, index) => paletaColores[index % 5]);
-        const coloresBordesBarras = nombres.map((_, index) => paletaBordes[index % 5]);
+        const paletteWaterfall = ['#3b82f6', '#0ea5e9', '#10b981', '#f59e0b', '#8b5cf6'];
+        const paletteStatus = ['#10b981', '#ef4444', '#f59e0b', '#3b82f6']; 
 
+        // --- 1. GRAFICA DE BARRAS ---
         const ctx1 = document.getElementById('chartProgreso');
-        if(ctx1) {
-            chartProgresoInstance = new Chart(ctx1, {
+        if(ctx1 && nombres.length > 0) {
+            const context1 = ctx1.getContext('2d');
+            let gradientBlue = context1.createLinearGradient(0, 0, 0, 400);
+            gradientBlue.addColorStop(0, 'rgba(59, 130, 246, 1)');   
+            gradientBlue.addColorStop(1, 'rgba(59, 130, 246, 0.1)'); 
+
+            chartProgresoInstance = new Chart(context1, {
                 type: 'bar',
                 data: {
                     labels: nombres,
                     datasets: [{
-                        label: '% Completado',
+                        label: 'Avance %',
                         data: porcentajes,
-                        backgroundColor: coloresBarras,
-                        borderColor: coloresBordesBarras,
+                        backgroundColor: gradientBlue,
+                        borderColor: '#3b82f6',
                         borderWidth: 1,
-                        borderRadius: 5
+                        borderRadius: { topLeft: 6, topRight: 6 },
+                        barPercentage: 0.6, 
+                        categoryPercentage: 0.8
                     }]
                 },
                 options: {
-                    responsive: true,
-                    scales: { y: { beginAtZero: true, max: 100 } }
+                    responsive: true, 
+                    maintainAspectRatio: false,
+                    plugins: { 
+                        legend: { display: false },
+                        tooltip: {
+                            callbacks: {
+                                title: function(context) {
+                                    return nombres[context[0].dataIndex];
+                                }
+                            }
+                        }
+                    },
+                    scales: { 
+                        y: { beginAtZero: true, max: 100, border: { display: false }, ticks: { callback: v => v + '%' } },
+                        x: { 
+                            grid: { display: false }, 
+                            border: { display: false },
+                            ticks: {
+                                maxRotation: 0, 
+                                minRotation: 0,
+                                font: { size: 13 },
+                                callback: function(value, index, values) {
+                                    let label = nombres[index] || '';
+                                    return label.length > 40 ? label.substring(0, 25) + '..' : label;
+                                }
+                            }
+                        }
+                    }
                 }
             });
         }
 
-        const projectNamesCascada = datosCascada.map(d => d.nombreProyecto);
-        const sopsCascada = datosCascada.map(d => d.sop); 
-
-        // Agregamos el arreglo para la nueva Etapa 1
-        const s1Data = [];
-        const s2Data = [];
-        const s3Data = [];
-        const s4Data = [];
-        const s5Data = [];
-        const totalData = [];
-
-        datosCascada.forEach(d => {
-            const cappedPorcentajesPorFase = d.porcentajesPorFase.map(pct => Math.min(pct, 100));
-
-            // Ahora dividimos entre 5 porque tenemos 5 etapas (cada una aporta max 20% al total global)
-            let p1 = (cappedPorcentajesPorFase[0] || 0) / 5;
-            let p2 = (cappedPorcentajesPorFase[1] || 0) / 5;
-            let p3 = (cappedPorcentajesPorFase[2] || 0) / 5;
-            let p4 = (cappedPorcentajesPorFase[3] || 0) / 5;
-            let p5 = (cappedPorcentajesPorFase[4] || 0) / 5;
-
-            // Asegurar que no excedan el 20% de aportación cada una
-            p1 = Math.min(p1, 20);
-            p2 = Math.min(p2, 20);
-            p3 = Math.min(p3, 20);
-            p4 = Math.min(p4, 20);
-            p5 = Math.min(p5, 20);
-
-            // Calcular dónde empieza y termina cada bloque (efecto escalera)
-            let end1 = p1;
-            let end2 = end1 + p2;
-            let end3 = end2 + p3;
-            let end4 = end3 + p4;
-            let end5 = end4 + p5;
-
-            // Pusheamos los bloques de inicio y fin para cada etapa
-            s1Data.push(p1 > 0 ? [0, end1] : null);
-            s2Data.push(p2 > 0 ? [end1, end2] : null);
-            s3Data.push(p3 > 0 ? [end2, end3] : null);
-            s4Data.push(p4 > 0 ? [end3, end4] : null);
-            s5Data.push(p5 > 0 ? [end4, end5] : null);
-            
-            // La barra gris total
-            totalData.push([0, end5]); 
-        });
-
-        // Agregamos la Etapa 1 a los datasets y aprovechamos la paleta de 5 colores
-        const cascadaDatasets = [
-            { label: 'ETAPA 1', data: s1Data, backgroundColor: paletaColores[0], borderRadius: 3 },
-            { label: 'ETAPA 2', data: s2Data, backgroundColor: paletaColores[1], borderRadius: 3 },
-            { label: 'ETAPA 3', data: s3Data, backgroundColor: paletaColores[2], borderRadius: 3 },
-            { label: 'ETAPA 4', data: s4Data, backgroundColor: paletaColores[3], borderRadius: 3 },
-            { label: 'ETAPA 5', data: s5Data, backgroundColor: paletaColores[4], borderRadius: 3 },
-            { label: 'TOTAL',   data: totalData, backgroundColor: '#808080', borderRadius: 3 }
-        ];
-
+        // --- 2. GRAFICA CASCADA ---
         const ctxCascada = document.getElementById('chartCascada');
-        if (ctxCascada) {
+        if (ctxCascada && datosCascada.length > 0) {
+            
+            const alturaMinimaPorBarra = 120; 
+            const alturaCalculada = Math.max(datosCascada.length * alturaMinimaPorBarra, 350);
+            document.getElementById('cascadaInnerContainer').style.height = alturaCalculada + 'px';
+
+            const projectNamesCascada = datosCascada.map(d => {
+                let n = d.nombreProyecto;
+                return n.length > 25 ? n.substring(0, 25) + '...' : n;
+            });
+            const sopsCascada = datosCascada.map(d => d.sop); 
+            const s1Data = [], s2Data = [], s3Data = [], s4Data = [], s5Data = [], totalData = [];
+
+            datosCascada.forEach(d => {
+                const capped = d.porcentajesPorFase.map(pct => Math.min(pct, 100));
+                let p1 = Math.min((capped[0] || 0) / 5, 20); let p2 = Math.min((capped[1] || 0) / 5, 20);
+                let p3 = Math.min((capped[2] || 0) / 5, 20); let p4 = Math.min((capped[3] || 0) / 5, 20);
+                let p5 = Math.min((capped[4] || 0) / 5, 20);
+                let end1 = p1; let end2 = end1 + p2; let end3 = end2 + p3; let end4 = end3 + p4; let end5 = end4 + p5;
+
+                s1Data.push(p1 > 0 ? [0, end1] : null); s2Data.push(p2 > 0 ? [end1, end2] : null);
+                s3Data.push(p3 > 0 ? [end2, end3] : null); s4Data.push(p4 > 0 ? [end3, end4] : null);
+                s5Data.push(p5 > 0 ? [end4, end5] : null); totalData.push([0, end5]); 
+            });
+
             chartCascadaInstance = new Chart(ctxCascada, {
                 type: 'bar',
                 data: {
                     labels: projectNamesCascada,
-                    datasets: cascadaDatasets
+                    datasets: [
+                        { label: 'ETAPA 1', data: s1Data, backgroundColor: paletteWaterfall[0], borderRadius: 4, barPercentage: 0.8 }, 
+                        { label: 'ETAPA 2', data: s2Data, backgroundColor: paletteWaterfall[1], borderRadius: 4, barPercentage: 0.8 },
+                        { label: 'ETAPA 3', data: s3Data, backgroundColor: paletteWaterfall[2], borderRadius: 4, barPercentage: 0.8 },
+                        { label: 'ETAPA 4', data: s4Data, backgroundColor: paletteWaterfall[3], borderRadius: 4, barPercentage: 0.8 },
+                        { label: 'ETAPA 5', data: s5Data, backgroundColor: paletteWaterfall[4], borderRadius: 4, barPercentage: 0.8 },
+                        { label: 'TOTAL',   data: totalData, backgroundColor: '#cbd5e1', borderRadius: 4, barPercentage: 0.8 }
+                    ]
                 },
                 plugins: [{
                     id: 'sopLabels',
-                    afterDatasetsDraw(chart, args, pluginOptions) {
+                    afterDatasetsDraw(chart) {
                         const { ctx, data } = chart;
                         const totalDatasetIndex = data.datasets.findIndex(ds => ds.label === 'TOTAL');
                         if (totalDatasetIndex === -1) return;
-
                         const meta = chart.getDatasetMeta(totalDatasetIndex);
-                        
-                        ctx.save();
-                        ctx.font = 'bold 12px system-ui';
-                        ctx.fillStyle = '#dc3545'; // Color rojo
-                        ctx.textAlign = 'left';
-                        ctx.textBaseline = 'middle';
-
+                        ctx.save(); ctx.textBaseline = 'middle';
                         meta.data.forEach((bar, index) => {
+                            if(!sopsCascada[index]) return; 
                             const textoSOP = "SOP: " + sopsCascada[index];
-                            // Dibuja el SOP a la derecha de la barra gris final
-                            ctx.fillText(textoSOP, bar.x + 10, bar.y);
+                            ctx.font = 'bold 12px Inter, sans-serif'; 
+                            const textWidth = ctx.measureText(textoSOP).width;
+                            ctx.fillStyle = 'rgba(239, 68, 68, 0.1)';
+                            ctx.beginPath(); ctx.roundRect(bar.x + 12, bar.y - 14, textWidth + 16, 28, 6); ctx.fill();
+                            ctx.fillStyle = '#ef4444'; ctx.fillText(textoSOP, bar.x + 20, bar.y);
                         });
-                        
                         ctx.restore();
                     }
                 }],
-                options: {
-                    indexAxis: 'y',
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    stacked: false, 
-                    layout: {
-                        padding: {
-                            right: 120 // Da espacio a la derecha para que quepa el texto del SOP
-                        }
+                options: { 
+                    indexAxis: 'y', 
+                    responsive: true, 
+                    maintainAspectRatio: false, 
+                    layout: { padding: { right: 130 } }, 
+                    scales: { 
+                        x: { max: 100, border: { display: false }, ticks: { callback: v => v + '%' } }, 
+                        y: { grid: { display: false }, border: { display: false }, ticks: { font: { weight: 'bold', color: '#334155', size: 12 } } } 
                     },
-                    plugins: {
-                        tooltip: {
-                            backgroundColor: 'rgba(33, 37, 41, 0.95)',
-                            titleFont: { size: 14, family: 'system-ui' },
-                            bodyFont: { size: 13, family: 'system-ui' },
-                            padding: 15,
-                            callbacks: {
-                                label: function(context) {
-                                    let raw = context.raw;
-                                    if (!raw) return '';
-                                    
-                                    let aportacion = raw[1] - raw[0]; 
-                                    
-                                    if (context.dataset.label === 'TOTAL') {
-                                        return 'AVANCE GLOBAL: ' + raw[1].toFixed(1) + '%';
-                                    }
-                                    
-                                    let avanceRealEtapa = aportacion * 5; 
-                                    return ` ${context.dataset.label}: ${avanceRealEtapa.toFixed(1)}% completado (Aporta +${aportacion.toFixed(1)}% al global)`;
-                                }
-                            }
-                        },
-                        legend: {
-                            position: 'top',
-                            labels: { usePointStyle: true, padding: 20, font: { weight: 'bold', size: 12, family: 'system-ui' } }
-                        }
-                    },
-                    scales: {
-                        x: {
-                            max: 100,
-                            title: { display: true, text: 'Progreso Acumulado (%)', font: { weight: 'bold', size: 12 }, color: '#adb5bd' },
-                            grid: { color: '#e9ecef', borderDash: [5, 5] },
-                            ticks: { callback: function(value) { return value + '%'; } }
-                        },
-                        y: {
-                            grid: { display: false },
-                            ticks: { font: { weight: 'bold', size: 13 }, color: '#495057' }
-                        }
-                    }
+                    interaction: { mode: 'y' } 
                 }
             });
         }
    
+        // --- 3. GRAFICA DONA ---
         const ctx3 = document.getElementById('chartVolumen');
-        if (datosEstadoGlobal) {
+        if (ctx3 && datosEstadoGlobal) {
             chartVolumenInstance = new Chart(ctx3, {
                 type: 'doughnut',
                 data: {
                     labels: ['ON TIME', 'LATE', 'NEEDS ACTION', 'DECISION'],
                     datasets: [{
-                        label: 'Porcentaje de Entregables',
-                        data: [
-                            datosEstadoGlobal.onTimePercentage,
-                            datosEstadoGlobal.latePercentage,
-                            datosEstadoGlobal.needsActionPercentage,
-                            datosEstadoGlobal.decisionPercentage
-                        ],
-                        backgroundColor: ['#77DD77', '#FF6961', '#FFB347', '#74B9FF'],
-                        borderColor: '#ffffff',
-                        borderWidth: 2,
-                        hoverOffset: 6
+                        data: [datosEstadoGlobal.onTimePercentage, datosEstadoGlobal.latePercentage, datosEstadoGlobal.needsActionPercentage, datosEstadoGlobal.decisionPercentage],
+                        backgroundColor: paletteStatus, borderWidth: 0, borderRadius: 4, spacing: 2, hoverOffset: 8
                     }]
                 },
-                options: {
-                    responsive: true,
-                    plugins: {
-                        legend: { position: 'top' },
-                        title: { display: true, text: 'Porcentaje de Entregables por Estado Global' }
-                    }
+                options: { 
+                    responsive: true, maintainAspectRatio: false, cutout: '75%', 
+                    plugins: { legend: { position: 'bottom', labels: { boxWidth: 12, padding: 15, usePointStyle: true, font: {size: 12} } } } 
                 }
             });
         }
 
-        // Event listener for sidebar toggle
-        window.addEventListener('sidebarToggled', function(e) {
-            console.log('Sidebar Toggled:', e.detail.isCollapsed);
-            // Give the layout some time to adjust after class changes
-            setTimeout(() => {
-                if (chartProgresoInstance) chartProgresoInstance.update();
-                if (chartCascadaInstance) chartCascadaInstance.update();
-                if (chartVolumenInstance) chartVolumenInstance.update();
-            }, 700); // Increased timeout to 700ms and using update()
-        });
+        // --- 4. MEDIDOR DE RIESGO INDIVIDUAL Y GLOBAL  ---
+        const ctxRiesgo = document.getElementById('chartRiesgo');
+        const selectRiesgo = document.getElementById('selectRiesgoProyecto');
+
+        if (ctxRiesgo && datosEstadoGlobal) {
+            
+            let scoreRiesgoGlobal = parseFloat((datosEstadoGlobal.latePercentage).toFixed(1)); 
+            
+            let currentRiskScore = scoreRiesgoGlobal;
+            
+            function getRiskProps(score) {
+                if (score >= 50) return { color: '#ef4444', label: 'ALTO RIESGO' };
+                if (score >= 20) return { color: '#f59e0b', label: 'RIESGO MEDIO' };
+                return { color: '#10b981', label: 'BAJO RIESGO' };
+            }
+
+            let initProps = getRiskProps(currentRiskScore);
+            let currentRiskColor = initProps.color;
+            let currentRiskLabel = initProps.label;
+
+            const gaugeTextPlugin = {
+                id: 'gaugeText',
+                beforeDraw: function(chart) {
+                    const { width, height, ctx } = chart;
+                    ctx.save();
+                    ctx.font = "900 36px 'Inter', sans-serif"; 
+                    ctx.fillStyle = currentRiskColor;
+                    ctx.textAlign = "center";
+                    ctx.textBaseline = "middle";
+                    ctx.fillText(currentRiskScore + "%", width / 2, height - 40);
+                    ctx.font = "bold 14px 'Inter', sans-serif";
+                    ctx.fillStyle = "#64748b";
+                    ctx.fillText(currentRiskLabel, width / 2, height - 10);
+                    ctx.restore();
+                }
+            };
+
+            chartRiesgoInstance = new Chart(ctxRiesgo, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Riesgo', 'Seguro'],
+                    datasets: [{
+                        data: [currentRiskScore, 100 - currentRiskScore],
+                        backgroundColor: [currentRiskColor, '#f1f5f9'], 
+                        borderWidth: 0, borderRadius: 5,
+                    }]
+                },
+                plugins: [gaugeTextPlugin],
+                options: {
+                    responsive: true, maintainAspectRatio: false, circumference: 180, rotation: 270, cutout: '80%', 
+                    plugins: { legend: { display: false }, tooltip: { enabled: false } },
+                    animation: { animateRotate: true, animateScale: false }
+                }
+            });
+
+            if (selectRiesgo && reportes.length > 0) {
+                selectRiesgo.innerHTML = '<option value="GLOBAL">Global</option>';
+
+                reportes.forEach((repo, index) => {
+                    let opt = document.createElement('option');
+                    opt.value = index; 
+                    let n = repo.nombreProyecto;
+                    opt.textContent = n.length > 15 ? n.substring(0, 15) + '...' : n; 
+                    selectRiesgo.appendChild(opt);
+                });
+
+                selectRiesgo.addEventListener('change', function() {
+                    const val = this.value;
+
+                    if (val === 'GLOBAL') {
+                        currentRiskScore = scoreRiesgoGlobal;
+                    } else {
+                        
+                        let riesgoInd = reportes[val].riesgo;
+                        currentRiskScore = (riesgoInd !== undefined && riesgoInd !== null) ? parseFloat(riesgoInd.toFixed(1)) : 0; 
+                    }
+
+                    let newProps = getRiskProps(currentRiskScore);
+                    currentRiskColor = newProps.color;
+                    currentRiskLabel = newProps.label;
+
+                    chartRiesgoInstance.data.datasets[0].data = [currentRiskScore, 100 - currentRiskScore];
+                    chartRiesgoInstance.data.datasets[0].backgroundColor = [currentRiskColor, '#f1f5f9'];
+                    chartRiesgoInstance.update();
+                });
+            }
+        }
         /*]]>*/
     </script>
 </body>

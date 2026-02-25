@@ -35,7 +35,6 @@ public class EvidenciaControlador {
     @Autowired
     private AdjuntoRepositorio adjuntoRepositorio;
 
-    // Carpeta donde se guardarán los archivos físicamente
     private static final String UPLOAD_DIR = "uploads/";
 
     @PostMapping("/subir/{itemId}")
@@ -43,7 +42,6 @@ public class EvidenciaControlador {
                                  @RequestParam("archivo") MultipartFile archivo,
                                  RedirectAttributes redirectAttributes) {
         
-        // 1. Buscar a qué entregable pertenece este archivo
         ElementoChecklist item = elementoRepositorio.findById(itemId).orElse(null);
         if (item == null) {
             return "redirect:/"; // Si no existe, regresamos al inicio
@@ -51,26 +49,22 @@ public class EvidenciaControlador {
 
         Long proyectoId = item.getProyecto().getId();
 
-        // 2. Validar que no envíen un archivo vacío
         if (archivo.isEmpty()) {
             redirectAttributes.addFlashAttribute("error", "Por favor selecciona un archivo válido.");
             return "redirect:/proyectos/checklist/" + proyectoId;
         }
 
         try {
-            // 3. Crear la carpeta 'uploads' si es la primera vez que subimos algo
+            // Crear la carpeta 'uploads' si es la primera vez que subimos algo
             File directorio = new File(UPLOAD_DIR);
             if (!directorio.exists()) {
                 directorio.mkdirs();
             }
 
-            // 4. Guardar el archivo físicamente en el servidor
-            // Le ponemos los milisegundos al nombre para que no se sobreescriban archivos con el mismo nombre
             String nombreArchivoReal = System.currentTimeMillis() + "_" + archivo.getOriginalFilename();
             Path rutaDestino = Paths.get(UPLOAD_DIR + nombreArchivoReal);
             Files.write(rutaDestino, archivo.getBytes());
 
-            // 5. Guardar el registro en la Base de Datos (PostgreSQL)
             Adjunto adjunto = new Adjunto();
             adjunto.setNombreArchivo(archivo.getOriginalFilename());
             adjunto.setTipoContenido(archivo.getContentType());
@@ -86,15 +80,10 @@ public class EvidenciaControlador {
             redirectAttributes.addFlashAttribute("error", "Error interno al guardar el archivo.");
         }
 
-        // 6. Recargar la página del checklist para que el usuario siga trabajando
         return "redirect:/proyectos/checklist/" + proyectoId;
     }
 
 
-    // Importa estas librerías arriba si no las tienes:
-    // import org.springframework.http.ResponseEntity;
-    // import java.util.HashMap;
-    // import java.util.Map;
 
     @PostMapping("/subir-ajax/{itemId}")
     @ResponseBody

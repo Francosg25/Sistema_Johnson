@@ -84,7 +84,7 @@ public class ChecklistSemilla {
             crearE("P-29", "QE",     "ETAPA 4", "16.-Production Validation Testing"),
             crearE("P-30", "PE",     "ETAPA 4", "17.-Packaging evaluation"),
             crearE("P-31", "QE",     "ETAPA 4", "18.-Production Control Plan"),
-            crearE("P-32", "PE",     "ETAPA 4", "04.-Floor plan layout"), // Duplicado según excel
+            crearE("P-32", "PE",     "ETAPA 4", "04.-Floor plan layout"), 
             crearE("P-33", "PROJ",   "ETAPA 4", "19.- Sign-OFF"),
 
             // --- ETAPA 5 ---
@@ -97,7 +97,7 @@ public class ChecklistSemilla {
         repo.saveAll(programa);
     }
 
-    // --- STAGE 2: CHECKLIST DETALLADO (COMPLETO 23 PUNTOS) ---
+    // --- STAGE 2
     private void cargarStage2(CatalogoElementoRepositorio repo) {
         List<CatalogoElemento> stage2 = Arrays.asList(
             crearDetalle("S2-01", "¿Se cuenta con un CFT completado?", "2. Stage 2", "Información preliminar/ Preliminary information", "Project Engineer"),
