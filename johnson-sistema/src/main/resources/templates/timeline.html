@@ -15,20 +15,42 @@
             font-family: 'Inter', system-ui, -apple-system, sans-serif;
             background-color: #f4f6f9;
             color: #495057; 
+            min-height: 100vh;
+            position: relative;
+            overflow-x: hidden;
         }
 
-        .premium-card {
-            border: none;
-            border-radius: 16px;
-            background: #ffffff;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.04), 0 1px 3px rgba(0,0,0,0.02);
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        /* --- GLASSMORPHISM DECORATION --- */
+        .bg-blob {
+            position: fixed;
+            width: 400px;
+            height: 400px;
+            background: linear-gradient(135deg, rgba(245, 130, 31, 0.15) 0%, rgba(245, 130, 31, 0.05) 100%);
+            filter: blur(80px);
+            border-radius: 50%;
+            z-index: -1;
+            pointer-events: none;
         }
+        .blob-1 { top: -100px; right: -100px; }
+        .blob-2 { bottom: -100px; left: -100px; background: linear-gradient(135deg, rgba(13, 110, 253, 0.12) 0%, rgba(13, 110, 253, 0.05) 100%); }
+
+        /* --- GLASS CARDS --- */
+        .glass-card {
+            background: rgba(255, 255, 255, 0.6) !important;
+            backdrop-filter: blur(12px) !important;
+            -webkit-backdrop-filter: blur(12px) !important;
+            border: 1px solid rgba(255, 255, 255, 0.4) !important;
+            border-radius: 20px !important;
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.07) !important;
+            overflow: hidden;
+        }
+        
         .premium-header {
-            background: transparent;
-            border-bottom: 1px solid rgba(0,0,0,0.04);
+            background: rgba(255, 255, 255, 0.3) !important;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2) !important;
             padding: 1.25rem 1.5rem;
         }
+
         .premium-title {
             font-size: 1.05rem;
             font-weight: 700;
@@ -47,13 +69,13 @@
         }
 
         .kpi-card { 
-            border-radius: 16px; 
+            border-radius: 20px; 
             padding: 1.5rem; 
             color: white; 
-            box-shadow: 0 4px 12px rgba(0,0,0,0.08); 
+            box-shadow: 0 8px 20px rgba(0,0,0,0.1); 
             position: relative; 
             overflow: hidden; 
-            border: none;
+            border: 1px solid rgba(255,255,255,0.2);
             transition: transform 0.3s ease;
         }
         .kpi-card:hover { transform: translateY(-4px); }
@@ -67,8 +89,7 @@
             width: 100%; 
             min-height: 550px; 
             border: none; 
-            background-color: #ffffff; 
-            border-radius: 12px;
+            background: transparent; 
         }
         .vis-timeline { border: none !important; }
         .vis-labelset .vis-label { 
@@ -76,8 +97,8 @@
             color: #495057; 
             font-size: 0.85rem; 
             padding-left: 15px !important; 
-            background-color: #f8f9fa; 
-            border-bottom: 1px solid #edf2f7; 
+            background-color: rgba(248, 249, 250, 0.5); 
+            border-bottom: 1px solid rgba(0,0,0,0.05); 
             display: flex; 
             align-items: center; 
         }
@@ -114,7 +135,8 @@
             font-weight: 800 !important; 
             color: #1e293b !important; 
             text-align: center !important; 
-            background: rgba(255,255,255,0.95) !important; 
+            background: rgba(255,255,255,0.9) !important; 
+            backdrop-filter: blur(4px);
             padding: 3px 6px !important; 
             border-radius: 6px !important; 
             box-shadow: 0 2px 4px rgba(0,0,0,0.1) !important;
@@ -138,8 +160,9 @@
         .event-content { font-size: 9px !important; font-weight: 700 !important; }
 
         .status-key-box { 
-            background: #fff; 
-            border: none; 
+            background: rgba(255, 255, 255, 0.6); 
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.4); 
             border-radius: 12px; 
             padding: 12px 20px; 
             display: flex; 
@@ -169,9 +192,17 @@
 
         .vis-item.vis-line, .vis-item.vis-dot { display: none !important; }
         .vis-item.vis-point .vis-dot { display: block !important; }
+
+        /* Ajustes para Tablas dinámicas en modales Glass */
+        .table { background: transparent !important; }
+        .table thead th { background-color: rgba(248, 249, 250, 0.5) !important; border-bottom: 1px solid rgba(0,0,0,0.05) !important; }
+        .table td { border-color: rgba(0,0,0,0.03); }
     </style>
 </head>
 <body class="bg-light">
+    <!-- Background Blobs for Glassmorphism Effect -->
+    <div class="bg-blob blob-1"></div>
+    <div class="bg-blob blob-2"></div>
 
     <div class="d-flex" id="wrapper">
         <div id="sidebar-wrapper"><div th:replace="~{fragments/sidebar :: sidebar(currentUri='/timeline')}"></div></div>
@@ -229,7 +260,7 @@
                         </div>
                     </div>
 
-                    <div class="d-flex gap-3 align-items-center bg-white p-2 rounded-3 border-0 shadow-sm px-3">
+                    <div class="d-flex gap-3 align-items-center p-2 rounded-3 border-0 shadow-sm px-3" style="background: rgba(255,255,255,0.6) !important; backdrop-filter: blur(10px);">
                         <div class="form-check m-0">
                             <input class="form-check-input filter-checkbox shadow-none" type="checkbox" id="chkMilestones" checked>
                             <label class="form-check-label fw-bold small text-secondary" for="chkMilestones">Hitos</label>
@@ -244,8 +275,8 @@
                     </div>
                 </div>
 
-                <div class="premium-card">
-                    <div class="premium-header">
+                <div class="card glass-card">
+                    <div class="card-header premium-header">
                         <h6 class="m-0 premium-title">
                             <i class="bi bi-graph-up premium-icon"></i>
                             Visualización de Timeline
@@ -255,8 +286,6 @@
                         <div id="visualization"></div>
                     </div>
                 </div>
-
-            </main>
 
             </main>
         </div>

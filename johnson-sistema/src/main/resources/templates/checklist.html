@@ -12,24 +12,44 @@
             font-family: 'Inter', system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
             background-color: #f4f6f9; 
             color: #495057; 
+            min-height: 100vh;
+            position: relative;
+            overflow-x: hidden;
         }
+
+        /* --- GLASSMORPHISM DECORATION --- */
+        .bg-blob {
+            position: fixed;
+            width: 400px;
+            height: 400px;
+            background: linear-gradient(135deg, rgba(245, 130, 31, 0.15) 0%, rgba(245, 130, 31, 0.05) 100%);
+            filter: blur(80px);
+            border-radius: 50%;
+            z-index: -1;
+            pointer-events: none;
+        }
+        .blob-1 { top: -100px; right: -100px; }
+        .blob-2 { bottom: -100px; left: -100px; background: linear-gradient(135deg, rgba(13, 110, 253, 0.12) 0%, rgba(13, 110, 253, 0.05) 100%); }
+
+        /* --- GLASS CARDS --- */
+        .glass-card {
+            background: rgba(255, 255, 255, 0.6) !important;
+            backdrop-filter: blur(12px) !important;
+            -webkit-backdrop-filter: blur(12px) !important;
+            border: 1px solid rgba(255, 255, 255, 0.4) !important;
+            border-radius: 20px !important;
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.07) !important;
+            overflow: hidden;
+        }
+
         h1, h2, h3, h4, h5, h6, .h1, .h2, .h3, .h4, .h5, .h6 {
             color: #2b3035;
             font-weight: 700;
             letter-spacing: -0.02em;
         }
 
-        .card {
-            border: none !important;
-            border-radius: 12px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.04), 0 1px 4px rgba(0, 0, 0, 0.06) !important;
-            background-color: #fff;
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
-            overflow: hidden; 
-        }
-
         .nav-tabs {
-            border-bottom: 2px solid #e9ecef !important;
+            border-bottom: 2px solid rgba(0,0,0,0.05) !important;
             gap: 4px; 
         }
         .nav-tabs .nav-link {
@@ -37,17 +57,18 @@
             color: #6c757d;
             font-weight: 600;
             padding: 0.8rem 1.5rem;
-            border-radius: 10px 10px 0 0 !important;
-            background-color: #f1f3f5 !important;
+            border-radius: 12px 12px 0 0 !important;
+            background-color: rgba(241, 243, 245, 0.6) !important;
+            backdrop-filter: blur(5px);
             transition: all 0.2s ease;
         }
         .nav-tabs .nav-link:hover {
             color: #0d6efd;
-            background-color: #e9ecef !important;
+            background-color: rgba(233, 236, 239, 0.8) !important;
         }
         .nav-tabs .nav-link.active {
             color: #0d6efd !important;
-            background-color: #fff !important;
+            background-color: rgba(255, 255, 255, 0.8) !important;
             border-bottom: 3px solid #0d6efd !important;
             box-shadow: 0 -4px 10px rgba(0,0,0,0.02) !important;
         }
@@ -56,33 +77,39 @@
             border-collapse: separate;
             border-spacing: 0;
             margin-bottom: 0;
+            background: transparent !important;
         }
         .table thead th {
-            border-bottom: 2px solid #edf2f7 !important;
+            border-bottom: 1px solid rgba(0,0,0,0.05) !important;
             font-weight: 700;
             color: #6c757d;
             letter-spacing: 0.03em;
-            background-color: #f8f9fa !important;
+            background-color: rgba(248, 249, 250, 0.5) !important;
         }
         .table td, .table th {
-            border-color: #f0f0f0;
+            border-color: rgba(0,0,0,0.03);
         }
         .table-hover tbody tr:hover td {
-            background-color: #f9fafb !important; 
+            background-color: rgba(255, 255, 255, 0.4) !important; 
         }
         .table-group-header td {
-            background-color: #f1f3f5 !important;
-            border-top: 2px solid #e9ecef !important;
-            border-bottom: 2px solid #e9ecef !important;
+            background-color: rgba(241, 243, 245, 0.7) !important;
+            backdrop-filter: blur(5px);
+            border-top: 1px solid rgba(0,0,0,0.05) !important;
+            border-bottom: 1px solid rgba(0,0,0,0.05) !important;
             letter-spacing: 0.02em;
         }
 
         .form-control, .form-select {
             border-radius: 6px;
+            background-color: rgba(255, 255, 255, 0.5) !important;
+            backdrop-filter: blur(4px);
+            border: 1px solid rgba(255, 255, 255, 0.3) !important;
             transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
         }
         .form-control:focus, .form-select:focus {
-            border-color: #ec9d6b;
+            background-color: rgba(255, 255, 255, 0.8) !important;
+            border-color: #ec9d6b !important;
             box-shadow: 0 0 0 3px rgba(13, 110, 253, 0.12);
         }
         .border-0:focus {
@@ -152,6 +179,9 @@
     </style>
 </head>
 <body class="bg-light">
+    <!-- Background Blobs for Glassmorphism Effect -->
+    <div class="bg-blob blob-1"></div>
+    <div class="bg-blob blob-2"></div>
 
     <div class="d-flex" id="wrapper">
         <div id="sidebar-wrapper">
@@ -199,7 +229,7 @@
                              th:id="'content-' + ${fase.id}" 
                              role="tabpanel">
 
-                            <div th:if="${fase.nombre.contains('Programa')}" class="card border-0 shadow-sm">
+                            <div th:if="${fase.nombre.contains('Programa')}" class="card glass-card">
                                 <div class="card-body p-0">
                                     <div class="table-responsive">
                                     <table class="table table-hover table-bordered mb-0 align-middle" style="font-size: 0.85rem;">
@@ -233,7 +263,7 @@
                                                         <span class="badge w-100 shadow-sm" th:classappend="'champ-' + ${#strings.toLowerCase(#strings.replace(item.champion, ' ', '-')).replace('/', '-')}" th:text="${item.champion}"></span>
                                                     </td>
 
-                                                    <td rowspan="2" style="vertical-align: middle; background-color: #fffacd;">
+                                                    <td rowspan="2" style="vertical-align: middle; background-color: rgba(255, 250, 205, 0.4) !important;">
                                                         <span class="d-block fw-bold text-dark" th:text="${item.nombre}"></span>
                                                     </td>
                                                     <td class="fw-bold small ps-2 text-muted">Plan</td>
@@ -264,7 +294,7 @@
                                                     </td>
                                                     
                                                     <td rowspan="2" style="max-width: 125px; vertical-align: middle;">
-                                                        <div class="d-flex justify-content-between align-items-center bg-white rounded p-1 border shadow-sm"
+                                                        <div class="d-flex justify-content-between align-items-center bg-white bg-opacity-50 rounded p-1 border shadow-sm"
                                                              style="cursor: pointer; transition: 0.2s;" onmouseover="this.style.borderColor='#80bdff'" onmouseout="this.style.borderColor='#dee2e6'" th:onclick="abrirEditorComentarios([[${item.id}]], [[${item.codigo}]])">
                                                             <div class="text-truncate small ms-2 w-100" th:id="'preview-comentario-' + ${item.id}"
                                                                  th:classappend="${item.comentario == null or item.comentario.isEmpty() ? 'text-muted fst-italic' : 'text-dark fw-bold'}"
@@ -296,7 +326,7 @@
                                                 <tr>
                                                     <td class="fw-bold small ps-2 text-muted">Real</td>
                                                     <td class="text-center">
-                                                        <input type="date" class="form-control form-control-sm border-0 bg-light-subtle text-center p-0 fw-bold" th:name="'fechaReal-' + ${item.id}" th:value="${item.fechaReal}">
+                                                        <input type="date" class="form-control form-control-sm border-0 bg-transparent text-center p-0 fw-bold" th:name="'fechaReal-' + ${item.id}" th:value="${item.fechaReal}">
                                                     </td>
                                                 </tr>
                                             </th:block>
@@ -306,7 +336,7 @@
                                 </div>
                             </div>
 
-                            <div th:if="${fase.nombre.contains('Stage 2')}" class="card border-0 shadow-sm">
+                            <div th:if="${fase.nombre.contains('Stage 2')}" class="card glass-card">
                                 <div class="card-body p-0">
                                     <div class="table-responsive">
                                     <table class="table table-hover mb-0 align-middle" style="font-size: 0.85rem;">
@@ -345,7 +375,7 @@
                                                     </td>
                                                     
                                                     <td style="max-width: 250px; vertical-align: middle;">
-                                                        <div class="d-flex justify-content-between align-items-center bg-white rounded p-1 border shadow-sm"
+                                                        <div class="d-flex justify-content-between align-items-center bg-white bg-opacity-50 rounded p-1 border shadow-sm"
                                                              style="cursor: pointer; transition: 0.2s;" onmouseover="this.style.borderColor='#80bdff'" onmouseout="this.style.borderColor='#dee2e6'" th:onclick="abrirEditorComentarios([[${item.id}]], [[${item.codigo}]])">
                                                             <div class="text-truncate small ms-2 w-100" th:id="'preview-comentario-' + ${item.id}"
                                                                  th:classappend="${item.comentario == null or item.comentario.isEmpty() ? 'text-muted fst-italic' : 'text-dark fw-bold'}"
@@ -383,9 +413,9 @@
                                 </div>
                             </div>
 
-                            <div th:if="${!fase.nombre.contains('Programa') && !fase.nombre.contains('Stage 2')}" class="card border-0 shadow-sm">
+                            <div th:if="${!fase.nombre.contains('Programa') && !fase.nombre.contains('Stage 2')}" class="card glass-card">
                                <div class="card-body p-4">
-                                    <div class="p-3 mb-4 rounded shadow-sm border" style="background-color: #f8f9fa;">
+                                    <div class="p-3 mb-4 rounded shadow-sm border" style="background-color: rgba(248, 249, 250, 0.6); backdrop-filter: blur(5px);">
                                         <h5 class="fw-bold text-dark mb-3"><i class="bi bi-search text-primary me-2"></i>Revisión de Etapa / <span class="text-primary" th:text="${fase.nombre}"></span></h5>
                                         <div class="row g-3 small">
                                             <div class="col-md-6"><strong class="me-2 text-muted">Cliente/Customer:</strong> <span class="fw-bold" th:text="${proyecto.cliente}"></span></div>
@@ -395,7 +425,7 @@
                                         </div>
                                     </div>
                                     <h6 class="text-uppercase fw-bold text-secondary mb-3 border-bottom pb-2">1. Validación de Requerimientos</h6>
-                                    <div class="table-responsive mb-5 card shadow-sm border-0">
+                                    <div class="table-responsive mb-5 card glass-card border-0 shadow-none" style="background: transparent !important; backdrop-filter: none !important;">
                                         <table class="table table-hover mb-0 align-middle">
                                             <thead class="bg-light small fw-bold text-center">
                                                 <tr>
@@ -424,7 +454,7 @@
                                                     <td class="fw-bold text-dark ps-3" th:text="${item.nombre}"></td>
                                                     
                                                     <td style="max-width: 250px; vertical-align: middle; padding-right: 15px;">
-                                                        <div class="d-flex justify-content-between align-items-center bg-white rounded p-1 border shadow-sm"
+                                                        <div class="d-flex justify-content-between align-items-center bg-white bg-opacity-50 rounded p-1 border shadow-sm"
                                                              style="cursor: pointer; transition: 0.2s;" onmouseover="this.style.borderColor='#80bdff'" onmouseout="this.style.borderColor='#dee2e6'" th:onclick="abrirEditorComentarios([[${item.id}]], [[${item.codigo}]])">
                                                             <div class="text-truncate small ms-2 w-100" th:id="'preview-comentario-' + ${item.id}"
                                                                  th:classappend="${item.comentario == null or item.comentario.isEmpty() ? 'text-muted fst-italic' : 'text-dark fw-bold'}"
@@ -445,7 +475,7 @@
                                         </table>
                                     </div>
                                     <h6 class="text-uppercase fw-bold text-secondary mb-3 border-bottom pb-2">2. Conclusión de la Etapa</h6>
-                                    <div class="table-responsive mb-5 card shadow-sm border-0">
+                                    <div class="table-responsive mb-5 card glass-card border-0 shadow-none" style="background: transparent !important; backdrop-filter: none !important;">
                                         <table class="table table-hover mb-0 align-middle">
                                             <thead class="bg-light small fw-bold text-center">
                                                 <tr>
@@ -462,7 +492,7 @@
                                                     <td class="text-muted fw-bold ps-3" th:text="${item.nombre.split(':').length > 1 ? item.nombre.split(':')[1] : ''}"></td>
                                                     
                                                     <td style="max-width: 250px; vertical-align: middle; padding-right: 15px;">
-                                                        <div class="d-flex justify-content-between align-items-center bg-white rounded p-1 border shadow-sm"
+                                                        <div class="d-flex justify-content-between align-items-center bg-white bg-opacity-50 rounded p-1 border shadow-sm"
                                                              style="cursor: pointer; transition: 0.2s;" onmouseover="this.style.borderColor='#80bdff'" onmouseout="this.style.borderColor='#dee2e6'" th:onclick="abrirEditorComentarios([[${item.id}]], [[${item.codigo}]])">
                                                             <div class="text-truncate small ms-2 w-100" th:id="'preview-comentario-' + ${item.id}"
                                                                  th:classappend="${item.comentario == null or item.comentario.isEmpty() ? 'text-muted fst-italic' : 'text-dark fw-bold'}"
@@ -485,8 +515,8 @@
                                     <h6 class="text-uppercase fw-bold text-secondary mb-3 border-bottom pb-2">3. Aprobaciones / Approvals</h6>
                                     <div th:if="${fase.nombre == 'Stage 3'}" class="row g-4">
                                         <div class="col-md-6">
-                                            <div class="card shadow-sm border-0 h-100">
-                                                <div class="card-header bg-light fw-bold text-primary"><i class="bi bi-people-fill me-2"></i>Stage 3 Responsibles</div>
+                                            <div class="card glass-card h-100 shadow-sm">
+                                                <div class="card-header bg-light bg-opacity-50 fw-bold text-primary border-0"><i class="bi bi-people-fill me-2"></i>Stage 3 Responsibles</div>
                                                 <div class="card-body p-0">
                                                     <table class="table table-hover table-sm mb-0 small border-0">
                                                         <tbody>
@@ -500,8 +530,8 @@
                                             </div>
                                         </div>
                                         <div class="col-md-6">
-                                            <div class="card shadow-sm border-0 h-100">
-                                                <div class="card-header bg-light fw-bold text-primary"><i class="bi bi-building me-2"></i>Manufacturing Site Management</div>
+                                            <div class="card glass-card h-100 shadow-sm">
+                                                <div class="card-header bg-light bg-opacity-50 fw-bold text-primary border-0"><i class="bi bi-building me-2"></i>Manufacturing Site Management</div>
                                                 <div class="card-body p-0">
                                                     <table class="table table-hover table-sm mb-0 small border-0">
                                                         <tbody>
@@ -517,7 +547,7 @@
                                             </div>
                                         </div>
                                     </div>
-                                    <div th:if="${fase.nombre != 'Stage 3'}" class="text-muted text-center py-4 bg-light rounded border border-dashed">
+                                    <div th:if="${fase.nombre != 'Stage 3'}" class="text-muted text-center py-4 bg-light bg-opacity-50 rounded border border-dashed">
                                         <i class="bi bi-journal-x fs-2 d-block mb-2 opacity-50"></i>
                                         Tabla de Aprobaciones para <strong th:text="${fase.nombre}"></strong> no requerida en esta vista.
                                     </div>
@@ -525,8 +555,7 @@
                             </div>
                         </div>
                     </div>
-                </form> 
-                
+                </form>
                 <th:block th:each="fase : ${fases}">
                     <th:block th:each="item : ${fase.items}">
                         <div class="modal fade" th:id="'modalEvidencia_' + ${item.id}" tabindex="-1" aria-hidden="true">

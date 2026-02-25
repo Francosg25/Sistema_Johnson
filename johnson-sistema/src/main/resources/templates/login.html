@@ -2,91 +2,214 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Login</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login | Johnson Electric</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    
     <style>
         :root {
-            --je-primary-color: rgb(245, 120, 32); /* Johnson Electric orange */
-            --je-primary-hover-color: rgb(200, 100, 20); /* Slightly darker orange for hover */
-            --je-text-dark: #000000; /* Black for text */
-            --je-background-light: #f8f9fa; /* Light subtle gray background */
-            --je-dark-background: #212529; /* Dark background for elements that might need it */
+            --je-orange: #F5821F;
+            --je-dark: #1e293b;
         }
+
         body {
-            background-color: var(--je-background-light); /* Light subtle gray background */
-            display: flex; /* Use flexbox for vertical centering */
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh; /* Full viewport height */
+            font-family: 'Inter', sans-serif;
             margin: 0;
+            padding: 0;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #f4f7fa;
+            position: relative;
+            overflow: hidden;
         }
-        .login-container {
-            max-width: 420px; /* Slightly wider */
-            width: 100%; /* Ensure it takes full width up to max-width */
-            padding: 40px; /* More padding */
-            border-radius: 12px; /* Softer corners */
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15); /* More prominent shadow */
-            background-color: #ffffff; /* White background for the form itself */
-            /* Remove margin: 100px auto; as flexbox handles centering */
+
+        /* --- DECORATIVE BLOBS --- */
+        .blob {
+            position: absolute;
+            width: 500px;
+            height: 500px;
+            background: linear-gradient(135deg, rgba(245, 130, 31, 0.2) 0%, rgba(245, 130, 31, 0.05) 100%);
+            filter: blur(80px);
+            border-radius: 50%;
+            z-index: -1;
         }
-        .login-container h2 {
-            color: var(--je-text-dark); /* Black for headings */
-            margin-bottom: 30px; /* More space below heading */
+        .blob-1 { top: -100px; left: -100px; }
+        .blob-2 { bottom: -100px; right: -100px; background: linear-gradient(135deg, rgba(59, 130, 246, 0.15) 0%, rgba(59, 130, 246, 0.05) 100%); }
+
+        /* --- GLASS CARD --- */
+        .glass-login-card {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            border-radius: 24px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.05), 0 5px 15px rgba(0, 0, 0, 0.03);
+            width: 100%;
+            max-width: 440px;
+            padding: 3rem;
+            position: relative;
+            z-index: 10;
         }
+
+        .brand-section {
+            text-align: center;
+            margin-bottom: 2.5rem;
+        }
+        .brand-logo-text {
+            font-weight: 800;
+            font-size: 1.5rem;
+            letter-spacing: -1px;
+            color: var(--je-dark);
+            line-height: 1;
+        }
+        .brand-logo-text span {
+            font-weight: 300;
+            color: var(--je-orange);
+            letter-spacing: 2px;
+            display: block;
+            font-size: 0.8rem;
+            margin-top: 4px;
+        }
+
+        h4 {
+            font-weight: 700;
+            color: var(--je-dark);
+            margin-bottom: 0.5rem;
+        }
+        p.subtitle {
+            color: #64748b;
+            font-size: 0.9rem;
+            margin-bottom: 2rem;
+        }
+
         .form-label {
-            font-weight: 500; /* Slightly bolder labels */
-            color: var(--je-text-dark); /* Black for labels */
+            font-weight: 600;
+            font-size: 0.85rem;
+            color: #475569;
+            margin-bottom: 0.5rem;
         }
+
+        .input-group-text {
+            background: rgba(255, 255, 255, 0.5);
+            border: 1px solid rgba(0, 0, 0, 0.05);
+            border-right: none;
+            color: #94a3b8;
+            border-radius: 12px 0 0 12px;
+        }
+
         .form-control {
-            border-radius: 6px; /* Slightly rounded inputs */
-            padding: 10px 15px; /* More vertical padding */
-            border-color: #ced4da; /* Default Bootstrap border color */
+            background: rgba(255, 255, 255, 0.5);
+            border: 1px solid rgba(0, 0, 0, 0.05);
+            border-radius: 0 12px 12px 0;
+            padding: 0.75rem 1rem;
+            font-size: 0.95rem;
+            transition: all 0.3s ease;
+            color: var(--je-dark);
         }
         .form-control:focus {
-            border-color: var(--je-primary-color);
-            box-shadow: 0 0 0 0.25rem rgba(245, 120, 32, 0.25); /* Adjusted shadow with custom orange color */
+            background: white;
+            border-color: var(--je-orange);
+            box-shadow: 0 0 0 4px rgba(245, 130, 31, 0.1);
+            outline: none;
         }
-        .btn-primary {
-            background-color: var(--je-primary-color);
-            border-color: var(--je-primary-color);
-            border-radius: 6px; /* Match input radius */
-            font-weight: 600; /* Bolder button text */
-            padding: 10px 20px; /* More padding */
-            color: #ffffff; /* White text for contrast on orange button */
-            transition: background-color 0.2s ease-in-out, border-color 0.2s ease-in-out; /* Smooth transition */
+
+        .btn-je-login {
+            background: linear-gradient(135deg, #F5821F 0%, #e67615 100%);
+            border: none;
+            border-radius: 12px;
+            padding: 0.9rem;
+            font-weight: 700;
+            color: white;
+            box-shadow: 0 8px 20px rgba(245, 130, 31, 0.25);
+            transition: all 0.3s ease;
+            margin-top: 1rem;
         }
-        .btn-primary:hover {
-            background-color: var(--je-primary-hover-color);
-            border-color: var(--je-primary-hover-color);
+        .btn-je-login:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 25px rgba(245, 130, 31, 0.35);
+            color: white;
         }
+        .btn-je-login:active {
+            transform: translateY(0);
+        }
+
         .alert {
-            border-radius: 6px; /* Match other elements */
+            border-radius: 12px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            border: none;
+            padding: 1rem;
+        }
+        .alert-danger { background: rgba(239, 68, 68, 0.1); color: #ef4444; }
+        .alert-success { background: rgba(16, 185, 129, 0.1); color: #10b981; }
+
+        .footer-text {
+            text-align: center;
+            margin-top: 2rem;
+            font-size: 0.75rem;
+            color: #94a3b8;
         }
     </style>
 </head>
 <body>
-    <div class="login-container">
-        <h2 class="text-center mb-4">Iniciar Sesión</h2>
-        <div th:if="${param.error}" class="alert alert-danger">
-            Usuario o contraseña inválidos.
+    
+    <div class="blob blob-1"></div>
+    <div class="blob blob-2"></div>
+
+    <div class="glass-login-card">
+        <div class="brand-section">
+            <div class="brand-logo-text">
+                JOHNSON
+                <span>ELECTRIC</span>
+            </div>
         </div>
-        <div th:if="${param.logout}" class="alert alert-success">
-            Has cerrado sesión correctamente.
+
+        
+
+        <div th:if="${param.error}" class="alert alert-danger mb-4">
+            <i class="bi bi-exclamation-circle-fill me-2"></i> Usuario o contraseña inválidos.
         </div>
+        <div th:if="${param.logout}" class="alert alert-success mb-4">
+            <i class="bi bi-check-circle-fill me-2"></i> Sesión cerrada con éxito.
+        </div>
+
         <form th:action="@{/login}" method="post">
             <div class="mb-3">
                 <label for="username" class="form-label">Usuario</label>
-                <input type="text" class="form-control" id="username" name="username" placeholder="Ingresa tu usuario" required autofocus>
+                <div class="input-group">
+                    <span class="input-group-text"><i class="bi bi-person-fill"></i></span>
+                    <input type="text" class="form-control" id="username" name="username" placeholder="Tu usuario" required autofocus>
+                </div>
             </div>
-            <div class="mb-3">
+            
+            <div class="mb-4">
                 <label for="password" class="form-label">Contraseña</label>
-                <input type="password" class="form-control" id="password" name="password" placeholder="Ingresa tu contraseña" required>
+                <div class="input-group">
+                    <span class="input-group-text"><i class="bi bi-shield-lock-fill"></i></span>
+                    <input type="password" class="form-control" id="password" name="password" placeholder="" required>
+                </div>
             </div>
+
             <div class="d-grid">
-                <button type="submit" class="btn btn-primary btn-lg">Entrar</button>
+                <button type="submit" class="btn btn-je-login">
+                    INICIAR SESIÓN <i class="bi bi-arrow-right-short ms-1"></i>
+                </button>
             </div>
         </form>
+
+        <div class="footer-text">
+            &copy; 2026 Johnson Electric - Dashboard APQP
+        </div>
     </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
