@@ -20,7 +20,6 @@
             overflow-x: hidden;
         }
 
-        /* --- GLASSMORPHISM DECORATION --- */
         .bg-blob {
             position: fixed;
             width: 400px;
@@ -193,14 +192,12 @@
         .vis-item.vis-line, .vis-item.vis-dot { display: none !important; }
         .vis-item.vis-point .vis-dot { display: block !important; }
 
-        /* Ajustes para Tablas dinámicas en modales Glass */
         .table { background: transparent !important; }
         .table thead th { background-color: rgba(248, 249, 250, 0.5) !important; border-bottom: 1px solid rgba(0,0,0,0.05) !important; }
         .table td { border-color: rgba(0,0,0,0.03); }
     </style>
 </head>
 <body class="bg-light">
-    <!-- Background Blobs for Glassmorphism Effect -->
     <div class="bg-blob blob-1"></div>
     <div class="bg-blob blob-2"></div>
 
@@ -253,7 +250,7 @@
                     <div class="status-key-box">
                         <div class="small fw-bold text-muted text-uppercase border-end pe-3 me-1">Leyenda</div>
                         <div class="d-flex align-items-center gap-2 small fw-bold text-dark">
-                            <div style="width: 10px; height: 10px; background: #f58220; border: 1.5px solid #fff; box-shadow: 0 0 0 1px #ddd; transform: rotate(45deg);"></div> Hitos %
+                            <div style="width: 10px; height: 10px; background: #f58220; border: 1.5px solid #fff; box-shadow: 0 0 0 1px #ddd; transform: rotate(45deg);"></div> Milestones %
                         </div>
                         <div class="d-flex align-items-center gap-2 small fw-bold text-dark">
                             <div style="width: 12px; height: 12px; background: #3b82f6; border-radius: 3px;"></div> APQP Events
@@ -263,7 +260,7 @@
                     <div class="d-flex gap-3 align-items-center p-2 rounded-3 border-0 shadow-sm px-3" style="background: rgba(255,255,255,0.6) !important; backdrop-filter: blur(10px);">
                         <div class="form-check m-0">
                             <input class="form-check-input filter-checkbox shadow-none" type="checkbox" id="chkMilestones" checked>
-                            <label class="form-check-label fw-bold small text-secondary" for="chkMilestones">Hitos</label>
+                            <label class="form-check-label fw-bold small text-secondary" for="chkMilestones">Milestones</label>
                         </div>
                         <div class="form-check m-0 border-start ps-3">
                             <input class="form-check-input filter-checkbox shadow-none" type="checkbox" id="chkMainEvents" checked>
@@ -271,6 +268,9 @@
                         </div>
                         <button class="btn btn-je-primary btn-sm ms-2" data-bs-toggle="modal" data-bs-target="#modalConfigHitos">
                            <i class="bi bi-flag-fill me-1"></i> Milestones
+                        </button>
+                        <button class="btn btn-outline-primary btn-sm ms-2 shadow-sm fw-bold" id="btnGoToToday">
+                            <i class="bi bi-calendar-event me-1"></i> Hoy
                         </button>
                     </div>
                 </div>
@@ -452,10 +452,18 @@
                 zoomMin: 1000 * 60 * 60 * 24 * 30 * 2, 
                 zoomMax: 1000 * 60 * 60 * 24 * 365 * 2,
                 stack: true,
-                showCurrentTime: true
+                showCurrentTime: true,
+                rollingMode: {
+                    follow: true,
+                    offset: 0.5
+                }
             };
 
             var timeline = new vis.Timeline(container, view, groups, options);
+
+            document.getElementById('btnGoToToday').onclick = function() {
+                timeline.moveTo(new Date());
+            };
 
             timeline.on('select', function (properties) {
                 if (properties.items.length > 0) {

@@ -41,14 +41,14 @@
 
 .sidebar-je .sidebar-footer {
     padding-top: 1rem;
-    border-top: 1px solid rgba(255, 255, 255, 0.1); /* Subtle separator */
+    border-top: 1px solid rgba(255, 255, 255, 0.1); 
     color: var(--je-sidebar-text);
 }
 
 .sidebar-je .sidebar-footer .avatar-initial {
     width: 40px;
     height: 40px;
-    background-color: var(--je-primary-orange); /* Orange background for avatar */
+    background-color: var(--je-primary-orange);
     color: #ffffff; 
     display: flex;
     justify-content: center;
@@ -58,10 +58,9 @@
 }
 
 .sidebar-je .sidebar-footer strong {
-    color: var(--je-sidebar-text); /* Ensure username text is visible */
+    color: var(--je-sidebar-text); 
 }
 
 .sidebar-je .sidebar-footer .btn-link {
-    color: var(--je-primary-orange) !important; /* Orange for logout link */
-    /* Removed text-danger from button class in HTML as per user's request for brand colors */
+    color: var(--je-primary-orange) !important; 
 }

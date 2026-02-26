@@ -110,7 +110,18 @@ public class ChecklistServicio {
             }
             porcentaje = Math.round(porcentaje * 10.0) / 10.0;
 
-            ReporteProgreso reporteProgreso = new ReporteProgreso(p.getNombre(), total, ok, porcentaje);
+            String sopStr = (p.getSop() != null) ? p.getSop().toString() : "N/A";
+            ReporteProgreso reporteProgreso = new ReporteProgreso(
+                p.getId(), 
+                p.getNombre(), 
+                p.getCliente(), 
+                p.getNumeroParte(), 
+                p.getLiderProyecto(), 
+                sopStr, 
+                total, 
+                ok, 
+                porcentaje
+            );
             
             double riesgo = calcularRiesgoDinamico(p, todosLosItemsDelProyecto);
             
@@ -190,6 +201,40 @@ public class ChecklistServicio {
             reporte.add(new ReporteCascada(p.getNombre(), porcentajes, fechaSop));
         }
         return reporte;
+    }
+
+    @Transactional(readOnly = true)
+    public List<ElementoChecklist> obtenerAlertasGlobales() {
+        List<ElementoChecklist> todos = repositorio.findAll();
+        return todos.stream()
+                .filter(e -> e.getControlEntregable() != null && e.getControlEntregable().equalsIgnoreCase("NEEDS ACTION"))
+                .toList();
+    }
+
+    @Transactional(readOnly = true)
+    public Map<String, Long> obtenerDatosTendencia() {
+        List<ElementoChecklist> todos = repositorio.findAll();
+        Map<String, Long> tendencia = new HashMap<>();
+        
+        // Vamos a agrupar por mes/año de fechaReal para los que están OK
+        for (ElementoChecklist item : todos) {
+            if ("OK".equalsIgnoreCase(item.getScore()) && item.getFechaReal() != null) {
+                String mesAnio = item.getFechaReal().getMonthValue() + "/" + item.getFechaReal().getYear();
+                tendencia.put(mesAnio, tendencia.getOrDefault(mesAnio, 0L) + 1);
+            }
+        }
+        return tendencia;
+    }
+
+    @Transactional(readOnly = true)
+    public long obtenerLanzamientosProximos() {
+        List<Proyecto> proyectos = proyectoRepositorio.findAll();
+        LocalDate hoy = LocalDate.now();
+        LocalDate limite = hoy.plusMonths(6);
+        
+        return proyectos.stream()
+                .filter(p -> p.getSop() != null && (p.getSop().isAfter(hoy) || p.getSop().isEqual(hoy)) && p.getSop().isBefore(limite))
+                .count();
     }
 
     private double calcularPorcentajeEtapaVisual(List<ElementoChecklist> elementos, String etapaVisual) {

@@ -10,13 +10,12 @@ import jakarta.servlet.http.HttpServletRequest;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional; // <-- IMPORTANTE NUEVO IMPORT
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -28,7 +27,6 @@ public class ProyectoControlador {
     @Autowired private ChecklistServicio checklistServicio;
     @Autowired private ProyectoRepositorio proyectoRepositorio;
 
-    // --- CLASE AUXILIAR PARA ENVIAR DATOS AL HTML ---
     @Data @AllArgsConstructor
     public static class FaseVista {
         private String id;
@@ -37,6 +35,7 @@ public class ProyectoControlador {
     }
 
     @GetMapping("/checklist/{id}")
+    @Transactional(readOnly = true)
     public String verChecklist(@PathVariable Long id, Model model, HttpServletRequest request) {
         Proyecto proyecto = proyectoServicio.buscarPorId(id);
         

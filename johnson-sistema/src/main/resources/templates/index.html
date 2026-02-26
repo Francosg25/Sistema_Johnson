@@ -5,7 +5,7 @@
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 
     <style>
         body {
@@ -37,7 +37,10 @@
             border: 1px solid rgba(255, 255, 255, 0.4) !important;
             border-radius: 20px !important;
             box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.07) !important;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            height: 100%;
         }
+        .glass-card:hover { transform: translateY(-3px); box-shadow: 0 12px 25px rgba(31, 38, 135, 0.1) !important; }
 
         .card-header.glass-header {
             background: rgba(255, 255, 255, 0.3) !important;
@@ -45,46 +48,71 @@
             padding: 1.25rem 1.5rem;
         }
 
+        /* --- KPI MINI CARDS --- */
+        .kpi-mini-card {
+            padding: 1.5rem; border-radius: 20px; display: flex; align-items: center;
+            background: rgba(255, 255, 255, 0.7); backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.04);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .kpi-mini-card:hover { transform: translateY(-3px); box-shadow: 0 12px 25px rgba(0, 0, 0, 0.08); }
+        .kpi-mini-icon {
+            width: 50px; height: 50px; border-radius: 12px; display: flex; align-items: center;
+            justify-content: center; font-size: 1.5rem; margin-right: 15px; flex-shrink: 0;
+        }
+        .kpi-mini-data h3 { font-size: 1.6rem; font-weight: 900; color: #1e293b; margin: 0; line-height: 1; }
+        .kpi-mini-data p { font-size: 0.75rem; font-weight: 700; color: #64748b; margin: 5px 0 0 0; text-transform: uppercase; letter-spacing: 0.5px; }
+        
+        .icon-blue { background: rgba(59, 130, 246, 0.15); color: #3b82f6; }
+        .icon-orange { background: rgba(245, 120, 32, 0.15); color: #f57820; }
+        .icon-red { background: rgba(239, 68, 68, 0.15); color: #ef4444; }
+        .icon-green { background: rgba(16, 185, 129, 0.15); color: #10b981; }
+
+        /* --- TABLA --- */
         .table { border-collapse: separate; border-spacing: 0; margin-bottom: 0; background: transparent !important; }
         .table thead th {
             border-bottom: 1px solid rgba(0, 0, 0, 0.05) !important;
             font-weight: 700; color: #6c757d; letter-spacing: 0.03em;
-            background-color: rgba(248, 249, 250, 0.5) !important; padding: 1rem 0.5rem;
+            background-color: rgba(248, 249, 250, 0.4) !important; padding: 1rem 0.5rem;
         }
         .table td { border-color: rgba(0, 0, 0, 0.03); padding: 1.1rem 0.5rem; }
-        .table-hover tbody tr:hover td { background-color: rgba(255, 255, 255, 0.4) !important; }
+        .table-hover tbody tr:hover td { background-color: rgba(255, 255, 255, 0.5) !important; }
 
-        .form-control, .form-select {
-            border-radius: 6px;
-            transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
-        }
-        .form-control:focus, .form-select:focus {
-            border-color: #eea039;
-            box-shadow: 0 0 0 3px rgba(13, 110, 253, 0.12);
-        }
-        .input-group-text { border-radius: 6px 0 0 6px; }
+        .progress-mini { height: 6px; border-radius: 10px; background-color: rgba(0,0,0,0.05); width: 100%; margin-top: 2px;}
+        .progress-mini .progress-bar { border-radius: 10px; }
 
-        .btn { font-weight: 600; border-radius: 8px; transition: all 0.2s ease; }
-        .btn-sm { border-radius: 6px; }
+        /* --- PANEL LATERAL ALERTAS --- */
+        .alert-item { 
+            padding: 12px 15px; border-radius: 12px; border-left: 4px solid #ef4444; 
+            background: rgba(255, 255, 255, 0.6); margin-bottom: 12px; 
+            transition: all 0.2s; border: 1px solid rgba(239, 68, 68, 0.1); border-left-width: 4px;
+        }
+        .alert-item:hover { background: rgba(254, 226, 226, 0.5); transform: translateX(3px); }
+        .alert-title { font-size: 0.85rem; font-weight: 800; color: #7f1d1d; margin: 0; }
+        .alert-desc { font-size: 0.75rem; font-weight: 500; color: #991b1b; margin: 2px 0 0 0; }
+
+        /* --- COMPONENTES UI --- */
+        .form-control, .form-select { border-radius: 8px; transition: all 0.15s ease-in-out; }
+        .form-control:focus, .form-select:focus { border-color: #eea039; box-shadow: 0 0 0 3px rgba(245, 120, 32, 0.15); }
+        .input-group-text { border-radius: 8px 0 0 8px; }
+
+        .btn { font-weight: 700; border-radius: 8px; transition: all 0.2s ease; }
+        .btn-sm { border-radius: 6px; font-weight: 600; }
         
         .btn-je-primary {
-            background: linear-gradient(to bottom, #F5821F, #F5821F) !important;
+            background: linear-gradient(135deg, #F5821F 0%, #e0600d 100%) !important;
             border: none !important; color: white !important;
-            box-shadow: 0 2px 6px rgba(13, 110, 253, 0.3) !important;
+            box-shadow: 0 4px 10px rgba(245, 120, 32, 0.3) !important;
         }
         .btn-je-primary:hover {
-            background: linear-gradient(to bottom, #F5821F, #F5821F) !important;
-            box-shadow: 0 4px 10px rgba(13, 110, 253, 0.4) !important;
-            transform: translateY(-1px);
+            box-shadow: 0 6px 15px rgba(245, 120, 32, 0.4) !important;
+            transform: translateY(-2px);
         }
 
-        .modal-content {
-            border-radius: 16px; border: none;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-        }
-        .modal-header { border-radius: 16px 16px 0 0; }
-        
-        .badge { padding: 0.4em 0.6em; border-radius: 6px; font-weight: 700; }
+        .modal-content { border-radius: 20px; border: none; box-shadow: 0 15px 35px rgba(0,0,0,0.2); }
+        .modal-header { border-radius: 20px 20px 0 0; }
+        .badge { padding: 0.4em 0.7em; border-radius: 6px; font-weight: 700; letter-spacing: 0.5px; }
     </style>
 </head>
 <body>
@@ -102,70 +130,173 @@
             <main class="container-fluid p-4">
                 
                 <div class="d-flex justify-content-between align-items-center mb-4">
-                    <h4 class="fw-bold text-dark m-0"><i class="bi bi-grid-fill text-primary me-2"></i>Panel de Proyectos</h4>
-                    <button class="btn btn-je-primary shadow-sm px-4" data-bs-toggle="modal" data-bs-target="#modalNuevoProyecto" sec:authorize="hasRole('ADMIN')">
-                        <i class="bi bi-plus-lg me-2"></i>Nuevo Proyecto
+                    <div>
+                        <h4 class="fw-bold text-dark m-0" style="letter-spacing: -0.5px;"><i class="bi bi-grid-fill text-primary me-2"></i>Dashboard Principal</h4>
+                        <p class="text-muted small fw-medium mb-0 mt-1">Resumen de Portafolio y Hitos APQP</p>
+                    </div>
+                    <button class="btn btn-je-primary shadow-sm px-4 py-2" data-bs-toggle="modal" data-bs-target="#modalNuevoProyecto" sec:authorize="hasRole('ADMIN')">
+                        <i class="bi bi-folder-plus me-2"></i>Nuevo Proyecto
                     </button>
                 </div>
 
-                <div class="card glass-card">
-                    <div class="card-header glass-header d-flex align-items-center">
-                        <h6 class="m-0 fw-bold text-dark text-uppercase"><i class="bi bi-table me-2 text-primary"></i> Portafolio Activo</h6>
+                                <div class="row g-4 mb-4">
+                                    <div class="col-md-3">
+                                        <div class="kpi-mini-card">
+                                            <div class="kpi-mini-icon icon-blue"><i class="bi bi-briefcase-fill"></i></div>
+                                            <div class="kpi-mini-data">
+                                                <h3 th:text="${proyectos != null ? proyectos.size() : '0'}">0</h3>
+                                                <p>Proyectos Totales</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="kpi-mini-card">
+                                            <div class="kpi-mini-icon icon-orange"><i class="bi bi-calendar-event-fill"></i></div>
+                                            <div class="kpi-mini-data">
+                                                <h3 th:text="${proximosLanzamientos}">0</h3> <p>SOP < 6 Meses</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="kpi-mini-card">
+                                            <div class="kpi-mini-icon icon-red"><i class="bi bi-exclamation-octagon-fill"></i></div>
+                                            <div class="kpi-mini-data">
+                                                <h3 th:text="${alertas != null ? alertas.size() : '0'}">0</h3>
+                                                <p>Needs Action (Global)</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="kpi-mini-card">
+                                            <div class="kpi-mini-icon icon-green"><i class="bi bi-shield-check"></i></div>
+                                            <div class="kpi-mini-data">
+                                                <h3 th:text="${avancePromedio + '%'}">0%</h3> <p>Avance Promedio</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                
+                <div class="row g-4 mb-4">
+                    <div class="col-lg-8">
+                        <div class="card glass-card">
+                            <div class="card-header glass-header d-flex align-items-center">
+                                <h6 class="m-0 fw-bold text-dark text-uppercase"><i class="bi bi-table me-2 text-primary"></i> Portafolio Activo</h6>
+                            </div>
+                            <div class="card-body p-0">
+                                <div class="table-responsive">
+                                    <table class="table table-hover align-middle mb-0">
+                                        <thead class="text-uppercase">
+                                            <tr>
+                                                <th class="ps-4" style="width: 35%;">Proyecto</th>
+                                                <th style="width: 15%;">Cliente</th>
+                                                <th style="width: 20%;">Progreso</th>
+                                                <th class="text-center" style="width: 35%;">SOP</th>
+                                                <th class="text-center pe-4" style="width: 15%;">Acciones</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr th:if="${reporteProgreso == null or reporteProgreso.empty}">
+                                                <td colspan="5" class="text-center py-5 text-muted fst-italic">
+                                                    <i class="bi bi-inbox fs-1 d-block mb-3 opacity-50"></i>
+                                                    No hay proyectos registrados actualmente.
+                                                </td>
+                                            </tr>
+                                            <tr th:each="p : ${reporteProgreso}">
+                                                <td class="ps-4">
+                                                    <div class="fw-bold text-dark fs-6" th:text="${p.nombreProyecto}">Nombre</div>
+                                                    <div class="small text-muted fw-medium" th:text="${p.numeroParte} + ' | ' + ${p.liderProyecto}">PN-123</div>
+                                                </td>
+                                                <td>
+                                                    <span class="badge bg-white text-dark border shadow-sm" th:text="${p.cliente}">Cliente</span>
+                                                </td>
+                                                <td>
+                                                    <div class="d-flex align-items-center pe-3">
+                                                        <span class="small fw-bold text-dark me-2" style="width: 45px;" th:text="${p.porcentaje + '%'}">0%</span>
+                                                        <div class="progress progress-mini">
+                                                            <div class="progress-bar" 
+                                                                 th:classappend="${p.porcentaje < 30 ? 'bg-danger' : (p.porcentaje < 70 ? 'bg-warning' : 'bg-success')}"
+                                                                 role="progressbar" th:style="'width: ' + ${p.porcentaje} + '%;'"></div>
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                                <td class="text-center">
+                                                    <div class="text-primary fw-bold small">
+                                                        <i class="bi bi-calendar3 me-1"></i> <span th:text="${p.sop}">Fecha</span>
+                                                    </div>
+                                                </td>
+                                                <td class="text-center pe-4">
+                                                    <a th:href="@{/proyectos/checklist/{id}(id=${p.id})}" class="btn btn-outline-primary btn-sm shadow-sm" title="Abrir Checklist">
+                                                        <i class="bi bi-card-checklist"></i>
+                                                    </a>
+                                                    <a href="#"
+                                                        data-bs-toggle="modal" 
+                                                        data-bs-target="#confirmDeleteProjectModal" 
+                                                        th:data-project-id="${p.id}"
+                                                        th:data-project-name="${p.nombreProyecto}"
+                                                        class="btn btn-outline-danger btn-sm ms-1 shadow-sm btn-delete-project"
+                                                        sec:authorize="hasRole('ADMIN')" title="Eliminar Proyecto">
+                                                        <i class="bi bi-trash"></i>
+                                                    </a>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                    <div class="card-body p-0">
-                        <div class="table-responsive">
-                            <table class="table table-hover align-middle mb-0">
-                                <thead class="bg-light text-secondary small text-uppercase">
-                                    <tr>
-                                        <th class="ps-4" style="width: 5%;">ID</th>
-                                        <th style="width: 25%;">Proyecto</th>
-                                        <th style="width: 13%;">Num. Parte</th>
-                                        <th style="width: 13%;">Cliente</th>
-                                        <th style="width: 13%;">Líder</th>
-                                        <th class="text-center" style="width: 20%;">SOP</th>
-                                        <th class="text-end pe-4" style="width: 30%;">Acciones</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr th:if="${proyectos == null or proyectos.empty}">
-                                        <td colspan="7" class="text-center py-5 text-muted fst-italic">No hay proyectos registrados actualmente.</td>
-                                    </tr>
-                                    <tr th:each="p : ${proyectos}">
-                                        <td class="ps-4 fw-bold text-muted" th:text="'#' + ${p.id}">1</td>
-                                        <td class="fw-bold text-dark" th:text="${p.nombre}">Nombre</td>
-                                        <td><span class="badge bg-light text-dark border shadow-sm" th:text="${p.numeroParte}">123</span></td>
-                                        <td th:text="${p.cliente}" class="text-secondary fw-medium">Cliente</td>
-                                        <td th:text="${p.liderProyecto}" class="text-secondary fw-medium">Líder</td>
-                                        <td class="text-center text-primary fw-bold" th:text="${p.sop}">Fecha</td>
-                                        <td class="text-end pe-4">
-                                            <a th:href="@{/proyectos/checklist/{id}(id=${p.id})}" class="btn btn-outline-primary btn-sm shadow-sm fw-bold">
-                                                <i class="bi bi-card-checklist me-1"></i>
-                                            </a>
-                                            <a href="#"
-                                                data-bs-toggle="modal" 
-                                                data-bs-target="#confirmDeleteProjectModal" 
-                                                th:data-project-id="${p.id}"
-                                                th:data-project-name="${p.nombre}"
-                                                class="btn btn-outline-danger btn-sm ms-1 shadow-sm btn-delete-project"
-                                                sec:authorize="hasRole('ADMIN')" title="Eliminar Proyecto">
-                                                <i class="bi bi-trash"></i>
-                                            </a>
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </table>
+
+                    <div class="col-lg-4">
+                        <div class="card glass-card">
+                            <div class="card-header glass-header d-flex justify-content-between align-items-center">
+                                <h6 class="m-0 fw-bold text-danger text-uppercase"><i class="bi bi-bell-fill me-2"></i> Atención Requerida</h6>
+                            </div>
+                            <div class="card-body p-3" style="max-height: 440px; overflow-y: auto;">
+                                
+                                <div th:if="${alertas == null or alertas.empty}" class="text-center py-5">
+                                    <div class="d-inline-flex align-items-center justify-content-center bg-white rounded-circle shadow-sm mb-3" style="width: 60px; height: 60px;">
+                                        <i class="bi bi-shield-check text-success fs-2"></i>
+                                    </div>
+                                    <h6 class="fw-bold text-dark">Todo bajo control</h6>
+                                    <p class="text-muted small mb-0">No hay entregables en estado "Needs Action".</p>
+                                </div>
+
+                                <div th:each="alerta : ${alertas}" class="alert-item shadow-sm p-3 mb-3">
+                                    <div class="d-flex justify-content-between align-items-start mb-1">
+                                        <p class="alert-title text-truncate pe-2 fw-bold" th:text="${alerta.proyecto.nombre}">Proyecto Alpha</p>
+                                        <span class="badge bg-danger">URGENTE</span>
+                                    </div>
+                                    <p class="alert-desc mb-2" th:text="${alerta.codigo + ' - ' + alerta.nombre}">1.1 Team Feasibility</p>
+                                    <div class="text-end">
+                                        <a th:href="@{/proyectos/checklist/{id}(id=${alerta.proyecto.id})}" class="text-danger fw-bold small text-decoration-none">
+                                            Ir al checklist <i class="bi bi-arrow-right-short"></i>
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
 
+                <div class="row g-4 mb-4">
+                    <div class="col-12">
+                        <div class="card glass-card">
+                            <div class="card-header glass-header">
+                                <h6 class="m-0 fw-bold text-dark text-uppercase"><i class="bi bi-graph-up-arrow me-2 text-primary"></i> Tendencia de Cumplimiento (Entregables OK por Mes)</h6>
+                            </div>
+                            <div class="card-body">
+                                <canvas id="trendChart" style="max-height: 300px;"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </main>
         </div>
     </div>
 
     <div class="modal fade" id="modalNuevoProyecto" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered modal-lg">
-            <div class="modal-content border-0 shadow-lg">
-                
+            <div class="modal-content">
                 <div class="modal-header bg-dark text-white border-bottom-0 pb-3">
                     <div>
                         <h5 class="modal-title fw-bold mb-0">
@@ -180,53 +311,45 @@
                 
                 <form th:action="@{/proyectos/guardar}" method="post">
                     <div class="modal-body p-4 bg-light">
-                        
-                        <div class="bg-white p-4 rounded border shadow-sm">
+                        <div class="bg-white p-4 rounded-4 border shadow-sm">
                             <h6 class="text-uppercase fw-bold text-secondary mb-4 border-bottom pb-2">Información General</h6>
                             
                             <div class="row g-4">
                                 <div class="col-md-12">
                                     <label for="nombreProyecto" class="form-label fw-bold small text-dark mb-1">Nombre del Proyecto <span class="text-danger">*</span></label>
-                                    <input type="text" id="nombreProyecto" name="nombre" class="form-control shadow-none" placeholder="Ej: Dahlia Valve Stellantis" required>
+                                    <input type="text" id="nombreProyecto" name="nombre" class="form-control" placeholder="Ej: Dahlia Valve Stellantis" required>
                                 </div>
-                                
                                 <div class="col-md-6">
                                     <label for="numeroParte" class="form-label fw-bold small text-dark mb-1">Número de Parte <span class="text-danger">*</span></label>
-                                    <input type="text" id="numeroParte" name="numeroParte" class="form-control shadow-none" placeholder="Ej: 1722-EJB0033" required>
+                                    <input type="text" id="numeroParte" name="numeroParte" class="form-control" placeholder="Ej: 1722-EJB0033" required>
                                 </div>
-                                
                                 <div class="col-md-6">
                                     <label for="cliente" class="form-label fw-bold small text-dark mb-1">Cliente <span class="text-danger">*</span></label>
                                     <div class="input-group">
                                         <span class="input-group-text bg-light border-end-0"><i class="bi bi-building text-secondary"></i></span>
-                                        <input type="text" id="cliente" name="cliente" class="form-control shadow-none border-start-0 ps-2" placeholder="Nombre del cliente" required>
+                                        <input type="text" id="cliente" name="cliente" class="form-control border-start-0 ps-2" placeholder="Nombre del cliente" required>
                                     </div>
                                 </div>
-
-                                <div class="col-md-4">
+                                <div class="col-md-6">
                                     <label for="liderProyecto" class="form-label fw-bold small text-dark mb-1">Líder del Proyecto</label>
                                     <div class="input-group">
                                         <span class="input-group-text bg-light border-end-0"><i class="bi bi-person text-secondary"></i></span>
-                                        <input type="text" id="liderProyecto" name="liderProyecto" class="form-control shadow-none border-start-0 ps-2" placeholder="Responsable">
+                                        <input type="text" id="liderProyecto" name="liderProyecto" class="form-control border-start-0 ps-2" placeholder="Responsable">
                                     </div>
                                 </div>
-                                
-
-                                <div class="col-md-4">
-                                    <label for="sop" class="form-label fw-bold small text-dark mb-1">SOP date</label>
+                                <div class="col-md-6">
+                                    <label for="sop" class="form-label fw-bold small text-dark mb-1">SOP Date</label>
                                     <div class="input-group">
                                         <span class="input-group-text bg-light border-end-0"><i class="bi bi-calendar3 text-secondary"></i></span>
-                                        <input type="date" id="sop" name="sop" class="form-control shadow-none border-start-0 ps-2">
+                                        <input type="date" id="sop" name="sop" class="form-control border-start-0 ps-2">
                                     </div>
                                 </div>
-
                             </div>
                         </div>
                     </div>
-
                     <div class="modal-footer bg-light border-top-0 pt-0 pb-4 pe-4">
-                        <button type="button" class="btn btn-outline-secondary btn-sm fw-bold px-4 shadow-sm" data-bs-dismiss="modal">Cancelar</button>
-                        <button type="submit" class="btn btn-je-primary btn-sm fw-bold px-4 shadow-sm">
+                        <button type="button" class="btn btn-outline-secondary px-4" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="submit" class="btn btn-je-primary px-4">
                             <i class="bi bi-check2-circle me-1"></i> Crear Proyecto
                         </button>
                     </div>
@@ -239,7 +362,7 @@
         <div class="modal-dialog modal-dialog-centered modal-sm">
             <div class="modal-content border-0 shadow-lg">
                 <div class="modal-header bg-danger text-white border-bottom-0 pb-3">
-                    <h6 class="modal-title fw-bold"><i class="bi bi-exclamation-triangle-fill me-2"></i>Confirmar Eliminación</h6>
+                    <h6 class="modal-title fw-bold"><i class="bi bi-exclamation-triangle-fill me-2"></i>Eliminar Proyecto</h6>
                     <button type="button" class="btn-close btn-close-white shadow-none" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body p-4 bg-light text-center">
@@ -247,7 +370,7 @@
                     <p class="small text-muted mt-1 mb-0">Esta acción es irreversible y borrará los 38 entregables asociados.</p>
                 </div>
                 <div class="modal-footer bg-light border-top-0 pt-0 pb-4 justify-content-center">
-                    <button type="button" class="btn btn-outline-secondary btn-sm fw-bold px-4 shadow-sm" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-outline-secondary btn-sm fw-bold px-4" data-bs-dismiss="modal">Cancelar</button>
                     <a href="#" id="confirmDeleteButton" class="btn btn-danger btn-sm fw-bold px-4 shadow-sm">
                         <i class="bi bi-trash me-1"></i>Eliminar
                     </a>
@@ -257,8 +380,9 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     
-    <script>
+    <script th:inline="javascript">
         document.addEventListener('DOMContentLoaded', function () {
             const deleteButtons = document.querySelectorAll('.btn-delete-project');
             const projectNameToDeleteSpan = document.getElementById('projectNameToDelete');
@@ -271,6 +395,56 @@
                     projectNameToDeleteSpan.textContent = '"' + projectName + '"';
                     confirmDeleteButton.href = '/proyectos/eliminar/' + projectId;
                 });
+            });
+
+            // Lógica de la gráfica de tendencia
+            const tendenciaData = /*[[${tendencia}]]*/ {};
+            
+            // Ordenar las llaves (mes/año) cronológicamente
+            const sortedKeys = Object.keys(tendenciaData).sort((a, b) => {
+                const [monthA, yearA] = a.split('/').map(Number);
+                const [monthB, yearB] = b.split('/').map(Number);
+                return yearA !== yearB ? yearA - yearB : monthA - monthB;
+            });
+
+            const labels = sortedKeys;
+            const values = sortedKeys.map(key => tendenciaData[key]);
+
+            const ctx = document.getElementById('trendChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Entregables Completados',
+                        data: values,
+                        borderColor: '#F5821F',
+                        backgroundColor: 'rgba(245, 130, 31, 0.1)',
+                        borderWidth: 3,
+                        tension: 0.4,
+                        fill: true,
+                        pointBackgroundColor: '#F5821F',
+                        pointRadius: 5,
+                        pointHoverRadius: 7
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            grid: { color: 'rgba(0,0,0,0.05)' },
+                            ticks: { precision: 0 }
+                        },
+                        x: {
+                            grid: { display: false }
+                        }
+                    }
+                }
             });
         });
     </script>
