@@ -33,6 +33,10 @@ public class EvidenciaControlador {
     @Autowired
     private AdjuntoRepositorio adjuntoRepositorio;
 
+    @Autowired
+    private com.johnson.practica.servicio.NotificacionServicio notificacionServicio;
+
+
     @PostMapping("/subir/{itemId}")
     public String subirEvidencia(@PathVariable Long itemId, 
                                  @RequestParam("archivo") MultipartFile archivo,
@@ -58,6 +62,11 @@ public class EvidenciaControlador {
             adjunto.setSubidoEn(LocalDateTime.now());
             
             adjuntoRepositorio.save(adjunto);
+            
+            String correoGerente = "francosanchezg25@gmail.com"; 
+            
+       
+  
             redirectAttributes.addFlashAttribute("exito", "Archivo subido correctamente.");
         } catch (IOException e) {
             redirectAttributes.addFlashAttribute("error", "Error interno al guardar el archivo.");
@@ -176,4 +185,11 @@ public class EvidenciaControlador {
         
         return "evidencias";
     }
+
+
+
+
+
+
+
 }

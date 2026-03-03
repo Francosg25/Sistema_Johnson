@@ -12,4 +12,6 @@ public interface UsuarioRepositorio extends JpaRepository<Usuario, Long> {
     // Custom query to fetch roles eagerly with the user
     @Query("SELECT u FROM Usuario u JOIN FETCH u.roles WHERE u.username = :username")
     Optional<Usuario> findByUsername(@Param("username") String username);
+
+    Optional<Usuario> findByCorreo(String correo);
 }

@@ -1,4 +1,4 @@
-<nav th:fragment="header" class="navbar navbar-expand-lg navbar-light px-4">
+<nav th:fragment="header" class="navbar navbar-expand-lg navbar-light px-4" style="position: sticky; top: 0; z-index: 1040; background: rgba(255,255,255,0.8); backdrop-filter: blur(10px);">
     <div class="container-fluid">
 
         <button class="btn btn-link text-dark me-3" id="sidebarToggle">
@@ -6,6 +6,148 @@
         </button>
 
         <h5 class="navbar-brand mb-0 fw-bold text-dark">Dashboard APQP</h5>
-        
+
+        <div class="ms-auto d-flex align-items-center">
+            <div class="dropdown me-3" id="notifDropdownContainer">
+                <button class="btn btn-light border-0 shadow-none position-relative rounded-circle p-2" type="button" id="notifDropdown" data-bs-toggle="dropdown" aria-expanded="false" onclick="fetchNotificaciones()">
+                    <i class="bi bi-bell fs-5 text-dark"></i>
+                    <span id="notifBadge" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger d-none" style="z-index: 10; font-size: 0.6rem; padding: 0.35em 0.5em;">
+                        0
+                    </span>
+                </button>
+                <div class="dropdown-menu dropdown-menu-end shadow-lg border-0 p-0" aria-labelledby="notifDropdown" style="width: 350px; border-radius: 12px; overflow: hidden; z-index: 1060;">
+                    <div class="bg-light p-3 border-bottom d-flex justify-content-between align-items-center">
+                        <h6 class="m-0 fw-bold text-dark">Notificaciones</h6>
+                        <button class="btn btn-link btn-sm text-primary p-0 text-decoration-none small fw-bold" onclick="event.stopPropagation(); marcarTodasComoLeidas()">Marcar todas como leídas</button>
+                    </div>
+                    <div id="notifList" class="overflow-auto" style="max-height: 400px;">
+                        <!-- Notificaciones se cargan aquí -->
+                        <div class="p-4 text-center text-muted small">
+                            No tienes notificaciones nuevas
+                        </div>
+                    </div>
+                    <div class="bg-light p-2 text-center border-top">
+                        <span class="text-muted" style="font-size: 0.65rem;">Módulo de Alertas APQP - Johnson Electric</span>
+                    </div>
+                </div>
+            </div>
     </div>
+
+    <script>
+        function fetchNotificaciones() {
+            fetch('/api/notificaciones/resumen')
+                .then(r => r.json())
+                .then(data => {
+                    renderNotificaciones(data);
+                })
+                .catch(err => console.error("Error fetching notifications:", err));
+        }
+
+        function renderNotificaciones(data) {
+            const badge = document.getElementById('notifBadge');
+            const list = document.getElementById('notifList');
+            
+            if (data && data.totalNoLeidas > 0) {
+                badge.innerText = data.totalNoLeidas;
+                badge.classList.remove('d-none');
+            } else {
+                badge.classList.add('d-none');
+            }
+
+            if (!list) return;
+
+            if (!data || !data.ultimas || data.ultimas.length === 0) {
+                list.innerHTML = '<div class="p-4 text-center text-muted small"><i class="bi bi-bell-slash d-block fs-3 mb-2 opacity-50"></i>No tienes notificaciones nuevas</div>';
+                return;
+            }
+
+            list.innerHTML = data.ultimas.map(n => `
+                <div class="p-3 border-bottom position-relative hover-bg-light" style="cursor: pointer;" onclick="marcarLeida(${n.id}, '${n.link}')">
+                    <div class="d-flex align-items-start">
+                        <div class="rounded-circle p-2 me-3 d-flex align-items-center justify-content-center ${getIconBg(n.tipo)}" style="width: 32px; height: 32px; flex-shrink: 0;">
+                            <i class="bi ${getIcon(n.tipo)} text-white" style="font-size: 0.9rem;"></i>
+                        </div>
+                        <div class="flex-grow-1" style="min-width: 0;">
+                            <div class="small fw-bold text-dark text-truncate">${n.titulo}</div>
+                            <div class="text-muted small text-truncate-2">${n.mensaje}</div>
+                            <div class="text-primary fw-bold mt-1" style="font-size: 0.65rem;">${formatoFecha(n.fechaCreacion)}</div>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function getIcon(tipo) {
+            if (!tipo) return 'bi-info-circle-fill';
+            const t = tipo.toUpperCase();
+            if (t === 'ALERT' || t === 'ALERTA') return 'bi-exclamation-triangle-fill';
+            if (t === 'SUCCESS' || t === 'EXITO') return 'bi-check-circle-fill';
+            return 'bi-info-circle-fill';
+        }
+
+        function getIconBg(tipo) {
+            if (!tipo) return 'bg-primary';
+            const t = tipo.toUpperCase();
+            if (t === 'ALERT' || t === 'ALERTA') return 'bg-danger';
+            if (t === 'SUCCESS' || t === 'EXITO') return 'bg-success';
+            return 'bg-primary';
+        }
+
+        function formatoFecha(fecha) {
+            if (!fecha) return "";
+            let d;
+            if (Array.isArray(fecha)) {
+                // Jackson array format [yyyy, mm, dd, hh, mm, ss]
+                d = new Date(fecha[0], fecha[1] - 1, fecha[2], fecha[3] || 0, fecha[4] || 0, fecha[5] || 0);
+            } else {
+                d = new Date(fecha);
+            }
+            
+            if (isNaN(d.getTime())) return "";
+
+            const hoy = new Date();
+            if (d.toDateString() === hoy.toDateString()) {
+                return d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            }
+            return d.toLocaleDateString([], { day: '2-digit', month: '2-digit' });
+        }
+
+        function marcarLeida(id, link) {
+            fetch('/api/notificaciones/marcar-leida/' + id, { method: 'POST' })
+                .then(() => {
+                    if (link && link !== 'null' && link !== 'undefined') window.location.href = link;
+                    else fetchNotificaciones();
+                });
+        }
+
+        function marcarTodasComoLeidas() {
+            fetch('/api/notificaciones/marcar-todas-leidas', { method: 'POST' })
+                .then(() => fetchNotificaciones());
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            fetchNotificaciones();
+            // Sidebar Toggle
+            const toggle = document.getElementById('sidebarToggle');
+            if (toggle) {
+                toggle.addEventListener('click', e => {
+                    e.preventDefault();
+                    document.getElementById('wrapper').classList.toggle('toggled');
+                });
+            }
+        });
+        
+        setInterval(fetchNotificaciones, 45000); // Cada 45 seg
+    </script>
+    <style>
+        .hover-bg-light:hover { background-color: #f8f9fa; }
+        .text-truncate-2 {
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+        #notifList::-webkit-scrollbar { width: 4px; }
+        #notifList::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+    </style>
 </nav>

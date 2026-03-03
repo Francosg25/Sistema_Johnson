@@ -21,5 +21,6 @@ public class Rol {
     private String nombre; // e.g., ROLE_ADMIN, ROLE_CHAMPION, ROLE_VIEWER
 
     @ManyToMany(mappedBy = "roles")
+    @com.fasterxml.jackson.annotation.JsonIgnore
     private Set<Usuario> usuarios;
 }

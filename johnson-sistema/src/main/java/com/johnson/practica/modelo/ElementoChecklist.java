@@ -1,7 +1,6 @@
 package com.johnson.practica.modelo;
 
 import jakarta.persistence.*;
-import lombok.Data;
 import java.time.LocalDate;
 import java.util.List;
 import lombok.Getter;
@@ -26,7 +25,6 @@ public class ElementoChecklist {
     @JoinColumn(name = "catalogo_id")
     private CatalogoElemento catalogo;
 
-    // Datos descriptivos (Copiados del catálogo al crear)
     private String codigo;
     private String nombre;
     private String grupo;
@@ -35,13 +33,11 @@ public class ElementoChecklist {
     private String champion;
     private String etapaVisual;
 
-    // Datos de respuesta (Llenados por el usuario)
-    private String estado;      // OK, NOK, NA
+    private String estado;     
     private String comentario;
-    private String score;       // Puntuación
+    private String score;       
     private String controlEntregable; 
     
-    // ESTOS SON LOS QUE FALTABAN Y CAUSABAN EL ERROR:
     private LocalDate fechaPlan;
     private LocalDate fechaReal;
 

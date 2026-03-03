@@ -7,8 +7,11 @@ import com.johnson.practica.dto.ReporteCascada;
 import com.johnson.practica.dto.ReporteEstadoGlobal; 
 import com.johnson.practica.modelo.ElementoChecklist;
 import com.johnson.practica.modelo.Proyecto;
+import com.johnson.practica.modelo.Usuario;
 import com.johnson.practica.repositorio.ElementoChecklistRepositorio;
 import com.johnson.practica.repositorio.ProyectoRepositorio;
+import com.johnson.practica.repositorio.UsuarioRepositorio;
+import com.johnson.practica.servicio.NotificacionServicio;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -33,6 +36,13 @@ public class ChecklistServicio {
 
     @Autowired
     private com.johnson.practica.repositorio.HitoProyectoRepositorio hitoProyectoRepositorio;
+
+    @Autowired
+    private NotificacionServicio notificacionServicio;
+
+    @Autowired
+    private UsuarioRepositorio usuarioRepositorio;
+
 
     @Transactional(readOnly = true)
     public List<ElementoChecklist> obtenerHitosPrograma(Long proyectoId) {
@@ -62,12 +72,34 @@ public class ChecklistServicio {
 
         for (Map.Entry<Long, Map<String, String>> entry : updatesById.entrySet()) {
             repositorio.findById(entry.getKey()).ifPresent(elemento -> {
+                
+                // Guardamos el estado anterior de los campos clave para comparar
+                String scoreAnterior = elemento.getScore() != null ? elemento.getScore() : "";
+                String estadoAnterior = elemento.getEstado() != null ? elemento.getEstado() : "";
+                
                 entry.getValue().forEach((fieldName, fieldValue) -> {
                     switch (fieldName) {
-                        case "controlEntregable" -> elemento.setControlEntregable(fieldValue);
-                        case "score" -> elemento.setScore(fieldValue);
+                        case "controlEntregable" -> {
+                            if ("NEEDS ACTION".equalsIgnoreCase(fieldValue) && !"NEEDS ACTION".equalsIgnoreCase(elemento.getControlEntregable())) {
+                                notificarEscalacion(elemento);
+                            }
+                            elemento.setControlEntregable(fieldValue);
+                        }
+                        case "score" -> {
+                            elemento.setScore(fieldValue);
+                            // --- GATILLO DE NOTIFICACIÓN PARA ENTREGABLE "OK" ---
+                            if ("OK".equalsIgnoreCase(fieldValue) && !"OK".equalsIgnoreCase(scoreAnterior)) {
+                                notificarAprobacion(elemento);
+                            }
+                        }
                         case "comentario" -> elemento.setComentario(fieldValue);
-                        case "estado" -> elemento.setEstado(fieldValue);
+                        case "estado" -> {
+                            elemento.setEstado(fieldValue);
+                            // --- GATILLO PARA OTROS ENTREGABLES (STAGE 2+) ---
+                            if ("OK".equalsIgnoreCase(fieldValue) && !"OK".equalsIgnoreCase(estadoAnterior)) {
+                                notificarAprobacion(elemento);
+                            }
+                        }
                         case "fechaReal" -> {
                             try { if (fieldValue != null && !fieldValue.isEmpty()) elemento.setFechaReal(LocalDate.parse(fieldValue)); } 
                             catch (Exception ignored) {}
@@ -80,6 +112,34 @@ public class ChecklistServicio {
                 });
             });
         }
+    }
+
+    private void notificarEscalacion(ElementoChecklist item) {
+        String titulo = "ALERTA: Escalación en " + item.getProyecto().getNombre();
+        String mensaje = "El entregable \"" + item.getCodigo() + " - " + item.getNombre() + "\" ha sido marcado como NEEDS ACTION.";
+        String link = "/proyectos/checklist/" + item.getProyecto().getId();
+        
+        String autor = "Sistema";
+        try {
+            var auth = org.springframework.security.core.context.SecurityContextHolder.getContext().getAuthentication();
+            if (auth != null && auth.getName() != null) autor = auth.getName();
+        } catch (Exception e) {}
+        
+        notificacionServicio.alertarAAdministradores(titulo, mensaje, "ALERT", link, autor);
+    }
+    
+    private void notificarAprobacion(ElementoChecklist item) {
+        String titulo = "✅ Entregable Aprobado";
+        String mensaje = "El entregable \"" + item.getCodigo() + " - " + item.getNombre() + "\" del proyecto " + item.getProyecto().getNombre() + " ha sido marcado como OK.";
+        String link = "/proyectos/checklist/" + item.getProyecto().getId();
+        
+        String autor = "Sistema";
+        try {
+            var auth = org.springframework.security.core.context.SecurityContextHolder.getContext().getAuthentication();
+            if (auth != null && auth.getName() != null) autor = auth.getName();
+        } catch (Exception e) {}
+        
+        notificacionServicio.alertarATodos(titulo, mensaje, "SUCCESS", link, autor);
     }
 
     // --- 3. MÉTODOS DE REPORTES ---
@@ -334,7 +394,6 @@ public class ChecklistServicio {
     private double calcularRiesgoDinamico(Proyecto p, List<ElementoChecklist> elementos) {
         if (elementos == null || elementos.isEmpty()) return 0.0;
 
-        // Filtrar solo las etapas pre-SOP (Etapa 1 a 4)
         List<ElementoChecklist> preSop = elementos.stream()
                 .filter(e -> e.getEtapaVisual() != null && !e.getEtapaVisual().toUpperCase().contains("ETAPA 5"))
                 .toList();
@@ -342,7 +401,6 @@ public class ChecklistServicio {
         long totalTareas = preSop.size();
         if (totalTareas == 0) return 0.0;
 
-        // Conteo de tareas por estatus
         long needsAction = preSop.stream()
                 .filter(e -> "NEEDS ACTION".equalsIgnoreCase(e.getControlEntregable()))
                 .count();
@@ -364,7 +422,6 @@ public class ChecklistServicio {
 
         if (diasParaSop <= 0) return 100.0;
 
-        // Lógica del Multiplicador de Urgencia basado en el tiempo restante
         double multiplicadorTiempo = 1.0;
 
         if (diasParaSop <= 7) {
@@ -379,11 +436,9 @@ public class ChecklistServicio {
 
         double riesgoTotal = 0.0;
 
-        // El porcentaje de tareas que faltan se multiplica por la urgencia del calendario
         double porcentajeFaltante = (pendientesNormales * 100.0) / totalTareas;
         riesgoTotal += (porcentajeFaltante * multiplicadorTiempo);
 
-        // Los "Needs Action" exigen escalación, por lo que suman riesgo directo 
         double castigoNeedsAction = (needsAction * 100.0 / totalTareas) * 2.5; 
         riesgoTotal += castigoNeedsAction;
 

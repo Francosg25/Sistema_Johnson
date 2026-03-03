@@ -5,13 +5,14 @@ import com.johnson.practica.modelo.Proyecto;
 import com.johnson.practica.repositorio.ProyectoRepositorio;
 import com.johnson.practica.servicio.ChecklistServicio;
 import com.johnson.practica.servicio.ProyectoServicio;
+import com.johnson.practica.servicio.NotificacionServicio; // <-- IMPORTACIÓN DEL SERVICIO DE NOTIFICACIONES
 
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.transaction.annotation.Transactional; // <-- IMPORTANTE NUEVO IMPORT
+import org.springframework.transaction.annotation.Transactional; 
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
@@ -26,6 +27,9 @@ public class ProyectoControlador {
     @Autowired private ProyectoServicio proyectoServicio;
     @Autowired private ChecklistServicio checklistServicio;
     @Autowired private ProyectoRepositorio proyectoRepositorio;
+    
+    @Autowired 
+    private NotificacionServicio notificacionServicio; // <-- INYECCIÓN PARA LAS ALERTAS
 
     @Data @AllArgsConstructor
     public static class FaseVista {
@@ -74,8 +78,21 @@ public class ProyectoControlador {
 
     
     @PostMapping("/guardar")
-    public String guardarProyecto(@ModelAttribute Proyecto proyecto) {
-        proyectoServicio.guardarProyecto(proyecto);
+    public String guardarProyecto(@ModelAttribute Proyecto proyecto, java.security.Principal principal) {
+        boolean esNuevo = (proyecto.getId() == null);
+        
+        Proyecto proyectoGuardado = proyectoServicio.guardarProyecto(proyecto);
+        
+        if (esNuevo) {
+            String titulo = "Nuevo Proyecto APQP";
+            String msj = "Se ha inicializado el portafolio para el proyecto: " + proyectoGuardado.getNombre();
+            String url = "/proyectos/checklist/" + proyectoGuardado.getId();
+            
+            String autor = (principal != null) ? principal.getName() : "Sistema";
+            
+            notificacionServicio.alertarATodos(titulo, msj, "SUCCESS", url, autor);
+        }
+        
         return "redirect:/";
     }
 
@@ -92,4 +109,9 @@ public class ProyectoControlador {
         model.addAttribute("currentUri", request.getRequestURI());
         return "index";
     }
+
+    
+
+
+
 }
