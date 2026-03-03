@@ -33,7 +33,6 @@
         .blob-1 { top: -100px; right: -100px; }
         .blob-2 { bottom: -100px; left: -100px; background: linear-gradient(135deg, rgba(13, 110, 253, 0.12) 0%, rgba(13, 110, 253, 0.05) 100%); }
 
-        /* --- GLASS CARDS --- */
         .glass-card {
             background: rgba(255, 255, 255, 0.6) !important;
             backdrop-filter: blur(12px) !important;
@@ -121,43 +120,54 @@
             height: 10px;
             top: 50% !important; 
             margin-top: -5px !important; 
+            margin-left: -8px !important;
             box-shadow: 1px 1px 2px rgba(0,0,0,0.3);
             z-index: 5;
         }
 
-        .vis-item.vis-point.hito-completado .vis-dot { background-color: #28a745; border: 1.5px solid #fff; animation: palpitar 5s infinite;}
+        .vis-item.vis-point.hito-completado .vis-dot { background-color: #28a745; border: 1px solid #fff; animation: palpitar 5s infinite;}
         .vis-item.vis-point.hito-pendiente .vis-dot { background-color: #f58220; border: 1.5px solid #fff; animation: palpitar 5s infinite;}
         .vis-item.vis-point.hito-atrasado .vis-dot { background-color: #dc3545; border: 1.5px solid #fff; animation: palpitar 1.5s infinite;}
 
         .milestone-text { 
-            font-size: 9px !important; 
+            font-size: 10px !important; 
             font-weight: 800 !important; 
             color: #1e293b !important; 
             text-align: left !important; 
-            background: rgba(255,255,255,0.9) !important; 
+            background: rgba(255,255,255,0.95) !important; 
             backdrop-filter: blur(4px);
-            padding: 3px 6px !important; 
-            border-radius: 6px !important; 
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1) !important;
+            padding: 5px 10px !important; 
+            border-radius: 8px !important; 
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1) !important;
             white-space: nowrap !important; 
-            margin-left: 15px !important; /* Mueve el texto a la derecha del rombo */
+            border: 1px solid rgba(245, 130, 31, 0.2) !important;
+            transform: translate(35px, -15px); 
+            display: inline-block;
         }
 
         .vis-item.vis-box {
-            border-radius: 6px !important; 
+            border-radius: 3px !important; 
             border: none !important; 
-            box-shadow: 0 2px 5px rgba(0,0,0,0.08) !important;
-            padding: 4px 8px !important; 
+            box-shadow: 0 1px 2px rgba(0,0,0,0.08) !important;
+            padding: 1px 4px !important; 
             transition: all 0.2s; 
             cursor: pointer;
         }
-        .vis-item.vis-box:hover { transform: translateY(-2px); box-shadow: 0 5px 12px rgba(0,0,0,0.15) !important; z-index: 10 !important; }
-        
+
+        .vis-item.vis-box .vis-item-content {
+            padding: 0 !important;
+            line-height: 1 !important;
+        }
+
+        .vis-item.vis-point .vis-item-content {
+            overflow: visible !important;
+        }
+
+        .event-content { font-size: 7px !important; font-weight: 700 !important; } 
+
         .vis-event-internal { background-color: #3b82f6 !important; color: white !important; } 
         .vis-event-external { background-color: #f59e0b !important; color: white !important; } 
         .event-delayed { background-color: #ef4444 !important; color: white !important; animation: palpitar 2s infinite; }
-
-        .event-content { font-size: 9px !important; font-weight: 700 !important; }
 
         .status-key-box { 
             background: rgba(255, 255, 255, 0.6); 
@@ -270,9 +280,6 @@
                         <button class="btn btn-je-primary btn-sm ms-2" data-bs-toggle="modal" data-bs-target="#modalConfigHitos">
                            <i class="bi bi-flag-fill me-1"></i> Milestones
                         </button>
-                        <button class="btn btn-outline-primary btn-sm ms-2 shadow-sm fw-bold" id="btnGoToToday">
-                            <i class="bi bi-calendar-event me-1"></i> Hoy
-                        </button>
                     </div>
                 </div>
 
@@ -293,17 +300,31 @@
     </div>
 
     <div class="modal fade" id="modalDetalleTimeline" tabindex="-1" aria-hidden="true" style="backdrop-filter: blur(4px);">
-        <div class="modal-dialog modal-dialog-centered modal-sm">
-            <div class="modal-content border-0 shadow-lg" style="border-radius: 16px;">
-                <div class="modal-header bg-light border-bottom-0 pb-2 px-4 pt-4">
-                    <h6 class="modal-title fw-bold text-dark"><i class="bi bi-info-circle text-primary me-2"></i>Detalle</h6>
-                    <button type="button" class="btn-close shadow-none" data-bs-dismiss="modal"></button>
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-0 shadow-lg" style="border-radius: 20px; overflow: hidden;">
+                <div class="modal-header bg-dark text-white p-4 border-0">
+                    <h6 class="modal-title fw-bold m-0"><i class="bi bi-info-circle-fill text-primary me-2"></i>Detalles del Evento</h6>
+                    <button type="button" class="btn-close btn-close-white shadow-none" data-bs-dismiss="modal"></button>
                 </div>
-                <div class="modal-body text-center px-4 pb-5">
-                    <h5 id="detalle-nombre" class="fw-bold text-dark mb-1">Nombre</h5>
-                    <div class="bg-light rounded-3 p-3 border-0 mt-3">
-                        <h6 id="detalle-fecha" class="text-primary fw-bold mb-0">YYYY-MM-DD</h6>
+                <div class="modal-body p-4 bg-light">
+                    <div class="bg-white p-4 rounded-4 shadow-sm border">
+                        <div class="mb-4">
+                            <label class="small text-muted fw-bold text-uppercase mb-2 d-block">Descripción</label>
+                            <h5 id="detalle-nombre" class="fw-bold text-dark m-0 lh-base"></h5>
+                        </div>
+                        <div class="pt-3 border-top">
+                            <label class="small text-muted fw-bold text-uppercase mb-2 d-block">Fecha Programada</label>
+                            <div class="d-flex align-items-center">
+                                <div class="bg-primary bg-opacity-10 p-2 rounded-3 me-3 text-primary">
+                                    <i class="bi bi-calendar-check fs-4"></i>
+                                </div>
+                                <h6 id="detalle-fecha" class="text-primary fw-bold mb-0 fs-5"></h6>
+                            </div>
+                        </div>
                     </div>
+                </div>
+                <div class="modal-footer bg-light border-0 pt-0 pb-4 px-4">
+                    <button type="button" class="btn btn-secondary fw-bold w-100 rounded-3 py-2" data-bs-dismiss="modal">Entendido</button>
                 </div>
             </div>
         </div>
@@ -340,17 +361,9 @@
                     </ul>
                     <div class="tab-content p-4">
                         <div class="tab-pane fade show active" id="tabHitos">
-                            <div class="row g-3 mb-4 bg-white p-4 rounded-3 border shadow-sm">
-                                <div class="col-md-4">
-                                    <label class="form-label small fw-bold text-dark">Nombre del Hito</label>
-                                    <input type="text" id="hitoNombre" class="form-control shadow-none" placeholder="Ej: SOP, Kick-off, PPAP Submission">
-                                </div>
-                                <div class="col-md-3">
-                                    <label class="form-label small fw-bold text-dark">Fecha Estimada</label>
-                                    <input type="date" id="hitoFecha" class="form-control shadow-none">
-                                </div>
-                                <div class="col-md-3">
-                                    <label class="form-label small fw-bold text-dark">Etapa Relacionada</label>
+                            <div class="row g-3 mb-4 bg-white p-4 rounded-3 border shadow-sm align-items-end">
+                                <div class="col-md-5">
+                                    <label class="form-label small fw-bold text-dark">Etapa a Alcanzar</label>
                                     <select id="hitoEtapa" class="form-select shadow-none">
                                         <option value="ETAPA 1">ETAPA 1 - Planning</option>
                                         <option value="ETAPA 2">ETAPA 2 - Product Design</option>
@@ -359,19 +372,25 @@
                                         <option value="ETAPA 5">ETAPA 5 - Feedback & Launch</option>
                                     </select>
                                 </div>
-                                <div class="col-md-1">
-                                    <label class="form-label small fw-bold text-dark">% Obj.</label>
+                                <div class="col-md-3">
+                                    <label class="form-label small fw-bold text-dark">Fecha Límite</label>
+                                    <input type="date" id="hitoFecha" class="form-control shadow-none">
+                                </div>
+                                <div class="col-md-2">
+                                    <label class="form-label small fw-bold text-dark">% Objetivo</label>
                                     <input type="number" id="hitoPorcentaje" class="form-control shadow-none" value="100" min="0" max="100">
                                 </div>
-                                <div class="col-md-1 d-flex align-items-end">
-                                    <button class="btn btn-je-primary w-100 shadow-sm" onclick="guardarHito()"><i class="bi bi-plus-lg"></i></button>
+                                <div class="col-md-2">
+                                    <button class="btn btn-je-primary w-100 shadow-sm" onclick="guardarHito()">
+                                        <i class="bi bi-plus-lg me-1"></i> Agregar
+                                    </button>
                                 </div>
                             </div>
                             <div class="premium-card">
                                 <div class="table-responsive">
                                     <table class="table table-hover align-middle mb-0">
                                         <thead class="bg-light text-secondary small text-uppercase">
-                                            <tr><th class="ps-4">Hito / Etapa</th><th>Fecha</th><th>Objetivo de Progreso</th><th class="text-center pe-4">Acciones</th></tr>
+                                            <tr><th class="ps-4">Etapa Configurada</th><th>Fecha</th><th>Objetivo</th><th class="text-center pe-4">Acciones</th></tr>
                                         </thead>
                                         <tbody id="listaHitos"></tbody>
                                     </table>
@@ -399,11 +418,7 @@
                                             </tr>
                                         </thead>
                                         <tbody id="listaElementosMain">
-                                            <tr>
-                                                <td colspan="4" class="text-center py-5 text-muted fst-italic">
-                                                    Seleccione un proyecto para cargar los entregables
-                                                </td>
-                                            </tr>
+                                            <tr><td colspan="4" class="text-center py-5 text-muted fst-italic">Seleccione un proyecto para cargar los entregables</td></tr>
                                         </tbody>
                                     </table>
                                 </div>
@@ -423,220 +438,79 @@
     <script th:inline="javascript">
         document.addEventListener('DOMContentLoaded', function() {
             var container = document.getElementById('visualization');
-
             var rawGroups = /*[[${timelineGroups}]]*/ [];
             var rawItems = /*[[${timelineItems}]]*/ [];
-
-            if (!Array.isArray(rawGroups)) rawGroups = [];
-            if (!Array.isArray(rawItems)) rawItems = [];
-
-            var groups = new vis.DataSet(rawGroups);
-            var items = new vis.DataSet(rawItems);
+            var groups = new vis.DataSet(rawGroups || []);
+            var items = new vis.DataSet(rawItems || []);
 
             var view = new vis.DataView(items, {
                 filter: function (item) {
                     var showMilestones = document.getElementById('chkMilestones').checked;
                     var showMainEvents = document.getElementById('chkMainEvents').checked;
-                    var cName = item.className || "";
-
-                    if (cName.includes('hito-') && showMilestones) return true;
-                    if (cName.includes('vis-event') && showMainEvents) return true;
-                    
-                    return false;
+                    return (item.className.includes('hito-') && showMilestones) || (item.className.includes('vis-event') && showMainEvents);
                 }
             });
 
-            var options = {
-                groupOrder: 'id',
-                editable: false,
-                margin: { 
-                    item: {horizontal: 10, vertical: 20}, 
-                    axis: 40 
-                }, 
-                orientation: 'top',
-                timeAxis: {scale: 'month', step: 1},
-                horizontalScroll: true,       
-                zoomKey: 'ctrlKey',          
-                zoomMin: 1000 * 60 * 60 * 24 * 30 * 2, 
-                zoomMax: 1000 * 60 * 60 * 24 * 365 * 2,
-                stack: true,
-                showCurrentTime: true,
-                rollingMode: {
-                    follow: true,
-                    offset: 0.5
-                }
-            };
-
-            var timeline = new vis.Timeline(container, view, groups, options);
-
-            document.getElementById('btnGoToToday').onclick = function() {
-                timeline.moveTo(new Date());
-            };
-
-            timeline.on('select', function (properties) {
-                if (properties.items.length > 0) {
-                    var itemId = properties.items[0];
-                    var itemData = items.get(itemId); 
-                    
-                    var tempDiv = document.createElement("div");
-                    tempDiv.innerHTML = itemData.content;
-                    
-                    // Verificamos si es un Main Event con un nombre oculto
-                    var eventBox = tempDiv.querySelector('.event-content');
-                    var realName = eventBox ? eventBox.getAttribute('data-realname') : null;
-
-                    var finalName = "";
-                    if (realName) {
-                        finalName = realName; // Usa el nombre original del entregable
-                    } else {
-                        // Para los Milestones regulares
-                        var titleEl = tempDiv.querySelector('.milestone-text') || tempDiv;
-                        finalName = titleEl.textContent || titleEl.innerText || "";
-                    }
-                    
-                    document.getElementById('detalle-nombre').innerText = finalName.trim();
-                    
-                    var fechaObj = new Date(itemData.start);
-                    var opcionesFecha = { timeZone: 'UTC', weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
-                    document.getElementById('detalle-fecha').innerText = fechaObj.toLocaleDateString('es-ES', opcionesFecha);
-                    
-                    bootstrap.Modal.getOrCreateInstance(document.getElementById('modalDetalleTimeline')).show();
-                }
+            var timeline = new vis.Timeline(container, view, groups, {
+                groupOrder: 'id', margin: {item: {horizontal: 10, vertical: 20}, axis: 40}, orientation: 'top',
+                timeAxis: {scale: 'month', step: 1}, horizontalScroll: true, zoomKey: 'ctrlKey', stack: true, showCurrentTime: true
             });
 
-            document.querySelectorAll('.filter-checkbox').forEach(function(checkbox) {
-                checkbox.addEventListener('change', function() { view.refresh(); });
-            });
-
+            document.querySelectorAll('.filter-checkbox').forEach(cb => cb.addEventListener('change', () => view.refresh()));
+            
             const selProyecto = document.getElementById('selProyecto');
-            if(selProyecto){ 
-                selProyecto.addEventListener('change', () => { 
-                    cargarHitos(); 
-                    cargarElementosParaMain(); 
-                }); 
-            }
-
-            const searchInput = document.getElementById('searchMainEvents');
-            if(searchInput) {
-                searchInput.addEventListener('input', () => {
-                    filtrarTablaMainEvents();
-                });
-            }
+            selProyecto.addEventListener('change', () => { cargarHitos(); cargarElementosParaMain(); });
 
             function cargarHitos() {
-                const proyectoId = selProyecto.value;
-                if (!proyectoId) { document.getElementById('listaHitos').innerHTML = ''; return; }
-                fetch(`/api/hitos/proyecto/${proyectoId}`).then(r => r.json()).then(hitos => {
+                const pid = selProyecto.value;
+                if (!pid) return;
+                fetch(`/api/hitos/proyecto/${pid}`).then(r => r.json()).then(hitos => {
                     const tbody = document.getElementById('listaHitos');
-                    tbody.innerHTML = '';
-                    hitos.forEach(h => {
-                        const tr = document.createElement('tr');
-                        const displayName = (h.nombre && h.nombre !== 'META') ? h.nombre : h.etapaAsociada;
-                        tr.innerHTML = `<td class="ps-4"><span class="fw-bold text-dark">${displayName}</span></td>
-                                        <td class="text-primary fw-bold">${h.fecha}</td>
-                                        <td><span class="badge bg-light text-secondary border me-1">${h.etapaAsociada}</span> <span class="badge bg-je-primary">${h.porcentajeObjetivo}% Obj.</span></td>
-                                        <td class="text-center pe-4"><button class="btn btn-outline-danger btn-sm border-0" onclick="eliminarHito(${h.id})"><i class="bi bi-trash-fill"></i></button></td>`;
-                        tbody.appendChild(tr);
-                    });
+                    tbody.innerHTML = hitos.map(h => `<tr><td class="ps-4 fw-bold">${h.etapaAsociada}</td><td class="text-primary fw-bold">${h.fecha}</td><td><span class="badge bg-je-primary">${h.porcentajeObjetivo}%</span></td><td class="text-center"><button class="btn btn-sm btn-outline-danger border-0" onclick="eliminarHito(${h.id})"><i class="bi bi-trash-fill"></i></button></td></tr>`).join('');
                 });
             }
 
-            let allElementosData = [];
-
             function cargarElementosParaMain() {
-                const proyectoId = selProyecto.value;
-                const tbody = document.getElementById('listaElementosMain');
-                
-                if (!proyectoId) { 
-                    tbody.innerHTML = '<tr><td colspan="4" class="text-center py-4 text-muted">Seleccione un proyecto primero</td></tr>'; 
-                    return; 
-                }
-
-                tbody.innerHTML = '<tr><td colspan="4" class="text-center py-4 text-primary"><div class="spinner-border spinner-border-sm me-2"></div> Cargando entregables...</td></tr>';
-                
-                fetch(`/api/hitos/proyecto/${proyectoId}/elementos`).then(r => r.json()).then(elementos => {
-                    allElementosData = elementos;
+                const pid = selProyecto.value;
+                if (!pid) return;
+                fetch(`/api/hitos/proyecto/${pid}/elementos`).then(r => r.json()).then(elementos => {
+                    window.allElementosData = elementos;
                     renderizarTablaMainEvents(elementos);
-                }).catch(err => {
-                    tbody.innerHTML = '<tr><td colspan="4" class="text-center py-4 text-danger">Error al cargar datos. Intente de nuevo.</td></tr>';
                 });
             }
 
             function renderizarTablaMainEvents(elementos) {
                 const tbody = document.getElementById('listaElementosMain');
-                tbody.innerHTML = '';
-                
-                if (elementos.length === 0) {
-                    tbody.innerHTML = '<tr><td colspan="4" class="text-center py-4 text-muted">No se encontraron entregables para este proyecto.</td></tr>';
-                    return;
-                }
-
-                elementos.forEach(el => {
-                    const tr = document.createElement('tr');
-                    const iconClass = el.esMainEvent ? 'bi-star-fill text-warning' : 'bi-star';
-                    const btnClass = el.esMainEvent ? 'btn-warning' : 'btn-outline-secondary';
-                    tr.innerHTML = `<td class="ps-4 small fw-bold text-muted">${el.codigo}</td>
-                                    <td class="small fw-bold text-dark">${el.nombre}</td>
-                                    <td class="small text-muted">${el.fase} <span class="mx-1">/</span> ${el.grupo}</td>
-                                    <td class="text-center pe-4">
-                                        <button class="btn btn-sm ${btnClass} border-0 shadow-none" onclick="toggleMainEvent(${el.id}, this)">
-                                            <i class="bi ${iconClass}"></i>
-                                        </button>
-                                    </td>`;
-                    tbody.appendChild(tr);
-                });
+                tbody.innerHTML = elementos.map(el => `<tr><td class="ps-4 small fw-bold text-muted">${el.codigo}</td><td class="small fw-bold">${el.nombre}</td><td class="small text-muted">${el.fase}</td><td class="text-center"><button class="btn btn-sm ${el.esMainEvent ? 'btn-warning' : 'btn-outline-secondary'} border-0" onclick="toggleMainEvent(${el.id}, this)"><i class="bi ${el.esMainEvent ? 'bi-star-fill text-warning' : 'bi-star'}"></i></button></td></tr>`).join('');
             }
-
-            function filtrarTablaMainEvents() {
-                const term = searchInput.value.toLowerCase().trim();
-                const filtrados = allElementosData.filter(el => 
-                    el.nombre.toLowerCase().includes(term) || 
-                    el.codigo.toLowerCase().includes(term) ||
-                    el.fase.toLowerCase().includes(term) ||
-                    el.grupo.toLowerCase().includes(term)
-                );
-                renderizarTablaMainEvents(filtrados);
-            }
-
-            const modalHitos = document.getElementById('modalConfigHitos');
-            modalHitos.addEventListener('shown.bs.modal', () => {
-                if(selProyecto.value) {
-                    cargarHitos();
-                    cargarElementosParaMain();
-                }
-            });
-
-            window.toggleMainEvent = function(id, btn) {
-                fetch(`/api/hitos/toggle-main-event/${id}`, { method: 'POST' }).then(r => {
-                    if (r.ok) {
-                        const icon = btn.querySelector('i');
-                        if (icon.classList.contains('bi-star')) {
-                            icon.classList.replace('bi-star', 'bi-star-fill'); icon.classList.add('text-warning');
-                            btn.classList.replace('btn-outline-secondary', 'btn-warning');
-                        } else {
-                            icon.classList.replace('bi-star-fill', 'bi-star'); icon.classList.remove('text-warning');
-                            btn.classList.replace('btn-warning', 'btn-outline-secondary');
-                        }
-                    }
-                });
-            };
 
             window.guardarHito = function() {
-                const payload = { 
-                    proyectoId: selProyecto.value, 
-                    nombre: document.getElementById('hitoNombre').value, 
-                    fecha: document.getElementById('hitoFecha').value, 
-                    etapa: document.getElementById('hitoEtapa').value,
-                    porcentaje: document.getElementById('hitoPorcentaje').value
-                };
-                if (!payload.proyectoId || !payload.nombre || !payload.fecha) { alert('Completar campos requeridos'); return; }
-                fetch('/api/hitos/guardar', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) })
-                .then(r => { if (r.ok) { cargarHitos(); /* Removido reload automático */ } });
+                const pid = selProyecto.value;
+                const etapa = document.getElementById('hitoEtapa').value;
+                const fecha = document.getElementById('hitoFecha').value;
+                const porc = document.getElementById('hitoPorcentaje').value;
+                if (!pid || !fecha) return alert("Seleccione proyecto y fecha");
+                fetch('/api/hitos/guardar', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({proyectoId: pid, nombre: etapa, fecha: fecha, etapa: etapa, porcentaje: porc}) })
+                .then(r => { if(r.ok) { cargarHitos(); document.getElementById('hitoFecha').value=''; } });
+            };
+
+            window.toggleMainEvent = function(id, btn) {
+                fetch(`/api/hitos/toggle-main-event/${id}`, { method: 'POST' }).then(r => { if(r.ok) cargarElementosParaMain(); });
             };
 
             window.eliminarHito = function(id) {
-                if (confirm('¿Eliminar hito?')) { fetch(`/api/hitos/${id}`, { method: 'DELETE' }).then(r => { if (r.ok) { cargarHitos(); /* Removido reload automático */ } }); }
+                if (confirm('¿Eliminar?')) fetch(`/api/hitos/${id}`, { method: 'DELETE' }).then(r => { if(r.ok) cargarHitos(); });
             };
+
+            timeline.on('select', (p) => {
+                if (p.items.length > 0) {
+                    const item = items.get(p.items[0]);
+                    const temp = document.createElement('div'); temp.innerHTML = item.content;
+                    document.getElementById('detalle-nombre').innerText = (temp.querySelector('.event-content')?.getAttribute('data-realname') || temp.innerText).trim();
+                    document.getElementById('detalle-fecha').innerText = new Date(item.start).toLocaleDateString('es-ES', {weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'});
+                    bootstrap.Modal.getOrCreateInstance(document.getElementById('modalDetalleTimeline')).show();
+                }
+            });
         });
     </script>
 </body>

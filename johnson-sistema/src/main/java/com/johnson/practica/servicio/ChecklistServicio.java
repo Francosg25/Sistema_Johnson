@@ -342,16 +342,12 @@ public class ChecklistServicio {
                 String colorTexto = completado ? "#28a745" : (isLate ? "#dc3545" : "#3f6ad8");
                 String claseCSS = completado ? "hito-completado" : (isLate ? "hito-atrasado" : "hito-pendiente");
                 
-                String labelPrincipal = hito.getNombre();
-                if (labelPrincipal == null || labelPrincipal.isEmpty() || "META".equalsIgnoreCase(labelPrincipal)) {
-                    labelPrincipal = hito.getEtapaAsociada();
-                }
+                String labelPrincipal = hito.getEtapaAsociada();
                 
                 String htmlContent = "<div class='milestone-text'>" + 
-                                        "<strong>" + labelPrincipal + "</strong><br>" +
-                                        "<span style='color: " + colorTexto + ";'>" + (int)progresoActual + "% / " + objetivo + "%</span><br>" +
-                                        "<span class='text-muted small'>" + hito.getFecha() + "</span>" +
-                                     "</div>";
+                                      "<strong>" + labelPrincipal + "</strong>: " +                                     
+                                      "<span style='color: " + colorTexto + "; font-weight: 900;'>" + (int)progresoActual + "% / " + objetivo + "%</span>" +                                                                                              
+                                      "</div>";
 
                 items.add(new TimelineItem(hito.getId() * -1, p.getId(), htmlContent, hito.getFecha().toString(), "point", claseCSS));
             }
