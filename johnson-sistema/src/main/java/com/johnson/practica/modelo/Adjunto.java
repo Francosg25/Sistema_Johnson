@@ -20,7 +20,9 @@ public class Adjunto {
 
     private String tipoContenido;
 
+    @Lob
     @Column(name = "datos", nullable = false)
+    @Basic(fetch = FetchType.LAZY)
     private byte[] datos;
 
     @ManyToOne(fetch = FetchType.LAZY)

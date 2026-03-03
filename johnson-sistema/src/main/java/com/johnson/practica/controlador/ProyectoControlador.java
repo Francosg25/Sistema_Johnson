@@ -5,8 +5,8 @@ import com.johnson.practica.modelo.Proyecto;
 import com.johnson.practica.repositorio.ProyectoRepositorio;
 import com.johnson.practica.servicio.ChecklistServicio;
 import com.johnson.practica.servicio.ProyectoServicio;
-import com.johnson.practica.servicio.NotificacionServicio; // <-- IMPORTACIÓN DEL SERVICIO DE NOTIFICACIONES
-
+import com.johnson.practica.servicio.NotificacionServicio; 
+import org.springframework.cache.annotation.CacheEvict; 
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -42,29 +42,34 @@ public class ProyectoControlador {
     @Transactional(readOnly = true)
     public String verChecklist(@PathVariable Long id, Model model, HttpServletRequest request) {
         Proyecto proyecto = proyectoServicio.buscarPorId(id);
-        
-        if (proyecto == null) {
-            return "redirect:/";
-        }
+        if (proyecto == null) return "redirect:/";
 
         model.addAttribute("currentUri", request.getRequestURI());
         model.addAttribute("proyecto", proyecto);
 
+        // --- OPTIMIZACIÓN: 1 SOLA CONSULTA A LA BD ---
+        // Traemos todos los elementos del proyecto de golpe
+        List<ElementoChecklist> todosLosElementos = checklistServicio.obtenerPorProyectoId(id);
+
         List<FaseVista> fases = new ArrayList<>();
         
-        // Programa APQP 
-        fases.add(new FaseVista("prog", "Programa APQP", checklistServicio.obtenerHitosPrograma(id)));
-        
-        // Stage 2 
-        fases.add(new FaseVista("s2", "Stage 2", checklistServicio.obtenerPorFase(id, "2. Stage 2")));
-        
-        // Stage 3, Stage 4, Stage 5 
-        fases.add(new FaseVista("s3", "Stage 3", checklistServicio.obtenerPorFase(id, "3. Stage 3")));
-        fases.add(new FaseVista("s4", "Stage 4", checklistServicio.obtenerPorFase(id, "4. Stage 4")));
-        fases.add(new FaseVista("s5", "Stage 5", checklistServicio.obtenerPorFase(id, "5. Stage 5")));
+        // Filtramos rápidamente en memoria RAM (Instantáneo)
+        fases.add(new FaseVista("prog", "Programa APQP", todosLosElementos.stream()
+                .filter(e -> e.getFase() != null && e.getFase().startsWith("0")).toList()));
+                
+        fases.add(new FaseVista("s2", "Stage 2", todosLosElementos.stream()
+                .filter(e -> e.getFase() != null && e.getFase().startsWith("2")).toList()));
+                
+        fases.add(new FaseVista("s3", "Stage 3", todosLosElementos.stream()
+                .filter(e -> e.getFase() != null && e.getFase().startsWith("3")).toList()));
+                
+        fases.add(new FaseVista("s4", "Stage 4", todosLosElementos.stream()
+                .filter(e -> e.getFase() != null && e.getFase().startsWith("4")).toList()));
+                
+        fases.add(new FaseVista("s5", "Stage 5", todosLosElementos.stream()
+                .filter(e -> e.getFase() != null && e.getFase().startsWith("5")).toList()));
 
         model.addAttribute("fases", fases); 
-
         return "checklist";
     }
 
@@ -78,6 +83,7 @@ public class ProyectoControlador {
 
     
     @PostMapping("/guardar")
+    @CacheEvict(value = "reportes", allEntries = true) 
     public String guardarProyecto(@ModelAttribute Proyecto proyecto, java.security.Principal principal) {
         boolean esNuevo = (proyecto.getId() == null);
         
@@ -97,6 +103,7 @@ public class ProyectoControlador {
     }
 
     @GetMapping("/eliminar/{id}")
+    @CacheEvict(value = "reportes", allEntries = true) 
     public String eliminarProyecto(@PathVariable Long id) {
         proyectoServicio.eliminarProyecto(id);
         return "redirect:/"; 

@@ -17,4 +17,10 @@ public interface ElementoChecklistRepositorio extends JpaRepository<ElementoChec
     List<ElementoChecklist> findByProyecto_Id(Long proyectoId);
     
     List<ElementoChecklist> findByControlEntregableIgnoreCase(String control);
+
+
+    @EntityGraph(attributePaths = {"catalogo", "adjuntos"})
+    List<ElementoChecklist> findByProyecto_IdOrderByCodigoAsc(Long proyectoId);
+
+
 }

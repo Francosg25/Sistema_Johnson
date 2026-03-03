@@ -7,13 +7,12 @@ import com.johnson.practica.dto.ReporteCascada;
 import com.johnson.practica.dto.ReporteEstadoGlobal; 
 import com.johnson.practica.modelo.ElementoChecklist;
 import com.johnson.practica.modelo.Proyecto;
-import com.johnson.practica.modelo.Usuario;
 import com.johnson.practica.repositorio.ElementoChecklistRepositorio;
 import com.johnson.practica.repositorio.ProyectoRepositorio;
 import com.johnson.practica.repositorio.UsuarioRepositorio;
-import com.johnson.practica.servicio.NotificacionServicio;
-
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -40,10 +39,6 @@ public class ChecklistServicio {
     @Autowired
     private NotificacionServicio notificacionServicio;
 
-    @Autowired
-    private UsuarioRepositorio usuarioRepositorio;
-
-
     @Transactional(readOnly = true)
     public List<ElementoChecklist> obtenerHitosPrograma(Long proyectoId) {
         return repositorio.findByProyecto_IdAndFaseStartingWithOrderByCodigoAsc(proyectoId, "0");
@@ -55,6 +50,7 @@ public class ChecklistServicio {
     }
 
     @Transactional
+    @CacheEvict(value = "reportes", allEntries = true) 
     public void guardarChecklistCompleto(Map<String, String> allParams) {
         if (allParams == null || allParams.isEmpty()) return;
 
@@ -138,6 +134,7 @@ public class ChecklistServicio {
 
     // --- 3. MÉTODOS DE REPORTES ---
 
+   @Cacheable("reportes")
    public List<ReporteProgreso> generarReporteGlobal() {
         List<Proyecto> proyectos = proyectoRepositorio.findAll();
         List<ReporteProgreso> reporte = new ArrayList<>();
@@ -436,5 +433,9 @@ public class ChecklistServicio {
         riesgoTotal += castigoNeedsAction;
 
         return Math.min(100.0, Math.round(riesgoTotal * 10.0) / 10.0);
+    }
+    @Transactional(readOnly = true)
+    public List<ElementoChecklist> obtenerPorProyectoId(Long id) {
+        return repositorio.findByProyecto_IdOrderByCodigoAsc(id);
     }
 }
