@@ -7,6 +7,5 @@ import com.johnson.practica.modelo.Proyecto;
 
 @Repository
 public interface ProyectoRepositorio extends JpaRepository<Proyecto, Long> {
-    // Aquí podrías agregar búsquedas personalizadas, por ejemplo:
-    // List<Proyecto> findByCliente(String cliente);
+
 }

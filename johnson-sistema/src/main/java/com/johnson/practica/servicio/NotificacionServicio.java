@@ -22,7 +22,6 @@ public class NotificacionServicio {
     @Autowired(required = false)
     private EmailServicio emailServicio;
 
-    // Método para crear notificaciones para TODOS (Ej: Nuevo Proyecto)
     @Transactional
     public void alertarATodos(String titulo, String mensaje, String tipo, String link, String autor) {
         List<Usuario> todosLosUsuarios = usuarioRepositorio.findAll();
@@ -34,7 +33,6 @@ public class NotificacionServicio {
         }
     }
 
-    // Método para alertar solo a los Jefes/Admins (Ej: Entregable en NEEDS ACTION)
     @Transactional
     public void alertarAAdministradores(String titulo, String mensaje, String tipo, String link, String autor) {
         List<Usuario> usuarios = usuarioRepositorio.findAll();

@@ -4,9 +4,11 @@ import com.johnson.practica.modelo.HitoProyecto;
 import com.johnson.practica.modelo.Proyecto;
 import com.johnson.practica.repositorio.HitoProyectoRepositorio;
 import com.johnson.practica.repositorio.ProyectoRepositorio;
+import com.johnson.practica.servicio.NotificacionServicio;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import java.security.Principal;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -26,6 +28,9 @@ public class MilestoneControlador {
 
     @Autowired
     private com.johnson.practica.repositorio.ElementoChecklistRepositorio elementoRepo;
+
+    @Autowired
+    private NotificacionServicio notificacionServicio;
 
     @GetMapping("/proyecto/{id}")
     public List<HitoProyecto> obtenerHitosPorProyecto(@PathVariable Long id) {
@@ -52,7 +57,7 @@ public class MilestoneControlador {
     }
 
     @PostMapping("/guardar")
-    public ResponseEntity<?> guardarHito(@RequestBody Map<String, String> payload) {
+    public ResponseEntity<?> guardarHito(@RequestBody Map<String, String> payload, Principal principal) {
         Long proyectoId = Long.parseLong(payload.get("proyectoId"));
         String nombre = payload.get("nombre");
         LocalDate fecha = LocalDate.parse(payload.get("fecha"));
@@ -63,11 +68,25 @@ public class MilestoneControlador {
         
         HitoProyecto hito = new HitoProyecto(nombre, fecha, etapa, p, porcentaje);
         
+        boolean esNuevo = true;
         if (payload.containsKey("id") && !payload.get("id").isEmpty()) {
             hito.setId(Long.parseLong(payload.get("id")));
+            esNuevo = false;
         }
         
         hitoRepo.save(hito);
+
+        if (esNuevo) {
+            String autor = (principal != null) ? principal.getName() : "Sistema";
+            notificacionServicio.alertarATodos(
+                "Nuevo Hito: " + nombre,
+                "Se ha creado un nuevo hito '" + nombre + "' en el proyecto " + p.getNombre(),
+                "INFO",
+                "/timeline",
+                autor
+            );
+        }
+
         return ResponseEntity.ok().build();
     }
 

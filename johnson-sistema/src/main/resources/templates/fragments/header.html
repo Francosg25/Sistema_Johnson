@@ -70,7 +70,10 @@
                         <div class="flex-grow-1" style="min-width: 0;">
                             <div class="small fw-bold text-dark">${n.titulo}</div>
                             <div class="text-muted small">${n.mensaje}</div>
-                            <div class="text-primary fw-bold mt-1" style="font-size: 0.65rem;">${formatoFecha(n.fechaCreacion)}</div>
+                            <div class="d-flex justify-content-between align-items-center mt-1">
+                                <span class="text-primary fw-bold" style="font-size: 0.65rem;">${formatoFecha(n.fechaCreacion)}</span>
+                                <span class="text-muted italic" style="font-size: 0.65rem;">Por: ${n.autorAccion || 'Sistema'}</span>
+                            </div>
                         </div>
                     </div>
                 </div>

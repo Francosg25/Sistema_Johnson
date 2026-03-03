@@ -58,7 +58,6 @@ public class CargadorDatos implements CommandLineRunner {
             usuarioServicio.guardarUsuario(admin);
         }
 
-        // --- 2. CONFIGURAR VISITANTE ---
         Optional<Usuario> visitanteOpt = usuarioServicio.buscarPorUsername("visitante");
         if (visitanteOpt.isEmpty()) {
             logger.info("Creando usuario 'visitante'...");

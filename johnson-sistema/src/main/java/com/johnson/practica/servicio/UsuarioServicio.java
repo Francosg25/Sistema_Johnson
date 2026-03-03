@@ -29,7 +29,7 @@ public class UsuarioServicio {
     @Transactional
     public Usuario guardarUsuario(Usuario usuario) {
         usuario.setPassword(passwordEncoder.encode(usuario.getPassword()));
-        // Asumiendo que los roles ya son entidades gestionadas (ej. desde CargadorDatos)
+        // Asumiendo que los roles ya son entidades gestionadas y solo se asignan al usuario, no es necesario volver a guardar los roles aquí.
         // No es necesario volver a buscar/guardar roles aquí si ya están en la DB
         return usuarioRepositorio.save(usuario);
     }

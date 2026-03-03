@@ -1,7 +1,6 @@
 package com.johnson.practica.modelo;
 
 import jakarta.persistence.*;
-import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 
