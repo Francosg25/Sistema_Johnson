@@ -133,13 +133,14 @@
             font-size: 9px !important; 
             font-weight: 800 !important; 
             color: #1e293b !important; 
-            text-align: center !important; 
+            text-align: left !important; 
             background: rgba(255,255,255,0.9) !important; 
             backdrop-filter: blur(4px);
             padding: 3px 6px !important; 
             border-radius: 6px !important; 
             box-shadow: 0 2px 4px rgba(0,0,0,0.1) !important;
             white-space: nowrap !important; 
+            margin-left: 15px !important; /* Mueve el texto a la derecha del rombo */
         }
 
         .vis-item.vis-box {
@@ -319,6 +320,20 @@
                     <button type="button" class="btn-close btn-close-white shadow-none" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body p-0 bg-light">
+                    <div class="p-4 bg-white border-bottom shadow-sm">
+                        <div class="row align-items-center">
+                            <div class="col-md-5 col-lg-4">
+                                <label class="form-label small fw-bold text-dark mb-1">
+                                    <i class="bi bi-folder-fill text-primary me-1"></i> Seleccionar Proyecto
+                                </label>
+                                <select id="selProyecto" class="form-select form-select-sm shadow-none border-primary border-opacity-25 bg-light bg-opacity-50 fw-bold">
+                                    <option value="">Elija un proyecto para configurar...</option>
+                                    <option th:each="p : ${proyectos}" th:value="${p.id}" th:text="${p.nombre}"></option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
                     <ul class="nav nav-tabs nav-fill bg-white border-bottom-0" id="configTabs" role="tablist">
                         <li class="nav-item"><button class="nav-link active fw-bold py-3 border-0 rounded-0" data-bs-toggle="tab" data-bs-target="#tabHitos"><i class="bi bi-diamond-half me-2"></i>Hitos de Progreso</button></li>
                         <li class="nav-item"><button class="nav-link fw-bold py-3 border-0 rounded-0" data-bs-toggle="tab" data-bs-target="#tabMainEvents" id="btnTabMainEvents"><i class="bi bi-star-fill me-2 text-warning"></i>Main Events (APQP)</button></li>
@@ -326,33 +341,26 @@
                     <div class="tab-content p-4">
                         <div class="tab-pane fade show active" id="tabHitos">
                             <div class="row g-3 mb-4 bg-white p-4 rounded-3 border shadow-sm">
-                                <div class="col-md-3">
-                                    <label class="form-label small fw-bold text-dark">Proyecto</label>
-                                    <select id="selProyecto" class="form-select shadow-none">
-                                        <option value="">Elija un proyecto...</option>
-                                        <option th:each="p : ${proyectos}" th:value="${p.id}" th:text="${p.nombre}"></option>
-                                    </select>
+                                <div class="col-md-4">
+                                    <label class="form-label small fw-bold text-dark">Nombre del Hito</label>
+                                    <input type="text" id="hitoNombre" class="form-control shadow-none" placeholder="Ej: SOP, Kick-off, PPAP Submission">
                                 </div>
                                 <div class="col-md-3">
-                                    <label class="form-label small fw-bold text-dark">Nombre Meta</label>
-                                    <input type="text" id="hitoNombre" class="form-control shadow-none" placeholder="Ej: Mid-Stage Review">
-                                </div>
-                                <div class="col-md-2">
-                                    <label class="form-label small fw-bold text-dark">Fecha Límite</label>
+                                    <label class="form-label small fw-bold text-dark">Fecha Estimada</label>
                                     <input type="date" id="hitoFecha" class="form-control shadow-none">
                                 </div>
-                                <div class="col-md-2">
-                                    <label class="form-label small fw-bold text-dark">Etapa</label>
+                                <div class="col-md-3">
+                                    <label class="form-label small fw-bold text-dark">Etapa Relacionada</label>
                                     <select id="hitoEtapa" class="form-select shadow-none">
-                                        <option value="ETAPA 1">ETAPA 1</option>
-                                        <option value="ETAPA 2">ETAPA 2</option>
-                                        <option value="ETAPA 3">ETAPA 3</option>
-                                        <option value="ETAPA 4">ETAPA 4</option>
-                                        <option value="ETAPA 5">ETAPA 5</option>
+                                        <option value="ETAPA 1">ETAPA 1 - Planning</option>
+                                        <option value="ETAPA 2">ETAPA 2 - Product Design</option>
+                                        <option value="ETAPA 3">ETAPA 3 - Process Design</option>
+                                        <option value="ETAPA 4">ETAPA 4 - Product & Process Validation</option>
+                                        <option value="ETAPA 5">ETAPA 5 - Feedback & Launch</option>
                                     </select>
                                 </div>
                                 <div class="col-md-1">
-                                    <label class="form-label small fw-bold text-dark">Meta %</label>
+                                    <label class="form-label small fw-bold text-dark">% Obj.</label>
                                     <input type="number" id="hitoPorcentaje" class="form-control shadow-none" value="100" min="0" max="100">
                                 </div>
                                 <div class="col-md-1 d-flex align-items-end">
@@ -363,7 +371,7 @@
                                 <div class="table-responsive">
                                     <table class="table table-hover align-middle mb-0">
                                         <thead class="bg-light text-secondary small text-uppercase">
-                                            <tr><th class="ps-4">Meta</th><th>Fecha</th><th>Medición</th><th class="text-center pe-4">Acciones</th></tr>
+                                            <tr><th class="ps-4">Hito / Etapa</th><th>Fecha</th><th>Objetivo de Progreso</th><th class="text-center pe-4">Acciones</th></tr>
                                         </thead>
                                         <tbody id="listaHitos"></tbody>
                                     </table>
@@ -523,9 +531,10 @@
                     tbody.innerHTML = '';
                     hitos.forEach(h => {
                         const tr = document.createElement('tr');
-                        tr.innerHTML = `<td class="ps-4"><span class="fw-bold text-dark">${h.nombre}</span></td>
+                        const displayName = (h.nombre && h.nombre !== 'META') ? h.nombre : h.etapaAsociada;
+                        tr.innerHTML = `<td class="ps-4"><span class="fw-bold text-dark">${displayName}</span></td>
                                         <td class="text-primary fw-bold">${h.fecha}</td>
-                                        <td><span class="badge bg-light text-secondary border me-1">${h.etapaAsociada}</span> <span class="badge bg-je-primary">${h.porcentajeObjetivo}% Meta</span></td>
+                                        <td><span class="badge bg-light text-secondary border me-1">${h.etapaAsociada}</span> <span class="badge bg-je-primary">${h.porcentajeObjetivo}% Obj.</span></td>
                                         <td class="text-center pe-4"><button class="btn btn-outline-danger btn-sm border-0" onclick="eliminarHito(${h.id})"><i class="bi bi-trash-fill"></i></button></td>`;
                         tbody.appendChild(tr);
                     });
@@ -622,11 +631,11 @@
                 };
                 if (!payload.proyectoId || !payload.nombre || !payload.fecha) { alert('Completar campos requeridos'); return; }
                 fetch('/api/hitos/guardar', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) })
-                .then(r => { if (r.ok) { cargarHitos(); location.reload(); } });
+                .then(r => { if (r.ok) { cargarHitos(); /* Removido reload automático */ } });
             };
 
             window.eliminarHito = function(id) {
-                if (confirm('¿Eliminar hito?')) { fetch(`/api/hitos/${id}`, { method: 'DELETE' }).then(r => { if (r.ok) { cargarHitos(); location.reload(); } }); }
+                if (confirm('¿Eliminar hito?')) { fetch(`/api/hitos/${id}`, { method: 'DELETE' }).then(r => { if (r.ok) { cargarHitos(); /* Removido reload automático */ } }); }
             };
         });
     </script>

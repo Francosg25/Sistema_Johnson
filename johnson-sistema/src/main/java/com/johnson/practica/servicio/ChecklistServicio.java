@@ -70,53 +70,47 @@ public class ChecklistServicio {
             }
         }
 
-        for (Map.Entry<Long, Map<String, String>> entry : updatesById.entrySet()) {
-            repositorio.findById(entry.getKey()).ifPresent(elemento -> {
-                
-                // Guardamos el estado anterior de los campos clave para comparar
-                String scoreAnterior = elemento.getScore() != null ? elemento.getScore() : "";
-                String estadoAnterior = elemento.getEstado() != null ? elemento.getEstado() : "";
-                
-                entry.getValue().forEach((fieldName, fieldValue) -> {
-                    switch (fieldName) {
-                        case "controlEntregable" -> {
-                            if ("NEEDS ACTION".equalsIgnoreCase(fieldValue) && !"NEEDS ACTION".equalsIgnoreCase(elemento.getControlEntregable())) {
-                                notificarEscalacion(elemento);
-                            }
-                            elemento.setControlEntregable(fieldValue);
+        List<ElementoChecklist> elementosAActualizar = repositorio.findAllById(updatesById.keySet());
+
+        for (ElementoChecklist elemento : elementosAActualizar) {
+            Map<String, String> cambios = updatesById.get(elemento.getId());
+            
+            String scoreAnterior = elemento.getScore() != null ? elemento.getScore() : "";
+            
+            cambios.forEach((fieldName, fieldValue) -> {
+                switch (fieldName) {
+                    case "controlEntregable" -> {
+                        if ("NEEDS ACTION".equalsIgnoreCase(fieldValue) && !"NEEDS ACTION".equalsIgnoreCase(elemento.getControlEntregable())) {
+                            notificarEscalacion(elemento);
                         }
-                        case "score" -> {
-                            elemento.setScore(fieldValue);
-                            // --- GATILLO DE NOTIFICACIÓN PARA ENTREGABLE "OK" ---
-                            if ("OK".equalsIgnoreCase(fieldValue) && !"OK".equalsIgnoreCase(scoreAnterior)) {
-                                notificarAprobacion(elemento);
-                            }
-                        }
-                        case "comentario" -> elemento.setComentario(fieldValue);
-                        case "estado" -> {
-                            elemento.setEstado(fieldValue);
-                            // --- GATILLO PARA OTROS ENTREGABLES (STAGE 2+) ---
-                            if ("OK".equalsIgnoreCase(fieldValue) && !"OK".equalsIgnoreCase(estadoAnterior)) {
-                                notificarAprobacion(elemento);
-                            }
-                        }
-                        case "fechaReal" -> {
-                            try { if (fieldValue != null && !fieldValue.isEmpty()) elemento.setFechaReal(LocalDate.parse(fieldValue)); } 
-                            catch (Exception ignored) {}
-                        }
-                        case "fechaPlan" -> {
-                            try { if (fieldValue != null && !fieldValue.isEmpty()) elemento.setFechaPlan(LocalDate.parse(fieldValue)); } 
-                            catch (Exception ignored) {}
+                        elemento.setControlEntregable(fieldValue);
+                    }
+                    case "score" -> {
+                        elemento.setScore(fieldValue);
+                        if ("OK".equalsIgnoreCase(fieldValue) && !"OK".equalsIgnoreCase(scoreAnterior)) {
+                            notificarAprobacion(elemento);
                         }
                     }
-                });
+                    case "comentario" -> elemento.setComentario(fieldValue);
+                    case "estado" -> elemento.setEstado(fieldValue);
+                    case "fechaReal" -> {
+                        try { if (fieldValue != null && !fieldValue.isEmpty()) elemento.setFechaReal(LocalDate.parse(fieldValue)); } 
+                        catch (Exception ignored) {}
+                    }
+                    case "fechaPlan" -> {
+                        try { if (fieldValue != null && !fieldValue.isEmpty()) elemento.setFechaPlan(LocalDate.parse(fieldValue)); } 
+                        catch (Exception ignored) {}
+                    }
+                }
             });
         }
+        
+        repositorio.saveAll(elementosAActualizar);
     }
 
     private void notificarEscalacion(ElementoChecklist item) {
         String titulo = "ALERTA: Escalación en " + item.getProyecto().getNombre();
-        String mensaje = "El entregable \"" + item.getCodigo() + " - " + item.getNombre() + "\" ha sido marcado como NEEDS ACTION.";
+        String mensaje = "El entregable \"" + item.getNombre() + "\" ha sido marcado como NEEDS ACTION.";
         String link = "/proyectos/checklist/" + item.getProyecto().getId();
         
         String autor = "Sistema";
@@ -130,7 +124,7 @@ public class ChecklistServicio {
     
     private void notificarAprobacion(ElementoChecklist item) {
         String titulo = "✅ Entregable Aprobado";
-        String mensaje = "El entregable \"" + item.getCodigo() + " - " + item.getNombre() + "\" del proyecto " + item.getProyecto().getNombre() + " ha sido marcado como OK.";
+        String mensaje = "El entregable \"" + item.getNombre() + "\" del proyecto " + item.getProyecto().getNombre() + " ha sido marcado como OK.";
         String link = "/proyectos/checklist/" + item.getProyecto().getId();
         
         String autor = "Sistema";
@@ -348,7 +342,10 @@ public class ChecklistServicio {
                 String colorTexto = completado ? "#28a745" : (isLate ? "#dc3545" : "#3f6ad8");
                 String claseCSS = completado ? "hito-completado" : (isLate ? "hito-atrasado" : "hito-pendiente");
                 
-                String labelPrincipal = (hito.getNombre() != null && !hito.getNombre().isEmpty()) ? hito.getNombre() : hito.getEtapaAsociada();
+                String labelPrincipal = hito.getNombre();
+                if (labelPrincipal == null || labelPrincipal.isEmpty() || "META".equalsIgnoreCase(labelPrincipal)) {
+                    labelPrincipal = hito.getEtapaAsociada();
+                }
                 
                 String htmlContent = "<div class='milestone-text'>" + 
                                         "<strong>" + labelPrincipal + "</strong><br>" +

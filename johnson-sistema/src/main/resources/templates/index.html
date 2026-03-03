@@ -263,7 +263,7 @@
 
                                 <div th:each="alerta : ${alertas}" class="alert-item shadow-sm p-3 mb-3">
                                     <div class="d-flex justify-content-between align-items-start mb-1">
-                                        <p class="alert-title text-truncate pe-2 fw-bold" th:text="${alerta.proyecto.nombre}">Proyecto Alpha</p>
+                                        <p class="alert-title pe-2 fw-bold" th:text="${alerta.proyecto.nombre}">Proyecto Alpha</p>
                                         <span class="badge bg-danger">URGENTE</span>
                                     </div>
                                     <p class="alert-desc mb-2" th:text="${alerta.codigo + ' - ' + alerta.nombre}">1.1 Team Feasibility</p>
