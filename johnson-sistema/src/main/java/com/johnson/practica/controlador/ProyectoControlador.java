@@ -5,8 +5,14 @@ import com.johnson.practica.modelo.Proyecto;
 import com.johnson.practica.repositorio.ProyectoRepositorio;
 import com.johnson.practica.servicio.ChecklistServicio;
 import com.johnson.practica.servicio.ProyectoServicio;
+import com.johnson.practica.servicio.ReporteServicio;
 import com.johnson.practica.servicio.NotificacionServicio; 
-import org.springframework.cache.annotation.CacheEvict; 
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -115,6 +121,24 @@ public class ProyectoControlador {
         model.addAttribute("proyectos", lista);
         model.addAttribute("currentUri", request.getRequestURI());
         return "index";
+    }
+
+    @Autowired
+    private ReporteServicio reporteServicio;
+
+    @GetMapping("/exportar-pdf/{id}")
+    public ResponseEntity<byte[]> descargarReportePdf(@PathVariable Long id) {
+        try {
+            byte[] pdf = reporteServicio.generarPdfProyecto(id);
+        
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_PDF);
+            headers.setContentDispositionFormData("attachment", "Reporte_APQP_Proyecto_" + id + ".pdf");
+        
+            return new ResponseEntity<>(pdf, headers, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
     

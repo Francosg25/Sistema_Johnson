@@ -15,6 +15,9 @@ public class ReportesControlador {
     @Autowired
     private ChecklistServicio checklistServicio;
 
+    @Autowired
+    private com.johnson.practica.servicio.ReporteServicio reporteServicio;
+
     @GetMapping
     public String verReportes(Model model) {
         var datos = checklistServicio.generarReporteGlobal();
@@ -26,7 +29,16 @@ public class ReportesControlador {
         var datosCascada = checklistServicio.generarReporteCascada();
         model.addAttribute("datosCascada", datosCascada);
         
-        return "reportes";
+        return "reportes/reportes";
+    }
+
+    @GetMapping("/proyecto/ver/{id}")
+    public String verReporteProyecto(@org.springframework.web.bind.annotation.PathVariable("id") Long id, Model model) {
+        java.util.Map<String, Object> datos = reporteServicio.obtenerDatosReporte(id);
+        
+        model.addAllAttributes(datos);
+        
+        return "reportes/proyecto_pdf";
     }
 }
     

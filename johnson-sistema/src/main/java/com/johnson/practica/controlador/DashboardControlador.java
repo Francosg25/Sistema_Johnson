@@ -33,6 +33,9 @@ public class DashboardControlador {
     @Autowired
     private UsuarioRepositorio usuarioRepositorio; // Inyectamos el repo de usuarios
 
+    @Autowired
+    private com.johnson.practica.servicio.BitacoraServicio bitacoraServicio;
+
     @GetMapping("/")
     public String index(Model model, jakarta.servlet.http.HttpServletRequest request, Principal principal) {
         List<ReporteProgreso> reporteGlobal = checklistServicio.generarReporteGlobal();
@@ -62,6 +65,7 @@ public class DashboardControlador {
         model.addAttribute("avancePromedio", avancePromedio);
         
         model.addAttribute("notificaciones", notificaciones); 
+        model.addAttribute("ultimosMovimientos", bitacoraServicio.obtenerUltimosMovimientos().stream().limit(5).toList());
         
         model.addAttribute("titulo", "Dashboard de Proyectos APQP - Johnson Electric");
         model.addAttribute("currentUri", request.getRequestURI());

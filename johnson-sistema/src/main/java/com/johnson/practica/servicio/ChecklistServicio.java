@@ -10,11 +10,15 @@ import com.johnson.practica.modelo.Proyecto;
 import com.johnson.practica.repositorio.ElementoChecklistRepositorio;
 import com.johnson.practica.repositorio.ProyectoRepositorio;
 import com.johnson.practica.repositorio.UsuarioRepositorio;
+import com.johnson.practica.repositorio.HitoProyectoRepositorio;
+import com.johnson.practica.servicio.BitacoraServicio;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.Authentication;
 
 import java.util.List;
 import java.util.Map;
@@ -32,6 +36,9 @@ public class ChecklistServicio {
 
     @Autowired
     private ProyectoRepositorio proyectoRepositorio;
+
+    @Autowired
+    private BitacoraServicio bitacoraServicio; 
 
     @Autowired
     private com.johnson.practica.repositorio.HitoProyectoRepositorio hitoProyectoRepositorio;
@@ -98,8 +105,21 @@ public class ChecklistServicio {
                         catch (Exception ignored) {}
                     }
                 }
+                String nombreUsuarioLogueado = "Sistema"; 
+                Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+                if (auth != null && auth.isAuthenticated() && !auth.getPrincipal().equals("anonymousUser")) {
+                    nombreUsuarioLogueado = auth.getName();
+                }
+
+               
+                bitacoraServicio.registrarAccion(
+                nombreUsuarioLogueado, 
+            "ACTUALIZO_ESTATUS", 
+            "El usuario actualizó el checklist" 
+                );
             });
         }
+
         
         repositorio.saveAll(elementosAActualizar);
     }
@@ -438,4 +458,13 @@ public class ChecklistServicio {
     public List<ElementoChecklist> obtenerPorProyectoId(Long id) {
         return repositorio.findByProyecto_IdOrderByCodigoAsc(id);
     }
+
+
+
+
+   
+
+    
+
+
 }

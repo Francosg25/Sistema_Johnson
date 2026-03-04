@@ -164,6 +164,67 @@
 
                 </div>
 
+                <!-- NUEVA SECCIÓN: TABLA DE REPORTES POR PROYECTO -->
+                <div class="row mb-5">
+                    <div class="col-12">
+                        <div class="card glass-card">
+                            <div class="card-header premium-header d-flex justify-content-between align-items-center">
+                                <h6 class="m-0 premium-title">
+                                    <i class="bi bi-file-earmark-pdf-fill premium-icon" style="background: rgba(245, 130, 31, 0.1); color: #F5821F;"></i>
+                                    Generador de Reportes por Proyecto
+                                </h6>
+                            </div>
+                            <div class="card-body p-0">
+                                <div class="table-responsive">
+                                    <table class="table table-hover align-middle mb-0">
+                                        <thead class="bg-light text-uppercase">
+                                            <tr>
+                                                <th class="ps-4" style="font-size: 0.75rem; color: #64748b; font-weight: 800;">Proyecto / Cliente</th>
+                                                <th class="text-center" style="font-size: 0.75rem; color: #64748b; font-weight: 800;">Progreso APQP</th>
+                                                <th class="text-center" style="font-size: 0.75rem; color: #64748b; font-weight: 800;">SOP Date</th>
+                                                <th class="text-center pe-4" style="font-size: 0.75rem; color: #64748b; font-weight: 800;">Acciones de Reporte</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr th:each="p : ${datosGrafica}">
+                                                <td class="ps-4">
+                                                    <div class="fw-bold text-dark" th:text="${p.nombreProyecto}">Nombre</div>
+                                                    <div class="small text-muted" th:text="${p.cliente}">Cliente</div>
+                                                </td>
+                                                <td>
+                                                    <div class="d-flex align-items-center justify-content-center">
+                                                        <div class="progress w-75 me-2" style="height: 6px; border-radius: 10px; background: rgba(0,0,0,0.05);">
+                                                            <div class="progress-bar bg-primary" role="progressbar" 
+                                                                 th:style="'width: ' + ${p.porcentaje} + '%; border-radius: 10px;'"
+                                                                 th:classappend="${p.porcentaje < 30 ? 'bg-danger' : (p.porcentaje < 70 ? 'bg-warning' : 'bg-success')}"></div>
+                                                        </div>
+                                                        <span class="small fw-bold text-dark" th:text="${p.porcentaje + '%'}">0%</span>
+                                                    </div>
+                                                </td>
+                                                <td class="text-center">
+                                                    <span class="badge bg-white text-primary border border-primary-subtle px-3 py-2" style="font-weight: 700;">
+                                                        <i class="bi bi-calendar3 me-1"></i> <span th:text="${p.sop}">Fecha</span>
+                                                    </span>
+                                                </td>
+                                                <td class="text-center pe-4">
+                                                    <div class="btn-group shadow-sm">
+                                                        <a th:href="@{/reportes/proyecto/ver/{id}(id=${p.id})}" target="_blank" class="btn btn-sm btn-outline-info" title="Ver Reporte Online">
+                                                            <i class="bi bi-eye-fill"></i>
+                                                        </a>
+                                                        <a th:href="@{/exportar-pdf/{id}(id=${p.id})}" class="btn btn-sm btn-je-primary" title="Descargar PDF Oficial">
+                                                            <i class="bi bi-file-earmark-pdf-fill"></i>
+                                                        </a>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
             </main>
         </div>
     </div>

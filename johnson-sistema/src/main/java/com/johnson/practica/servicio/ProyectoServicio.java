@@ -22,6 +22,9 @@ public class ProyectoServicio {
     @Autowired
     private ElementoChecklistRepositorio elementoRepositorio;
 
+    @Autowired
+    private com.johnson.practica.servicio.BitacoraServicio bitacoraServicio;
+
     @Transactional
     public Proyecto guardarProyecto(Proyecto proyecto) {
         boolean isNew = proyecto.getId() == null;
@@ -33,6 +36,10 @@ public class ProyectoServicio {
 
         // Si es un proyecto nuevo, primero lo guardamos para obtener un ID.
         Proyecto proyectoGuardado = proyectoRepositorio.save(proyecto);
+
+        // REGISTRAR EN BITÁCORA
+        String usuario = org.springframework.security.core.context.SecurityContextHolder.getContext().getAuthentication().getName();
+        bitacoraServicio.registrarAccion(usuario, "CREO_PROYECTO", "Se creó el proyecto: " + proyectoGuardado.getNombre());
 
         List<CatalogoElemento> plantillaCompleta = catalogoRepositorio.findAll();
         System.out.println("DEBUG: Creando checklist para nuevo proyecto. Plantillas encontradas: " + plantillaCompleta.size());
@@ -81,8 +88,13 @@ public class ProyectoServicio {
 
     @Transactional
     public void eliminarProyecto(Long id) {
+        Proyecto p = buscarPorId(id);
+        if (p != null) {
+            String usuario = org.springframework.security.core.context.SecurityContextHolder.getContext().getAuthentication().getName();
+            bitacoraServicio.registrarAccion(usuario, "ELIMINO_PROYECTO", "Se eliminó el proyecto: " + p.getNombre());
+        }
+
         // Primero borramos los items del checklist para evitar error de llave foránea
-        // Usamos el método que ya tienes en tu repo o uno genérico de borrado
         List<ElementoChecklist> items = elementoRepositorio.findByProyecto_IdAndFaseStartingWithOrderByCodigoAsc(id, ""); 
         elementoRepositorio.deleteAll(items);
         
