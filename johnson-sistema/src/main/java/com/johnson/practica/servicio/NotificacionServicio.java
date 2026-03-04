@@ -33,25 +33,23 @@ public class NotificacionServicio {
         }
     }
 
+    @Autowired
+    private org.springframework.messaging.simp.SimpMessagingTemplate messagingTemplate;
+
     @Transactional
     public void alertarAAdministradores(String titulo, String mensaje, String tipo, String link, String autor) {
         List<Usuario> usuarios = usuarioRepositorio.findAll();
-        
         for (Usuario u : usuarios) {
             boolean esAdmin = u.getRoles().stream().anyMatch(r -> r.getNombre().contains("ADMIN"));
             if (esAdmin) {
                 Notificacion notif = new Notificacion(titulo, mensaje, tipo, u, autor);
                 notif.setLink(link);
                 repositorio.save(notif);
-                
-                // Disparo de correo solo para admins
-                if (u.getCorreo() != null && emailServicio != null) {
-                    emailServicio.enviarAlertaUrgente(u.getCorreo(), titulo, mensaje + "\nAutor: " + autor);
-                }
+            
+                messagingTemplate.convertAndSendToUser(u.getUsername(), "/queue/notificaciones", "NUEVA_NOTIF");
             }
         }
     }
-
     public List<Notificacion> obtenerNoLeidas(Usuario usuario) {
         return repositorio.findByDestinatarioAndLeidaOrderByFechaCreacionDesc(usuario, false);
     }

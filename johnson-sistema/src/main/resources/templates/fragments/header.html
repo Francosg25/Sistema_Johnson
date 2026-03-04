@@ -21,7 +21,6 @@
                         <button class="btn btn-link btn-sm text-primary p-0 text-decoration-none small fw-bold" onclick="event.stopPropagation(); marcarTodasComoLeidas()">Marcar todas como leídas</button>
                     </div>
                     <div id="notifList" class="overflow-auto" style="max-height: 400px;">
-                        <!-- Notificaciones se cargan aquí -->
                         <div class="p-4 text-center text-muted small">
                             No tienes notificaciones nuevas
                         </div>
@@ -33,7 +32,48 @@
             </div>
     </div>
 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.5.1/sockjs.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
+
     <script>
+        let stompClient = null;
+
+        function conectarWebSocket() {
+            const socket = new SockJS('/ws-johnson');
+            stompClient = Stomp.over(socket);
+            stompClient.debug = null; // Oculta logs en la consola del navegador
+
+            stompClient.connect({}, function (frame) {
+                console.log('Conectado a WebSockets (Tiempo Real Activo)');
+                
+                // Suscripción al canal privado del usuario logueado
+                stompClient.subscribe('/user/queue/notificaciones', function (msg) {
+                    // Cuando llega un mensaje, actualizamos las notificaciones de inmediato
+                    fetchNotificaciones(); 
+                    animarCampana();
+                });
+            });
+        }
+
+        // Efecto visual extra para cuando llega una notificación
+        function animarCampana() {
+            const iconoCampana = document.querySelector('#notifDropdown i.bi-bell');
+            if (iconoCampana) {
+                iconoCampana.classList.remove('bi-bell');
+                iconoCampana.classList.add('bi-bell-fill', 'text-danger');
+                iconoCampana.style.transform = 'rotate(15deg)';
+                
+                setTimeout(() => {
+                    iconoCampana.style.transform = 'rotate(-15deg)';
+                    setTimeout(() => {
+                        iconoCampana.style.transform = 'rotate(0deg)';
+                        iconoCampana.classList.remove('bi-bell-fill', 'text-danger');
+                        iconoCampana.classList.add('bi-bell');
+                    }, 150);
+                }, 150);
+            }
+        }
+
         function fetchNotificaciones() {
             fetch('/api/notificaciones/resumen')
                 .then(r => r.json())
@@ -100,7 +140,6 @@
             if (!fecha) return "";
             let d;
             if (Array.isArray(fecha)) {
-                // Jackson array format [yyyy, mm, dd, hh, mm, ss]
                 d = new Date(fecha[0], fecha[1] - 1, fecha[2], fecha[3] || 0, fecha[4] || 0, fecha[5] || 0);
             } else {
                 d = new Date(fecha);
@@ -130,9 +169,9 @@
 
         document.addEventListener('DOMContentLoaded', () => {
             fetchNotificaciones();
+            conectarWebSocket();   
         });
         
-        setInterval(fetchNotificaciones, 45000); // Cada 45 seg
     </script>
     <style>
         .hover-bg-light:hover { background-color: #f8f9fa; }
@@ -144,5 +183,7 @@
         }
         #notifList::-webkit-scrollbar { width: 4px; }
         #notifList::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+        
+        #notifDropdown i { transition: transform 0.15s ease-in-out; }
     </style>
 </nav>
