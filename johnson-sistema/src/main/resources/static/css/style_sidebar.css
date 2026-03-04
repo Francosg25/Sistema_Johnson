@@ -102,10 +102,16 @@
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
-    margin-bottom: 1rem;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05); /* Misma línea que el header */
+    margin-bottom: 0; /* Eliminamos el margen para que la línea se conecte */
     color: var(--je-text-dark);
     white-space: nowrap;
+    box-sizing: border-box;
+}
+
+/* Espaciado para compensar la falta de margen en el logo */
+.sidebar-je .nav {
+    margin-top: 1rem;
 }
 
 .sidebar-je .brand-logo .light {

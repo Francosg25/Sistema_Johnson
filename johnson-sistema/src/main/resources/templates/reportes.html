@@ -288,12 +288,12 @@
                 data: {
                     labels: projectNamesCascada,
                     datasets: [
-                        { label: 'ETAPA 1', data: s1Data, backgroundColor: paletteWaterfall[0], borderRadius: 4, barPercentage: 0.8 }, 
-                        { label: 'ETAPA 2', data: s2Data, backgroundColor: paletteWaterfall[1], borderRadius: 4, barPercentage: 0.8 },
-                        { label: 'ETAPA 3', data: s3Data, backgroundColor: paletteWaterfall[2], borderRadius: 4, barPercentage: 0.8 },
-                        { label: 'ETAPA 4', data: s4Data, backgroundColor: paletteWaterfall[3], borderRadius: 4, barPercentage: 0.8 },
-                        { label: 'ETAPA 5', data: s5Data, backgroundColor: paletteWaterfall[4], borderRadius: 4, barPercentage: 0.8 },
-                        { label: 'TOTAL',   data: totalData, backgroundColor: '#cbd5e1', borderRadius: 4, barPercentage: 0.8 }
+                        { label: 'ETAPA 1', data: s1Data, backgroundColor: paletteWaterfall[0], borderRadius: 4, barPercentage: 0.8, realPct: datosCascada.map(d => d.porcentajesPorFase[0]) }, 
+                        { label: 'ETAPA 2', data: s2Data, backgroundColor: paletteWaterfall[1], borderRadius: 4, barPercentage: 0.8, realPct: datosCascada.map(d => d.porcentajesPorFase[1]) },
+                        { label: 'ETAPA 3', data: s3Data, backgroundColor: paletteWaterfall[2], borderRadius: 4, barPercentage: 0.8, realPct: datosCascada.map(d => d.porcentajesPorFase[2]) },
+                        { label: 'ETAPA 4', data: s4Data, backgroundColor: paletteWaterfall[3], borderRadius: 4, barPercentage: 0.8, realPct: datosCascada.map(d => d.porcentajesPorFase[3]) },
+                        { label: 'ETAPA 5', data: s5Data, backgroundColor: paletteWaterfall[4], borderRadius: 4, barPercentage: 0.8, realPct: datosCascada.map(d => d.porcentajesPorFase[4]) },
+                        { label: 'TOTAL',   data: totalData, backgroundColor: '#cbd5e1', borderRadius: 4, barPercentage: 0.8, realPct: reportes.map(r => r.porcentaje) }
                     ]
                 },
                 plugins: [{
@@ -307,11 +307,34 @@
                         meta.data.forEach((bar, index) => {
                             if(!sopsCascada[index]) return; 
                             const textoSOP = "SOP: " + sopsCascada[index];
-                            ctx.font = 'bold 12px Inter, sans-serif'; 
+                            ctx.font = 'bold 11px Inter, sans-serif'; 
                             const textWidth = ctx.measureText(textoSOP).width;
                             ctx.fillStyle = 'rgba(239, 68, 68, 0.1)';
-                            ctx.beginPath(); ctx.roundRect(bar.x + 12, bar.y - 14, textWidth + 16, 28, 6); ctx.fill();
-                            ctx.fillStyle = '#ef4444'; ctx.fillText(textoSOP, bar.x + 20, bar.y);
+                            ctx.beginPath(); ctx.roundRect(bar.x + 12, bar.y - 12, textWidth + 12, 24, 6); ctx.fill();
+                            ctx.fillStyle = '#ef4444'; ctx.fillText(textoSOP, bar.x + 18, bar.y);
+                        });
+                        ctx.restore();
+                    }
+                }, {
+                    id: 'barLabels',
+                    afterDatasetsDraw(chart) {
+                        const { ctx, data } = chart;
+                        ctx.save();
+                        ctx.textAlign = 'center';
+                        ctx.textBaseline = 'middle';
+                        ctx.font = 'bold 10px Inter, sans-serif';
+
+                        chart.data.datasets.forEach((dataset, i) => {
+                            if (dataset.label === 'TOTAL') return;
+                            const meta = chart.getDatasetMeta(i);
+                            meta.data.forEach((bar, index) => {
+                                const val = dataset.realPct[index];
+                                if (val > 0 && bar.horizontal) {
+                                    ctx.fillStyle = '#ffffff';
+                                    // Dibujar el porcentaje en el centro de la sección de la barra
+                                    ctx.fillText(Math.round(val) + '%', bar.x - (bar.width / 2), bar.y);
+                                }
+                            });
                         });
                         ctx.restore();
                     }
@@ -321,6 +344,18 @@
                     responsive: true, 
                     maintainAspectRatio: false, 
                     layout: { padding: { right: 130 } }, 
+                    plugins: {
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    const dataset = context.dataset;
+                                    const index = context.dataIndex;
+                                    const val = dataset.realPct[index];
+                                    return dataset.label + ': ' + (val ? val.toFixed(1) : '0') + '%';
+                                }
+                            }
+                        }
+                    },
                     scales: { 
                         x: { max: 100, border: { display: false }, ticks: { callback: v => v + '%' } }, 
                         y: { grid: { display: false }, border: { display: false }, ticks: { font: { weight: 'bold', color: '#334155', size: 12 } } } 

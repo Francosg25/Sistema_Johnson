@@ -9,16 +9,15 @@
     --bs-primary-rgb: 245, 130, 31; 
 }
 
-/* Estilos base (Manejados por style_sidebar.css para la estructura) */
 body {
     font-family: 'Inter', sans-serif;
     background-color: var(--je-bg-light); 
 }
 
 .navbar {
-    height: 70px;
+    min-height: 85px;
     border-bottom: 1px solid rgba(0, 0, 0, 0.05) !important;
-    padding: 0 1.5rem !important;
+    padding: 0.8rem 1.5rem !important;
 }
 
 
@@ -50,12 +49,21 @@ body {
     font-weight: 600;
 }
 
-/* Layout for sidebar + page content (Manejado ahora por style_sidebar.css y Flexbox) */
-html, body { height: 100%; margin: 0; padding: 0; overflow: hidden; }
-#wrapper { display: flex; width: 100vw; height: 100vh; }
+html, body { 
+    height: 100%; 
+    margin: 0 !important; 
+    padding: 0 !important; 
+    overflow: hidden; 
+}
+#wrapper { 
+    display: flex; 
+    width: 100vw; 
+    height: 100vh; 
+    margin: 0;
+    padding: 0;
+}
 
 
-/* Small helpers */
 .avatar-initial { width: 44px; height: 44px; display:inline-flex; align-items:center; justify-content:center; border-radius:8px; }
 
 .champ-proj     { background-color: #cce5ff; color: #004085; } /* Blue */

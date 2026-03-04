@@ -1,4 +1,4 @@
-<nav th:fragment="header" class="navbar navbar-expand-lg navbar-light px-4" style="position: sticky; top: 0; z-index: 1000; background: rgba(255,255,255,0.8); backdrop-filter: blur(10px);">
+<nav th:fragment="header" class="navbar navbar-expand-lg navbar-light" style="position: sticky; top: 0; z-index: 1000; background: rgba(255,255,255,0.8); backdrop-filter: blur(10px); width: 100%; border-radius: 0;">
     <div class="container-fluid">
 
         <button class="btn btn-link text-dark me-3" id="sidebarToggle">
@@ -8,10 +8,10 @@
         <h5 class="navbar-brand mb-0 fw-bold text-dark">Dashboard APQP</h5>
 
         <div class="ms-auto d-flex align-items-center">
-            <div class="dropdown me-3" id="notifDropdownContainer">
+            <div class="dropdown me-3 mt-2" id="notifDropdownContainer">
                 <button class="btn btn-light border-0 shadow-none position-relative rounded-circle p-2" type="button" id="notifDropdown" data-bs-toggle="dropdown" aria-expanded="false" onclick="fetchNotificaciones()">
                     <i class="bi bi-bell fs-5 text-dark"></i>
-                    <span id="notifBadge" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger d-none" style="z-index: 10; font-size: 0.6rem; padding: 0.35em 0.5em;">
+                    <span id="notifBadge" class="position-absolute badge rounded-pill bg-danger d-none" style="z-index: 10; font-size: 0.6rem; padding: 0.35em 0.5em; top: 5px; right: 5px; transform: translate(30%, 30%);">
                         0
                     </span>
                 </button>
