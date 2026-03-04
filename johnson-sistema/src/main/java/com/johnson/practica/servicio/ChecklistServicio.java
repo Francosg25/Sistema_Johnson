@@ -9,9 +9,6 @@ import com.johnson.practica.modelo.ElementoChecklist;
 import com.johnson.practica.modelo.Proyecto;
 import com.johnson.practica.repositorio.ElementoChecklistRepositorio;
 import com.johnson.practica.repositorio.ProyectoRepositorio;
-import com.johnson.practica.repositorio.UsuarioRepositorio;
-import com.johnson.practica.repositorio.HitoProyectoRepositorio;
-import com.johnson.practica.servicio.BitacoraServicio;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
@@ -19,6 +16,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.Authentication;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import java.util.List;
 import java.util.Map;
@@ -94,7 +93,41 @@ public class ChecklistServicio {
                             notificarAprobacion(elemento);
                         }
                     }
-                    case "comentario" -> elemento.setComentario(fieldValue);
+                    case "comentario" -> {
+                        elemento.setComentario(fieldValue);
+                        
+                        // --- MOTOR DE DETECCIÓN DE MENCIONES ---
+                        if (fieldValue != null && fieldValue.contains("@")) {
+                            Pattern patron = Pattern.compile("@([a-zA-Z0-9_.-]+)");
+                            Matcher matcher = patron.matcher(fieldValue);
+                            
+                            while (matcher.find()) {
+                                String usernameMencionado = matcher.group(1); // Extrae ej: "gromero"
+                                
+                                // Extraemos quién hizo el comentario
+                                String autor = "Un compañero";
+                                Authentication authCtx = SecurityContextHolder.getContext().getAuthentication();
+                                if (authCtx != null && authCtx.isAuthenticated()) {
+                                    autor = authCtx.getName();
+                                }
+
+                                // Evitamos que el usuario se notifique a sí mismo
+                                if (!autor.equalsIgnoreCase(usernameMencionado)) {
+                                    String msj = autor + " te ha mencionado en el entregable: " + elemento.getCodigo();
+                                    String link = "/proyectos/checklist/" + elemento.getProyecto().getId();
+                                    
+                                    notificacionServicio.alertarAUsuario(
+                                        usernameMencionado, 
+                                        "Has sido mencionado", 
+                                        msj, 
+                                        "ALERT", 
+                                        link,
+                                        autor
+                                    );
+                                }
+                            }
+                        }
+                    }
                     case "estado" -> elemento.setEstado(fieldValue);
                     case "fechaReal" -> {
                         try { if (fieldValue != null && !fieldValue.isEmpty()) elemento.setFechaReal(LocalDate.parse(fieldValue)); } 

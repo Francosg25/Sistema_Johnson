@@ -30,6 +30,17 @@ public class Notificacion {
     @JoinColumn(name = "destinatario_id")
     @com.fasterxml.jackson.annotation.JsonIgnore
     private Usuario destinatario;
+    private String usuarioDestino;
+
+    public String setUsuarioDestino(String usuarioDestino) {
+        this.usuarioDestino = usuarioDestino;
+        return usuarioDestino;
+    }
+
+    public String getUsuarioDestino() {
+        return usuarioDestino;
+    }
+
 
     public Notificacion(String titulo, String mensaje, String tipo, Usuario destinatario, String autorAccion) {
         this.titulo = titulo;

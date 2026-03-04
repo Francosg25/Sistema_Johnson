@@ -709,6 +709,37 @@
     </div>
 </div>
 
+    <link rel="stylesheet" href="https://unpkg.com/tributejs/dist/tribute.css">
+    <script src="https://unpkg.com/tributejs/dist/tribute.min.js"></script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const usuariosPlanta = [
+                { key: 'Eduardo Tejeida (Project)', value: 'etejeida' },
+                { key: 'Gabriel Romero (Quality)', value: 'gromero' },
+                { key: 'Jesus Urena (Process)', value: 'jurena' },
+                { key: 'Fermin Flores (Operations)', value: 'fflores' },
+                { key: 'Admin Sistema', value: 'admin' }
+            ];
+
+            const tribute = new Tribute({
+                values: usuariosPlanta,
+                selectTemplate: function (item) {
+                    return '@' + item.original.value; 
+                },
+                menuItemTemplate: function (item) {
+                    return '<span class="fw-bold text-primary">' + item.original.key + '</span>';
+                }
+            });
+
+            const editorTextarea = document.getElementById('editor-textarea');
+            if(editorTextarea) {
+                tribute.attach(editorTextarea);
+            }
+        });
+    </script>
+
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     
     <script>
