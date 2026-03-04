@@ -19,24 +19,22 @@
 
         .bg-blob {
             position: fixed;
-            width: 400px;
-            height: 400px;
-            background: linear-gradient(135deg, rgba(245, 130, 31, 0.15) 0%, rgba(245, 130, 31, 0.05) 100%);
-            filter: blur(80px);
+            width: 500px;
+            height: 500px;
+            background: linear-gradient(135deg, rgba(245, 130, 31, 0.3) 0%, rgba(245, 130, 31, 0.1) 100%);
+            filter: blur(100px);
             border-radius: 50%;
             z-index: -1;
             pointer-events: none;
         }
-        .blob-1 { top: -100px; right: -100px; }
-        .blob-2 { bottom: -100px; left: -100px; background: linear-gradient(135deg, rgba(13, 110, 253, 0.12) 0%, rgba(13, 110, 253, 0.05) 100%); }
+        .blob-1 { top: -150px; right: -150px; }
+        .blob-2 { bottom: -150px; left: -150px; background: linear-gradient(135deg, rgba(13, 110, 253, 0.25) 0%, rgba(13, 110, 253, 0.08) 100%); }
 
         .glass-card {
-            background: rgba(255, 255, 255, 0.6) !important;
-            backdrop-filter: blur(12px) !important;
-            -webkit-backdrop-filter: blur(12px) !important;
-            border: 1px solid rgba(255, 255, 255, 0.4) !important;
+            background: rgba(255, 255, 255, 0.9) !important;
+            border: 1px solid rgba(0, 0, 0, 0.08) !important;
             border-radius: 20px !important;
-            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.07) !important;
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.05) !important;
             overflow: hidden;
         }
 
@@ -56,17 +54,16 @@
             font-weight: 600;
             padding: 0.8rem 1.5rem;
             border-radius: 12px 12px 0 0 !important;
-            background-color: rgba(241, 243, 245, 0.6) !important;
-            backdrop-filter: blur(5px);
+            background-color: #f1f3f5 !important;
             transition: all 0.2s ease;
         }
         .nav-tabs .nav-link:hover {
             color: #0d6efd;
-            background-color: rgba(233, 236, 239, 0.8) !important;
+            background-color: #e9ecef !important;
         }
         .nav-tabs .nav-link.active {
             color: #0d6efd !important;
-            background-color: rgba(255, 255, 255, 0.8) !important;
+            background-color: #fff !important;
             border-bottom: 3px solid #0d6efd !important;
             box-shadow: 0 -4px 10px rgba(0,0,0,0.02) !important;
         }
@@ -82,7 +79,7 @@
             font-weight: 700;
             color: #6c757d;
             letter-spacing: 0.03em;
-            background-color: rgba(248, 249, 250, 0.5) !important;
+            background-color: #f8f9fa !important;
         }
         .table td, .table th {
             border-color: rgba(0,0,0,0.03);
@@ -91,8 +88,7 @@
             background-color: rgba(255, 255, 255, 0.4) !important; 
         }
         .table-group-header td {
-            background-color: rgba(241, 243, 245, 0.7) !important;
-            backdrop-filter: blur(5px);
+            background-color: #f1f3f5 !important;
             border-top: 1px solid rgba(0,0,0,0.05) !important;
             border-bottom: 1px solid rgba(0,0,0,0.05) !important;
             letter-spacing: 0.02em;
@@ -100,9 +96,8 @@
 
         .form-control, .form-select {
             border-radius: 6px;
-            background-color: rgba(255, 255, 255, 0.5) !important;
-            backdrop-filter: blur(4px);
-            border: 1px solid rgba(255, 255, 255, 0.3) !important;
+            background-color: #fff !important;
+            border: 1px solid #dee2e6 !important;
             transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
         }
         .form-control:focus, .form-select:focus {
@@ -166,10 +161,18 @@
         .champ-all { background-color: #f8f9fa; color: #6c757d; border: 1px solid #e9ecef; }
         .champ-n-a { background-color: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
         
-        .status-on-time { color: #198754 !important; font-weight: 800 !important; }
-        .status-late { color: #dc3545 !important; font-weight: 800 !important; }
-        .status-decision { color: #0dcaf0 !important; font-weight: 800 !important; }
-        .status-needs-action { color: #ffc107 !important; font-weight: 800 !important; text-shadow: 0px 0px 1px rgba(255,193,7,0.5); }
+        .status-on-time { color: #198754 !important; font-weight: 800 !important; background-color: rgba(25, 135, 84, 0.08) !important; box-shadow: 0 0 12px rgba(25, 135, 84, 0.25) !important; border-color: rgba(25, 135, 84, 0.3) !important; }
+        .status-on-time:focus { box-shadow: 0 0 15px rgba(25, 135, 84, 0.35) !important; }
+
+        .status-late { color: #dc3545 !important; font-weight: 800 !important; background-color: rgba(220, 53, 69, 0.08) !important; box-shadow: 0 0 12px rgba(220, 53, 69, 0.25) !important; border-color: rgba(220, 53, 69, 0.3) !important; }
+        .status-late:focus { box-shadow: 0 0 15px rgba(220, 53, 69, 0.35) !important; }
+
+        .status-decision { color: #0dcaf0 !important; font-weight: 800 !important; background-color: rgba(13, 202, 240, 0.08) !important; box-shadow: 0 0 12px rgba(13, 202, 240, 0.25) !important; border-color: rgba(13, 202, 240, 0.3) !important; }
+        .status-decision:focus { box-shadow: 0 0 15px rgba(13, 202, 240, 0.35) !important; }
+
+        .status-needs-action { color: #ffc107 !important; font-weight: 800 !important; background-color: rgba(255, 193, 7, 0.08) !important; box-shadow: 0 0 12px rgba(255, 193, 7, 0.25) !important; border-color: rgba(255, 193, 7, 0.3) !important; }
+        .status-needs-action:focus { box-shadow: 0 0 15px rgba(255, 193, 7, 0.35) !important; }
+
         .status-default { color: #6c757d !important; font-weight: 600 !important; }
     </style>
 </head>
@@ -188,89 +191,85 @@
             <main class="container-fluid p-4">
 
                 <div id="checklist-skeleton" class="container-fluid p-4">
-    <div class="glass-card p-4 mb-4">
-        <div class="row align-items-center">
-            <div class="col-md-8">
-                <div class="skeleton skeleton-title" style="width: 40%; height: 28px;"></div>
-                <div class="skeleton skeleton-text" style="width: 25%;"></div>
-            </div>
-            <div class="col-md-4 text-end">
-                <div class="skeleton" style="width: 120px; height: 36px; border-radius: 8px; display: inline-block;"></div>
-            </div>
-        </div>
-    </div>
-
-    <div class="d-flex mb-3">
-        <div class="skeleton me-2" style="width: 100px; height: 40px; border-radius: 8px 8px 0 0;"></div>
-        <div class="skeleton me-2" style="width: 100px; height: 40px; border-radius: 8px 8px 0 0;"></div>
-        <div class="skeleton me-2" style="width: 100px; height: 40px; border-radius: 8px 8px 0 0;"></div>
-    </div>
-
-    <div class="glass-card p-0 overflow-hidden">
-        <div class="bg-light p-3 border-bottom">
-            <div class="row">
-                <div class="col-1"><div class="skeleton skeleton-text mb-0"></div></div>
-                <div class="col-3"><div class="skeleton skeleton-text mb-0"></div></div>
-                <div class="col-2"><div class="skeleton skeleton-text mb-0"></div></div>
-                <div class="col-2"><div class="skeleton skeleton-text mb-0"></div></div>
-                <div class="col-4"><div class="skeleton skeleton-text mb-0"></div></div>
-            </div>
-        </div>
-        <div th:each="i : ${#numbers.sequence(1, 6)}" class="p-3 border-bottom">
-            <div class="row align-items-center">
-                <div class="col-1"><div class="skeleton" style="width: 30px; height: 20px;"></div></div>
-                <div class="col-3">
-                    <div class="skeleton skeleton-title mb-1" style="width: 80%;"></div>
-                    <div class="skeleton skeleton-text mb-0" style="width: 50%;"></div>
-                </div>
-                <div class="col-2"><div class="skeleton" style="width: 100%; height: 35px; border-radius: 6px;"></div></div>
-                <div class="col-2"><div class="skeleton" style="width: 100%; height: 35px; border-radius: 6px;"></div></div>
-                <div class="col-4"><div class="skeleton" style="width: 100%; height: 35px; border-radius: 6px;"></div></div>
-            </div>
-        </div>
-    </div>
-</div>
-
-<div id="checklist-content" style="display: none;">
-    
-    </div>
-
-                
-                <form th:action="@{/proyectos/checklist/guardar-todo/{id}(id=${proyecto.id})}" method="post">
-                    <div class="d-flex justify-content-between align-items-end mb-4">
-                        <div>
-                            <h6 class="text-uppercase text-muted small fw-bold mb-1">Proyecto Activo</h6>
-                            <span class="badge bg-secondary fs-6 shadow-sm" th:text="${proyecto.numeroParte}">NUM</span>
-                            <span class="ms-2 fw-bold text-dark fs-5" th:text="${proyecto.nombre}">Nombre</span>
-                        </div>
-                        <div>
-                            <a href="/" class="btn btn-outline-secondary btn-sm me-2 shadow-sm fw-bold">Volver</a>
-                            <button type="submit" class="btn btn-je-primary btn-sm shadow-sm" sec:authorize="hasAnyRole('ADMIN', 'CHAMPION')">
-                                <i class="bi bi-save me-2"></i>Guardar Cambios
-                            </button>
+                    <div class="glass-card p-4 mb-4">
+                        <div class="row align-items-center">
+                            <div class="col-md-8">
+                                <div class="skeleton skeleton-title" style="width: 40%; height: 28px;"></div>
+                                <div class="skeleton skeleton-text" style="width: 25%;"></div>
+                            </div>
+                            <div class="col-md-4 text-end">
+                                <div class="skeleton" style="width: 120px; height: 36px; border-radius: 8px; display: inline-block;"></div>
+                            </div>
                         </div>
                     </div>
 
-                    <ul class="nav nav-tabs nav-fill mb-4 border-bottom-0" id="apqpTabs" role="tablist">
-                        <li class="nav-item" role="presentation" th:each="fase : ${fases}">
-                            <button class="nav-link border-0 shadow-sm me-2" 
-                                    th:classappend="'bg-light text-muted'"
-                                    th:id="'tab-' + ${fase.id}" 
-                                    data-bs-toggle="tab" 
-                                    th:data-bs-target="'#content-' + ${fase.id}" 
-                                    type="button" role="tab" 
-                                    th:text="${fase.nombre}">
-                                Fase
-                            </button>
-                        </li>
-                    </ul>
+                    <div class="d-flex mb-3">
+                        <div class="skeleton me-2" style="width: 100px; height: 40px; border-radius: 8px 8px 0 0;"></div>
+                        <div class="skeleton me-2" style="width: 100px; height: 40px; border-radius: 8px 8px 0 0;"></div>
+                        <div class="skeleton me-2" style="width: 100px; height: 40px; border-radius: 8px 8px 0 0;"></div>
+                    </div>
 
-                    <div class="tab-content" id="apqpTabsContent">
-                        <div th:each="fase, faseIter : ${fases}" 
-                             class="tab-pane fade" 
-                             th:classappend="${faseIter.index == 0} ? 'show active'" 
-                             th:id="'content-' + ${fase.id}" 
-                             role="tabpanel">
+                    <div class="glass-card p-0 overflow-hidden">
+                        <div class="bg-light p-3 border-bottom">
+                            <div class="row">
+                                <div class="col-1"><div class="skeleton skeleton-text mb-0"></div></div>
+                                <div class="col-3"><div class="skeleton skeleton-text mb-0"></div></div>
+                                <div class="col-2"><div class="skeleton skeleton-text mb-0"></div></div>
+                                <div class="col-2"><div class="skeleton skeleton-text mb-0"></div></div>
+                                <div class="col-4"><div class="skeleton skeleton-text mb-0"></div></div>
+                            </div>
+                        </div>
+                        <div th:each="i : ${#numbers.sequence(1, 6)}" class="p-3 border-bottom">
+                            <div class="row align-items-center">
+                                <div class="col-1"><div class="skeleton" style="width: 30px; height: 20px;"></div></div>
+                                <div class="col-3">
+                                    <div class="skeleton skeleton-title mb-1" style="width: 80%;"></div>
+                                    <div class="skeleton skeleton-text mb-0" style="width: 50%;"></div>
+                                </div>
+                                <div class="col-2"><div class="skeleton" style="width: 100%; height: 35px; border-radius: 6px;"></div></div>
+                                <div class="col-2"><div class="skeleton" style="width: 100%; height: 35px; border-radius: 6px;"></div></div>
+                                <div class="col-4"><div class="skeleton" style="width: 100%; height: 35px; border-radius: 6px;"></div></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="checklist-content" style="display: none;">
+                    <form th:action="@{/proyectos/checklist/guardar-todo/{id}(id=${proyecto.id})}" method="post">
+                        <div class="d-flex justify-content-between align-items-end mb-4">
+                            <div>
+                                <h6 class="text-uppercase text-muted small fw-bold mb-1">Proyecto Activo</h6>
+                                <span class="badge bg-secondary fs-6 shadow-sm" th:text="${proyecto.numeroParte}">NUM</span>
+                                <span class="ms-2 fw-bold text-dark fs-5" th:text="${proyecto.nombre}">Nombre</span>
+                            </div>
+                            <div>
+                                <a href="/" class="btn btn-outline-secondary btn-sm me-2 shadow-sm fw-bold">Volver</a>
+                                <button type="submit" class="btn btn-je-primary btn-sm shadow-sm" sec:authorize="hasAnyRole('ADMIN', 'CHAMPION')">
+                                    <i class="bi bi-save me-2"></i>Guardar Cambios
+                                </button>
+                            </div>
+                        </div>
+
+                        <ul class="nav nav-tabs nav-fill mb-4 border-bottom-0" id="apqpTabs" role="tablist">
+                            <li class="nav-item" role="presentation" th:each="fase : ${fases}">
+                                <button class="nav-link border-0 shadow-sm me-2" 
+                                        th:classappend="'bg-light text-muted'"
+                                        th:id="'tab-' + ${fase.id}" 
+                                        data-bs-toggle="tab" 
+                                        th:data-bs-target="'#content-' + ${fase.id}" 
+                                        type="button" role="tab" 
+                                        th:text="${fase.nombre}">
+                                    Fase
+                                </button>
+                            </li>
+                        </ul>
+
+                        <div class="tab-content" id="apqpTabsContent">
+                            <div th:each="fase, faseIter : ${fases}" 
+                                 class="tab-pane fade" 
+                                 th:classappend="${faseIter.index == 0} ? 'show active'" 
+                                 th:id="'content-' + ${fase.id}" 
+                                 role="tabpanel">
 
                             <div th:if="${fase.nombre.contains('Programa')}" class="card glass-card">
                                 <div class="card-body p-0">
@@ -707,91 +706,90 @@
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const apqpTabs = document.getElementById('apqpTabs');
-            if (apqpTabs) {
-                const tabButtons = apqpTabs.querySelectorAll('button[data-bs-toggle="tab"]');
-                const lastActiveTabId = localStorage.getItem('lastActiveApqpTab');
-                let tabToActivate = null;
-                if (lastActiveTabId) {
-                    tabToActivate = document.getElementById(lastActiveTabId);
-                }
-                if (!tabToActivate || !apqpTabs.contains(tabToActivate)) {
-                    tabToActivate = tabButtons[0];
-                }
-                if (tabToActivate) {
-                    const bootstrapTab = new bootstrap.Tab(tabToActivate);
-                    bootstrapTab.show();
-                    tabButtons.forEach(btn => {
-                        btn.classList.remove('active', 'fw-bold', 'bg-white');
-                        btn.classList.add('bg-light', 'text-muted');
-                    });
-                    tabToActivate.classList.add('active', 'fw-bold', 'bg-white');
-                    tabToActivate.classList.remove('bg-light', 'text-muted');
-                }
-                apqpTabs.addEventListener('click', function(event) {
-                    const clickedButton = event.target.closest('button[data-bs-toggle="tab"]');
-                    if (clickedButton) {
-                        localStorage.setItem('lastActiveApqpTab', clickedButton.id);
-                        tabButtons.forEach(btn => {
-                            btn.classList.remove('active', 'fw-bold', 'bg-white');
-                            btn.classList.add('bg-light', 'text-muted');
-                        });
-                        clickedButton.classList.add('active', 'fw-bold', 'bg-white');
-                        clickedButton.classList.remove('bg-light', 'text-muted');
-                    }
+            if (!apqpTabs) return;
+
+            const tabButtons = apqpTabs.querySelectorAll('button[data-bs-toggle="tab"]');
+            const lastActiveTabId = localStorage.getItem('lastActiveApqpTab');
+            let tabToActivate = lastActiveTabId ? document.getElementById(lastActiveTabId) : tabButtons[0];
+
+            if (tabToActivate && apqpTabs.contains(tabToActivate)) {
+                // LIMPIEZA FORZOSA: Eliminamos cualquier rastro de pestañas activas previas (para evitar duplicados)
+                tabButtons.forEach(btn => {
+                    btn.classList.remove('active', 'fw-bold', 'bg-white');
+                    btn.classList.add('bg-light', 'text-muted');
+                    const targetId = btn.getAttribute('data-bs-target');
+                    const pane = document.querySelector(targetId);
+                    if (pane) pane.classList.remove('show', 'active');
                 });
+
+                // ACTIVACIÓN: Mostramos la pestaña correcta
+                const bsTab = new bootstrap.Tab(tabToActivate);
+                bsTab.show();
+                
+                // Aplicamos estilos visuales al botón seleccionado
+                tabToActivate.classList.add('active', 'fw-bold', 'bg-white');
+                tabToActivate.classList.remove('bg-light', 'text-muted');
             }
+
+            apqpTabs.addEventListener('click', (e) => {
+                const btn = e.target.closest('button[data-bs-toggle="tab"]');
+                if (btn) {
+                    localStorage.setItem('lastActiveApqpTab', btn.id);
+                    tabButtons.forEach(b => {
+                        const isActive = b === btn;
+                        b.classList.toggle('active', isActive);
+                        b.classList.toggle('fw-bold', isActive);
+                        b.classList.toggle('bg-white', isActive);
+                        b.classList.toggle('bg-light', !isActive);
+                        b.classList.toggle('text-muted', !isActive);
+                    });
+                }
+            });
         });
     </script>
     
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            function applySelectStyle(selectElement) {
-                selectElement.classList.remove('status-on-time', 'status-late', 'status-decision', 'status-needs-action', 'status-default');
-                selectElement.classList.remove('bg-success', 'bg-danger', 'bg-warning', 'bg-info', 'bg-secondary');
-                const value = selectElement.value;
-                let newClass = 'status-default';
-                if (selectElement.name.startsWith('controlEntregable')) {
-                    switch (value) {
-                        case 'Closed on time': newClass = 'status-on-time'; break;
-                        case 'Closed late': newClass = 'status-late'; break;
-                        case 'DECISION': newClass = 'status-decision'; break;
-                        case 'NEEDS ACTION': newClass = 'status-needs-action'; break;
-                    }
-                } else if (selectElement.name.startsWith('score')) {
-                    switch (value) {
-                        case 'OK': newClass = 'status-on-time'; break;
-                        case 'N/A': newClass = 'status-default'; break;
-                    }
-                }
-                selectElement.classList.add(newClass);
+        function applySelectStyle(select) {
+            const classes = ['status-on-time', 'status-late', 'status-decision', 'status-needs-action', 'status-default'];
+            select.classList.remove(...classes);
+            
+            let newClass = 'status-default';
+            const val = select.value;
+            if (select.name.startsWith('controlEntregable')) {
+                if (val === 'Closed on time') newClass = 'status-on-time';
+                else if (val === 'Closed late') newClass = 'status-late';
+                else if (val === 'DECISION') newClass = 'status-decision';
+                else if (val === 'NEEDS ACTION') newClass = 'status-needs-action';
+            } else if (select.name.startsWith('score') && val === 'OK') {
+                newClass = 'status-on-time';
             }
+            select.classList.add(newClass);
+        }
 
-            function applyRadioStyle(radioInput) {
-                const buttonGroup = radioInput.closest('.btn-group');
-                if (!buttonGroup) return;
-                buttonGroup.querySelectorAll('label').forEach(label => {
-                    label.classList.remove('btn-success', 'btn-danger','btn-secondary', 'text-white');
-                });
-                const label = buttonGroup.querySelector(`label[for="${radioInput.id}"]`);
-                if (label) {
-                    label.classList.remove('btn-outline-success', 'btn-outline-danger', 'btn-outline-secondary');
-                    switch (radioInput.value) {
-                        case 'OK': label.classList.add('btn-success', 'text-white'); break;
-                        case 'NOK': label.classList.add('btn-danger', 'text-white'); break;
-                        case 'NA': label.classList.add('btn-secondary', 'text-white'); break;
-                    }
-                }
+        function applyRadioStyle(radio) {
+            const group = radio.closest('.btn-group');
+            if (!group) return;
+            group.querySelectorAll('label').forEach(l => l.classList.remove('btn-success', 'btn-danger', 'btn-secondary', 'text-white'));
+            const label = group.querySelector(`label[for="${radio.id}"]`);
+            if (label) {
+                label.classList.remove('btn-outline-success', 'btn-outline-danger', 'btn-outline-secondary');
+                if (radio.value === 'OK') label.classList.add('btn-success', 'text-white');
+                else if (radio.value === 'NOK') label.classList.add('btn-danger', 'text-white');
+                else if (radio.value === 'NA') label.classList.add('btn-secondary', 'text-white');
             }
+        }
 
-            document.querySelectorAll('select[name^="controlEntregable-"], select[name^="score-"]').forEach(select => {
-                applySelectStyle(select);
-                select.addEventListener('change', () => applySelectStyle(select));
-            });
+        document.addEventListener('change', (e) => {
+            if (e.target.tagName === 'SELECT' && (e.target.name.startsWith('controlEntregable') || e.target.name.startsWith('score'))) {
+                applySelectStyle(e.target);
+            } else if (e.target.type === 'radio' && e.target.name.startsWith('estado-')) {
+                applyRadioStyle(e.target);
+            }
+        });
 
-            document.querySelectorAll('input[type="radio"][name^="estado-"]').forEach(radio => {
-                if (radio.checked) applyRadioStyle(radio);
-                radio.addEventListener('change', () => applyRadioStyle(radio));
-            });
+        document.addEventListener('DOMContentLoaded', () => {
+            document.querySelectorAll('select[name^="controlEntregable-"], select[name^="score-"]').forEach(applySelectStyle);
+            document.querySelectorAll('input[type="radio"][name^="estado-"]:checked').forEach(applyRadioStyle);
         });
     </script>
 
