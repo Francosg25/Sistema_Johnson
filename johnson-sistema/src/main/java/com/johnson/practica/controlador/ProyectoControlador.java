@@ -26,6 +26,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import com.johnson.practica.servicio.FirmaEtapaServicio;
+import com.johnson.practica.modelo.FirmaEtapa;
+import java.security.Principal;
+import java.util.HashMap;
+
 @Controller
 @RequestMapping("/proyectos")
 public class ProyectoControlador {
@@ -33,15 +38,17 @@ public class ProyectoControlador {
     @Autowired private ProyectoServicio proyectoServicio;
     @Autowired private ChecklistServicio checklistServicio;
     @Autowired private ProyectoRepositorio proyectoRepositorio;
+    @Autowired private FirmaEtapaServicio firmaEtapaServicio;
     
     @Autowired 
-    private NotificacionServicio notificacionServicio; // <-- INYECCIÓN PARA LAS ALERTAS
+    private NotificacionServicio notificacionServicio;
 
     @Data @AllArgsConstructor
     public static class FaseVista {
         private String id;
         private String nombre;
         private List<ElementoChecklist> items;
+        private Map<String, FirmaEtapa> firmas;
     }
 
     @GetMapping("/checklist/{id}")
@@ -53,30 +60,36 @@ public class ProyectoControlador {
         model.addAttribute("currentUri", request.getRequestURI());
         model.addAttribute("proyecto", proyecto);
 
-        // --- OPTIMIZACIÓN: 1 SOLA CONSULTA A LA BD ---
-        // Traemos todos los elementos del proyecto de golpe
         List<ElementoChecklist> todosLosElementos = checklistServicio.obtenerPorProyectoId(id);
 
         List<FaseVista> fases = new ArrayList<>();
         
-        // Filtramos rápidamente en memoria RAM (Instantáneo)
         fases.add(new FaseVista("prog", "Programa APQP", todosLosElementos.stream()
-                .filter(e -> e.getFase() != null && e.getFase().startsWith("0")).toList()));
+                .filter(e -> e.getFase() != null && e.getFase().startsWith("0")).toList(), new HashMap<>()));
                 
         fases.add(new FaseVista("s2", "Stage 2", todosLosElementos.stream()
-                .filter(e -> e.getFase() != null && e.getFase().startsWith("2")).toList()));
+                .filter(e -> e.getFase() != null && e.getFase().startsWith("2")).toList(), new HashMap<>()));
                 
         fases.add(new FaseVista("s3", "Stage 3", todosLosElementos.stream()
-                .filter(e -> e.getFase() != null && e.getFase().startsWith("3")).toList()));
+                .filter(e -> e.getFase() != null && e.getFase().startsWith("3")).toList(), 
+                firmaEtapaServicio.obtenerFirmasPorEtapa(id, 3)));
                 
         fases.add(new FaseVista("s4", "Stage 4", todosLosElementos.stream()
-                .filter(e -> e.getFase() != null && e.getFase().startsWith("4")).toList()));
+                .filter(e -> e.getFase() != null && e.getFase().startsWith("4")).toList(), 
+                firmaEtapaServicio.obtenerFirmasPorEtapa(id, 4)));
                 
         fases.add(new FaseVista("s5", "Stage 5", todosLosElementos.stream()
-                .filter(e -> e.getFase() != null && e.getFase().startsWith("5")).toList()));
+                .filter(e -> e.getFase() != null && e.getFase().startsWith("5")).toList(), 
+                firmaEtapaServicio.obtenerFirmasPorEtapa(id, 5)));
 
         model.addAttribute("fases", fases); 
         return "checklist";
+    }
+
+    @PostMapping("/checklist/firmar/{id}")
+    public String firmarEtapa(@PathVariable Long id, @RequestParam Integer etapa, @RequestParam String rol, Principal principal) {
+        firmaEtapaServicio.firmar(id, etapa, rol, principal.getName());
+        return "redirect:/proyectos/checklist/" + id;
     }
 
     @PostMapping("/checklist/guardar-todo/{proyectoId}")

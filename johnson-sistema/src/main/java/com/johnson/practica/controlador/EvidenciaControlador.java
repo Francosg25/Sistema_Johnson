@@ -63,9 +63,7 @@ public class EvidenciaControlador {
             
             adjuntoRepositorio.save(adjunto);
             
-            String correoGerente = "francosanchezg25@gmail.com"; 
-            
-       
+               
   
             redirectAttributes.addFlashAttribute("exito", "Archivo subido correctamente.");
         } catch (IOException e) {
@@ -160,27 +158,25 @@ public class EvidenciaControlador {
     @GetMapping({"", "/"})
     @Transactional(readOnly = true)
     public String verRepositorioGlobal(Model model) {
-        
         List<Adjunto> adjuntos = adjuntoRepositorio.findAllConDetalles(); 
-        List<Map<String, Object>> listaSegura = new java.util.ArrayList<>();
+        
+        // Agrupamos por nombre de proyecto
+        Map<String, List<Map<String, Object>>> agrupadosPorProyecto = new java.util.LinkedHashMap<>();
         
         for (Adjunto a : adjuntos) {
-            Map<String, Object> map = new HashMap<>();
-            map.put("id", a.getId());
-            map.put("nombreArchivo", a.getNombreArchivo() != null ? a.getNombreArchivo() : "Documento");
-            map.put("subidoEn", a.getSubidoEn());
-            map.put("proyectoNombre", a.getProyecto() != null ? a.getProyecto().getNombre() : "Sin Proyecto");
+            String proyectoNombre = (a.getProyecto() != null) ? a.getProyecto().getNombre() : "Otros / Sin Proyecto";
             
-            if (a.getElementoChecklist() != null) {
-                map.put("entregableInfo", a.getElementoChecklist().getCodigo() + " - " + a.getElementoChecklist().getNombre());
-            } else {
-                map.put("entregableInfo", "Desconocido");
-            }
+            Map<String, Object> infoAdjunto = new HashMap<>();
+            infoAdjunto.put("id", a.getId());
+            infoAdjunto.put("nombreArchivo", a.getNombreArchivo() != null ? a.getNombreArchivo() : "Documento");
+            infoAdjunto.put("subidoEn", a.getSubidoEn());
+            infoAdjunto.put("entregableInfo", (a.getElementoChecklist() != null) ? 
+                a.getElementoChecklist().getNombre() : "Desconocido");
             
-            listaSegura.add(map);
+            agrupadosPorProyecto.computeIfAbsent(proyectoNombre, k -> new java.util.ArrayList<>()).add(infoAdjunto);
         }
         
-        model.addAttribute("adjuntos", listaSegura);
+        model.addAttribute("proyectosConEvidencias", agrupadosPorProyecto);
         model.addAttribute("currentUri", "/evidencias");
         
         return "evidencias";

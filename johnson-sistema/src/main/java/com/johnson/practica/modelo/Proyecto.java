@@ -31,6 +31,20 @@ public class Proyecto {
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     private LocalDate sop;
 
+    // Roles para Firmas APQP
+    private String projectEngineer;
+    private String qualityEngineer;
+    private String processEngineer;
+    private String projectLeader;
+    
+    // Management Site Management
+    private String operationsManager;
+    private String qualityManager;
+    private String materialsManager;
+    private String scsManager;
+    private String financeManager;
+    private String hrManager;
+
     @OneToMany(mappedBy = "proyecto", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonIgnore
     private List<ElementoChecklist> checklist = new ArrayList<>();

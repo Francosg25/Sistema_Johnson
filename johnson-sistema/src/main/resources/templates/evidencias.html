@@ -123,72 +123,89 @@
                     </div>
                 </div>
 
-                <div class="card glass-card">
-                    <div class="table-responsive">
-                        <table class="table table-hover" id="tablaEvidencias">
-                            <thead>
-                                <tr>
-                                    <th style="width: 35%;">Archivo</th>
-                                    <th style="width: 20%;">Proyecto Asociado</th>
-                                    <th style="width: 25%;">Entregable APQP</th>
-                                    <th style="width: 10%;">Fecha Subida</th>
-                                    <th style="width: 10%;" class="text-center">Acciones</th>
-                                </tr>
-                            </thead>
-                            <tr th:each="adj : ${adjuntos}" class="fila-archivo">
-                                    <td>
-                                        <div class="d-flex align-items-center">
-                                            <div class="file-icon" 
-                                                 th:classappend="${#strings.endsWith(#strings.toLowerCase(adj.nombreArchivo), '.pdf') ? 'icon-pdf' : 
-                                                                 (#strings.endsWith(#strings.toLowerCase(adj.nombreArchivo), '.xls') or #strings.endsWith(#strings.toLowerCase(adj.nombreArchivo), '.xlsx') ? 'icon-excel' : 
-                                                                 (#strings.endsWith(#strings.toLowerCase(adj.nombreArchivo), '.doc') or #strings.endsWith(#strings.toLowerCase(adj.nombreArchivo), '.docx') ? 'icon-word' : 'icon-default'))}">
-                                                <i class="bi"
-                                                   th:classappend="${#strings.endsWith(#strings.toLowerCase(adj.nombreArchivo), '.pdf') ? 'bi-file-earmark-pdf-fill' : 
-                                                                   (#strings.endsWith(#strings.toLowerCase(adj.nombreArchivo), '.xls') or #strings.endsWith(#strings.toLowerCase(adj.nombreArchivo), '.xlsx') ? 'bi-file-earmark-excel-fill' : 
-                                                                   (#strings.endsWith(#strings.toLowerCase(adj.nombreArchivo), '.doc') or #strings.endsWith(#strings.toLowerCase(adj.nombreArchivo), '.docx') ? 'bi-file-earmark-word-fill' : 'bi-file-earmark-fill'))}">
-                                                </i>
-                                            </div>
-                                            <div class="d-flex flex-column text-truncate" style="max-width: 300px;">
-                                                <span class="text-dark text-truncate nombre-busqueda fw-bold" th:text="${adj.nombreArchivo}">Documento.pdf</span>
-                                                <span class="text-muted small fw-normal">Documento adjunto</span> 
-                                            </div>
-                                        </div>
-                                    </td>
-                                    
-                                    <td>
-                                        <span class="badge bg-light text-dark border shadow-sm proyecto-busqueda" th:text="${adj.proyectoNombre}">Proyecto X</span>
-                                    </td>
-                                    
-                                    <td>
-                                        <span class="text-muted fw-normal entregable-busqueda" style="font-size: 0.85rem;" th:text="${adj.entregableInfo}">
-                                            1.1 - Feasibility
-                                        </span>
-                                    </td>
-                                    
-                                    <td>
-                                        <span class="text-muted fw-normal" style="font-size: 0.85rem;" 
-                                              th:text="${adj.subidoEn != null ? #temporals.format(adj.subidoEn, 'dd MMM yyyy') : 'Sin fecha'}">01 Ene 2026</span>
-                                    </td>
-                                    
-                                    <td class="text-center">
-                                        <div class="d-flex justify-content-center gap-1">
-                                            <a th:href="@{'/evidencias/descargar/' + ${adj.id}}" class="btn-action btn-download" title="Descargar">
-                                                <i class="bi bi-cloud-arrow-down-fill fs-5"></i>
-                                            </a>
-                                        </div>
-
-
-                                        <button type="button" class="btn-action btn-delete" title="Eliminar Permanentemente"
-                                                th:data-id="${adj.id}" 
-                                                th:data-nombre="${adj.nombreArchivo}"
-                                                onclick="confirmarEliminacion(this.getAttribute('data-id'), this.getAttribute('data-nombre'))"
-                                                sec:authorize="hasAnyRole('ADMIN', 'CHAMPION')">
-                                                <i class="bi bi-trash3-fill fs-5"></i>
-                                        </button>
-                                    </td>
-                                </tr>
-                        </table>
+                <!-- Contenedor de Proyectos (Carpetas) -->
+                <div th:each="entry, iter : ${proyectosConEvidencias}" class="mb-4">
+                    <div class="d-flex align-items-center mb-3">
+                        <button class="btn btn-link p-0 text-decoration-none d-flex align-items-center" 
+                                type="button" data-bs-toggle="collapse" 
+                                th:data-bs-target="'#collapse-' + ${iter.index}" 
+                                aria-expanded="true">
+                            <i class="bi bi-folder-fill text-warning fs-3 me-2"></i>
+                            <h5 class="fw-bold text-dark m-0 proyecto-busqueda" th:text="${entry.key}">Nombre del Proyecto</h5>
+                            <span class="badge bg-primary bg-opacity-10 text-primary ms-3 rounded-pill" th:text="${entry.value.size() + ' archivos'}">0 archivos</span>
+                            <i class="bi bi-chevron-down ms-2 text-muted small"></i>
+                        </button>
                     </div>
+
+                    <div class="collapse show" th:id="'collapse-' + ${iter.index}">
+                        <div class="card glass-card border-0">
+                            <div class="table-responsive">
+                                <table class="table table-hover align-middle">
+                                    <thead>
+                                        <tr>
+                                            <th style="width: 45%;">Archivo</th>
+                                            <th style="width: 35%;">Entregable APQP</th>
+                                            <th style="width: 15%;">Fecha Subida</th>
+                                            <th style="width: 10%;" class="text-center">Acciones</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr th:each="adj : ${entry.value}" class="fila-archivo">
+                                            <td>
+                                                <div class="d-flex align-items-center">
+                                                    <div class="file-icon" 
+                                                         th:classappend="${#strings.endsWith(#strings.toLowerCase(adj.nombreArchivo), '.pdf') ? 'icon-pdf' : 
+                                                                         (#strings.endsWith(#strings.toLowerCase(adj.nombreArchivo), '.xls') or #strings.endsWith(#strings.toLowerCase(adj.nombreArchivo), '.xlsx') ? 'icon-excel' : 
+                                                                         (#strings.endsWith(#strings.toLowerCase(adj.nombreArchivo), '.doc') or #strings.endsWith(#strings.toLowerCase(adj.nombreArchivo), '.docx') ? 'icon-word' : 'icon-default'))}">
+                                                        <i class="bi"
+                                                           th:classappend="${#strings.endsWith(#strings.toLowerCase(adj.nombreArchivo), '.pdf') ? 'bi-file-earmark-pdf-fill' : 
+                                                                           (#strings.endsWith(#strings.toLowerCase(adj.nombreArchivo), '.xls') or #strings.endsWith(#strings.toLowerCase(adj.nombreArchivo), '.xlsx') ? 'bi-file-earmark-excel-fill' : 
+                                                                           (#strings.endsWith(#strings.toLowerCase(adj.nombreArchivo), '.doc') or #strings.endsWith(#strings.toLowerCase(adj.nombreArchivo), '.docx') ? 'bi-file-earmark-word-fill' : 'bi-file-earmark-fill'))}">
+                                                        </i>
+                                                    </div>
+                                                    <div class="d-flex flex-column text-truncate" style="max-width: 400px;">
+                                                        <span class="text-dark text-truncate nombre-busqueda fw-bold" th:text="${adj.nombreArchivo}">Documento.pdf</span>
+                                                        <span class="text-muted small fw-normal">Evidencia del proyecto</span> 
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            
+                                            <td>
+                                                <span class="text-muted fw-normal entregable-busqueda" style="font-size: 0.85rem;" th:text="${adj.entregableInfo}">
+                                                    Entregable
+                                                </span>
+                                            </td>
+                                            
+                                            <td>
+                                                <span class="text-muted fw-normal" style="font-size: 0.85rem;" 
+                                                      th:text="${adj.subidoEn != null ? #temporals.format(adj.subidoEn, 'dd MMM yyyy') : 'Sin fecha'}">01 Ene 2026</span>
+                                            </td>
+                                            
+                                            <td class="text-center">
+                                                <div class="d-flex justify-content-center gap-1">
+                                                    <a th:href="@{'/evidencias/descargar/' + ${adj.id}}" class="btn-action btn-download" title="Descargar">
+                                                        <i class="bi bi-cloud-arrow-down-fill fs-5"></i>
+                                                    </a>
+                                                    <button type="button" class="btn-action btn-delete" title="Eliminar Permanentemente"
+                                                            th:data-id="${adj.id}" 
+                                                            th:data-nombre="${adj.nombreArchivo}"
+                                                            onclick="confirmarEliminacion(this.getAttribute('data-id'), this.getAttribute('data-nombre'))"
+                                                            sec:authorize="hasAnyRole('ADMIN', 'CHAMPION')">
+                                                            <i class="bi bi-trash3-fill fs-5"></i>
+                                                    </button>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div th:if="${proyectosConEvidencias == null or proyectosConEvidencias.isEmpty()}" class="text-center py-5">
+                    <i class="bi bi-archive text-muted display-1 mb-3 opacity-25"></i>
+                    <h5 class="text-muted">No se han subido evidencias todavía.</h5>
                 </div>
 
             </main>
