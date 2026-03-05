@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
@@ -26,6 +27,11 @@ public class UsuarioServicio {
         this.rolRepositorio = rolRepositorio;
         this.passwordEncoder = passwordEncoder;
         this.emailServicio = emailServicio;
+    }
+
+    @Transactional(readOnly = true)
+    public List<Usuario> listarTodos() {
+        return usuarioRepositorio.findAll();
     }
 
     @Transactional
@@ -54,7 +60,6 @@ public class UsuarioServicio {
 
         Usuario guardado = usuarioRepositorio.save(usuario);
         
-        // Enviar correo
         String mensaje = String.format(
             "Hola %s,\n\nHas sido registrado como CHAMPION en el Sistema Johnson.\n" +
             "Tus credenciales de acceso son:\n\n" +

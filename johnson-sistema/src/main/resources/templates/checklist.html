@@ -8,6 +8,33 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 
     <style>
+      
+        .mention-tag {
+            font-weight: 800;
+            color: #ffffff !important;
+            background: #7a7979 !important;
+            padding: 2px 8px;
+            border-radius: 12px;
+            display: inline-block;
+            box-shadow: 0 2px 4px rgba(111, 66, 193, 0.3);
+            margin: 0 2px;
+        }
+        
+        #editor-textarea {
+            min-height: 200px;
+            max-height: 400px;
+            overflow-y: auto;
+            outline: none;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+
+        #editor-textarea:empty:before {
+            content: "Escribe aquí tus observaciones... ";
+            color: #adb5bd;
+            font-style: italic;
+        }
+
         body {
             font-family: 'Inter', system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
             background-color: #f4f6f9; 
@@ -364,11 +391,13 @@
                                                     </td>
                                                     
                                                     <td class="text-center" rowspan="2" style="vertical-align: middle;">
-                                                        <button type="button" class="btn btn-sm btn-light border shadow-sm rounded-circle" 
+                                                        <button type="button" class="btn btn-sm border shadow-sm rounded-circle" 
+                                                                th:id="'btn-evidencia-' + ${item.id}"
+                                                                th:classappend="${item.adjuntos != null and !item.adjuntos.isEmpty()} ? 'btn-primary' : 'btn-light'"
                                                                 data-bs-toggle="modal" 
                                                                 th:data-bs-target="'#modalEvidencia_' + ${item.id}"
                                                                 title="Subir/Ver Evidencia">
-                                                            <i class="bi bi-cloud-arrow-up-fill text-primary"></i>
+                                                            <i th:id="'btn-icon-evidencia-' + ${item.id}" class="bi bi-cloud-arrow-up-fill" th:classappend="${item.adjuntos != null and !item.adjuntos.isEmpty()} ? 'text-white' : 'text-primary'"></i>
                                                         </button>
                                                     </td>
                                                 </tr>
@@ -434,7 +463,7 @@
                                                             <button type="button" th:id="'btn-comentario-' + ${item.id}" 
                                                                     class="btn btn-sm border-0 rounded-circle ms-1 flex-shrink-0 shadow-sm"
                                                                     th:classappend="${item.comentario == null or item.comentario.isEmpty() ? 'btn-light text-secondary' : 'btn-primary text-white'}"
-                                                                    title="Ver/Editar Observaciones">
+                                                                    th:attr="onclick=|abrirEditorComentarios('${item.id}', '${item.codigo}')|">
                                                                 <i th:id="'btn-icon-comentario-' + ${item.id}" 
                                                                    th:class="${item.comentario == null or item.comentario.isEmpty() ? 'bi bi-pencil' : 'bi bi-chat-text-fill'}"></i>
                                                             </button>
@@ -448,11 +477,13 @@
                                                     <td class="text-center"><input type="date" class="form-control form-control-sm border-0 text-center p-0 fw-bold text-dark bg-transparent" th:name="'fechaReal-' + ${item.id}" th:value="${item.fechaReal}"></td>
                                                     
                                                     <td class="text-center">
-                                                        <button type="button" class="btn btn-sm btn-light border shadow-sm rounded-circle" 
+                                                        <button type="button" class="btn btn-sm border shadow-sm rounded-circle" 
+                                                                th:id="'btn-evidencia-' + ${item.id}"
+                                                                th:classappend="${item.adjuntos != null and !item.adjuntos.isEmpty()} ? 'btn-primary' : 'btn-light'"
                                                                 data-bs-toggle="modal" 
                                                                 th:data-bs-target="'#modalEvidencia_' + ${item.id}"
                                                                 title="Subir/Ver Evidencia">
-                                                            <i class="bi bi-cloud-arrow-up-fill text-primary"></i>
+                                                            <i th:id="'btn-icon-evidencia-' + ${item.id}" class="bi bi-cloud-arrow-up-fill" th:classappend="${item.adjuntos != null and !item.adjuntos.isEmpty()} ? 'text-white' : 'text-primary'"></i>
                                                         </button>
                                                     </td>
                                                 </tr>
@@ -489,10 +520,12 @@
                                             <tbody>
                                                 <tr th:each="item : ${fase.items}" th:if="${item.grupo == 'Validación'}">
                                                     <td class="text-center align-middle">
-                                                        <button type="button" class="btn btn-sm btn-light border shadow-sm rounded-circle" 
+                                                        <button type="button" class="btn btn-sm border shadow-sm rounded-circle" 
+                                                                th:id="'btn-evidencia-' + ${item.id}"
+                                                                th:classappend="${item.adjuntos != null and !item.adjuntos.isEmpty()} ? 'btn-primary' : 'btn-light'"
                                                                 data-bs-toggle="modal" 
                                                                 th:data-bs-target="'#modalEvidencia_' + ${item.id}">
-                                                            <i class="bi bi-cloud-arrow-up-fill text-primary"></i>
+                                                            <i th:id="'btn-icon-evidencia-' + ${item.id}" class="bi bi-cloud-arrow-up-fill" th:classappend="${item.adjuntos != null and !item.adjuntos.isEmpty()} ? 'text-white' : 'text-primary'"></i>
                                                         </button>
                                                     </td>
                                                     <td class="text-center">
@@ -513,7 +546,7 @@
                                                             <button type="button" th:id="'btn-comentario-' + ${item.id}" 
                                                                     class="btn btn-sm border-0 rounded-circle ms-1 flex-shrink-0 shadow-sm"
                                                                     th:classappend="${item.comentario == null or item.comentario.isEmpty() ? 'btn-light text-secondary' : 'btn-primary text-white'}"
-                                                                    title="Ver/Editar Observaciones">
+                                                                    th:attr="onclick=|abrirEditorComentarios('${item.id}', '${item.codigo}')|">
                                                                 <i th:id="'btn-icon-comentario-' + ${item.id}" 
                                                                    th:class="${item.comentario == null or item.comentario.isEmpty() ? 'bi bi-pencil' : 'bi bi-chat-text-fill'}"></i>
                                                             </button>
@@ -551,7 +584,7 @@
                                                             <button type="button" th:id="'btn-comentario-' + ${item.id}" 
                                                                     class="btn btn-sm border-0 rounded-circle ms-1 flex-shrink-0 shadow-sm"
                                                                     th:classappend="${item.comentario == null or item.comentario.isEmpty() ? 'btn-light text-secondary' : 'btn-primary text-white'}"
-                                                                    title="Ver/Editar Observaciones">
+                                                                    th:attr="onclick=|abrirEditorComentarios('${item.id}', '${item.codigo}')|">
                                                                 <i th:id="'btn-icon-comentario-' + ${item.id}" 
                                                                    th:class="${item.comentario == null or item.comentario.isEmpty() ? 'bi bi-pencil' : 'bi bi-chat-text-fill'}"></i>
                                                             </button>
@@ -673,10 +706,9 @@
                             </div>
                             <div class="modal-body pt-0 bg-light">
                                 <div class="p-3 bg-white rounded border shadow-sm">
-                                    <p class="small text-muted mb-2"><i class="bi bi-info-circle me-1"></i> Puedes usar múltiples líneas, listas y fechas.</p>
+                                    <p class="small text-muted mb-2"><i class="bi bi-info-circle me-1"></i> Puedes usar múltiples líneas, listas y fechas. Usa <strong>@</strong> para mencionar.</p>
                                     <input type="hidden" id="editor-item-id">
-                                    <textarea id="editor-textarea" class="form-control shadow-none border-secondary-subtle" rows="8" 
-                                              placeholder="Ejemplo:&#10;1. Actualizar formato oficial - 7 Jun&#10;2. RFQ cotización Mauro..."></textarea>
+                                    <div id="editor-textarea" contenteditable="true" class="form-control border-secondary-subtle"></div>
                                 </div>
                             </div>
                             <div class="modal-footer bg-light border-top-0">
@@ -713,29 +745,88 @@
     <script src="https://unpkg.com/tributejs/dist/tribute.min.js"></script>
 
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const usuariosPlanta = [
-                { key: 'Eduardo Tejeida (Project)', value: 'etejeida' },
-                { key: 'Gabriel Romero (Quality)', value: 'gromero' },
-                { key: 'Jesus Urena (Process)', value: 'jurena' },
-                { key: 'Fermin Flores (Operations)', value: 'fflores' },
-                { key: 'Admin Sistema', value: 'admin' }
-            ];
+        function abrirEditorComentarios(itemId, codigo) {
+            const textareaReal = document.getElementById('real-comentario-' + itemId);
+            const modalTextarea = document.getElementById('editor-textarea');
+            const modalCodigo = document.getElementById('editor-codigo');
+            const modalItemId = document.getElementById('editor-item-id');
 
-            const tribute = new Tribute({
-                values: usuariosPlanta,
-                selectTemplate: function (item) {
-                    return '@' + item.original.value; 
-                },
-                menuItemTemplate: function (item) {
-                    return '<span class="fw-bold text-primary">' + item.original.key + '</span>';
-                }
-            });
-
-            const editorTextarea = document.getElementById('editor-textarea');
-            if(editorTextarea) {
-                tribute.attach(editorTextarea);
+            if(textareaReal) {
+                // Convertimos el texto plano con @username en HTML con tags para el editor
+                let texto = textareaReal.value;
+                let htmlResaltado = texto.replace(/@([a-zA-Z0-9_.-]+)/g, '<span class="mention-tag">@$1</span>');
+                modalTextarea.innerHTML = htmlResaltado;
             }
+            if(modalCodigo) modalCodigo.innerText = codigo;
+            if(modalItemId) modalItemId.value = itemId;
+
+            const myModal = new bootstrap.Modal(document.getElementById('modalEditorComentarios'));
+            myModal.show();
+        }
+
+        function guardarComentarioModal() {
+            const itemId = document.getElementById('editor-item-id').value;
+            const modalEditor = document.getElementById('editor-textarea');
+            
+            // Extraemos solo el texto plano (quitando los tags HTML) para la base de datos
+            const nuevoTexto = modalEditor.innerText; 
+            
+            const textareaReal = document.getElementById('real-comentario-' + itemId);
+            const previewDiv = document.getElementById('preview-comentario-' + itemId);
+            const btnIcon = document.getElementById('btn-icon-comentario-' + itemId);
+            const btnContenedor = document.getElementById('btn-comentario-' + itemId);
+
+            if(textareaReal) textareaReal.value = nuevoTexto;
+
+            if (nuevoTexto.trim() === "") {
+                if(previewDiv) {
+                    previewDiv.innerText = "";
+                    previewDiv.classList.add('text-muted', 'fst-italic');
+                    previewDiv.classList.remove('text-dark', 'fw-bold');
+                }
+                if(btnIcon) btnIcon.className = 'bi bi-pencil';
+                if(btnContenedor) btnContenedor.className = 'btn btn-sm btn-light text-secondary border-0 rounded-circle ms-1 shadow-sm flex-shrink-0';
+            } else {
+                if(previewDiv) {
+                    previewDiv.innerText = nuevoTexto;
+                    previewDiv.classList.remove('text-muted', 'fst-italic');
+                    previewDiv.classList.add('text-dark', 'fw-bold');
+                }
+                if(btnIcon) {
+                    btnIcon.className = 'bi bi-chat-text-fill text-white';
+                }
+                if(btnContenedor) {
+                    btnContenedor.className = 'btn btn-sm btn-primary border-0 rounded-circle ms-1 shadow-sm flex-shrink-0';
+                }
+            }
+
+            const modalElement = document.getElementById('modalEditorComentarios');
+            const modalInstance = bootstrap.Modal.getInstance(modalElement);
+            modalInstance.hide();
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            fetch('/api/usuarios/menciones')
+                .then(response => response.json())
+                .then(usuariosPlanta => {
+                    const tribute = new Tribute({
+                        values: usuariosPlanta,
+                        selectTemplate: function (item) {
+                            // Al seleccionar, insertamos el HTML del tag directamente
+                            return '<span class="mention-tag" contenteditable="false">@' + item.original.value + '</span>&nbsp;';
+                        },
+                        menuItemTemplate: function (item) {
+                            return '<span class="fw-bold text-primary">' + item.original.key + '</span>' +
+                                   '<br><small class="text-muted">@' + item.original.value + '</small>';
+                        }
+                    });
+
+                    const editorTextarea = document.getElementById('editor-textarea');
+                    if(editorTextarea) {
+                        tribute.attach(editorTextarea);
+                    }
+                })
+                .catch(err => console.error("Error al cargar usuarios para menciones:", err));
         });
     </script>
 
@@ -752,7 +843,6 @@
             let tabToActivate = lastActiveTabId ? document.getElementById(lastActiveTabId) : tabButtons[0];
 
             if (tabToActivate && apqpTabs.contains(tabToActivate)) {
-                // LIMPIEZA FORZOSA: Eliminamos cualquier rastro de pestañas activas previas (para evitar duplicados)
                 tabButtons.forEach(btn => {
                     btn.classList.remove('active', 'fw-bold', 'bg-white');
                     btn.classList.add('bg-light', 'text-muted');
@@ -761,11 +851,9 @@
                     if (pane) pane.classList.remove('show', 'active');
                 });
 
-                // ACTIVACIÓN: Mostramos la pestaña correcta
                 const bsTab = new bootstrap.Tab(tabToActivate);
                 bsTab.show();
                 
-                // Aplicamos estilos visuales al botón seleccionado
                 tabToActivate.classList.add('active', 'fw-bold', 'bg-white');
                 tabToActivate.classList.remove('bg-light', 'text-muted');
             }
@@ -891,6 +979,18 @@
                             listaUl.appendChild(nuevoLi);
 
                             this.reset(); 
+
+                            
+                            let btnContenedorEvi = document.getElementById('btn-evidencia-' + itemId);
+                            let btnIconEvi = document.getElementById('btn-icon-evidencia-' + itemId);
+                            
+                            if(btnContenedorEvi) {
+                                btnContenedorEvi.className = 'btn btn-sm btn-primary border-0 rounded-circle ms-1 shadow-sm flex-shrink-0';
+                            }
+                            if(btnIconEvi) {
+                                btnIconEvi.className = 'bi bi-paperclip text-white'; 
+                            }
+
                         } else {
                             alertaDiv.innerHTML = `
                                 <div class="alert alert-danger alert-dismissible fade show small py-2" role="alert">
@@ -923,60 +1023,7 @@
                 });
             });
         });
-    </script>
 
-    <script>
-        function abrirEditorComentarios(itemId, codigo) {
-            const textareaReal = document.getElementById('real-comentario-' + itemId);
-            const modalTextarea = document.getElementById('editor-textarea');
-            const modalCodigo = document.getElementById('editor-codigo');
-            const modalItemId = document.getElementById('editor-item-id');
-
-            if(textareaReal) modalTextarea.value = textareaReal.value;
-            if(modalCodigo) modalCodigo.innerText = codigo;
-            if(modalItemId) modalItemId.value = itemId;
-
-            const myModal = new bootstrap.Modal(document.getElementById('modalEditorComentarios'));
-            myModal.show();
-        }
-
-        function guardarComentarioModal() {
-            const itemId = document.getElementById('editor-item-id').value;
-            const nuevoTexto = document.getElementById('editor-textarea').value;
-            
-            const textareaReal = document.getElementById('real-comentario-' + itemId);
-            const previewDiv = document.getElementById('preview-comentario-' + itemId);
-            const btnIcon = document.getElementById('btn-icon-comentario-' + itemId);
-            const btnContenedor = document.getElementById('btn-comentario-' + itemId);
-
-            if(textareaReal) textareaReal.value = nuevoTexto;
-
-            if (nuevoTexto.trim() === "") {
-                if(previewDiv) {
-                    previewDiv.innerText = "";
-                    previewDiv.classList.add('text-muted', 'fst-italic');
-                    previewDiv.classList.remove('text-dark', 'fw-bold');
-                }
-                if(btnIcon) btnIcon.className = 'bi bi-pencil';
-                if(btnContenedor) btnContenedor.className = 'btn btn-sm btn-light text-secondary border-0 rounded-circle ms-1 shadow-sm flex-shrink-0';
-            } else {
-                if(previewDiv) {
-                    previewDiv.innerText = nuevoTexto;
-                    previewDiv.classList.remove('text-muted', 'fst-italic');
-                    previewDiv.classList.add('text-dark', 'fw-bold');
-                }
-                if(btnIcon) btnIcon.className = 'bi bi-chat-text-fill text-white';
-                if(btnContenedor) btnContenedor.className = 'btn btn-sm btn-primary border-0 rounded-circle ms-1 shadow-sm flex-shrink-0';
-            }
-
-            const modalElement = document.getElementById('modalEditorComentarios');
-            const modalInstance = bootstrap.Modal.getInstance(modalElement);
-            modalInstance.hide();
-        }
-    </script>
-
-
-    <script>
         let modalConfirmacionEliminar = null;
 
         function eliminarEvidenciaAjax(adjuntoId, botonElemento, itemId) {
@@ -1018,6 +1065,17 @@
                             if (msgVacio) {
                                 msgVacio.classList.remove('d-none');
                                 msgVacio.classList.add('d-flex');
+                            }
+
+                           
+                            let btnContenedorEvi = document.getElementById('btn-evidencia-' + itemId);
+                            let btnIconEvi = document.getElementById('btn-icon-evidencia-' + itemId);
+                            
+                            if(btnContenedorEvi) {
+                                btnContenedorEvi.className = 'btn btn-sm btn-light text-secondary border-0 rounded-circle ms-1 shadow-sm flex-shrink-0';
+                            }
+                            if(btnIconEvi) {
+                                btnIconEvi.className = 'bi bi-paperclip'; 
                             }
                         }
                     } else {

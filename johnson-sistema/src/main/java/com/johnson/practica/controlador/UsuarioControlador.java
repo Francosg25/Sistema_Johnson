@@ -13,6 +13,10 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.Optional;
 
+import org.springframework.web.bind.annotation.ResponseBody;
+import java.util.List;
+import java.util.stream.Collectors;
+
 @Controller
 public class UsuarioControlador {
 
@@ -23,6 +27,16 @@ public class UsuarioControlador {
         this.usuarioServicio = usuarioServicio;
         this.passwordEncoder = passwordEncoder;
     }
+
+    @GetMapping("/api/usuarios/menciones")
+    @ResponseBody
+    public List<MentionDto> obtenerUsuariosParaMenciones() {
+        return usuarioServicio.listarTodos().stream()
+                .map(u -> new MentionDto(u.getNombreCompleto(), u.getUsername()))
+                .collect(Collectors.toList());
+    }
+
+    public static record MentionDto(String key, String value) {}
 
     @GetMapping("/cambiar-password")
     public String cambiarPasswordForm(Authentication auth, Model model) {

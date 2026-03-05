@@ -88,14 +88,13 @@ public class ChecklistServicio {
             cambios.forEach((fieldName, fieldValue) -> {
                 if (fieldValue == null) return;
                 
-                // LIMPIEZA EXTREMA: Quitamos espacios adelante, atrás, y posibles saltos de línea (enters) que manda el HTML.
                 String valorNuevo = fieldValue.replaceAll("[\\n\\r]+", " ").trim();
 
                 switch (fieldName) {
                     
                     case "controlEntregable" -> {
                         String valorActual = elemento.getControlEntregable() == null ? "" : elemento.getControlEntregable().replaceAll("[\\n\\r]+", " ").trim();
-                        if (!valorNuevo.equalsIgnoreCase(valorActual)) { // Usamos equalsIgnoreCase por si cambian mayúsculas
+                        if (!valorNuevo.equalsIgnoreCase(valorActual)) { 
                             elemento.setControlEntregable(valorNuevo);
                             huboCambioReal[0] = true;
                         }
@@ -114,6 +113,22 @@ public class ChecklistServicio {
                         if (!valorNuevo.equals(valorActual)) {
                             elemento.setComentario(valorNuevo);
                             huboCambioReal[0] = true;
+
+                            if (valorNuevo.contains("@")) {
+                                Pattern p = Pattern.compile("@([a-zA-Z0-9_.-]+)");
+                                Matcher m = p.matcher(valorNuevo);
+                                String autor = SecurityContextHolder.getContext().getAuthentication() != null ? 
+                                    SecurityContextHolder.getContext().getAuthentication().getName() : "Sistema";
+
+                                while (m.find()) {
+                                    String target = m.group(1);
+                                    if (!autor.equalsIgnoreCase(target)) {
+                                        notificacionServicio.alertarAUsuario(target, "Mención en Checklist", 
+                                            autor + " te ha mencionado en el proyecto " + elemento.getProyecto().getNombre() + " en el entregable " + elemento.getNombre() + ".", 
+                                            "ALERT", "/proyectos/checklist/" + elemento.getProyecto().getId(), autor);
+                                    }
+                                }
+                            }
                         }
                     }
                     
