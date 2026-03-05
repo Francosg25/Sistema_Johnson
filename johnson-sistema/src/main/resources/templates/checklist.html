@@ -745,6 +745,8 @@
     <script src="https://unpkg.com/tributejs/dist/tribute.min.js"></script>
 
     <script>
+        let modalComentariosInstance = null;
+
         function abrirEditorComentarios(itemId, codigo) {
             const textareaReal = document.getElementById('real-comentario-' + itemId);
             const modalTextarea = document.getElementById('editor-textarea');
@@ -753,56 +755,71 @@
 
             if(textareaReal) {
                 // Convertimos el texto plano con @username en HTML con tags para el editor
-                let texto = textareaReal.value;
-                let htmlResaltado = texto.replace(/@([a-zA-Z0-9_.-]+)/g, '<span class="mention-tag">@$1</span>');
+                let texto = textareaReal.value || "";
+                let htmlResaltado = texto.replace(/@([a-zA-Z0-9_.-]+)/g, '<span class="mention-tag" contenteditable="false">@$1</span>');
                 modalTextarea.innerHTML = htmlResaltado;
             }
             if(modalCodigo) modalCodigo.innerText = codigo;
             if(modalItemId) modalItemId.value = itemId;
 
-            const myModal = new bootstrap.Modal(document.getElementById('modalEditorComentarios'));
-            myModal.show();
+            // REUTILIZAR INSTANCIA PARA EVITAR BLOQUEOS
+            const modalElem = document.getElementById('modalEditorComentarios');
+            if (!modalComentariosInstance) {
+                modalComentariosInstance = new bootstrap.Modal(modalElem);
+            }
+            modalComentariosInstance.show();
         }
 
         function guardarComentarioModal() {
-            const itemId = document.getElementById('editor-item-id').value;
-            const modalEditor = document.getElementById('editor-textarea');
-            
-            // Extraemos solo el texto plano (quitando los tags HTML) para la base de datos
-            const nuevoTexto = modalEditor.innerText; 
-            
-            const textareaReal = document.getElementById('real-comentario-' + itemId);
-            const previewDiv = document.getElementById('preview-comentario-' + itemId);
-            const btnIcon = document.getElementById('btn-icon-comentario-' + itemId);
-            const btnContenedor = document.getElementById('btn-comentario-' + itemId);
+            try {
+                const itemId = document.getElementById('editor-item-id').value;
+                const modalEditor = document.getElementById('editor-textarea');
+                
+                // Extraemos solo el texto plano (innertext respeta saltos de línea y quita HTML)
+                const nuevoTexto = modalEditor.innerText; 
+                
+                const textareaReal = document.getElementById('real-comentario-' + itemId);
+                const previewDiv = document.getElementById('preview-comentario-' + itemId);
+                const btnIcon = document.getElementById('btn-icon-comentario-' + itemId);
+                const btnContenedor = document.getElementById('btn-comentario-' + itemId);
 
-            if(textareaReal) textareaReal.value = nuevoTexto;
+                if(textareaReal) textareaReal.value = nuevoTexto;
 
-            if (nuevoTexto.trim() === "") {
-                if(previewDiv) {
-                    previewDiv.innerText = "";
-                    previewDiv.classList.add('text-muted', 'fst-italic');
-                    previewDiv.classList.remove('text-dark', 'fw-bold');
+                if (nuevoTexto.trim() === "") {
+                    if(previewDiv) {
+                        previewDiv.innerText = "";
+                        previewDiv.classList.add('text-muted', 'fst-italic');
+                        previewDiv.classList.remove('text-dark', 'fw-bold');
+                    }
+                    if(btnIcon) btnIcon.className = 'bi bi-pencil';
+                    if(btnContenedor) btnContenedor.className = 'btn btn-sm btn-light text-secondary border-0 rounded-circle ms-1 shadow-sm flex-shrink-0';
+                } else {
+                    if(previewDiv) {
+                        previewDiv.innerText = nuevoTexto;
+                        previewDiv.classList.remove('text-muted', 'fst-italic');
+                        previewDiv.classList.add('text-dark', 'fw-bold');
+                    }
+                    if(btnIcon) btnIcon.className = 'bi bi-chat-text-fill text-white';
+                    if(btnContenedor) btnContenedor.className = 'btn btn-sm btn-primary border-0 rounded-circle ms-1 shadow-sm flex-shrink-0';
                 }
-                if(btnIcon) btnIcon.className = 'bi bi-pencil';
-                if(btnContenedor) btnContenedor.className = 'btn btn-sm btn-light text-secondary border-0 rounded-circle ms-1 shadow-sm flex-shrink-0';
-            } else {
-                if(previewDiv) {
-                    previewDiv.innerText = nuevoTexto;
-                    previewDiv.classList.remove('text-muted', 'fst-italic');
-                    previewDiv.classList.add('text-dark', 'fw-bold');
+
+                // CERRAR Y LIMPIAR BACKDROP
+                if (modalComentariosInstance) {
+                    modalComentariosInstance.hide();
                 }
-                if(btnIcon) {
-                    btnIcon.className = 'bi bi-chat-text-fill text-white';
-                }
-                if(btnContenedor) {
-                    btnContenedor.className = 'btn btn-sm btn-primary border-0 rounded-circle ms-1 shadow-sm flex-shrink-0';
-                }
+                
+                // Seguridad extra: eliminar capas bloqueantes de forma manual si persisten
+                setTimeout(() => {
+                    document.querySelectorAll('.modal-backdrop').forEach(el => el.remove());
+                    document.body.classList.remove('modal-open');
+                    document.body.style.overflow = '';
+                    document.body.style.paddingRight = '';
+                }, 300);
+
+            } catch (err) {
+                console.error("Error al guardar comentario:", err);
+                alert("Hubo un problema al aplicar el comentario, por favor intenta de nuevo.");
             }
-
-            const modalElement = document.getElementById('modalEditorComentarios');
-            const modalInstance = bootstrap.Modal.getInstance(modalElement);
-            modalInstance.hide();
         }
 
         document.addEventListener('DOMContentLoaded', function() {
