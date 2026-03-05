@@ -66,13 +66,13 @@ html, body {
 
 .avatar-initial { width: 44px; height: 44px; display:inline-flex; align-items:center; justify-content:center; border-radius:8px; }
 
-.champ-proj     { background-color: #cce5ff; color: #004085; } /* Blue */
-.champ-de       { background-color: #e2e3e5; color: #383d41; } /* Gray */
-.champ-qe       { background-color: #f8d7da; color: #721c24; } /* Red */
-.champ-pe       { background-color: #fffacd; color: #856404; } /* Yellow */
-.champ-qe-pe    { background-color: #d4edda; color: #155724; } /* Green (new) */
-.champ-all      { background-color: #ffdcba; color: #663003; } /* Orange */
-.champ-ops      { background-color: #e0cffc; color: #4b0082; } /* Purple */
+.champ-proj     { background-color: #cce5ff; color: #004085; } 
+.champ-de       { background-color: #e2e3e5; color: #383d41; } 
+.champ-qe       { background-color: #f8d7da; color: #721c24; } 
+.champ-pe       { background-color: #fffacd; color: #856404; } 
+.champ-qe-pe    { background-color: #d4edda; color: #155724; } 
+.champ-all      { background-color: #ffdcba; color: #663003; } 
+.champ-ops      { background-color: #e0cffc; color: #4b0082; }
 
 .status-on-time     { background-color: #d4edda; color: #155724; transition: background-color 0.3s ease, color 0.3s ease; }
 .status-late        { background-color: #f8d7da; color: #721c24; transition: background-color 0.3s ease, color 0.3s ease; }

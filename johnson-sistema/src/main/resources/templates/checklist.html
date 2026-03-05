@@ -275,10 +275,16 @@
                                     <button type="submit" class="btn btn-je-primary btn-sm px-3" sec:authorize="hasAnyRole('ADMIN', 'CHAMPION')" title="Guardar todos los cambios">
                                         <i class="bi bi-save2-fill me-1"></i> Guardar
                                     </button>
-                                    <a th:href="@{/reportes/proyecto/ver/{id}(id=${proyecto.id})}" target="_blank" class="btn btn-info btn-sm text-white px-3" title="Ver Reporte Ejecutivo Online">
+                                    <a th:href="@{/reportes/proyecto/ver/{id}(id=${proyecto.id})}" target="_blank"
+                                       style="background-color: #1f7cf5; border: none; color: white;"
+                                        class="btn btn-sm px-3"
+                                        title="Ver Reporte Ejecutivo Online">
                                         <i class="bi bi-eye-fill"></i>
-                                    </a>
-                                    <a th:href="@{/exportar-pdf/{id}(id=${proyecto.id})}" class="btn btn-dark btn-sm px-3" title="Descargar Reporte PDF">
+                                     </a>
+                                    <a th:href="@{/exportar-pdf/{id}(id=${proyecto.id})}" target="_blank"
+                                        style="background-color: #e75959; border: none; color: white;"
+                                        class="btn btn-sm px-3" 
+                                        title="Descargar Reporte PDF">
                                         <i class="bi bi-file-earmark-pdf-fill"></i>
                                     </a>
                                 </div>
