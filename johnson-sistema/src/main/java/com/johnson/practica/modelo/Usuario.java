@@ -25,6 +25,12 @@ public class Usuario {
     @Column(unique = true, nullable = false)
     private String correo;
 
+    @Column(name = "nombre_completo")
+    private String nombreCompleto;
+
+    @Column(name = "password_changed")
+    private boolean passwordChanged = false;
+
     @Column(name = "habilitado")
     private boolean enabled = true;
 

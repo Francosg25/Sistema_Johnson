@@ -8,6 +8,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
@@ -16,6 +17,7 @@ import com.johnson.practica.servicio.DetallesUsuarioServicio;
 
 @Configuration
 @EnableWebSecurity
+@EnableMethodSecurity
 public class SeguridadConfig {
 
     private final DetallesUsuarioServicio detallesUsuarioServicio;
@@ -27,9 +29,11 @@ public class SeguridadConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-            .csrf(csrf -> csrf.disable()) // <--- 1. DESACTIVAR CSRF TEMPORALMENTE
+            .csrf(csrf -> csrf.disable())
             .authorizeHttpRequests(authorize -> authorize
-                .requestMatchers("/css/**", "/js/**", "/img/**", "/login").permitAll()
+                .requestMatchers("/css/**", "/js/**", "/images/**", "/login", "/cambiar-password").permitAll()
+                .requestMatchers("/admin/**").hasRole("ADMIN")
+                .requestMatchers("/bitacora/eliminar/**", "/evidencias/eliminar/**").hasAnyRole("ADMIN", "CHAMPION")
                 .anyRequest().authenticated()
             )
             .formLogin(form -> form

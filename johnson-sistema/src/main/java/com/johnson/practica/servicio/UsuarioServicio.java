@@ -19,19 +19,63 @@ public class UsuarioServicio {
     private final UsuarioRepositorio usuarioRepositorio;
     private final RolRepositorio rolRepositorio;
     private final PasswordEncoder passwordEncoder;
+    private final EmailServicio emailServicio;
 
-    public UsuarioServicio(UsuarioRepositorio usuarioRepositorio, RolRepositorio rolRepositorio, PasswordEncoder passwordEncoder) {
+    public UsuarioServicio(UsuarioRepositorio usuarioRepositorio, RolRepositorio rolRepositorio, PasswordEncoder passwordEncoder, EmailServicio emailServicio) {
         this.usuarioRepositorio = usuarioRepositorio;
         this.rolRepositorio = rolRepositorio;
         this.passwordEncoder = passwordEncoder;
+        this.emailServicio = emailServicio;
     }
 
     @Transactional
     public Usuario guardarUsuario(Usuario usuario) {
-        usuario.setPassword(passwordEncoder.encode(usuario.getPassword()));
-        // Asumiendo que los roles ya son entidades gestionadas y solo se asignan al usuario, no es necesario volver a guardar los roles aquí.
-        // No es necesario volver a buscar/guardar roles aquí si ya están en la DB
+        if (!usuario.getPassword().startsWith("$2a$")) { // Solo encriptar si no está ya encriptada
+            usuario.setPassword(passwordEncoder.encode(usuario.getPassword()));
+        }
         return usuarioRepositorio.save(usuario);
+    }
+
+    @Transactional
+    public Usuario crearChampion(String username, String correo, String nombreCompleto) {
+        String tempPass = generarPasswordAleatoria();
+        
+        Usuario usuario = new Usuario();
+        usuario.setUsername(username);
+        usuario.setCorreo(correo);
+        usuario.setNombreCompleto(nombreCompleto);
+        usuario.setPassword(passwordEncoder.encode(tempPass));
+        usuario.setPasswordChanged(false);
+        usuario.setEnabled(true);
+
+        Set<Rol> roles = new HashSet<>();
+        rolRepositorio.findByNombre("ROLE_CHAMPION").ifPresent(roles::add);
+        usuario.setRoles(roles);
+
+        Usuario guardado = usuarioRepositorio.save(usuario);
+        
+        // Enviar correo
+        String mensaje = String.format(
+            "Hola %s,\n\nHas sido registrado como CHAMPION en el Sistema Johnson.\n" +
+            "Tus credenciales de acceso son:\n\n" +
+            "Usuario: %s\n" +
+            "Contraseña temporal: %s\n\n" +
+            "Por seguridad, el sistema te pedirá cambiar tu contraseña al primer ingreso.",
+            nombreCompleto, username, tempPass
+        );
+        emailServicio.enviarAlertaUrgente(correo, "Bienvenida al Sistema APQP", mensaje);
+        
+        return guardado;
+    }
+
+    private String generarPasswordAleatoria() {
+        String chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*";
+        StringBuilder sb = new StringBuilder();
+        java.util.Random rnd = new java.util.Random();
+        for (int i = 0; i < 10; i++) {
+            sb.append(chars.charAt(rnd.nextInt(chars.length())));
+        }
+        return sb.toString();
     }
 
     public Optional<Usuario> buscarPorUsername(String username) {

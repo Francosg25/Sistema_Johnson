@@ -42,6 +42,7 @@ public class CargadorDatos implements CommandLineRunner {
             admin.setPassword("adminpass"); 
             admin.setCorreo("admin@example.com");
             admin.setEnabled(true);
+            admin.setPasswordChanged(true);
 
             Set<Rol> roles = new HashSet<>();
             roles.add(rolRepositorio.findByNombre("ROLE_ADMIN").get());
@@ -55,6 +56,7 @@ public class CargadorDatos implements CommandLineRunner {
             logger.info("Forzando re-encriptación de contraseña del admin...");
             Usuario admin = adminOpt.get();
             admin.setPassword("adminpass");
+            admin.setPasswordChanged(true);
             usuarioServicio.guardarUsuario(admin);
         }
 
@@ -66,6 +68,7 @@ public class CargadorDatos implements CommandLineRunner {
             visitante.setPassword("visitantepass"); 
             visitante.setCorreo("visitante@example.com");
             visitante.setEnabled(true);
+            visitante.setPasswordChanged(true);
 
             Set<Rol> rolesVis = new HashSet<>();
             rolesVis.add(rolRepositorio.findByNombre("ROLE_VIEWER").get());
@@ -77,6 +80,7 @@ public class CargadorDatos implements CommandLineRunner {
             logger.info("Forzando re-encriptación de contraseña del visitante...");
             Usuario visitante = visitanteOpt.get();
             visitante.setPassword("visitantepass");
+            visitante.setPasswordChanged(true);
             usuarioServicio.guardarUsuario(visitante);
         }
     }
