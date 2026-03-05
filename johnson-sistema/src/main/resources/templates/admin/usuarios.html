@@ -1,51 +1,63 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
-<head th:replace="~{fragments/head :: head}"></head>
-<body class="bg-light">
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <div th:replace="~{fragments/head :: head}"></div>
+</head>
+<body style="background-color: #f4f6f9; min-height: 100vh; overflow-x: hidden;">
 
-    <div class="wrapper">
-        <nav th:replace="~{fragments/sidebar :: sidebar('/admin/usuarios')}"></nav>
+    <div class="d-flex" id="wrapper">
+        
+        <div id="sidebar-wrapper">
+            <div th:replace="~{fragments/sidebar :: sidebar(currentUri=${currentUri})}"></div>
+        </div>
 
-        <div id="content">
-            <header th:replace="~{fragments/header :: header}"></header>
+        <div id="page-content-wrapper" class="w-100">
+            
+            <div th:replace="~{fragments/header :: header}"></div>
 
-            <div class="container-fluid py-4">
+            <main class="container-fluid p-4">
+                
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <div>
+                        <h4 class="fw-bold text-dark m-0"><i class="bi bi-people-fill text-primary me-2"></i>Gestión de Usuarios</h4>
+                        <p class="text-muted small fw-medium mb-0 mt-1">Panel de Administración de Cuentas APQP</p>
+                    </div>
+                </div>
+
                 <div class="row justify-content-center">
                     <div class="col-lg-8">
-                        <div class="card border-0 shadow-sm rounded-4">
+                        
+                        <div class="card border-0 shadow-sm rounded-4" style="background: rgba(255, 255, 255, 0.8); backdrop-filter: blur(10px);">
                             <div class="card-header bg-white border-bottom py-3">
-                                <h5 class="mb-0 fw-bold text-dark">
+                                <h6 class="mb-0 fw-bold text-dark text-uppercase">
                                     <i class="bi bi-person-plus-fill text-primary me-2"></i> Registrar Nuevo Champion
-                                </h5>
+                                </h6>
                             </div>
                             <div class="card-body p-4">
-                                <div th:if="${mensaje}" class="alert alert-success alert-dismissible fade show" role="alert">
+                                <div th:if="${mensaje}" class="alert alert-success shadow-sm mb-4" role="alert">
                                     <i class="bi bi-check-circle-fill me-2"></i> <span th:text="${mensaje}"></span>
-                                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                                 </div>
-                                <div th:if="${error}" class="alert alert-danger alert-dismissible fade show" role="alert">
+                                <div th:if="${error}" class="alert alert-danger shadow-sm mb-4" role="alert">
                                     <i class="bi bi-exclamation-triangle-fill me-2"></i> <span th:text="${error}"></span>
-                                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                                 </div>
 
                                 <form th:action="@{/admin/usuarios/crear-champion}" method="post">
                                     <div class="row g-3">
                                         <div class="col-md-6">
-                                            <label for="nombre" class="form-label fw-semibold">Nombre Completo</label>
-                                            <input type="text" class="form-control rounded-3" id="nombre" name="nombre" placeholder="Ej. Juan Pérez" required>
+                                            <label class="form-label fw-bold small text-dark mb-1">Nombre Completo</label>
+                                            <input type="text" name="nombre" class="form-control" placeholder="Ej. Juan Pérez" required>
                                         </div>
                                         <div class="col-md-6">
-                                            <label for="username" class="form-label fw-semibold">Nombre de Usuario</label>
-                                            <input type="text" class="form-control rounded-3" id="username" name="username" placeholder="Ej. jperez" required>
+                                            <label class="form-label fw-bold small text-dark mb-1">Nombre de Usuario (Login)</label>
+                                            <input type="text" name="username" class="form-control" placeholder="Ej. jperez" required>
                                         </div>
-                                        <div class="col-12">
-                                            <label for="correo" class="form-label fw-semibold">Correo Electrónico Corporativo</label>
-                                            <input type="email" class="form-control rounded-3" id="correo" name="correo" placeholder="juan.perez@johnsonelectric.com" required>
-                                            <div class="form-text">Se enviará una contraseña temporal a este correo.</div>
+                                        <div class="col-md-12">
+                                            <label class="form-label fw-bold small text-dark mb-1">Correo Electrónico (Para envío de contraseña)</label>
+                                            <input type="email" name="correo" class="form-control" placeholder="juan.perez@johnsonelectric.com" required>
                                         </div>
-                                        <div class="col-12 mt-4">
-                                            <button type="submit" class="btn btn-primary px-4 py-2 rounded-3 fw-bold">
-                                                <i class="bi bi-send-fill me-2"></i> Crear Cuenta y Enviar Invitación
+                                        <div class="col-12 mt-4 text-end">
+                                            <button type="submit" class="btn btn-primary px-4 fw-bold shadow-sm" style="background: linear-gradient(135deg, #F5821F 0%, #e0600d 100%); border: none;">
+                                                <i></i> Crear Cuenta y Enviar Invitación
                                             </button>
                                         </div>
                                     </div>
@@ -53,21 +65,20 @@
                             </div>
                         </div>
 
-                        <div class="card border-0 shadow-sm rounded-4 mt-4">
-                            <div class="card-header bg-white border-bottom py-3">
-                                <h5 class="mb-0 fw-bold text-dark">Información de Seguridad</h5>
-                            </div>
-                            <div class="card-body">
-                                <ul class="mb-0 text-muted small">
+                        <div class="card border-0 shadow-sm rounded-4 mt-4 bg-white opacity-75">
+                            <div class="card-body p-4">
+                                <h6 class="fw-bold text-dark mb-3"><i class="bi bi-shield-lock-fill text-warning me-2"></i>Información de Seguridad</h6>
+                                <ul class="mb-0 text-muted small" style="line-height: 1.8;">
                                     <li>Las cuentas creadas tendrán el rol <strong>ROLE_CHAMPION</strong> por defecto.</li>
-                                    <li>El sistema obliga al usuario a cambiar su contraseña en el primer inicio de sesión.</li>
-                                    <li>Las contraseñas se almacenan cifradas con el algoritmo BCrypt.</li>
+                                    <li>El sistema exige al usuario que <strong>cambie su contraseña temporal</strong> en el primer inicio de sesión.</li>
+                                    <li>Las contraseñas se almacenan cifradas con el estándar industrial <strong>BCrypt</strong>.</li>
                                 </ul>
                             </div>
                         </div>
+
                     </div>
                 </div>
-            </div>
+            </main>
         </div>
     </div>
 

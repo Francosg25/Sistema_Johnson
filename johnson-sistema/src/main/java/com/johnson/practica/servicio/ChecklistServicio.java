@@ -74,119 +74,101 @@ public class ChecklistServicio {
 
         List<ElementoChecklist> elementosAActualizar = repositorio.findAllById(updatesById.keySet());
 
+        String nombreUsuarioLogueado = "Sistema"; 
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if (auth != null && auth.isAuthenticated() && !auth.getPrincipal().equals("anonymousUser")) {
+            nombreUsuarioLogueado = auth.getName();
+        }
+
         for (ElementoChecklist elemento : elementosAActualizar) {
             Map<String, String> cambios = updatesById.get(elemento.getId());
             
-            String scoreAnterior = elemento.getScore() != null ? elemento.getScore() : "";
+            final boolean[] huboCambioReal = {false}; 
             
             cambios.forEach((fieldName, fieldValue) -> {
+                if (fieldValue == null) return;
+                
+                // LIMPIEZA EXTREMA: Quitamos espacios adelante, atrás, y posibles saltos de línea (enters) que manda el HTML.
+                String valorNuevo = fieldValue.replaceAll("[\\n\\r]+", " ").trim();
+
                 switch (fieldName) {
+                    
                     case "controlEntregable" -> {
-                        if ("NEEDS ACTION".equalsIgnoreCase(fieldValue) && !"NEEDS ACTION".equalsIgnoreCase(elemento.getControlEntregable())) {
-                            notificarEscalacion(elemento);
+                        String valorActual = elemento.getControlEntregable() == null ? "" : elemento.getControlEntregable().replaceAll("[\\n\\r]+", " ").trim();
+                        if (!valorNuevo.equalsIgnoreCase(valorActual)) { // Usamos equalsIgnoreCase por si cambian mayúsculas
+                            elemento.setControlEntregable(valorNuevo);
+                            huboCambioReal[0] = true;
                         }
-                        elemento.setControlEntregable(fieldValue);
                     }
+                    
                     case "score" -> {
-                        elemento.setScore(fieldValue);
-                        if ("OK".equalsIgnoreCase(fieldValue) && !"OK".equalsIgnoreCase(scoreAnterior)) {
-                            notificarAprobacion(elemento);
+                        String valorActual = elemento.getScore() == null ? "" : elemento.getScore().replaceAll("[\\n\\r]+", " ").trim();
+                        if (!valorNuevo.equalsIgnoreCase(valorActual)) {
+                            elemento.setScore(valorNuevo);
+                            huboCambioReal[0] = true;
                         }
                     }
+                    
                     case "comentario" -> {
-                        elemento.setComentario(fieldValue);
-                        
-                        // --- MOTOR DE DETECCIÓN DE MENCIONES ---
-                        if (fieldValue != null && fieldValue.contains("@")) {
-                            Pattern patron = Pattern.compile("@([a-zA-Z0-9_.-]+)");
-                            Matcher matcher = patron.matcher(fieldValue);
-                            
-                            while (matcher.find()) {
-                                String usernameMencionado = matcher.group(1); // Extrae ej: "gromero"
-                                
-                                // Extraemos quién hizo el comentario
-                                String autor = "Un compañero";
-                                Authentication authCtx = SecurityContextHolder.getContext().getAuthentication();
-                                if (authCtx != null && authCtx.isAuthenticated()) {
-                                    autor = authCtx.getName();
-                                }
-
-                                // Evitamos que el usuario se notifique a sí mismo
-                                if (!autor.equalsIgnoreCase(usernameMencionado)) {
-                                    String msj = autor + " te ha mencionado en el entregable: " + elemento.getCodigo();
-                                    String link = "/proyectos/checklist/" + elemento.getProyecto().getId();
-                                    
-                                    notificacionServicio.alertarAUsuario(
-                                        usernameMencionado, 
-                                        "Has sido mencionado", 
-                                        msj, 
-                                        "ALERT", 
-                                        link,
-                                        autor
-                                    );
-                                }
-                            }
+                        String valorActual = elemento.getComentario() == null ? "" : elemento.getComentario().replaceAll("[\\n\\r]+", " ").trim();
+                        if (!valorNuevo.equals(valorActual)) {
+                            elemento.setComentario(valorNuevo);
+                            huboCambioReal[0] = true;
                         }
                     }
-                    case "estado" -> elemento.setEstado(fieldValue);
+                    
+                    case "estado" -> {
+                        String valorActual = elemento.getEstado() == null ? "" : elemento.getEstado().replaceAll("[\\n\\r]+", " ").trim();
+                        if (!valorNuevo.equalsIgnoreCase(valorActual)) {
+                            elemento.setEstado(valorNuevo);
+                            huboCambioReal[0] = true;
+                        }
+                    }
+                    
                     case "fechaReal" -> {
-                        try { if (fieldValue != null && !fieldValue.isEmpty()) elemento.setFechaReal(LocalDate.parse(fieldValue)); } 
-                        catch (Exception ignored) {}
+                        try { 
+                            if (!valorNuevo.isEmpty()) {
+                                LocalDate nuevaFecha = LocalDate.parse(valorNuevo);
+                                if (elemento.getFechaReal() == null || !nuevaFecha.equals(elemento.getFechaReal())) {
+                                    elemento.setFechaReal(nuevaFecha);
+                                    huboCambioReal[0] = true;
+                                }
+                            } else if (elemento.getFechaReal() != null) {
+                                elemento.setFechaReal(null);
+                                huboCambioReal[0] = true;
+                            }
+                        } catch (Exception ignored) {}
                     }
+                    
                     case "fechaPlan" -> {
-                        try { if (fieldValue != null && !fieldValue.isEmpty()) elemento.setFechaPlan(LocalDate.parse(fieldValue)); } 
-                        catch (Exception ignored) {}
+                        try { 
+                            if (!valorNuevo.isEmpty()) {
+                                LocalDate nuevaFecha = LocalDate.parse(valorNuevo);
+                                if (elemento.getFechaPlan() == null || !nuevaFecha.equals(elemento.getFechaPlan())) {
+                                    elemento.setFechaPlan(nuevaFecha);
+                                    huboCambioReal[0] = true;
+                                }
+                            } else if (elemento.getFechaPlan() != null) {
+                                elemento.setFechaPlan(null);
+                                huboCambioReal[0] = true;
+                            }
+                        } catch (Exception ignored) {}
                     }
                 }
-                String nombreUsuarioLogueado = "Sistema"; 
-                Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-                if (auth != null && auth.isAuthenticated() && !auth.getPrincipal().equals("anonymousUser")) {
-                    nombreUsuarioLogueado = auth.getName();
-                }
-
-               
-                bitacoraServicio.registrarAccion(
-                nombreUsuarioLogueado, 
-            "ACTUALIZO_ESTATUS", 
-            "El usuario actualizó el checklist" 
-                );
             });
-        }
 
+            // Solo guardará si la limpieza extrema comprobó que realmente hubo un cambio
+            if (huboCambioReal[0]) {
+                bitacoraServicio.registrarAccion(
+                    nombreUsuarioLogueado, 
+                    "ACTUALIZO_ENTREGABLE", 
+                    "Se actualizó el entregable: " + elemento.getCodigo() + " - " + elemento.getNombre()
+                );
+            }
+        }
         
         repositorio.saveAll(elementosAActualizar);
     }
-
-    private void notificarEscalacion(ElementoChecklist item) {
-        String titulo = "ALERTA: Escalación en " + item.getProyecto().getNombre();
-        String mensaje = "El entregable \"" + item.getNombre() + "\" ha sido marcado como NEEDS ACTION.";
-        String link = "/proyectos/checklist/" + item.getProyecto().getId();
-        
-        String autor = "Sistema";
-        try {
-            var auth = org.springframework.security.core.context.SecurityContextHolder.getContext().getAuthentication();
-            if (auth != null && auth.getName() != null) autor = auth.getName();
-        } catch (Exception e) {}
-        
-        notificacionServicio.alertarAAdministradores(titulo, mensaje, "ALERT", link, autor);
-    }
-    
-    private void notificarAprobacion(ElementoChecklist item) {
-        String titulo = "✅ Entregable Aprobado";
-        String mensaje = "El entregable \"" + item.getNombre() + "\" del proyecto " + item.getProyecto().getNombre() + " ha sido marcado como OK.";
-        String link = "/proyectos/checklist/" + item.getProyecto().getId();
-        
-        String autor = "Sistema";
-        try {
-            var auth = org.springframework.security.core.context.SecurityContextHolder.getContext().getAuthentication();
-            if (auth != null && auth.getName() != null) autor = auth.getName();
-        } catch (Exception e) {}
-        
-        notificacionServicio.alertarATodos(titulo, mensaje, "SUCCESS", link, autor);
-    }
-
-    // --- 3. MÉTODOS DE REPORTES ---
-
    @Cacheable("reportes")
    public List<ReporteProgreso> generarReporteGlobal() {
         List<Proyecto> proyectos = proyectoRepositorio.findAll();
@@ -320,7 +302,6 @@ public class ChecklistServicio {
         List<ElementoChecklist> todos = repositorio.findAll();
         Map<String, Long> tendencia = new HashMap<>();
         
-        // Vamos a agrupar por mes/año de fechaReal para los que están OK
         for (ElementoChecklist item : todos) {
             if ("OK".equalsIgnoreCase(item.getScore()) && item.getFechaReal() != null) {
                 String mesAnio = item.getFechaReal().getMonthValue() + "/" + item.getFechaReal().getYear();
@@ -487,16 +468,11 @@ public class ChecklistServicio {
 
         return Math.min(100.0, Math.round(riesgoTotal * 10.0) / 10.0);
     }
+
     @Transactional(readOnly = true)
     public List<ElementoChecklist> obtenerPorProyectoId(Long id) {
         return repositorio.findByProyecto_IdOrderByCodigoAsc(id);
     }
-
-
-
-
-   
-
     
 
 

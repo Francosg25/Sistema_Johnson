@@ -10,4 +10,3 @@ import java.util.List;
 public interface BitacoraRepositorio extends JpaRepository<Bitacora, Long> {
     List<Bitacora> findTop50ByOrderByFechaDesc();
 }
-

@@ -35,7 +35,6 @@ public class Bitacora {
         this.fecha = LocalDateTime.now();
     }
 
-    // Getters y Setters
     public Long getId() { return id; }
     public String getUsuario() { return usuario; }
     public String getAccion() { return accion; }

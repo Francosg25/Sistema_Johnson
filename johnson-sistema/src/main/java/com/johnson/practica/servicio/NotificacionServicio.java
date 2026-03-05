@@ -38,14 +38,10 @@ public class NotificacionServicio {
         }
     }
 
-    /**
-     * Envía una notificación directa a un solo usuario (Ej. Menciones @usuario)
-     */
     @Transactional
     public void alertarAUsuario(String usernameDestino, String titulo, String mensaje, String tipo, String link, String autor) {
         
         // Buscamos al usuario en la base de datos (Porque tu clase Notificacion pide el objeto Usuario)
-        // Asumiendo que tu usuarioRepositorio tiene un método findByUsername.
         usuarioRepositorio.findByUsername(usernameDestino).ifPresent(usuario -> {
             
             // Usamos tu constructor exacto: Notificacion(titulo, mensaje, tipo, usuario, autor)
@@ -55,7 +51,6 @@ public class NotificacionServicio {
             // Usamos "repositorio" (es el nombre real de tu variable)
             repositorio.save(notif);
 
-            // Disparamos el WebSocket usando la misma bandera ("NUEVA_NOTIF") que usas en alertarAAdministradores
             if (messagingTemplate != null) {
                 messagingTemplate.convertAndSendToUser(
                     usuario.getUsername(), 
