@@ -31,7 +31,7 @@ public class SeguridadConfig {
         http
             .csrf(csrf -> csrf.disable())
             .authorizeHttpRequests(authorize -> authorize
-                .requestMatchers("/css/**", "/js/**", "/images/**", "/login", "/cambiar-password").permitAll()
+                .requestMatchers("/css/**", "/js/**", "/images/**", "/login", "/cambiar-password", "/olvido-password", "/recuperar-password").permitAll()
                 .requestMatchers("/admin/**").hasRole("ADMIN")
                 .requestMatchers("/bitacora/eliminar/**", "/evidencias/eliminar/**").hasAnyRole("ADMIN", "CHAMPION")
                 .anyRequest().authenticated()

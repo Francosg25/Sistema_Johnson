@@ -34,6 +34,12 @@ public class Usuario {
     @Column(name = "habilitado")
     private boolean enabled = true;
 
+    @Column(name = "reset_token")
+    private String resetToken;
+
+    @Column(name = "reset_token_expiration")
+    private java.time.LocalDateTime resetTokenExpiration;
+
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
         name = "usuario_roles",

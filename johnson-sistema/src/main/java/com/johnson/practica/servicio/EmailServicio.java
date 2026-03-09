@@ -28,4 +28,25 @@ public class EmailServicio {
             System.err.println("Error enviando correo: " + e.getMessage());
         }
     }
+
+    public void enviarEnlaceRecuperacion(String destinatario, String token, String nombreUsuario) {
+        String enlace = "http://localhost:8081/recuperar-password?token=" + token;
+        String cuerpo = String.format(
+            "Hola %s,\n\nHas solicitado restablecer tu contraseña en el Sistema Johnson.\n" +
+            "Haz clic en el siguiente enlace para crear una nueva contraseña (vence en 1 hora):\n\n" +
+            "%s\n\n" +
+            "Si no solicitaste este cambio, puedes ignorar este correo.",
+            nombreUsuario, enlace
+        );
+
+        try {
+            SimpleMailMessage mail = new SimpleMailMessage();
+            mail.setTo(destinatario);
+            mail.setSubject("Restablecer Contraseña - Sistema APQP");
+            mail.setText(cuerpo);
+            mailSender.send(mail);
+        } catch (Exception e) {
+            System.err.println("Error enviando correo de recuperación: " + e.getMessage());
+        }
+    }
 }

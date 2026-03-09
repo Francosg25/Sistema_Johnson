@@ -88,6 +88,35 @@ public class UsuarioServicio {
     }
 
     @Transactional
+    public void solicitarRecuperacion(String correo) {
+        Usuario usuario = usuarioRepositorio.findByCorreo(correo)
+                .orElseThrow(() -> new RuntimeException("No existe un usuario con ese correo electrónico"));
+
+        String token = java.util.UUID.randomUUID().toString();
+        usuario.setResetToken(token);
+        usuario.setResetTokenExpiration(java.time.LocalDateTime.now().plusHours(1));
+        usuarioRepositorio.save(usuario);
+
+        emailServicio.enviarEnlaceRecuperacion(usuario.getCorreo(), token, usuario.getNombreCompleto());
+    }
+
+    @Transactional
+    public void completarRecuperacion(String token, String nuevaContrasena) {
+        Usuario usuario = usuarioRepositorio.findByResetToken(token)
+                .orElseThrow(() -> new RuntimeException("Enlace de recuperación no válido"));
+
+        if (usuario.getResetTokenExpiration().isBefore(java.time.LocalDateTime.now())) {
+            throw new RuntimeException("El enlace de recuperación ha expirado");
+        }
+
+        usuario.setPassword(passwordEncoder.encode(nuevaContrasena));
+        usuario.setResetToken(null);
+        usuario.setResetTokenExpiration(null);
+        usuario.setPasswordChanged(true);
+        usuarioRepositorio.save(usuario);
+    }
+
+    @Transactional
     public void inicializarRoles() {
         if (rolRepositorio.findByNombre("ROLE_ADMIN").isEmpty()) {
             Rol adminRole = new Rol();

@@ -62,7 +62,7 @@ public class ChecklistSemilla {
 
             // --- ETAPA 3 ---
             crearE("P-11", "QE",     "ETAPA 3", "01.- Especificaciones de empaque"),
-            crearE("P-12", "PE",     "ETAPA 3", "01.- Especificaciones de empaque"), // Duplicado según excel
+            crearE("P-12", "PE",     "ETAPA 3", "01.- Especificaciones de empaque"), 
             crearE("P-13", "QE",     "ETAPA 3", "02.-Cambios en el SGC para fabricar el producto"),
             crearE("P-14", "PE",     "ETAPA 3", "03.-Process Flow Chart"),
             crearE("P-15", "PE",     "ETAPA 3", "04.-Floor plan layout"),
@@ -73,7 +73,7 @@ public class ChecklistSemilla {
             crearE("P-20", "QE",     "ETAPA 3", "0.9- MSA Plan"),
             crearE("P-21", "QE/PE",  "ETAPA 3", "10.-SPC Plan"),
             crearE("P-22", "PROJ",   "ETAPA 3", "11.- Minutas Juntas"),
-            crearE("P-23", "QE",     "ETAPA 3", "11.- Minutas Juntas"), // Duplicado según excel
+            crearE("P-23", "QE",     "ETAPA 3", "11.- Minutas Juntas"), 
             crearE("P-24", "PROJ",   "ETAPA 3", "Revisión de etapa (línea en México) / Stage Revision (line in Mexico):"),
 
             // --- ETAPA 4 ---
