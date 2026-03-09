@@ -132,12 +132,12 @@ public class ChecklistSemilla {
 
     private void cargarGateReview(CatalogoElementoRepositorio repo, String fase) {
         List<CatalogoElemento> gate = Arrays.asList(
-            // --- SUBSECTION 1: VALIDATION 
+            // VALIDATION 
             crearGate("GATE-01", "Are all APQP Checklist items closed?", fase, "Validation"),
             crearGate("GATE-02", "Are deliverables validated and audited by the team?", fase, "Validation"),
             crearGate("GATE-03", "Were deliverables completed on time?", fase, "Validation"),
 
-            // --- SUBSECTION 2: CONCLUSION
+            // CONCLUSION
             crearGate("CONC-01", "CLOSE: The project can be closed.", fase, "Conclusion"),
             crearGate("CONC-02", "DEVIATION: Minor open situations.", fase, "Conclusion"),
             crearGate("CONC-03", "OPEN: Insufficient evidence.", fase, "Conclusion")

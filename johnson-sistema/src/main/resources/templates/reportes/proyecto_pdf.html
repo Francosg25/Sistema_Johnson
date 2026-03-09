@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <meta charset="UTF-8">
+    <meta charset="UTF-8" /> 
     <title>APQP Project Report</title>
     <style>
         @page {
@@ -111,31 +111,31 @@
             <td colspan="3" th:text="${proyecto.nombre}" style="font-size: 14pt; font-weight: bold;"></td>
         </tr>
         <tr>
-            <td class="label">Project Number:</td>
-            <td th:text="${proyecto.numeroProyecto}"></td>
+            <td class="label">Part Number:</td>
+            <td th:text="${proyecto.numeroParte}"></td>
             <td class="label">Customer:</td>
             <td th:text="${proyecto.cliente}"></td>
         </tr>
         <tr>
-            <td class="label">Lead Engineer:</td>
-            <td th:text="${proyecto.ingenieroLider}"></td>
-            <td class="label">Current Status:</td>
-            <td th:text="${proyecto.estatus}"></td>
+            <td class="label">Project Leader:</td>
+            <td th:text="${proyecto.liderProyecto}"></td>
+            <td class="label">SOP Date:</td>
+            <td th:text="${proyecto.sop != null ? proyecto.sop : 'TBD'}"></td>
         </tr>
     </table>
 
     <div class="section-title">Visual Status Summary</div>
     <div class="charts-container">
         <div class="chart-box">
-            <img th:src="${gEstatus}" alt="General Status"/>
+            <img th:src="${gEstatus}" alt="General Status" />
             <div class="chart-label">Status Distribution</div>
         </div>
         <div class="chart-box">
-            <img th:src="${gEtapas}" alt="Progress per Stage"/>
+            <img th:src="${gEtapas}" alt="Progress per Stage" />
             <div class="chart-label">Progress per Stage (1-5)</div>
         </div>
         <div class="chart-box">
-            <img th:src="${gTiempos}" alt="Compliance"/>
+            <img th:src="${gTiempos}" alt="Compliance" />
             <div class="chart-label">Deadline Compliance</div>
         </div>
     </div>
@@ -154,10 +154,10 @@
         <tbody>
             <tr th:each="e : ${entregables}">
                 <td th:text="${e.nombre}"></td>
-                <td th:text="${e.etapaVisual}"></td>
+                <td th:text="${e.etapaVisual != null ? e.etapaVisual : e.fase}"></td>
                 <td th:text="${e.champion}"></td>
                 <td th:text="${e.fechaPlan != null ? #temporals.format(e.fechaPlan, 'dd/MM/yyyy') : '-'}"></td>
-                <td th:text="${e.estatus}"></td>
+                <td th:text="${e.controlEntregable != null and !e.controlEntregable.isEmpty() ? e.controlEntregable : (e.estado != null and !e.estado.isEmpty() ? e.estado : '-')}"></td>
             </tr>
         </tbody>
     </table>
