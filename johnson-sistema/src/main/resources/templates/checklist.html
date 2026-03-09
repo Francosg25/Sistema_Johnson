@@ -262,7 +262,7 @@
                 </div>
 
                 <div id="checklist-content" style="display: none;">
-                    <form th:action="@{/proyectos/checklist/guardar-todo/{id}(id=${proyecto.id})}" method="post">
+                    <form th:action="@{/proyectos/checklist/guardar-ajax/{id}(id=${proyecto.id})}" method="post" id="formChecklist">
                         <div class="d-flex justify-content-between align-items-end mb-4">
                             <div>
                                 <h6 class="text-uppercase text-muted small fw-bold mb-1">Project</h6>
@@ -272,7 +272,7 @@
                             <div class="d-flex align-items-center">
                                 <a href="/" class="btn btn-outline-secondary btn-sm me-3 shadow-sm fw-bold">Back</a>
                                 <div class="btn-group shadow-sm">
-                                    <button type="submit" class="btn btn-je-primary btn-sm px-3" sec:authorize="hasAnyRole('ADMIN', 'CHAMPION')" title="Save all changes">
+                                    <button type="submit" id="btnGuardarTodo" class="btn btn-je-primary btn-sm px-3" sec:authorize="hasAnyRole('ADMIN', 'CHAMPION')" title="Save all changes">
                                         <i class="bi bi-save2-fill me-1"></i> Save
                                     </button>
                                     <a th:href="@{/reportes/proyecto/ver/{id}(id=${proyecto.id})}" target="_blank"
@@ -291,12 +291,9 @@
                             </div>
                         </div>
                         <div class="card glass-card border-0 shadow-sm mb-4">
-                            <div class="card-body py-2 px-4">
+                            <div class="card-body py-3 px-4">
                                 <div class="d-flex align-items-center justify-content-between flex-wrap gap-2">
-                                    <div class="d-flex align-items-center me-3">
-                                        <i class="bi bi-info-circle-fill text-primary me-2 fs-5"></i>
-                                        <span class="fw-bold small text-dark text-uppercase" style="letter-spacing: 0.5px;">Roles</span>
-                                    </div>
+    
                                     <div class="d-flex flex-wrap gap-3 small fw-medium text-muted">
                                         <div class="d-flex align-items-center" title="Quality Engineer">
                                             <span class="badge champ-qe me-2 shadow-sm">QE</span> Quality
@@ -1143,6 +1140,62 @@
                 });
             };
         }
+    </script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const formChecklist = document.getElementById('formChecklist');
+            const btnGuardarTodo = document.getElementById('btnGuardarTodo');
+
+            if (formChecklist) {
+                formChecklist.addEventListener('submit', function(e) {
+                    e.preventDefault();
+
+                    const formData = new FormData(this);
+                    const params = new URLSearchParams(formData); // Convertir a application/x-www-form-urlencoded
+                    const url = this.getAttribute('action');
+                    const originalBtnContent = btnGuardarTodo.innerHTML;
+
+                    // Bloquear botón (prevención doble clic)
+                    btnGuardarTodo.disabled = true;
+                    btnGuardarTodo.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span> Saving...';
+
+                    fetch(url, {
+                        method: 'POST',
+                        body: params,
+                        headers: {
+                            'Content-Type': 'application/x-www-form-urlencoded'
+                        }
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.exito) {
+                            // Mostrar éxito (puedes usar un Toast o alerta temporal)
+                            btnGuardarTodo.classList.remove('btn-je-primary');
+                            btnGuardarTodo.classList.add('btn-success');
+                            btnGuardarTodo.innerHTML = '<i class="bi bi-check-circle-fill me-1"></i> Saved!';
+                            
+                            setTimeout(() => {
+                                btnGuardarTodo.classList.remove('btn-success');
+                                btnGuardarTodo.classList.add('btn-je-primary');
+                                btnGuardarTodo.innerHTML = originalBtnContent;
+                                btnGuardarTodo.disabled = false;
+                            }, 2000);
+                        } else {
+                            alert('Error saving checklist: ' + data.mensaje);
+                            btnGuardarTodo.innerHTML = originalBtnContent;
+                            btnGuardarTodo.disabled = false;
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        alert('Connection error while saving.');
+                        btnGuardarTodo.innerHTML = originalBtnContent;
+                        btnGuardarTodo.disabled = false;
+                    });
+                });
+            }
+        });
     </script>
 
     <script>

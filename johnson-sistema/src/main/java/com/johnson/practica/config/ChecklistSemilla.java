@@ -157,15 +157,15 @@ public class ChecklistSemilla {
     private CatalogoElemento crearDetalle(String cod, String nom, String fase, String grupo, String resp) {
         CatalogoElemento e = new CatalogoElemento();
         e.setCodigo(cod); e.setNombre(nom); e.setFase(fase); e.setGrupo(grupo);
-        e.setChampion(resp); e.setTipoInput("PREGUNTA"); // Will activate Yes/No/NA
+        e.setChampion(resp); e.setTipoInput("PREGUNTA"); 
         return e;
     }
 
     private CatalogoElemento crearGate(String cod, String nom, String fase, String grupo) {
         CatalogoElemento e = new CatalogoElemento();
         e.setCodigo(cod); e.setNombre(nom); e.setFase(fase); e.setGrupo(grupo);
-        e.setChampion("N/A"); // No responsible for Gate row
-        e.setTipoInput("GATE"); // Special type for simple table
+        e.setChampion("N/A"); 
+        e.setTipoInput("GATE"); 
         return e;
     }
 }

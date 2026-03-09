@@ -100,6 +100,24 @@ public class ProyectoControlador {
         return "redirect:/proyectos/checklist/" + proyectoId;
     }
 
+    @PostMapping("/checklist/guardar-ajax/{proyectoId}")
+    @ResponseBody
+    public ResponseEntity<Map<String, Object>> guardarChecklistAjax(@PathVariable Long proyectoId, @RequestParam Map<String, String> allParams) {
+        Map<String, Object> response = new HashMap<>();
+        try {
+            if (allParams != null) {
+                checklistServicio.guardarChecklistCompleto(allParams);
+            }
+            response.put("exito", true);
+            response.put("mensaje", "Checklist saved successfully");
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            response.put("exito", false);
+            response.put("mensaje", "Error saving checklist: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
+    }
+
     
     @PostMapping("/guardar")
     @CacheEvict(value = "reportes", allEntries = true) 
@@ -126,6 +144,12 @@ public class ProyectoControlador {
     public String eliminarProyecto(@PathVariable Long id) {
         proyectoServicio.eliminarProyecto(id);
         return "redirect:/"; 
+    }
+
+    @GetMapping("/api/{id}")
+    @ResponseBody
+    public Proyecto obtenerProyectoApi(@PathVariable Long id) {
+        return proyectoServicio.buscarPorId(id);
     }
     
     @GetMapping("/")

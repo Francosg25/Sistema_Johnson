@@ -67,6 +67,13 @@ public class DashboardControlador {
         model.addAttribute("notificaciones", notificaciones); 
         model.addAttribute("ultimosMovimientos", bitacoraServicio.obtenerUltimosMovimientos().stream().limit(5).toList());
         
+        // --- SECCIÓN: MIS TAREAS / FILTRO POR CHAMPION ---
+        model.addAttribute("todasTareasPendientes", checklistServicio.obtenerTodasTareasPendientes());
+        model.addAttribute("listaChampions", checklistServicio.obtenerTodosLosChampions());
+        if (principal != null) {
+            model.addAttribute("usuarioLogueado", principal.getName());
+        }
+
         model.addAttribute("titulo", "Dashboard de Proyectos APQP - Johnson Electric");
         model.addAttribute("currentUri", request.getRequestURI());
         return "index"; 

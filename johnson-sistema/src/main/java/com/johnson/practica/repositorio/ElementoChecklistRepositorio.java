@@ -22,5 +22,9 @@ public interface ElementoChecklistRepositorio extends JpaRepository<ElementoChec
     @EntityGraph(attributePaths = {"catalogo", "adjuntos"})
     List<ElementoChecklist> findByProyecto_IdOrderByCodigoAsc(Long proyectoId);
 
+    @org.springframework.data.jpa.repository.Query("SELECT DISTINCT e.champion FROM ElementoChecklist e WHERE e.champion IS NOT NULL")
+    List<String> findDistinctChampions();
 
+    @EntityGraph(attributePaths = {"proyecto"})
+    List<ElementoChecklist> findByScoreNotIgnoreCase(String score);
 }

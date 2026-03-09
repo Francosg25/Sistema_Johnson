@@ -72,7 +72,9 @@ public class ChecklistServicio {
             }
         }
 
-        List<ElementoChecklist> elementosAActualizar = repositorio.findAllById(updatesById.keySet());
+        List<ElementoChecklist> elementosDesdeBD = repositorio.findAllById(updatesById.keySet());
+        
+        List<ElementoChecklist> elementosRealmenteModificados = new ArrayList<>();
 
         String nombreUsuarioLogueado = "Sistema"; 
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
@@ -80,91 +82,67 @@ public class ChecklistServicio {
             nombreUsuarioLogueado = auth.getName();
         }
 
-        for (ElementoChecklist elemento : elementosAActualizar) {
+        for (ElementoChecklist elemento : elementosDesdeBD) {
             Map<String, String> cambios = updatesById.get(elemento.getId());
             
             final boolean[] huboCambioReal = {false}; 
             
             cambios.forEach((fieldName, fieldValue) -> {
-                if (fieldValue == null) return;
-                
-                String valorNuevo = fieldValue.replaceAll("[\\n\\r]+", " ").trim();
+                String valorNuevo = (fieldValue == null) ? "" : fieldValue.replaceAll("[\\n\\r]+", " ").trim();
 
                 switch (fieldName) {
-                    
                     case "controlEntregable" -> {
                         String valorActual = elemento.getControlEntregable() == null ? "" : elemento.getControlEntregable().replaceAll("[\\n\\r]+", " ").trim();
-                        if (!valorNuevo.equalsIgnoreCase(valorActual)) { 
-                            elemento.setControlEntregable(valorNuevo);
+                        if (!valorNuevo.equalsIgnoreCase(valorActual) && !(valorNuevo.isEmpty() && valorActual.isEmpty())) { 
+                            elemento.setControlEntregable(valorNuevo); 
                             huboCambioReal[0] = true;
                         }
                     }
-                    
                     case "score" -> {
                         String valorActual = elemento.getScore() == null ? "" : elemento.getScore().replaceAll("[\\n\\r]+", " ").trim();
-                        if (!valorNuevo.equalsIgnoreCase(valorActual)) {
-                            elemento.setScore(valorNuevo);
+                        if (!valorNuevo.equalsIgnoreCase(valorActual) && !(valorNuevo.isEmpty() && valorActual.isEmpty())) {
+                            elemento.setScore(valorNuevo); 
                             huboCambioReal[0] = true;
                         }
                     }
-                    
                     case "comentario" -> {
                         String valorActual = elemento.getComentario() == null ? "" : elemento.getComentario().replaceAll("[\\n\\r]+", " ").trim();
-                        if (!valorNuevo.equals(valorActual)) {
-                            elemento.setComentario(valorNuevo);
+                        if (!valorNuevo.equalsIgnoreCase(valorActual) && !(valorNuevo.isEmpty() && valorActual.isEmpty())) {
+                            elemento.setComentario(valorNuevo); 
                             huboCambioReal[0] = true;
-
-                            if (valorNuevo.contains("@")) {
-                                Pattern p = Pattern.compile("@([a-zA-Z0-9_.-]+)");
-                                Matcher m = p.matcher(valorNuevo);
-                                String autor = SecurityContextHolder.getContext().getAuthentication() != null ? 
-                                    SecurityContextHolder.getContext().getAuthentication().getName() : "Sistema";
-
-                                while (m.find()) {
-                                    String target = m.group(1);
-                                    if (!autor.equalsIgnoreCase(target)) {
-                                        notificacionServicio.alertarAUsuario(target, "Mención en Checklist", 
-                                            autor + " te ha mencionado en el proyecto " + elemento.getProyecto().getNombre() + " en el entregable " + elemento.getNombre() + ".", 
-                                            "ALERT", "/proyectos/checklist/" + elemento.getProyecto().getId(), autor);
-                                    }
-                                }
-                            }
                         }
                     }
-                    
                     case "estado" -> {
                         String valorActual = elemento.getEstado() == null ? "" : elemento.getEstado().replaceAll("[\\n\\r]+", " ").trim();
-                        if (!valorNuevo.equalsIgnoreCase(valorActual)) {
-                            elemento.setEstado(valorNuevo);
+                        if (!valorNuevo.equalsIgnoreCase(valorActual) && !(valorNuevo.isEmpty() && valorActual.isEmpty())) {
+                            elemento.setEstado(valorNuevo); 
                             huboCambioReal[0] = true;
                         }
                     }
-                    
                     case "fechaReal" -> {
                         try { 
                             if (!valorNuevo.isEmpty()) {
                                 LocalDate nuevaFecha = LocalDate.parse(valorNuevo);
                                 if (elemento.getFechaReal() == null || !nuevaFecha.equals(elemento.getFechaReal())) {
-                                    elemento.setFechaReal(nuevaFecha);
+                                    elemento.setFechaReal(nuevaFecha); 
                                     huboCambioReal[0] = true;
                                 }
                             } else if (elemento.getFechaReal() != null) {
-                                elemento.setFechaReal(null);
+                                elemento.setFechaReal(null); 
                                 huboCambioReal[0] = true;
                             }
                         } catch (Exception ignored) {}
                     }
-                    
                     case "fechaPlan" -> {
                         try { 
                             if (!valorNuevo.isEmpty()) {
                                 LocalDate nuevaFecha = LocalDate.parse(valorNuevo);
                                 if (elemento.getFechaPlan() == null || !nuevaFecha.equals(elemento.getFechaPlan())) {
-                                    elemento.setFechaPlan(nuevaFecha);
+                                    elemento.setFechaPlan(nuevaFecha); 
                                     huboCambioReal[0] = true;
                                 }
                             } else if (elemento.getFechaPlan() != null) {
-                                elemento.setFechaPlan(null);
+                                elemento.setFechaPlan(null); 
                                 huboCambioReal[0] = true;
                             }
                         } catch (Exception ignored) {}
@@ -172,18 +150,21 @@ public class ChecklistServicio {
                 }
             });
 
-            // Solo guardará si la limpieza extrema comprobó que realmente hubo un cambio
             if (huboCambioReal[0]) {
                 bitacoraServicio.registrarAccion(
                     nombreUsuarioLogueado, 
                     "ACTUALIZO_ENTREGABLE", 
                     "Se actualizó el entregable: " + elemento.getCodigo() + " - " + elemento.getNombre()
                 );
+                elementosRealmenteModificados.add(elemento);
             }
         }
         
-        repositorio.saveAll(elementosAActualizar);
+        if (!elementosRealmenteModificados.isEmpty()) {
+            repositorio.saveAll(elementosRealmenteModificados);
+        }
     }
+
    @Cacheable("reportes")
    public List<ReporteProgreso> generarReporteGlobal() {
         List<Proyecto> proyectos = proyectoRepositorio.findAllByOrderByIdAsc();
@@ -482,6 +463,35 @@ public class ChecklistServicio {
         riesgoTotal += castigoNeedsAction;
 
         return Math.min(100.0, Math.round(riesgoTotal * 10.0) / 10.0);
+    }
+
+    @Transactional(readOnly = true)
+    public List<ElementoChecklist> obtenerTareasPendientesUsuario(String username) {
+        List<ElementoChecklist> todos = repositorio.findAll();
+        return todos.stream()
+                .filter(e -> e.getChampion() != null && 
+                            e.getChampion().equalsIgnoreCase(username) && 
+                            !"OK".equalsIgnoreCase(scoreFormateado(e.getScore())))
+                .toList();
+    }
+
+    @Transactional(readOnly = true)
+    public List<ElementoChecklist> obtenerTodasTareasPendientes() {
+        return repositorio.findByScoreNotIgnoreCase("OK").stream()
+                .filter(e -> e.getScore() == null || !e.getScore().equalsIgnoreCase("OK"))
+                .toList();
+    }
+
+    @Transactional(readOnly = true)
+    public List<String> obtenerTodosLosChampions() {
+        return repositorio.findDistinctChampions().stream()
+                .filter(c -> c != null && !c.trim().isEmpty() && !c.equalsIgnoreCase("N/A"))
+                .sorted()
+                .toList();
+    }
+
+    private String scoreFormateado(String s) {
+        return (s == null) ? "" : s.trim().toUpperCase();
     }
 
     @Transactional(readOnly = true)
