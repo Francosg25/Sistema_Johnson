@@ -30,7 +30,7 @@
         }
 
         #editor-textarea:empty:before {
-            content: "Escribe aquí tus observaciones... ";
+            content: "Write your observations here... ";
             color: #adb5bd;
             font-style: italic;
         }
@@ -265,26 +265,26 @@
                     <form th:action="@{/proyectos/checklist/guardar-todo/{id}(id=${proyecto.id})}" method="post">
                         <div class="d-flex justify-content-between align-items-end mb-4">
                             <div>
-                                <h6 class="text-uppercase text-muted small fw-bold mb-1">Proyecto Activo</h6>
+                                <h6 class="text-uppercase text-muted small fw-bold mb-1">Project</h6>
                                 <span class="badge bg-secondary fs-6 shadow-sm" th:text="${proyecto.numeroParte}">NUM</span>
                                 <span class="ms-2 fw-bold text-dark fs-5" th:text="${proyecto.nombre}">Nombre</span>
                             </div>
                             <div class="d-flex align-items-center">
-                                <a href="/" class="btn btn-outline-secondary btn-sm me-3 shadow-sm fw-bold">Volver</a>
+                                <a href="/" class="btn btn-outline-secondary btn-sm me-3 shadow-sm fw-bold">Back</a>
                                 <div class="btn-group shadow-sm">
-                                    <button type="submit" class="btn btn-je-primary btn-sm px-3" sec:authorize="hasAnyRole('ADMIN', 'CHAMPION')" title="Guardar todos los cambios">
-                                        <i class="bi bi-save2-fill me-1"></i> Guardar
+                                    <button type="submit" class="btn btn-je-primary btn-sm px-3" sec:authorize="hasAnyRole('ADMIN', 'CHAMPION')" title="Save all changes">
+                                        <i class="bi bi-save2-fill me-1"></i> Save
                                     </button>
                                     <a th:href="@{/reportes/proyecto/ver/{id}(id=${proyecto.id})}" target="_blank"
                                        style="background-color: #1f7cf5; border: none; color: white;"
                                         class="btn btn-sm px-3"
-                                        title="Ver Reporte Ejecutivo Online">
+                                        title="View Executive Report Online">
                                         <i class="bi bi-eye-fill"></i>
                                      </a>
                                     <a th:href="@{/exportar-pdf/{id}(id=${proyecto.id})}" target="_blank"
                                         style="background-color: #e75959; border: none; color: white;"
                                         class="btn btn-sm px-3" 
-                                        title="Descargar Reporte PDF">
+                                        title="Download PDF Report">
                                         <i class="bi bi-file-earmark-pdf-fill"></i>
                                     </a>
                                 </div>
@@ -299,22 +299,22 @@
                                     </div>
                                     <div class="d-flex flex-wrap gap-3 small fw-medium text-muted">
                                         <div class="d-flex align-items-center" title="Quality Engineer">
-                                            <span class="badge champ-qe me-2 shadow-sm">QE</span> Calidad
+                                            <span class="badge champ-qe me-2 shadow-sm">QE</span> Quality
                                         </div>
                                         <div class="d-flex align-items-center" title="Process/Manufacturing Engineer">
-                                            <span class="badge champ-pe me-2 shadow-sm">PE</span> Procesos
+                                            <span class="badge champ-pe me-2 shadow-sm">PE</span> Process
                                         </div>
                                         <div class="d-flex align-items-center" title="Design/Product Engineer">
-                                            <span class="badge champ-de me-2 shadow-sm">DE</span> Diseño
+                                            <span class="badge champ-de me-2 shadow-sm">DE</span> Design
                                         </div>
                                         <div class="d-flex align-items-center" title="Project Leader">
-                                            <span class="badge champ-proj me-2 shadow-sm">PROJ</span> Líder de Proyecto
+                                            <span class="badge champ-proj me-2 shadow-sm">PROJ</span> Project Manager
                                         </div>
                                         <div class="d-flex align-items-center" title="Quality & Process (Responsabilidad Compartida)">
-                                            <span class="badge champ-qe-pe me-2 shadow-sm">QE/PE</span> Calidad y Procesos
+                                            <span class="badge champ-qe-pe me-2 shadow-sm">QE/PE</span> Quality and Process
                                         </div>
                                         <div class="d-flex align-items-center" title="Cross-Functional Team">
-                                            <span class="badge champ-all me-2 shadow-sm">ALL</span> Todo el Equipo (CFT)
+                                            <span class="badge champ-all me-2 shadow-sm">ALL</span> All Team (CFT)
                                         </div>
                                     </div>
                                 </div>
@@ -342,19 +342,19 @@
                                  th:id="'content-' + ${fase.id}" 
                                  role="tabpanel">
 
-                            <div th:if="${fase.nombre.contains('Programa')}" class="card glass-card">
+                            <div th:if="${fase.nombre.contains('Program')}" class="card glass-card">
                                 <div class="card-body p-0">
                                     <div class="table-responsive">
                                     <table class="table table-hover table-bordered mb-0 align-middle" style="font-size: 0.85rem;">
                                             <thead class="bg-light small text-uppercase text-muted fw-bold">
                                                 <tr>
                                                     <th rowspan="2" style="width: 5%;" class="text-center align-middle">Champion</th>
-                                                    <th rowspan="2" style="width: 13%;" class="align-middle">Entregables / Deliverables</th>
-                                                    <th colspan="2" style="width: 10%;" class="text-center">Fechas</th>
-                                                    <th rowspan="2" style="width: 69%;" class="text-center align-middle">Status</th>
-                                                    <th rowspan="2" style="width: 9%;" class="text-center align-middle">Calificación / Score</th>
-                                                    <th rowspan="2" style="width: 10%;" class="align-middle">Observaciones / Remarks</th>
-                                                    <th rowspan="2" class="text-center align-middle" style="width: 50px;" title="Evidencias">
+                                                    <th rowspan="2" style="width: 25%;" class="align-middle">Deliverables</th>
+                                                    <th colspan="2" style="width: 10%;" class="text-center">Dates</th>
+                                                    <th rowspan="2" style="width: 25%;" class="text-center align-middle">Status</th>
+                                                    <th rowspan="2" style="width: 14%;" class="text-center align-middle">Score</th>
+                                                    <th rowspan="2" style="width: 15%;" class="align-middle">Remarks</th>
+                                                    <th rowspan="2" class="text-center align-middle" style="width: 50px;" title="Evidence">
                                                         <i class="bi bi-paperclip fs-5 text-secondary"></i>
                                                     </th>
                                                 </tr>
@@ -432,14 +432,13 @@
                                                                 th:classappend="${item.adjuntos != null and !item.adjuntos.isEmpty()} ? 'btn-primary' : 'btn-light'"
                                                                 data-bs-toggle="modal" 
                                                                 th:data-bs-target="'#modalEvidencia_' + ${item.id}"
-                                                                title="Subir/Ver Evidencia">
-                                                            <i th:id="'btn-icon-evidencia-' + ${item.id}" class="bi bi-cloud-arrow-up-fill" th:classappend="${item.adjuntos != null and !item.adjuntos.isEmpty()} ? 'text-white' : 'text-primary'"></i>
+                                                                title="Upload/View Evidence">                                                            <i th:id="'btn-icon-evidencia-' + ${item.id}" class="bi bi-cloud-arrow-up-fill" th:classappend="${item.adjuntos != null and !item.adjuntos.isEmpty()} ? 'text-white' : 'text-primary'"></i>
                                                         </button>
                                                     </td>
                                                 </tr>
                                                 
                                                 <tr>
-                                                    <td class="fw-bold small ps-2 text-muted">Real</td>
+                                                    <td class="fw-bold small ps-2 text-muted">Actual</td>
                                                     <td class="text-center">
                                                         <input type="date" class="form-control form-control-sm border-0 bg-transparent text-center p-0 fw-bold" th:name="'fechaReal-' + ${item.id}" th:value="${item.fechaReal}">
                                                     </td>
@@ -458,12 +457,12 @@
                                         <thead class="bg-light small fw-bold text-uppercase">
                                             <tr>
                                                 <th style="width: 10%;" class="text-center">ID</th>
-                                                <th style="width: 35%;">Requisito / Requirement</th>
-                                                <th style="width: 15%;" class="text-center">Cumplimiento</th>
-                                                <th style="width: 20%;">Comentarios</th>
-                                                <th style="width: 10%;" class="text-center">Responsable</th>
-                                                <th style="width: 10%;" class="text-center">Fecha</th>
-                                                <th class="text-center" style="width: 50px;" title="Evidencias">
+                                                <th style="width: 35%;">Requirement</th>
+                                                <th style="width: 10%;" class="text-center">Compliance</th>
+                                                <th style="width: 25%;">Comments</th>
+                                                <th style="width: 10%;" class="text-center">Responsible</th>
+                                                <th style="width: 10%;" class="text-center">Date</th>
+                                                <th class="text-center" style="width: 50px;" title="Evidence">
                                                     <i class="bi bi-paperclip fs-5 text-secondary"></i>
                                                 </th>
                                             </tr>
@@ -481,7 +480,7 @@
                                                     <td class="text-center">
                                                         <div class="btn-group btn-group-sm w-100 shadow-sm">
                                                             <input type="radio" class="btn-check" th:name="'estado-' + ${item.id}" value="OK" th:id="'si_'+${item.id}" th:checked="${item.estado == 'OK'}">
-                                                            <label class="btn btn-outline-success fw-bold" th:for="'si_'+${item.id}">Si</label>
+                                                            <label class="btn btn-outline-success fw-bold" th:for="'si_'+${item.id}">Yes</label>
                                                             <input type="radio" class="btn-check" th:name="'estado-' + ${item.id}" value="NOK" th:id="'no_'+${item.id}" th:checked="${item.estado == 'NOK'}">
                                                             <label class="btn btn-outline-danger fw-bold" th:for="'no_'+${item.id}">No</label>
                                                             <input type="radio" class="btn-check" th:name="'estado-' + ${item.id}" value="NA" th:id="'na_'+${item.id}" th:checked="${item.estado == 'NA'}">
@@ -518,7 +517,7 @@
                                                                 th:classappend="${item.adjuntos != null and !item.adjuntos.isEmpty()} ? 'btn-primary' : 'btn-light'"
                                                                 data-bs-toggle="modal" 
                                                                 th:data-bs-target="'#modalEvidencia_' + ${item.id}"
-                                                                title="Subir/Ver Evidencia">
+                                                                title="Upload/View Evidence">
                                                             <i th:id="'btn-icon-evidencia-' + ${item.id}" class="bi bi-cloud-arrow-up-fill" th:classappend="${item.adjuntos != null and !item.adjuntos.isEmpty()} ? 'text-white' : 'text-primary'"></i>
                                                         </button>
                                                     </td>
@@ -530,31 +529,31 @@
                                 </div>
                             </div>
 
-                            <div th:if="${!fase.nombre.contains('Programa') && !fase.nombre.contains('Stage 2')}" class="card glass-card">
+                            <div th:if="${!fase.nombre.contains('Program') && !fase.nombre.contains('Stage 2')}" class="card glass-card">
                                <div class="card-body p-4">
                                     <div class="p-3 mb-4 rounded shadow-sm border" style="background-color: rgba(248, 249, 250, 0.6); backdrop-filter: blur(5px);">
-                                        <h5 class="fw-bold text-dark mb-3"><i class="bi bi-search text-primary me-2"></i>Revisión de Etapa / <span class="text-primary" th:text="${fase.nombre}"></span></h5>
+                                        <h5 class="fw-bold text-dark mb-3"><i class="bi bi-search text-primary me-2"></i>Stage Review / <span class="text-primary" th:text="${fase.nombre}"></span></h5>
                                         <div class="row g-3 small">
-                                            <div class="col-md-6"><strong class="me-2 text-muted">Cliente/Customer:</strong> <span class="fw-bold" th:text="${proyecto.cliente}"></span></div>
-                                            <div class="col-md-6"><strong class="me-2 text-muted">Fecha/Date:</strong> <span class="fw-bold"></span></div>
-                                            <div class="col-md-6"><strong class="me-2 text-muted">Nombre del proyecto:</strong> <span class="fw-bold" th:text="${proyecto.nombre}"></span></div>
-                                            <div class="col-md-6"><strong class="me-2 text-muted">Número de parte:</strong> <span class="fw-bold" th:text="${proyecto.numeroParte}"></span></div>
+                                            <div class="col-md-6"><strong class="me-2 text-muted">Customer:</strong> <span class="fw-bold" th:text="${proyecto.cliente}"></span></div>
+                                            <div class="col-md-6"><strong class="me-2 text-muted">Date:</strong> <span class="fw-bold"></span></div>
+                                            <div class="col-md-6"><strong class="me-2 text-muted">Project Name:</strong> <span class="fw-bold" th:text="${proyecto.nombre}"></span></div>
+                                            <div class="col-md-6"><strong class="me-2 text-muted">Part Number:</strong> <span class="fw-bold" th:text="${proyecto.numeroParte}"></span></div>
                                         </div>
                                     </div>
-                                    <h6 class="text-uppercase fw-bold text-secondary mb-3 border-bottom pb-2">1. Validación de Requerimientos</h6>
+                                    <h6 class="text-uppercase fw-bold text-secondary mb-3 border-bottom pb-2">1. Requirements Validation</h6>
                                     <div class="table-responsive mb-5 card glass-card border-0 shadow-none" style="background: transparent !important; backdrop-filter: none !important;">
                                         <table class="table table-hover mb-0 align-middle">
                                             <thead class="bg-light small fw-bold text-center">
                                                 <tr>
-                                                    <th style="width: 50px;" title="Evidencias"><i class="bi bi-paperclip fs-5 text-secondary"></i></th>
-                                                    <th style="width: 8%;">Si / Yes</th>
+                                                    <th style="width: 50px;" title="Evidence"><i class="bi bi-paperclip fs-5 text-secondary"></i></th>
+                                                    <th style="width: 8%;">Yes</th>
                                                     <th style="width: 8%;">No</th>
-                                                    <th class="text-start ps-3">Requerimiento/Requirement</th>
-                                                    <th style="width: 30%;">Comentarios/Comments</th>
+                                                    <th class="text-start ps-3">Requirement</th>
+                                                    <th style="width: 30%;">Comments</th>
                                                 </tr>
                                             </thead>
                                             <tbody>
-                                                <tr th:each="item : ${fase.items}" th:if="${item.grupo == 'Validación'}">
+                                                <tr th:each="item : ${fase.items}" th:if="${item.grupo == 'Conclusion'}">
                                                     <td class="text-center align-middle">
                                                         <button type="button" class="btn btn-sm border shadow-sm rounded-circle" 
                                                                 th:id="'btn-evidencia-' + ${item.id}"
@@ -593,19 +592,19 @@
                                             </tbody>
                                         </table>
                                     </div>
-                                    <h6 class="text-uppercase fw-bold text-secondary mb-3 border-bottom pb-2">2. Conclusión de la Etapa</h6>
+                                    <h6 class="text-uppercase fw-bold text-secondary mb-3 border-bottom pb-2">2. Stage Conclusion</h6>
                                     <div class="table-responsive mb-5 card glass-card border-0 shadow-none" style="background: transparent !important; backdrop-filter: none !important;">
                                         <table class="table table-hover mb-0 align-middle">
                                             <thead class="bg-light small fw-bold text-center">
                                                 <tr>
-                                                    <th style="width: 15%;">Fecha / Date</th>
-                                                    <th style="width: 20%;">Conclusión / Conclusion</th>
-                                                    <th class="text-start ps-3">Descripción</th>
-                                                    <th style="width: 30%;">Comentarios /Comments</th>
+                                                    <th style="width: 15%;">Date</th>
+                                                    <th style="width: 20%;">Conclusion</th>
+                                                    <th class="text-start ps-3">Description</th>
+                                                    <th style="width: 30%;">Comments</th>
                                                 </tr>
                                             </thead>
                                             <tbody>
-                                                <tr th:each="item : ${fase.items}" th:if="${item.grupo == 'Conclusión'}">
+                                                <tr th:each="item : ${fase.items}" th:if="${item.grupo == 'Conclusion'}">
                                                     <td class="text-center"><input type="date" class="form-control form-control-sm border shadow-sm text-center fw-bold text-primary" th:name="'fechaReal-' + ${item.id}" th:value="${item.fechaReal}"></td>
                                                     <td class="text-center"><span class="badge bg-secondary px-3 py-2 shadow-sm" th:text="${item.nombre.split(':')[0]}"></span></td>
                                                     <td class="text-muted fw-bold ps-3" th:text="${item.nombre.split(':').length > 1 ? item.nombre.split(':')[1] : ''}"></td>
@@ -631,7 +630,7 @@
                                             </tbody>
                                         </table>
                                     </div>
-                                    <h6 class="text-uppercase fw-bold text-secondary mb-3 border-bottom pb-2">3. Aprobaciones / Approvals</h6>
+                                    <h6 class="text-uppercase fw-bold text-secondary mb-3 border-bottom pb-2">3. Approvals</h6>
                                     <div th:if="${fase.nombre == 'Stage 3'}" class="row g-4">
                                         <div class="col-md-6">
                                             <div class="card glass-card h-100 shadow-sm">
@@ -668,7 +667,7 @@
                                     </div>
                                     <div th:if="${fase.nombre != 'Stage 3'}" class="text-muted text-center py-4 bg-light bg-opacity-50 rounded border border-dashed">
                                         <i class="bi bi-journal-x fs-2 d-block mb-2 opacity-50"></i>
-                                        Tabla de Aprobaciones para <strong th:text="${fase.nombre}"></strong> no requerida en esta vista.
+                                        Approval table for <strong th:text="${fase.nombre}"></strong> not required in this view.
                                     </div>
                                 </div>
                             </div>
@@ -683,7 +682,7 @@
                                     <div class="modal-header bg-light border-bottom-0 pb-0">
                                         <div>
                                             <h5 class="modal-title fw-bold text-dark mb-0">
-                                                <i class="bi bi-folder-check text-primary me-2"></i>Evidencia
+                                                <i class="bi bi-folder-check text-primary me-2"></i>Evidence
                                             </h5>
                                             <p class="text-muted small mb-0 mt-1" th:text="${item.codigo} + ' - ' + ${item.nombre}"></p>
                                         </div>
@@ -694,17 +693,17 @@
                                         <form th:action="@{'/evidencias/subir-ajax/' + ${item.id}}" th:data-item-id="${item.id}" method="post" enctype="multipart/form-data" class="mb-4 form-evidencia-ajax" sec:authorize="hasAnyRole('ADMIN', 'CHAMPION')">
                                             <div class="p-4 border rounded bg-light text-center border-primary border-opacity-25" style="border-style: dashed !important; border-width: 2px !important;">
                                                 <i class="bi bi-cloud-upload fs-1 text-primary mb-2 d-block"></i>
-                                                <label th:for="'archivo_' + ${item.id}" class="form-label fw-bold mb-1">Selecciona un archivo</label>
+                                                <label th:for="'archivo_' + ${item.id}" class="form-label fw-bold mb-1">Select a file</label>
                                                 <p class="text-muted small mb-3">PDF, Excel, Word (Max 15MB)</p>
                                                 <input class="form-control form-control-sm shadow-sm" type="file" th:id="'archivo_' + ${item.id}" name="archivo" required>
-                                                <button type="submit" class="btn btn-primary btn-sm w-100 mt-3 fw-bold shadow-sm btn-subir">Subir Archivo</button>
+                                                <button type="submit" class="btn btn-primary btn-sm w-100 mt-3 fw-bold shadow-sm btn-subir">Upload File</button>
                                             </div>
                                         </form>
 
-                                        <h6 class="fw-bold small mb-3 text-secondary border-bottom pb-2">ARCHIVOS ADJUNTOS</h6>
+                                        <h6 class="fw-bold small mb-3 text-secondary border-bottom pb-2">ATTACHED FILES</h6>
                                         <ul class="list-group list-group-flush small" th:id="'lista-' + ${item.id}">
                                             <li th:if="${item.adjuntos == null or item.adjuntos.isEmpty()}" th:id="'msg-vacio-' + ${item.id}" class="list-group-item d-flex justify-content-between align-items-center px-0 bg-transparent border-bottom-dashed text-muted fst-italic">
-                                                No hay evidencias subidas aún.
+                                                No evidence uploaded yet.
                                             </li>
                                            <li th:each="adj : ${item.adjuntos}" class="list-group-item d-flex justify-content-between align-items-center px-0 bg-transparent border-bottom-dashed py-2">
                                                 <div class="d-flex align-items-center text-truncate pe-3">
@@ -712,10 +711,10 @@
                                                         <span class="text-truncate fw-bold text-dark" th:text="${adj.nombreArchivo}"></span>
                                                 </div>
                                                 <div class="d-flex gap-2">
-                                                    <a th:href="@{'/evidencias/descargar/' + ${adj.id}}" class="btn btn-sm btn-light border rounded-circle shadow-sm text-primary" title="Descargar">
+                                                    <a th:href="@{'/evidencias/descargar/' + ${adj.id}}" class="btn btn-sm btn-light border rounded-circle shadow-sm text-primary" title="Download">
                                                         <i class="bi bi-download"></i>
                                                     </a>
-                                                    <button type="button" class="btn btn-sm btn-light border rounded-circle shadow-sm text-danger" title="Eliminar" 
+                                                    <button type="button" class="btn btn-sm btn-light border rounded-circle shadow-sm text-danger" title="Delete" 
                                                             th:onclick="'eliminarEvidenciaAjax(' + ${adj.id} + ', this, ' + ${item.id} + ')'"
                                                             sec:authorize="hasAnyRole('ADMIN', 'CHAMPION')">
                                                         <i class="bi bi-trash"></i>
@@ -735,22 +734,22 @@
                         <div class="modal-content shadow-lg border-0">
                             <div class="modal-header bg-light border-bottom-0 pb-3">
                                 <h5 class="modal-title fw-bold text-dark">
-                                    <i class="bi bi-card-text text-primary me-2"></i>Observaciones / Remarks
+                                    <i class="bi bi-card-text text-primary me-2"></i>Remarks
                                     <span id="editor-codigo" class="badge bg-secondary ms-2 fw-normal shadow-sm"></span>
                                 </h5>
                                 <button type="button" class="btn-close shadow-none" data-bs-dismiss="modal" aria-label="Close"></button>
                             </div>
                             <div class="modal-body pt-0 bg-light">
                                 <div class="p-3 bg-white rounded border shadow-sm">
-                                    <p class="small text-muted mb-2"><i class="bi bi-info-circle me-1"></i> Puedes usar múltiples líneas, listas y fechas. Usa <strong>@</strong> para mencionar.</p>
+                                    <p class="small text-muted mb-2"><i class="bi bi-info-circle me-1"></i> You can use multiple lines, lists and dates. Use <strong>@</strong> to mention.</p>
                                     <input type="hidden" id="editor-item-id">
                                     <div id="editor-textarea" contenteditable="true" class="form-control border-secondary-subtle"></div>
                                 </div>
                             </div>
                             <div class="modal-footer bg-light border-top-0">
-                                <button type="button" class="btn btn-outline-secondary btn-sm fw-bold px-3 shadow-sm" data-bs-dismiss="modal">Cancelar</button>
+                                <button type="button" class="btn btn-outline-secondary btn-sm fw-bold px-3 shadow-sm" data-bs-dismiss="modal">Cancel</button>
                                 <button type="button" class="btn btn-primary btn-sm fw-bold px-4 shadow-sm" onclick="guardarComentarioModal()">
-                                    <i class="bi bi-check2-circle me-2"></i> Aplicar al Checklist
+                                    <i class="bi bi-check2-circle me-2"></i> Apply to Checklist
                                 </button>
                             </div>
                         </div>
@@ -766,11 +765,11 @@
         <div class="modal-content border-0 shadow-lg">
             <div class="modal-body text-center p-4">
                 <i class="bi bi-exclamation-circle text-danger display-4 mb-3 d-block"></i>
-                <h6 class="fw-bold text-dark mb-2">¿Eliminar Evidencia?</h6>
-                <p class="text-muted small mb-4">El archivo se borrará permanentemente.</p>
+                <h6 class="fw-bold text-dark mb-2">Delete Evidence?</h6>
+                <p class="text-muted small mb-4">The file will be permanently deleted.</p>
                 <div class="d-flex justify-content-center gap-2">
-                    <button type="button" class="btn btn-light btn-sm px-3 border shadow-sm fw-bold" data-bs-dismiss="modal">Cancelar</button>
-                    <button type="button" class="btn btn-danger btn-sm px-4 fw-bold shadow-sm" id="btnConfirmarEliminar">Eliminar</button>
+                    <button type="button" class="btn btn-light btn-sm px-3 border shadow-sm fw-bold" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-danger btn-sm px-4 fw-bold shadow-sm" id="btnConfirmarEliminar">Delete</button>
                 </div>
             </div>
         </div>
@@ -854,7 +853,7 @@
 
             } catch (err) {
                 console.error("Error al guardar comentario:", err);
-                alert("Hubo un problema al aplicar el comentario, por favor intenta de nuevo.");
+                alert("There was a problem applying the comment, please try again.");
             }
         }
 
@@ -989,7 +988,7 @@
                     let listaUl = document.getElementById('lista-' + itemId);
                     let msgVacio = document.getElementById('msg-vacio-' + itemId);
                     
-                    btnSubmit.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span> Subiendo...';
+                    btnSubmit.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span> Uploading...';
                     btnSubmit.disabled = true;
 
                     fetch(url, {
@@ -1056,7 +1055,7 @@
                     .catch(error => {
                         alertaDiv.innerHTML = `
                             <div class="alert alert-danger alert-dismissible fade show small py-2" role="alert">
-                                <i class="bi bi-wifi-off me-2"></i> Error de conexión.
+                                <i class="bi bi-wifi-off me-2"></i> Connection error.
                                 <button type="button" class="btn-close py-2" data-bs-dismiss="alert" aria-label="Close"></button>
                             </div>
                         `;
@@ -1138,7 +1137,7 @@
                     }
                 })
                 .catch(error => {
-                    alert('Error de conexión al intentar eliminar el archivo.');
+                    alert('Connection error when trying to delete the file.');
                     botonElemento.innerHTML = iconoOriginal;
                     botonElemento.disabled = false;
                 });

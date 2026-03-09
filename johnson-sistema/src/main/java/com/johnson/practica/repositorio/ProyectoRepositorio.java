@@ -7,5 +7,5 @@ import com.johnson.practica.modelo.Proyecto;
 
 @Repository
 public interface ProyectoRepositorio extends JpaRepository<Proyecto, Long> {
-
+    java.util.List<Proyecto> findAllByOrderByIdAsc();
 }

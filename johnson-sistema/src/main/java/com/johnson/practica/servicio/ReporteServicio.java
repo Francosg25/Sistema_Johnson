@@ -44,7 +44,7 @@ public class ReporteServicio {
         double progreso = entregablesPrograma.isEmpty() ? 0 : (okCount * 100.0) / entregablesPrograma.size();
 
         Map<String, Double> progresoEtapas = new java.util.LinkedHashMap<>();
-        String[] etapas = {"ETAPA 1", "ETAPA 2", "ETAPA 3", "ETAPA 4", "ETAPA 5"};
+        String[] etapas = {"STAGE 1", "STAGE 2", "STAGE 3", "STAGE 4", "STAGE 5"};
         for (String etapa : etapas) {
             long totalE = entregablesPrograma.stream().filter(e -> etapa.equalsIgnoreCase(e.getEtapaVisual())).count();
             long okE = entregablesPrograma.stream().filter(e -> etapa.equalsIgnoreCase(e.getEtapaVisual()) && "OK".equalsIgnoreCase(e.getScore())).count();
@@ -56,7 +56,7 @@ public class ReporteServicio {
         long others = entregablesPrograma.size() - onTime - late;
 
         String gEstatus = descargarGraficaBase64("{type:'doughnut',data:{labels:['OK','Action','Pend.'],datasets:[{data:["+okCount+","+actionCount+","+pendingCount+"],backgroundColor:['#10b981','#ef4444','#cbd5e1']}]},options:{plugins:{doughnutlabel:{labels:[{text:'"+Math.round(progreso)+"%',font:{size:20}},{text:'Progreso'}]}}}}");
-        String gEtapas = descargarGraficaBase64("{type:'horizontalBar',data:{labels:['ETAPA 1','ETAPA 2','ETAPA 3','ETAPA 4','ETAPA 5'],datasets:[{label:'% Completado',data:"+progresoEtapas.values().toString()+",backgroundColor:'#3b82f6'}]},options:{scales:{xAxes:[{ticks:{min:0,max:100}}]}}}");
+        String gEtapas = descargarGraficaBase64("{type:'horizontalBar',data:{labels:['STAGE 1','STAGE 2','STAGE 3','STAGE 4','STAGE 5'],datasets:[{label:'% Completed',data:"+progresoEtapas.values().toString()+",backgroundColor:'#3b82f6'}]},options:{scales:{xAxes:[{ticks:{min:0,max:100}}]}}}");
         String gTiempos = descargarGraficaBase64("{type:'pie',data:{labels:['On Time','Late','Otros'],datasets:[{data:["+onTime+","+late+","+others+"],backgroundColor:['#34d399','#f87171','#94a3b8']}]}}");
 
         Map<String, Object> variables = new HashMap<>();

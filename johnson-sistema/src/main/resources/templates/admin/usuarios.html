@@ -19,8 +19,8 @@
                 
                 <div class="d-flex justify-content-between align-items-center mb-4">
                     <div>
-                        <h4 class="fw-bold text-dark m-0"><i class="bi bi-people-fill text-primary me-2"></i>Gestión de Usuarios</h4>
-                        <p class="text-muted small fw-medium mb-0 mt-1">Panel de Administración de Cuentas APQP</p>
+                        <h4 class="fw-bold text-dark m-0"><i class="bi bi-people-fill text-primary me-2"></i>User Management</h4>
+                        <p class="text-muted small fw-medium mb-0 mt-1">APQP Accounts Administration Panel</p>
                     </div>
                 </div>
 
@@ -30,7 +30,7 @@
                         <div class="card border-0 shadow-sm rounded-4" style="background: rgba(255, 255, 255, 0.8); backdrop-filter: blur(10px);">
                             <div class="card-header bg-white border-bottom py-3">
                                 <h6 class="mb-0 fw-bold text-dark text-uppercase">
-                                    <i class="bi bi-person-plus-fill text-primary me-2"></i> Registrar Nuevo Champion
+                                    <i class="bi bi-person-plus-fill text-primary me-2"></i> Register New Champion
                                 </h6>
                             </div>
                             <div class="card-body p-4">
@@ -44,20 +44,20 @@
                                 <form th:action="@{/admin/usuarios/crear-champion}" method="post">
                                     <div class="row g-3">
                                         <div class="col-md-6">
-                                            <label class="form-label fw-bold small text-dark mb-1">Nombre Completo</label>
-                                            <input type="text" name="nombre" class="form-control" placeholder="Ej. Juan Pérez" required>
+                                            <label class="form-label fw-bold small text-dark mb-1">Full Name</label>
+                                            <input type="text" name="nombre" class="form-control" placeholder="Ex. Juan Pérez" required>
                                         </div>
                                         <div class="col-md-6">
-                                            <label class="form-label fw-bold small text-dark mb-1">Nombre de Usuario (Login)</label>
-                                            <input type="text" name="username" class="form-control" placeholder="Ej. jperez" required>
+                                            <label class="form-label fw-bold small text-dark mb-1">Username (Login)</label>
+                                            <input type="text" name="username" class="form-control" placeholder="Ex. jperez" required>
                                         </div>
                                         <div class="col-md-12">
-                                            <label class="form-label fw-bold small text-dark mb-1">Correo Electrónico (Para envío de contraseña)</label>
+                                            <label class="form-label fw-bold small text-dark mb-1">Email Address (For password sending)</label>
                                             <input type="email" name="correo" class="form-control" placeholder="juan.perez@johnsonelectric.com" required>
                                         </div>
                                         <div class="col-12 mt-4 text-end">
                                             <button type="submit" class="btn btn-primary px-4 fw-bold shadow-sm" style="background: linear-gradient(135deg, #F5821F 0%, #e0600d 100%); border: none;">
-                                                <i></i> Crear Cuenta y Enviar Invitación
+                                                <i></i> Create Account and Send Invitation
                                             </button>
                                         </div>
                                     </div>
@@ -67,9 +67,9 @@
 
                         <div class="card border-0 shadow-sm rounded-4 mt-4 bg-white opacity-75">
                             <div class="card-body p-4">
-                                <h6 class="fw-bold text-dark mb-3"><i class="bi bi-shield-lock-fill text-warning me-2"></i>Información de Seguridad</h6>
+                                <h6 class="fw-bold text-dark mb-3"><i class="bi bi-shield-lock-fill text-warning me-2"></i>Security Information</h6>
                                 <ul class="mb-0 text-muted small" style="line-height: 1.8;">
-                                    <li>Las cuentas creadas tendrán el rol <strong>ROLE_CHAMPION</strong> por defecto.</li>
+                                    <li>Created accounts will have the <strong>ROLE_CHAMPION</strong> role by default.</li>
                                     <li>El sistema exige al usuario que <strong>cambie su contraseña temporal</strong> en el primer inicio de sesión.</li>
                                     <li>Las contraseñas se almacenan cifradas con el estándar industrial <strong>BCrypt</strong>.</li>
                                 </ul>

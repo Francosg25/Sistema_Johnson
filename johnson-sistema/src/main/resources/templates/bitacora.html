@@ -143,7 +143,7 @@
                                 <h4 class="fw-bold text-dark m-0" style="letter-spacing: -0.5px;">
                                     <i class="bi bi-clock-history text-primary me-2"></i>Audit Trail
                                 </h4>
-                                <p class="text-muted small fw-medium mb-0 mt-1">Historial de cambios y actividades del sistema</p>
+                                <p class="text-muted small fw-medium mb-0 mt-1">System changes and activities history</p>
                             </div>
                         </div>
 
@@ -151,13 +151,13 @@
                             <div class="card-header premium-header">
                                 <h6 class="m-0 premium-title">
                                     <i class="bi bi-list-ul premium-icon"></i>
-                                    Últimos 50 Movimientos
+                                    Last 50 Movements
                                 </h6>
                             </div>
                             <div class="card-body p-4">
                                 <div th:if="${movimientos.empty}" class="text-center py-5">
                                     <i class="bi bi-info-circle fs-1 text-muted opacity-50 mb-3 d-block"></i>
-                                    <p class="text-muted">No hay registros de actividad aún.</p>
+                                    <p class="text-muted">No activity records yet.</p>
                                 </div>
                                 
                                 <div class="audit-timeline" th:if="${!movimientos.empty}">
@@ -177,7 +177,7 @@
                                                   th:text="${m.accion}">ACCION</span>
                                         </div>
                                         <div class="audit-detail" th:text="${m.detalle}">
-                                            Detalle del cambio realizado...
+                                            Detail of the change made...
                                         </div>
                                     </div>
                                 </div>

@@ -113,17 +113,16 @@
                 
                 <div class="d-flex justify-content-between align-items-center mb-4">
                     <div>
-                        <h4 class="fw-bold text-dark m-0"><i class="bi bi-folder-symlink text-primary me-2"></i>Vault de Evidencias</h4>
-                        <p class="text-muted small mt-1 mb-0">Repositorio global de todos los archivos subidos en los proyectos APQP.</p>
+                        <h4 class="fw-bold text-dark m-0"><i class="bi bi-folder-symlink text-primary me-2"></i>Evidence Vault</h4>
+                        <p class="text-muted small mt-1 mb-0">Global repository of all files uploaded in APQP projects.</p>
                     </div>
                     
                     <div class="search-container w-100">
                         <i class="bi bi-search"></i>
-                        <input type="text" id="buscadorArchivos" class="form-control search-input" placeholder="Buscar por nombre, proyecto o entregable...">
+                        <input type="text" id="buscadorArchivos" class="form-control search-input" placeholder="Search by name, project or deliverable...">
                     </div>
                 </div>
 
-                <!-- Contenedor de Proyectos (Carpetas) -->
                 <div th:each="entry, iter : ${proyectosConEvidencias}" class="mb-4">
                     <div class="d-flex align-items-center mb-3">
                         <button class="btn btn-link p-0 text-decoration-none d-flex align-items-center" 
@@ -132,7 +131,7 @@
                                 aria-expanded="true">
                             <i class="bi bi-folder-fill text-warning fs-3 me-2"></i>
                             <h5 class="fw-bold text-dark m-0 proyecto-busqueda" th:text="${entry.key}">Nombre del Proyecto</h5>
-                            <span class="badge bg-primary bg-opacity-10 text-primary ms-3 rounded-pill" th:text="${entry.value.size() + ' archivos'}">0 archivos</span>
+                            <span class="badge bg-primary bg-opacity-10 text-primary ms-3 rounded-pill" th:text="${entry.value.size() + ' files'}">0 files</span>
                             <i class="bi bi-chevron-down ms-2 text-muted small"></i>
                         </button>
                     </div>
@@ -143,10 +142,10 @@
                                 <table class="table table-hover align-middle">
                                     <thead>
                                         <tr>
-                                            <th style="width: 45%;">Archivo</th>
-                                            <th style="width: 35%;">Entregable APQP</th>
-                                            <th style="width: 15%;">Fecha Subida</th>
-                                            <th style="width: 10%;" class="text-center">Acciones</th>
+                                            <th style="width: 45%;">File</th>
+                                            <th style="width: 35%;">APQP Deliverable</th>
+                                            <th style="width: 15%;">Upload Date</th>
+                                            <th style="width: 10%;" class="text-center">Actions</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -165,28 +164,28 @@
                                                     </div>
                                                     <div class="d-flex flex-column text-truncate" style="max-width: 400px;">
                                                         <span class="text-dark text-truncate nombre-busqueda fw-bold" th:text="${adj.nombreArchivo}">Documento.pdf</span>
-                                                        <span class="text-muted small fw-normal">Evidencia del proyecto</span> 
+                                                        <span class="text-muted small fw-normal">Project evidence</span> 
                                                     </div>
                                                 </div>
                                             </td>
                                             
                                             <td>
                                                 <span class="text-muted fw-normal entregable-busqueda" style="font-size: 0.85rem;" th:text="${adj.entregableInfo}">
-                                                    Entregable
+                                                    Deliverable
                                                 </span>
                                             </td>
                                             
                                             <td>
                                                 <span class="text-muted fw-normal" style="font-size: 0.85rem;" 
-                                                      th:text="${adj.subidoEn != null ? #temporals.format(adj.subidoEn, 'dd MMM yyyy') : 'Sin fecha'}">01 Ene 2026</span>
+                                                      th:text="${adj.subidoEn != null ? #temporals.format(adj.subidoEn, 'dd MMM yyyy') : 'No date'}">01 Ene 2026</span>
                                             </td>
                                             
                                             <td class="text-center">
                                                 <div class="d-flex justify-content-center gap-1">
-                                                    <a th:href="@{'/evidencias/descargar/' + ${adj.id}}" class="btn-action btn-download" title="Descargar">
+                                                    <a th:href="@{'/evidencias/descargar/' + ${adj.id}}" class="btn-action btn-download" title="Download">
                                                         <i class="bi bi-cloud-arrow-down-fill fs-5"></i>
                                                     </a>
-                                                    <button type="button" class="btn-action btn-delete" title="Eliminar Permanentemente"
+                                                    <button type="button" class="btn-action btn-delete" title="Delete Permanently"
                                                             th:data-id="${adj.id}" 
                                                             th:data-nombre="${adj.nombreArchivo}"
                                                             onclick="confirmarEliminacion(this.getAttribute('data-id'), this.getAttribute('data-nombre'))"
@@ -205,7 +204,7 @@
 
                 <div th:if="${proyectosConEvidencias == null or proyectosConEvidencias.isEmpty()}" class="text-center py-5">
                     <i class="bi bi-archive text-muted display-1 mb-3 opacity-25"></i>
-                    <h5 class="text-muted">No se han subido evidencias todavía.</h5>
+                    <h5 class="text-muted">No evidence has been uploaded yet.</h5>
                 </div>
 
             </main>
@@ -216,11 +215,11 @@
         <div class="modal-dialog modal-dialog-centered modal-sm">
             <div class="modal-content border-0 shadow-lg">
                 <div class="modal-header bg-danger text-white border-bottom-0 pb-3">
-                    <h6 class="modal-title fw-bold"><i class="bi bi-exclamation-triangle-fill me-2"></i>Eliminar Archivo</h6>
+                    <h6 class="modal-title fw-bold"><i class="bi bi-exclamation-triangle-fill me-2"></i>Delete File</h6>
                     <button type="button" class="btn-close btn-close-white shadow-none" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body p-4 bg-light text-center">
-                    <p class="mb-2 text-dark">¿Borrar el archivo de la bóveda?</p>
+                    <p class="mb-2 text-dark">Delete the file from the vault?</p>
                     <p id="vaultFileName" class="fw-bold text-danger text-truncate mb-0 small"></p>
                 </div>
                 <div class="modal-footer bg-light border-top-0 pt-0 pb-4 justify-content-center">

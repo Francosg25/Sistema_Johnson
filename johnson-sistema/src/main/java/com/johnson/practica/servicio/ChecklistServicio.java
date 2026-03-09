@@ -186,7 +186,7 @@ public class ChecklistServicio {
     }
    @Cacheable("reportes")
    public List<ReporteProgreso> generarReporteGlobal() {
-        List<Proyecto> proyectos = proyectoRepositorio.findAll();
+        List<Proyecto> proyectos = proyectoRepositorio.findAllByOrderByIdAsc();
         List<ReporteProgreso> reporte = new ArrayList<>();
 
         for (Proyecto p : proyectos) {
@@ -234,7 +234,7 @@ public class ChecklistServicio {
     }
 
     public ReporteEstadoGlobal generarReporteEstadoGlobal() {
-        List<Proyecto> proyectos = proyectoRepositorio.findAll();
+        List<Proyecto> proyectos = proyectoRepositorio.findAllByOrderByIdAsc();
         
         int total = 0;
         int onTime = 0;
@@ -286,9 +286,9 @@ public class ChecklistServicio {
 
     @Transactional(readOnly = true)
     public List<ReporteCascada> generarReporteCascada() {
-        List<Proyecto> proyectos = proyectoRepositorio.findAll();
+        List<Proyecto> proyectos = proyectoRepositorio.findAllByOrderByIdAsc();
         List<ReporteCascada> reporte = new ArrayList<>();
-        List<String> etapas = Arrays.asList("ETAPA 1", "ETAPA 2", "ETAPA 3", "ETAPA 4", "ETAPA 5");
+        List<String> etapas = Arrays.asList("STAGE 1", "STAGE 2", "STAGE 3", "STAGE 4", "STAGE 5");
 
         for (Proyecto p : proyectos) {
             List<Double> porcentajes = new ArrayList<>();
@@ -328,7 +328,7 @@ public class ChecklistServicio {
 
     @Transactional(readOnly = true)
     public long obtenerLanzamientosProximos() {
-        List<Proyecto> proyectos = proyectoRepositorio.findAll();
+        List<Proyecto> proyectos = proyectoRepositorio.findAllByOrderByIdAsc();
         LocalDate hoy = LocalDate.now();
         LocalDate limite = hoy.plusMonths(6);
         
@@ -365,7 +365,7 @@ public class ChecklistServicio {
 
    @Transactional(readOnly = true)
     public Map<String, Object> obtenerDatosTimeline() {
-        List<Proyecto> proyectos = proyectoRepositorio.findAll();
+        List<Proyecto> proyectos = proyectoRepositorio.findAllByOrderByIdAsc();
         List<TimelineGrupo> groups = new ArrayList<>();
         List<TimelineItem> items = new ArrayList<>();
 
@@ -434,7 +434,7 @@ public class ChecklistServicio {
         if (elementos == null || elementos.isEmpty()) return 0.0;
 
         List<ElementoChecklist> preSop = elementos.stream()
-                .filter(e -> e.getEtapaVisual() != null && !e.getEtapaVisual().toUpperCase().contains("ETAPA 5"))
+                .filter(e -> e.getEtapaVisual() != null && !e.getEtapaVisual().toUpperCase().contains("STAGE 5"))
                 .toList();
 
         long totalTareas = preSop.size();

@@ -64,7 +64,6 @@
             font-size: 1.1rem;
         }
         
-        /* Contenedores de Gráficos con Scroll Inteligente */
         .chart-container {
             position: relative;
             padding: 1.5rem;
@@ -75,7 +74,6 @@
             overflow-x: hidden;
             padding-right: 10px;
         }
-        /* Custom Scrollbar */
         .waterfall-container::-webkit-scrollbar { width: 8px; }
         .waterfall-container::-webkit-scrollbar-track { background: #f1f1f1; border-radius: 10px; }
         .waterfall-container::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
@@ -83,7 +81,6 @@
     </style>
 </head>
 <body>
-    <!-- Background Blobs for Glassmorphism Effect -->
     <div class="bg-blob blob-1"></div>
     <div class="bg-blob blob-2"></div>
 
@@ -101,7 +98,7 @@
                             <div class="card-header premium-header">
                                 <h6 class="m-0 premium-title">
                                     <i class="bi bi-water premium-icon"></i>
-                                    Progreso por Etapas y Proyectos
+                                    Progress by Stage and Project                                
                                 </h6>
                             </div>
                             <div class="card-body waterfall-container" style="max-height: 600px;">
@@ -119,7 +116,7 @@
                             <div class="card-header premium-header">
                                 <h6 class="m-0 premium-title">
                                     <i class="bi bi-bar-chart-fill premium-icon" style="background: rgba(59, 130, 246, 0.1); color: #3b82f6;"></i>
-                                    Comparativa de Avance Global (%)
+                                    Global Progress Comparation (%)
                                 </h6>
                             </div>
                             <div class="card-body chart-container" style="height: 400px;">
@@ -136,7 +133,7 @@
                             <div class="card-header premium-header">
                                 <h6 class="m-0 premium-title">
                                     <i class="bi bi-pie-chart-fill premium-icon" style="background: rgba(16, 185, 129, 0.1); color: #10b981;"></i>
-                                    Salud de Tareas
+                                    Health Task
                                 </h6>
                             </div>
                             <div class="card-body chart-container d-flex align-items-center justify-content-center" style="height: 350px;">
@@ -150,7 +147,7 @@
                             <div class="card-header premium-header d-flex justify-content-between align-items-center">
                                 <h6 class="m-0 premium-title">
                                     <i class="bi bi-speedometer2 premium-icon" style="background: rgba(239, 68, 68, 0.1); color: #ef4444;"></i>
-                                    Riesgo
+                                    Risk Meter
                                 </h6>
                                 <select id="selectRiesgoProyecto" class="form-select form-select-sm border-0 bg-light fw-bold text-secondary shadow-none" style="width: auto; max-width: 600px; cursor: pointer;">
                                     <option value="GLOBAL">Global</option>
@@ -288,11 +285,11 @@
                 data: {
                     labels: projectNamesCascada,
                     datasets: [
-                        { label: 'ETAPA 1', data: s1Data, backgroundColor: paletteWaterfall[0], borderRadius: 4, barPercentage: 0.8, realPct: datosCascada.map(d => d.porcentajesPorFase[0]) }, 
-                        { label: 'ETAPA 2', data: s2Data, backgroundColor: paletteWaterfall[1], borderRadius: 4, barPercentage: 0.8, realPct: datosCascada.map(d => d.porcentajesPorFase[1]) },
-                        { label: 'ETAPA 3', data: s3Data, backgroundColor: paletteWaterfall[2], borderRadius: 4, barPercentage: 0.8, realPct: datosCascada.map(d => d.porcentajesPorFase[2]) },
-                        { label: 'ETAPA 4', data: s4Data, backgroundColor: paletteWaterfall[3], borderRadius: 4, barPercentage: 0.8, realPct: datosCascada.map(d => d.porcentajesPorFase[3]) },
-                        { label: 'ETAPA 5', data: s5Data, backgroundColor: paletteWaterfall[4], borderRadius: 4, barPercentage: 0.8, realPct: datosCascada.map(d => d.porcentajesPorFase[4]) },
+                        { label: 'STAGE 1', data: s1Data, backgroundColor: paletteWaterfall[0], borderRadius: 4, barPercentage: 0.8, realPct: datosCascada.map(d => d.porcentajesPorFase[0]) }, 
+                        { label: 'STAGE 2', data: s2Data, backgroundColor: paletteWaterfall[1], borderRadius: 4, barPercentage: 0.8, realPct: datosCascada.map(d => d.porcentajesPorFase[1]) },
+                        { label: 'STAGE 3', data: s3Data, backgroundColor: paletteWaterfall[2], borderRadius: 4, barPercentage: 0.8, realPct: datosCascada.map(d => d.porcentajesPorFase[2]) },
+                        { label: 'STAGE 4', data: s4Data, backgroundColor: paletteWaterfall[3], borderRadius: 4, barPercentage: 0.8, realPct: datosCascada.map(d => d.porcentajesPorFase[3]) },
+                        { label: 'STAGE 5', data: s5Data, backgroundColor: paletteWaterfall[4], borderRadius: 4, barPercentage: 0.8, realPct: datosCascada.map(d => d.porcentajesPorFase[4]) },
                         { label: 'TOTAL',   data: totalData, backgroundColor: '#cbd5e1', borderRadius: 4, barPercentage: 0.8, realPct: reportes.map(r => r.porcentaje) }
                     ]
                 },
@@ -328,10 +325,10 @@
                             if (dataset.label === 'TOTAL') return;
                             const meta = chart.getDatasetMeta(i);
                             meta.data.forEach((bar, index) => {
-                                const val = dataset.realPct[index];
-                                if (val > 0 && bar.horizontal) {
+                                const val = dataset.realPct && dataset.realPct[index];
+                                if (val > 0 && bar.width > 10) { 
                                     ctx.fillStyle = '#ffffff';
-                                    // Dibujar el porcentaje en el centro de la sección de la barra
+                                    // Use bar.x as the end and width/2 to center
                                     ctx.fillText(Math.round(val) + '%', bar.x - (bar.width / 2), bar.y);
                                 }
                             });

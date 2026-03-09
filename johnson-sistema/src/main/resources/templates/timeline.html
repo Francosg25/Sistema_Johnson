@@ -259,7 +259,7 @@
 
                 <div class="d-flex flex-wrap justify-content-between align-items-center mb-4 gap-3">
                     <div class="status-key-box">
-                        <div class="small fw-bold text-muted text-uppercase border-end pe-3 me-1">Leyenda</div>
+                        <div class="small fw-bold text-muted text-uppercase border-end pe-3 me-1">Legend</div>
                         <div class="d-flex align-items-center gap-2 small fw-bold text-dark">
                             <div style="width: 10px; height: 10px; background: #f58220; border: 1.5px solid #fff; box-shadow: 0 0 0 1px #ddd; transform: rotate(45deg);"></div> Milestones %
                         </div>
@@ -287,7 +287,7 @@
                     <div class="card-header premium-header">
                         <h6 class="m-0 premium-title">
                             <i class="bi bi-graph-up premium-icon"></i>
-                            Visualización de Timeline
+                            Timeline Visualization
                         </h6>
                     </div>
                     <div class="card-body p-0">
@@ -303,17 +303,17 @@
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content border-0 shadow-lg" style="border-radius: 20px; overflow: hidden;">
                 <div class="modal-header bg-dark text-white p-4 border-0">
-                    <h6 class="modal-title fw-bold m-0"><i class="bi bi-info-circle-fill text-primary me-2"></i>Detalles del Evento</h6>
+                    <h6 class="modal-title fw-bold m-0"><i class="bi bi-info-circle-fill text-primary me-2"></i>Event Details</h6>
                     <button type="button" class="btn-close btn-close-white shadow-none" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body p-4 bg-light">
                     <div class="bg-white p-4 rounded-4 shadow-sm border">
                         <div class="mb-4">
-                            <label class="small text-muted fw-bold text-uppercase mb-2 d-block">Descripción</label>
+                            <label class="small text-muted fw-bold text-uppercase mb-2 d-block">Description</label>
                             <h5 id="detalle-nombre" class="fw-bold text-dark m-0 lh-base"></h5>
                         </div>
                         <div class="pt-3 border-top">
-                            <label class="small text-muted fw-bold text-uppercase mb-2 d-block">Fecha Programada</label>
+                            <label class="small text-muted fw-bold text-uppercase mb-2 d-block">Scheduled Date</label>
                             <div class="d-flex align-items-center">
                                 <div class="bg-primary bg-opacity-10 p-2 rounded-3 me-3 text-primary">
                                     <i class="bi bi-calendar-check fs-4"></i>
@@ -324,7 +324,7 @@
                     </div>
                 </div>
                 <div class="modal-footer bg-light border-0 pt-0 pb-4 px-4">
-                    <button type="button" class="btn btn-secondary fw-bold w-100 rounded-3 py-2" data-bs-dismiss="modal">Entendido</button>
+                    <button type="button" class="btn btn-secondary fw-bold w-100 rounded-3 py-2" data-bs-dismiss="modal">Understood</button>
                 </div>
             </div>
         </div>
@@ -335,8 +335,8 @@
             <div class="modal-content shadow-lg border-0" style="border-radius: 16px; overflow: hidden;">
                 <div class="modal-header bg-dark text-white p-4">
                     <div>
-                        <h5 class="modal-title fw-bold mb-0"><i class="bi bi-gear-fill text-primary me-2"></i>Configuración del Timeline</h5>
-                        <p class="small text-light text-opacity-75 mb-0">Gestione los hitos de porcentaje y eventos destacados.</p>
+                        <h5 class="modal-title fw-bold mb-0"><i class="bi bi-gear-fill text-primary me-2"></i>Timeline Configuration</h5>
+                        <p class="small text-light text-opacity-75 mb-0">Manage percentage milestones and highlighted events.</p>
                     </div>
                     <button type="button" class="btn-close btn-close-white shadow-none" data-bs-dismiss="modal"></button>
                 </div>
@@ -345,10 +345,10 @@
                         <div class="row align-items-center">
                             <div class="col-md-5 col-lg-4">
                                 <label class="form-label small fw-bold text-dark mb-1">
-                                    <i class="bi bi-folder-fill text-primary me-1"></i> Seleccionar Proyecto
+                                    <i class="bi bi-folder-fill text-primary me-1"></i> Select Project
                                 </label>
                                 <select id="selProyecto" class="form-select form-select-sm shadow-none border-primary border-opacity-25 bg-light bg-opacity-50 fw-bold">
-                                    <option value="">Elija un proyecto para configurar...</option>
+                                    <option value="">Choose a project to configure...</option>
                                     <option th:each="p : ${proyectos}" th:value="${p.id}" th:text="${p.nombre}"></option>
                                 </select>
                             </div>
@@ -356,33 +356,33 @@
                     </div>
 
                     <ul class="nav nav-tabs nav-fill bg-white border-bottom-0" id="configTabs" role="tablist">
-                        <li class="nav-item"><button class="nav-link active fw-bold py-3 border-0 rounded-0" data-bs-toggle="tab" data-bs-target="#tabHitos"><i class="bi bi-diamond-half me-2"></i>Hitos de Progreso</button></li>
+                        <li class="nav-item"><button class="nav-link active fw-bold py-3 border-0 rounded-0" data-bs-toggle="tab" data-bs-target="#tabHitos"><i class="bi bi-diamond-half me-2"></i>Progress Milestones</button></li>
                         <li class="nav-item"><button class="nav-link fw-bold py-3 border-0 rounded-0" data-bs-toggle="tab" data-bs-target="#tabMainEvents" id="btnTabMainEvents"><i class="bi bi-star-fill me-2 text-warning"></i>Main Events (APQP)</button></li>
                     </ul>
                     <div class="tab-content p-4">
                         <div class="tab-pane fade show active" id="tabHitos">
                             <div class="row g-3 mb-4 bg-white p-4 rounded-3 border shadow-sm align-items-end">
                                 <div class="col-md-5">
-                                    <label class="form-label small fw-bold text-dark">Etapa a Alcanzar</label>
+                                    <label class="form-label small fw-bold text-dark">Stage to Reach</label>
                                     <select id="hitoEtapa" class="form-select shadow-none">
-                                        <option value="ETAPA 1">ETAPA 1 - Planning</option>
-                                        <option value="ETAPA 2">ETAPA 2 - Product Design</option>
-                                        <option value="ETAPA 3">ETAPA 3 - Process Design</option>
-                                        <option value="ETAPA 4">ETAPA 4 - Product & Process Validation</option>
-                                        <option value="ETAPA 5">ETAPA 5 - Feedback & Launch</option>
+                                        <option value="ETAPA 1">STAGE 1 - Planning</option>
+                                        <option value="ETAPA 2">STAGE 2 - Product Design</option>
+                                        <option value="ETAPA 3">STAGE 3 - Process Design</option>
+                                        <option value="ETAPA 4">STAGE 4 - Product & Process Validation</option>
+                                        <option value="ETAPA 5">STAGE 5 - Feedback & Launch</option>
                                     </select>
                                 </div>
                                 <div class="col-md-3">
-                                    <label class="form-label small fw-bold text-dark">Fecha Límite</label>
+                                    <label class="form-label small fw-bold text-dark">Deadline</label>
                                     <input type="date" id="hitoFecha" class="form-control shadow-none">
                                 </div>
                                 <div class="col-md-2">
-                                    <label class="form-label small fw-bold text-dark">% Objetivo</label>
+                                    <label class="form-label small fw-bold text-dark">Target %</label>
                                     <input type="number" id="hitoPorcentaje" class="form-control shadow-none" value="100" min="0" max="100">
                                 </div>
                                 <div class="col-md-2">
                                     <button class="btn btn-je-primary w-100 shadow-sm" onclick="guardarHito()">
-                                        <i class="bi bi-plus-lg me-1"></i> Agregar
+                                        <i class="bi bi-plus-lg me-1"></i> Add
                                     </button>
                                 </div>
                             </div>
@@ -390,7 +390,7 @@
                                 <div class="table-responsive">
                                     <table class="table table-hover align-middle mb-0">
                                         <thead class="bg-light text-secondary small text-uppercase">
-                                            <tr><th class="ps-4">Etapa Configurada</th><th>Fecha</th><th>Objetivo</th><th class="text-center pe-4">Acciones</th></tr>
+                                            <tr><th class="ps-4">Configured Stage</th><th>Date</th><th>Target</th><th class="text-center pe-4">Actions</th></tr>
                                         </thead>
                                         <tbody id="listaHitos"></tbody>
                                     </table>
@@ -402,7 +402,7 @@
                                 <div class="col-md-12">
                                     <div class="input-group input-group-lg shadow-sm rounded-3 overflow-hidden">
                                         <span class="input-group-text bg-white border-0"><i class="bi bi-search text-muted"></i></span>
-                                        <input type="text" id="searchMainEvents" class="form-control border-0 shadow-none ps-0" placeholder="Buscar entregable por nombre o código...">
+                                        <input type="text" id="searchMainEvents" class="form-control border-0 shadow-none ps-0" placeholder="Search deliverable by name or code...">
                                     </div>
                                 </div>
                             </div>
@@ -411,14 +411,14 @@
                                     <table class="table table-hover align-middle mb-0">
                                         <thead class="bg-light text-secondary small text-uppercase sticky-top">
                                             <tr>
-                                                <th class="ps-4">Cód</th>
-                                                <th>Entregable</th>
-                                                <th>Fase / Grupo</th>
-                                                <th class="text-center pe-4">Destacar</th>
+                                                <th class="ps-4">Code</th>
+                                                <th>Deliverable</th>
+                                                <th>Phase / Group</th>
+                                                <th class="text-center pe-4">Highlight</th>
                                             </tr>
                                         </thead>
                                         <tbody id="listaElementosMain">
-                                            <tr><td colspan="4" class="text-center py-5 text-muted fst-italic">Seleccione un proyecto para cargar los entregables</td></tr>
+                                            <tr><td colspan="4" class="text-center py-5 text-muted fst-italic">Select a project to load the deliverables</td></tr>
                                         </tbody>
                                     </table>
                                 </div>
@@ -427,8 +427,8 @@
                     </div>
                 </div>
                 <div class="modal-footer bg-white border-top-0 p-4">
-                    <button type="button" class="btn btn-outline-secondary fw-bold px-4 rounded-3" data-bs-dismiss="modal">Cerrar</button>
-                    <button type="button" class="btn btn-dark fw-bold px-4 rounded-3" onclick="location.reload()">Actualizar Timeline</button>
+                    <button type="button" class="btn btn-outline-secondary fw-bold px-4 rounded-3" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-dark fw-bold px-4 rounded-3" onclick="location.reload()">Update Timeline</button>
                 </div>
             </div>
         </div>
@@ -489,7 +489,7 @@
                 const etapa = document.getElementById('hitoEtapa').value;
                 const fecha = document.getElementById('hitoFecha').value;
                 const porc = document.getElementById('hitoPorcentaje').value;
-                if (!pid || !fecha) return alert("Seleccione proyecto y fecha");
+                if (!pid || !fecha) return alert("Select project and date");
                 fetch('/api/hitos/guardar', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({proyectoId: pid, nombre: etapa, fecha: fecha, etapa: etapa, porcentaje: porc}) })
                 .then(r => { if(r.ok) { cargarHitos(); document.getElementById('hitoFecha').value=''; } });
             };
@@ -499,7 +499,7 @@
             };
 
             window.eliminarHito = function(id) {
-                if (confirm('¿Eliminar?')) fetch(`/api/hitos/${id}`, { method: 'DELETE' }).then(r => { if(r.ok) cargarHitos(); });
+                if (confirm('Delete?')) fetch(`/api/hitos/${id}`, { method: 'DELETE' }).then(r => { if(r.ok) cargarHitos(); });
             };
 
             timeline.on('select', (p) => {
@@ -507,7 +507,7 @@
                     const item = items.get(p.items[0]);
                     const temp = document.createElement('div'); temp.innerHTML = item.content;
                     document.getElementById('detalle-nombre').innerText = (temp.querySelector('.event-content')?.getAttribute('data-realname') || temp.innerText).trim();
-                    document.getElementById('detalle-fecha').innerText = new Date(item.start).toLocaleDateString('es-ES', {weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'});
+                    document.getElementById('detalle-fecha').innerText = new Date(item.start).toLocaleDateString('en-US', {weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'});
                     bootstrap.Modal.getOrCreateInstance(document.getElementById('modalDetalleTimeline')).show();
                 }
             });

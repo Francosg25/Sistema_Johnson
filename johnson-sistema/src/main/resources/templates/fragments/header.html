@@ -5,7 +5,7 @@
             <i class="bi bi-list fs-3"></i>
         </button>
 
-        <h5 class="navbar-brand mb-0 fw-bold text-dark">Dashboard APQP</h5>
+        <h5 class="navbar-brand mb-0 fw-bold text-dark">APQP Dashboard</h5>
 
         <div class="ms-auto d-flex align-items-center">
             <div class="dropdown me-3 mt-2" id="notifDropdownContainer">
@@ -17,16 +17,16 @@
                 </button>
                 <div class="dropdown-menu dropdown-menu-end shadow-lg border-0 p-0" aria-labelledby="notifDropdown" style="width: 350px; border-radius: 12px; overflow: hidden; z-index: 1060;">
                     <div class="bg-light p-3 border-bottom d-flex justify-content-between align-items-center">
-                        <h6 class="m-0 fw-bold text-dark">Notificaciones</h6>
-                        <button class="btn btn-link btn-sm text-primary p-0 text-decoration-none small fw-bold" onclick="event.stopPropagation(); marcarTodasComoLeidas()">Marcar como leídas</button>
+                        <h6 class="m-0 fw-bold text-dark">Notifications</h6>
+                        <button class="btn btn-link btn-sm text-primary p-0 text-decoration-none small fw-bold" onclick="event.stopPropagation(); marcarTodasComoLeidas()">Mark all as read</button>
                     </div>
                     <div id="notifList" class="overflow-auto" style="max-height: 400px;">
                         <div class="p-4 text-center text-muted small">
-                            No tienes notificaciones nuevas
+                            You have no new notifications
                         </div>
                     </div>
                     <div class="bg-light p-2 text-center border-top">
-                        <span class="text-muted" style="font-size: 0.65rem;">Módulo de Alertas APQP - Johnson Electric</span>
+                        <span class="text-muted" style="font-size: 0.65rem;">APQP Alerts Module - Johnson Electric</span>
                     </div>
                 </div>
             </div>
@@ -44,7 +44,7 @@
             stompClient.debug = null; // Oculta logs en la consola del navegador
 
             stompClient.connect({}, function (frame) {
-                console.log('Conectado a WebSockets (Tiempo Real Activo)');
+                console.log('Connected to WebSockets (Real Time Active)');
                 
                 // Suscripción al canal privado del usuario logueado
                 stompClient.subscribe('/user/queue/notificaciones', function (msg) {
@@ -97,7 +97,7 @@
             if (!list) return;
 
             if (!data || !data.ultimas || data.ultimas.length === 0) {
-                list.innerHTML = '<div class="p-4 text-center text-muted small"><i class="bi bi-bell-slash d-block fs-3 mb-2 opacity-50"></i>No tienes notificaciones nuevas</div>';
+                list.innerHTML = '<div class="p-4 text-center text-muted small"><i class="bi bi-bell-slash d-block fs-3 mb-2 opacity-50"></i>You have no new notifications</div>';
                 return;
             }
 
@@ -112,7 +112,7 @@
                             <div class="text-muted small">${n.mensaje}</div>
                             <div class="d-flex justify-content-between align-items-center mt-1">
                                 <span class="text-primary fw-bold" style="font-size: 0.65rem;">${formatoFecha(n.fechaCreacion)}</span>
-                                <span class="text-muted italic" style="font-size: 0.65rem;">Por: ${n.autorAccion || 'Sistema'}</span>
+                                <span class="text-muted italic" style="font-size: 0.65rem;">By: ${n.autorAccion || 'System'}</span>
                             </div>
                         </div>
                     </div>

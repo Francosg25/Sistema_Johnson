@@ -64,7 +64,7 @@ public class ProyectoControlador {
 
         List<FaseVista> fases = new ArrayList<>();
         
-        fases.add(new FaseVista("prog", "Programa APQP", todosLosElementos.stream()
+        fases.add(new FaseVista("prog", "APQP Program", todosLosElementos.stream()
                 .filter(e -> e.getFase() != null && e.getFase().startsWith("0")).toList(), new HashMap<>()));
                 
         fases.add(new FaseVista("s2", "Stage 2", todosLosElementos.stream()
@@ -109,8 +109,8 @@ public class ProyectoControlador {
         Proyecto proyectoGuardado = proyectoServicio.guardarProyecto(proyecto);
         
         if (esNuevo) {
-            String titulo = "Nuevo Proyecto APQP";
-            String msj = "Se ha inicializado el portafolio para el proyecto: " + proyectoGuardado.getNombre();
+            String titulo = "New Project APQP";
+            String msj = "The portfolio has been initialized for the project: " + proyectoGuardado.getNombre();
             String url = "/proyectos/checklist/" + proyectoGuardado.getId();
             
             String autor = (principal != null) ? principal.getName() : "Sistema";

@@ -1,101 +1,154 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <meta charset="UTF-8"/>
+    <meta charset="UTF-8">
+    <title>APQP Project Report</title>
     <style>
-        @page { size: A4; margin: 1cm; }
-        body { font-family: 'Helvetica', 'Arial', sans-serif; color: #334155; margin: 0; padding: 0; line-height: 1.4; }
-        
-        /* Header */
-        .header { background-color: #F58220; color: white; padding: 25px; text-align: center; border-radius: 0 0 15px 15px; }
-        .header h1 { margin: 0; font-size: 24px; text-transform: uppercase; letter-spacing: 1px; }
-        .header p { margin: 5px 0 0; opacity: 0.9; font-size: 14px; }
-
-        /* Ficha Técnica */
-        .section-title { color: #F58220; border-bottom: 2px solid #F58220; padding-bottom: 8px; margin: 30px 0 15px; font-size: 18px; text-transform: uppercase; }
-        
-        .ficha-container { background-color: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; padding: 20px; margin-bottom: 25px; }
-        .ficha-grid { width: 100%; border-collapse: collapse; }
-        .ficha-grid td { padding: 8px 0; font-size: 13px; }
-        .label { font-weight: bold; color: #64748b; width: 150px; }
-        .value { color: #1e293b; }
-
-        /* Charts Grid */
-        .charts-container { width: 100%; margin-bottom: 30px; }
-        .chart-box { display: inline-block; width: 31%; text-align: center; vertical-align: top; margin: 0 1%; }
-        .chart-box img { width: 100%; border: 1px solid #f1f5f9; border-radius: 5px; }
-        .chart-label { font-size: 11px; font-weight: bold; margin-top: 8px; color: #475569; }
-
-        /* Table */
-        table { width: 100%; border-collapse: collapse; margin-top: 10px; background-color: white; }
-        th { background-color: #f1f5f9; border: 1px solid #e2e8f0; padding: 10px; text-align: left; font-size: 11px; color: #475569; text-transform: uppercase; }
-        td { border: 1px solid #e2e8f0; padding: 8px 10px; font-size: 11px; color: #334155; }
-        tr:nth-child(even) { background-color: #f8fafc; }
-
-        /* Status Colors */
-        .status-pill { padding: 3px 8px; border-radius: 12px; font-weight: bold; font-size: 10px; text-align: center; display: inline-block; }
-        .status-ok { background-color: #dcfce7; color: #166534; }
-        .status-na { background-color: #fee2e2; color: #991b1b; }
-        .status-pending { background-color: #f1f5f9; color: #475569; }
-
-        .footer { position: fixed; bottom: 0; width: 100%; text-align: center; font-size: 10px; color: #94a3b8; padding-bottom: 10px; }
+        @page {
+            size: A4;
+            margin: 20mm;
+        }
+        body {
+            font-family: 'Helvetica', 'Arial', sans-serif;
+            font-size: 10pt;
+            color: #333;
+            line-height: 1.4;
+        }
+        .header {
+            text-align: center;
+            border-bottom: 2px solid #0056b3;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+        }
+        .header h1 {
+            color: #0056b3;
+            margin: 0;
+            font-size: 22pt;
+        }
+        .header p {
+            margin: 5px 0 0;
+            color: #666;
+            font-size: 11pt;
+        }
+        .info-grid {
+            width: 100%;
+            margin-bottom: 20px;
+            border-collapse: collapse;
+        }
+        .info-grid td {
+            padding: 5px;
+            border: 1px solid #eee;
+        }
+        .label {
+            font-weight: bold;
+            background-color: #f8f9fa;
+            width: 25%;
+        }
+        .section-title {
+            background-color: #0056b3;
+            color: white;
+            padding: 5px 10px;
+            font-weight: bold;
+            margin-top: 20px;
+            margin-bottom: 10px;
+            border-radius: 3px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 15px;
+        }
+        th {
+            background-color: #f2f2f2;
+            text-align: left;
+            padding: 8px;
+            border: 1px solid #ddd;
+            font-size: 9pt;
+        }
+        td {
+            padding: 7px;
+            border: 1px solid #ddd;
+            vertical-align: top;
+            font-size: 9pt;
+        }
+        .status-badge {
+            padding: 2px 6px;
+            border-radius: 10px;
+            font-size: 8pt;
+            font-weight: bold;
+        }
+        .charts-container {
+            text-align: center;
+            margin-top: 10px;
+        }
+        .chart-box {
+            display: inline-block;
+            width: 30%;
+            margin: 0 1%;
+            vertical-align: top;
+        }
+        .chart-box img {
+            width: 100%;
+            height: auto;
+        }
+        .chart-label {
+            font-size: 8pt;
+            font-weight: bold;
+            margin-top: 5px;
+        }
     </style>
 </head>
 <body>
     <div class="header">
-        <h1>Reporte Ejecutivo de Proyecto APQP</h1>
-        <p>Johnson Electric - Sistema de Gestión de Lanzamientos</p>
+        <h1>APQP PROJECT PORTFOLIO</h1>
+        <p th:text="'Generated on: ' + ${#dates.format(#dates.createNow(), 'dd/MM/yyyy HH:mm')}"></p>
     </div>
 
-    <div class="section-title">Información del Proyecto</div>
-    <div class="ficha-container">
-        <table class="ficha-grid">
-            <tr>
-                <td class="label">Proyecto:</td>
-                <td class="value" th:text="${proyecto.nombre}"></td>
-                <td class="label">Cliente:</td>
-                <td class="value" th:text="${proyecto.cliente}"></td>
-            </tr>
-            <tr>
-                <td class="label">N° de Parte:</td>
-                <td class="value" th:text="${proyecto.numeroParte}"></td>
-                <td class="label">Líder:</td>
-                <td class="value" th:text="${proyecto.liderProyecto}"></td>
-            </tr>
-            <tr>
-                <td class="label">Progreso Total:</td>
-                <td class="value"><strong th:text="${progreso + '%'}"></strong></td>
-                <td class="label">Fecha SOP:</td>
-                <td class="value" th:text="${proyecto.sop}"></td>
-            </tr>
-        </table>
-    </div>
+    <div class="section-title">General Project Information</div>
+    <table class="info-grid">
+        <tr>
+            <td class="label">Project Name:</td>
+            <td colspan="3" th:text="${proyecto.nombre}" style="font-size: 14pt; font-weight: bold;"></td>
+        </tr>
+        <tr>
+            <td class="label">Project Number:</td>
+            <td th:text="${proyecto.numeroProyecto}"></td>
+            <td class="label">Customer:</td>
+            <td th:text="${proyecto.cliente}"></td>
+        </tr>
+        <tr>
+            <td class="label">Lead Engineer:</td>
+            <td th:text="${proyecto.ingenieroLider}"></td>
+            <td class="label">Current Status:</td>
+            <td th:text="${proyecto.estatus}"></td>
+        </tr>
+    </table>
 
-    <div class="section-title">Indicadores de Desempeño</div>
+    <div class="section-title">Visual Status Summary</div>
     <div class="charts-container">
         <div class="chart-box">
-            <img th:src="${gEstatus}" alt="Estatus General"/>
-            <div class="chart-label">Distribución de Estatus</div>
+            <img th:src="${gEstatus}" alt="General Status"/>
+            <div class="chart-label">Status Distribution</div>
         </div>
         <div class="chart-box">
-            <img th:src="${gEtapas}" alt="Progreso por Etapas"/>
-            <div class="chart-label">Avance por Etapa (1-5)</div>
+            <img th:src="${gEtapas}" alt="Progress per Stage"/>
+            <div class="chart-label">Progress per Stage (1-5)</div>
         </div>
         <div class="chart-box">
-            <img th:src="${gTiempos}" alt="Cumplimiento"/>
-            <div class="chart-label">Cumplimiento de Plazos</div>
+            <img th:src="${gTiempos}" alt="Compliance"/>
+            <div class="chart-label">Deadline Compliance</div>
         </div>
     </div>
 
-    <div class="section-title">Checklist Detallado (Programa APQP)</div>
+    <div class="section-title">Detailed Checklist (APQP Program)</div>
     <table>
         <thead>
             <tr>
-                <th style="width: 40%">Entregable</th>
-                <th>Etapa</th>
-                <th>Responsable</th>
-                <th>Fecha Plan</th>
-                <th>Estatus</th>
+                <th style="width: 40%">Deliverable</th>
+                <th>Stage</th>
+                <th>Responsible</th>
+                <th>Plan Date</th>
+                <th>Status</th>
             </tr>
         </thead>
         <tbody>
@@ -103,18 +156,14 @@
                 <td th:text="${e.nombre}"></td>
                 <td th:text="${e.etapaVisual}"></td>
                 <td th:text="${e.champion}"></td>
-                <td th:text="${e.fechaPlan}"></td>
-                <td>
-                    <span th:if="${e.score == 'OK'}" class="status-pill status-ok">OK</span>
-                    <span th:if="${e.score == 'NEEDS ACTION'}" class="status-pill status-na">ACTION</span>
-                    <span th:if="${e.score != 'OK' and e.score != 'NEEDS ACTION'}" class="status-pill status-pending" th:text="${e.score != null ? e.score : 'PEND'}"></span>
-                </td>
+                <td th:text="${e.fechaPlan != null ? #temporals.format(e.fechaPlan, 'dd/MM/yyyy') : '-'}"></td>
+                <td th:text="${e.estatus}"></td>
             </tr>
         </tbody>
     </table>
 
-    <div class="footer">
-        Generado automáticamente por el Sistema de Gestión Johnson Electric - <span th:text="${#temporals.format(#temporals.createNow(), 'dd/MM/yyyy HH:mm')}"></span>
+    <div style="margin-top: 30px; border-top: 1px solid #ccc; padding-top: 10px; font-size: 8pt; color: #777;">
+        <p>This document is an automatic export from the APQP Management System - Johnson Electric.</p>
     </div>
 </body>
 </html>
