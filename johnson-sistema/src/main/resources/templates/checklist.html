@@ -272,18 +272,25 @@
                             <div class="d-flex align-items-center">
                                 <a href="/" class="btn btn-outline-secondary btn-sm me-3 shadow-sm fw-bold">Back</a>
                                 <div class="btn-group shadow-sm">
-                                    <button type="submit" id="btnGuardarTodo" class="btn btn-je-primary btn-sm px-3" sec:authorize="hasAnyRole('ADMIN', 'CHAMPION')" title="Save all changes">
-                                        <i class="bi bi-save2-fill me-1"></i> Save
+                                    <button type="submit" id="btnGuardarTodo" class="btn btn-je-primary btn-sm px-3 d-flex align-items-center" sec:authorize="hasAnyRole('ADMIN', 'CHAMPION')" title="Save all changes">
+                                        <i class="bi bi-save2-fill me-2"></i> Save
                                     </button>
                                     <a th:href="@{/reportes/proyecto/ver/{id}(id=${proyecto.id})}" target="_blank"
-                                       style="background-color: #1f7cf5; border: none; color: white;"
-                                        class="btn btn-sm px-3"
+                                        style="background-color: #0b6ded; border: none; color: white;"
+                                        class="btn btn-sm px-3 d-flex align-items-center"
                                         title="View Executive Report Online">
                                         <i class="bi bi-eye-fill"></i>
                                      </a>
+                                     
+                                    <a th:href="@{/proyectos/exportar-excel/{id}(id=${proyecto.id})}"
+                                        style="background-color: #319365; border: none; color: white;"
+                                        class="btn btn-sm px-3 d-flex align-items-center" 
+                                        title="Download Excel Checklist">
+                                        <i class="bi bi-file-earmark-excel-fill"></i>
+                                    </a>
                                     <a th:href="@{/proyectos/exportar-pdf/{id}(id=${proyecto.id})}" target="_blank"
-                                        style="background-color: #e75959; border: none; color: white;"
-                                        class="btn btn-sm px-3" 
+                                        style="background-color: #d84040; border: none; color: white;"
+                                        class="btn btn-sm px-3 d-flex align-items-center" 
                                         title="Download PDF Report">
                                         <i class="bi bi-file-earmark-pdf-fill"></i>
                                     </a>

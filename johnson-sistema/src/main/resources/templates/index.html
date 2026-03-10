@@ -265,7 +265,7 @@
                                                             <i class="bi bi-calendar3 me-1"></i> <span th:text="${p.sop}">Fecha</span>
                                                         </div>
                                                     </td>
-                                                    <td class="pe-4">
+                                                    <td class="align-middle pe-4">
                                                         <div class="d-flex justify-content-center align-items-center gap-2">
                                                             <a th:href="@{/proyectos/checklist/{id}(id=${p.id})}" class="btn btn-outline-primary btn-sm shadow-sm" title="Open Checklist">
                                                                 <i class="bi bi-card-checklist"></i>
@@ -376,7 +376,7 @@
                                                               th:classappend="${t.controlEntregable == 'NEEDS ACTION' ? 'bg-warning text-dark' : 'bg-light text-muted border'}" 
                                                               th:text="${t.controlEntregable != null and !t.controlEntregable.empty ? t.controlEntregable : 'PENDING'}">Status</span>
                                                     </td>
-                                                    <td class="text-center pe-4">
+                                                    <td class="text-center align-middle pe-4">
                                                         <a th:href="@{/proyectos/checklist/{id}(id=${t.proyecto.id})}" class="btn btn-sm btn-outline-primary rounded-circle shadow-sm">
                                                             <i class="bi bi-arrow-right-short"></i>
                                                         </a>

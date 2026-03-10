@@ -4,6 +4,7 @@ import com.johnson.practica.modelo.ElementoChecklist;
 import com.johnson.practica.modelo.Proyecto;
 import com.johnson.practica.repositorio.ProyectoRepositorio;
 import com.johnson.practica.servicio.ChecklistServicio;
+import com.johnson.practica.servicio.ExcelServicio;
 import com.johnson.practica.servicio.ProyectoServicio;
 import com.johnson.practica.servicio.ReporteServicio;
 import com.johnson.practica.servicio.NotificacionServicio; 
@@ -162,6 +163,26 @@ public class ProyectoControlador {
 
     @Autowired
     private ReporteServicio reporteServicio;
+
+    @Autowired
+    private ExcelServicio excelServicio;
+
+    @GetMapping("/exportar-excel/{id}")
+    public ResponseEntity<byte[]> descargarExcel(@PathVariable Long id) {
+        try {
+            Proyecto p = proyectoServicio.buscarPorId(id);
+            List<ElementoChecklist> items = checklistServicio.obtenerPorProyectoId(id);
+            byte[] data = excelServicio.generarExcelProyecto(p, items);
+
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
+            headers.setContentDispositionFormData("attachment", "Checklist_" + p.getNumeroParte() + ".xlsx");
+
+            return new ResponseEntity<>(data, headers, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
 
     @GetMapping("/exportar-pdf/{id}")
     public ResponseEntity<byte[]> descargarReportePdf(@PathVariable Long id) {
