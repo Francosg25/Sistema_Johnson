@@ -178,15 +178,21 @@
 
         .badge { padding: 0.4em 0.6em; border-radius: 6px; font-weight: 700; letter-spacing: 0.02em; }
         
-        .champ-qe, .champ-quality-engineer { background-color: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
-        .champ-de, .champ-design-engineer { background-color: #cce5ff; color: #004085; border: 1px solid #b8daff; }
-        .champ-pe, .champ-process-engineer { background-color: #fff3cd; color: #856404; border: 1px solid #ffeeba; }
-        .champ-qe-pe { background-color: #d1ecf1; color: #0c5460; border: 1px solid #bee5eb; }
-        .champ-proj, .champ-project-engineer { background-color: #e2e3e5; color: #383d41; border: 1px solid #d6d8db; }
-        .champ-scs-procurement { background-color: #e6e6fa; color: #6f42c1; border: 1px solid #d6d6f5; }
-        .champ-finance-rep { background-color: #d5f5e3; color: #27ae60; border: 1px solid #abebc6; }
+        .champ-qe { background-color: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .champ-de { background-color: #cce5ff; color: #004085; border: 1px solid #b8daff; }
+        .champ-pe { background-color: #fff3cd; color: #856404; border: 1px solid #ffeeba; }
+        .champ-proj { background-color: #e2e3e5; color: #383d41; border: 1px solid #d6d8db; }
+        .champ-scs { background-color: #e6e6fa; color: #6f42c1; border: 1px solid #d6d6f5; }
+        .champ-fin { background-color: #d1ecf1; color: #0c5460; border: 1px solid #bee5eb; }
+        .champ-ops { background-color: #fce4ec; color: #880e4f; border: 1px solid #f8bbd0; }
+        .champ-hr { background-color: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+        .champ-mat { background-color: #fffaf0; color: #8b4513; border: 1px solid #ffebcd; }
+        .champ-cust { background-color: #e0f7fa; color: #006064; border: 1px solid #b2ebf2; }
+        .champ-supp { background-color: #f3e5f5; color: #4a148c; border: 1px solid #e1bee7; }
+        .champ-qe-pe { background-color: #e0f2f1; color: #004d40; border: 1px solid #b2dfdb; }
         .champ-all { background-color: #f8f9fa; color: #6c757d; border: 1px solid #e9ecef; }
         .champ-n-a { background-color: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+        .champ-generic { background-color: #ffffff; color: #495057; border: 1px solid #dee2e6; }
         
         .status-on-time { color: #198754 !important; font-weight: 800 !important; background-color: rgba(25, 135, 84, 0.08) !important; box-shadow: 0 0 12px rgba(25, 135, 84, 0.25) !important; border-color: rgba(25, 135, 84, 0.3) !important; }
         .status-on-time:focus { box-shadow: 0 0 15px rgba(25, 135, 84, 0.35) !important; }
@@ -377,7 +383,11 @@
                                                 
                                                 <tr>
                                                     <td class="text-center fw-bold" rowspan="2" style="vertical-align: middle;">
-                                                        <span class="badge w-100 shadow-sm" th:classappend="'champ-' + ${#strings.toLowerCase(#strings.replace(item.champion, ' ', '-')).replace('/', '-')}" th:text="${item.champion}"></span>
+                                                        <span class="badge w-100 shadow-sm" 
+                                                              th:with="normChamp=${@checklistServicio.normalizarChampion(item.champion)}"
+                                                              th:classappend="'champ-' + ${#strings.toLowerCase(normChamp).replace('/', '-')}" 
+                                                              th:text="${normChamp}"
+                                                              th:title="${@checklistServicio.obtenerNombreCompletoChampion(normChamp)}"></span>
                                                     </td>
 
                                                     <td rowspan="2" style="vertical-align: middle; background-color: rgba(255, 250, 205, 0.4) !important;">
@@ -511,7 +521,11 @@
                                                     </td>
 
                                                     <td class="text-center fw-bold">
-                                                        <span class="badge w-100 shadow-sm" th:classappend="'champ-' + ${#strings.toLowerCase(#strings.replace(item.champion, ' ', '-')).replace('/', '-')}" th:text="${item.champion}"></span>
+                                                        <span class="badge w-100 shadow-sm" 
+                                                              th:with="normChamp=${@checklistServicio.normalizarChampion(item.champion)}"
+                                                              th:classappend="'champ-' + ${#strings.toLowerCase(normChamp).replace('/', '-')}" 
+                                                              th:text="${normChamp}"
+                                                              th:title="${@checklistServicio.obtenerNombreCompletoChampion(normChamp)}"></span>
                                                     </td>
                                                     <td class="text-center"><input type="date" class="form-control form-control-sm border-0 text-center p-0 fw-bold text-dark bg-transparent" th:name="'fechaReal-' + ${item.id}" th:value="${item.fechaReal}"></td>
                                                     

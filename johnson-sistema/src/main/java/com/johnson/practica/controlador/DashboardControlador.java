@@ -14,9 +14,14 @@ import com.johnson.practica.dto.ReporteEstadoGlobal;
 import com.johnson.practica.modelo.Notificacion; 
 import com.johnson.practica.modelo.Usuario; // <-- NUEVO
 
+import com.johnson.practica.modelo.ElementoChecklist; // <-- NUEVO
+import com.johnson.practica.modelo.Proyecto; // <-- NUEVO
 import java.security.Principal; // <-- NUEVO
 import java.util.ArrayList;
+import java.util.HashMap; // <-- NUEVO
 import java.util.List;
+import java.util.Map; // <-- NUEVO
+import java.util.stream.Collectors; // <-- NUEVO
 
 @Controller
 public class DashboardControlador {
@@ -38,6 +43,7 @@ public class DashboardControlador {
 
     @GetMapping("/")
     public String index(Model model, jakarta.servlet.http.HttpServletRequest request, Principal principal) {
+        List<Proyecto> proyectos = proyectoRepositorio.findAll();
         List<ReporteProgreso> reporteGlobal = checklistServicio.generarReporteGlobal();
         ReporteEstadoGlobal estadoGlobal = checklistServicio.generarReporteEstadoGlobal();
         
@@ -56,7 +62,7 @@ public class DashboardControlador {
             }
         }
 
-        model.addAttribute("proyectos", proyectoRepositorio.findAll());
+        model.addAttribute("proyectos", proyectos);
         model.addAttribute("reporteProgreso", reporteGlobal);
         model.addAttribute("estadoGlobal", estadoGlobal);
         model.addAttribute("alertas", checklistServicio.obtenerAlertasGlobales());
@@ -68,8 +74,32 @@ public class DashboardControlador {
         model.addAttribute("ultimosMovimientos", bitacoraServicio.obtenerUltimosMovimientos().stream().limit(5).toList());
         
         // --- SECCIÓN: MIS TAREAS / FILTRO POR CHAMPION ---
-        model.addAttribute("todasTareasPendientes", checklistServicio.obtenerTodasTareasPendientes());
+        List<ElementoChecklist> todasPendientes = checklistServicio.obtenerTodasTareasPendientes();
+        model.addAttribute("todasTareasPendientes", todasPendientes);
         model.addAttribute("listaChampions", checklistServicio.obtenerTodosLosChampions());
+        
+        // Agregamos conteo por champion para el filtro moderno
+        Map<String, Long> conteoPorChampion = todasPendientes.stream()
+            .filter(t -> t.getChampion() != null)
+            .collect(Collectors.groupingBy(t -> checklistServicio.normalizarChampion(t.getChampion()), Collectors.counting()));
+        model.addAttribute("conteoPorChampion", conteoPorChampion);
+
+        // --- SECCIÓN: CALENDARIO DE EVENTOS ---
+        List<Map<String, Object>> eventosCalendario = new ArrayList<>();
+        for (Proyecto p : proyectos) {
+            if (p.getSop() != null) {
+                Map<String, Object> event = new HashMap<>();
+                event.put("title", "SOP: " + p.getNombre());
+                event.put("start", p.getSop().toString());
+                event.put("description", "Start of Production - PN: " + p.getNumeroParte());
+                event.put("className", "bg-warning border-0 shadow-sm"); // Naranja SOP
+                event.put("url", "/proyectos/checklist/" + p.getId());
+                eventosCalendario.add(event);
+            }
+            // Podríamos agregar hitos específicos aquí si fuera necesario
+        }
+        model.addAttribute("eventosCalendario", eventosCalendario);
+
         if (principal != null) {
             model.addAttribute("usuarioLogueado", principal.getName());
         }

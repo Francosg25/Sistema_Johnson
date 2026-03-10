@@ -158,6 +158,10 @@ public class ProyectoControlador {
         List<Proyecto> lista = proyectoRepositorio.findAll();
         model.addAttribute("proyectos", lista);
         model.addAttribute("currentUri", request.getRequestURI());
+
+        Map<String, Integer> tendencia = checklistServicio.obtenerTendenciaAprobacionesOK();
+        model.addAttribute("tendencia", tendencia);
+
         return "index";
     }
 

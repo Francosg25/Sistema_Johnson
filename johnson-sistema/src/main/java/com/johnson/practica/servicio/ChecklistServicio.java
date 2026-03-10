@@ -97,7 +97,7 @@ public class ChecklistServicio {
         if (auth != null && auth.isAuthenticated() && !auth.getPrincipal().equals("anonymousUser")) {
             usuarioAudit = auth.getName();
         }
-        final String nombreUsuarioLogueado = usuarioAudit; // Variable final para la lambda
+        final String nombreUsuarioLogueado = usuarioAudit; 
 
         for (ElementoChecklist elemento : elementosDesdeBD) {
             Map<String, String> cambios = updatesById.get(elemento.getId());
@@ -181,6 +181,20 @@ public class ChecklistServicio {
         if (!elementosRealmenteModificados.isEmpty()) {
             repositorio.saveAll(elementosRealmenteModificados);
         }
+    }
+
+
+    public Map<String, Integer> obtenerTendenciaAprobacionesOK() {
+        List<ElementoChecklist> todos = repositorio.findAll();
+        Map<String, Integer> tendencia = new HashMap<>();
+
+        for (ElementoChecklist e : todos) {
+            if ("OK".equalsIgnoreCase(e.getScore()) && e.getFechaReal() != null) {
+                String mesAnio = String.format("%02d/%d", e.getFechaReal().getMonthValue(), e.getFechaReal().getYear());
+                tendencia.put(mesAnio, tendencia.getOrDefault(mesAnio, 0) + 1);
+            }
+        }
+        return tendencia;
     }
 
 
@@ -498,6 +512,7 @@ public class ChecklistServicio {
     public List<ElementoChecklist> obtenerTodasTareasPendientes() {
         return repositorio.findByScoreNotIgnoreCase("OK").stream()
                 .filter(e -> e.getScore() == null || !e.getScore().equalsIgnoreCase("OK"))
+                .filter(e -> e.getFase() != null && (e.getFase().equals("0. Program") || e.getFase().equals("2. Stage 2")))
                 .toList();
     }
 
@@ -505,8 +520,52 @@ public class ChecklistServicio {
     public List<String> obtenerTodosLosChampions() {
         return repositorio.findDistinctChampions().stream()
                 .filter(c -> c != null && !c.trim().isEmpty() && !c.equalsIgnoreCase("N/A"))
+                .map(this::normalizarChampion)
+                .distinct()
                 .sorted()
                 .toList();
+    }
+
+    public String normalizarChampion(String champ) {
+        if (champ == null || champ.trim().isEmpty()) return "N/A";
+        String c = champ.trim().toUpperCase();
+        
+        // Mapeo estricto a siglas
+        if (c.equals("DE") || c.contains("DESIGN ENGINEER") || c.contains("PRODUCT ENGINEER")) return "DE";
+        if (c.equals("QE") || c.contains("QUALITY ENGINEER")) return "QE";
+        if (c.equals("PE") || c.contains("PROCESS ENGINEER") || c.contains("MANUFACTURING")) return "PE";
+        if (c.equals("PROJ") || c.contains("PROJECT ENGINEER") || c.contains("PROJECT MANAGER") || c.equals("PROJECT LEADER")) return "PROJ";
+        if (c.contains("SCS") || c.contains("PROCUREMENT") || c.contains("SUPPLY CHAIN")) return "SCS";
+        if (c.contains("FINANCE")) return "FIN";
+        if (c.equals("OPS") || c.contains("OPERATIONS")) return "OPS";
+        if (c.contains("HR") || c.contains("HUMAN RESOURCES")) return "HR";
+        if (c.contains("MATERIALS")) return "MAT";
+        if (c.contains("CLIENTE") || c.contains("CUSTOMER")) return "CUST";
+        if (c.contains("PROVEEDOR") || c.contains("SUPPLIER")) return "SUPP";
+        if (c.equals("QE/PE") || (c.contains("QE") && c.contains("PE"))) return "QE/PE";
+        if (c.contains("ALL") || c.contains("CFT")) return "ALL";
+        
+        return champ.trim(); 
+    }
+
+    public String obtenerNombreCompletoChampion(String sigla) {
+        if (sigla == null) return "Unknown";
+        return switch (sigla.toUpperCase()) {
+            case "DE" -> "Design / Product Engineer";
+            case "QE" -> "Quality Engineer";
+            case "PE" -> "Process / Manufacturing Engineer";
+            case "PROJ" -> "Project Engineer / Leader";
+            case "SCS" -> "Supply Chain & Procurement";
+            case "FIN" -> "Finance Representative";
+            case "OPS" -> "Operations / Manufacturing";
+            case "HR" -> "Human Resources";
+            case "MAT" -> "Materials Management";
+            case "CUST" -> "Customer / Client";
+            case "SUPP" -> "Supplier / Vendor";
+            case "QE/PE" -> "Shared Quality & Process Responsibility";
+            case "ALL" -> "Cross-Functional Team (All)";
+            default -> sigla;
+        };
     }
 
     private String scoreFormateado(String s) {
