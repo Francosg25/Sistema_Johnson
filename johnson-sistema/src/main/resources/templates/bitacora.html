@@ -163,17 +163,17 @@
                                 <div class="audit-timeline" th:if="${!movimientos.empty}">
                                     <div th:each="m : ${movimientos}" class="audit-item">
                                         <div class="audit-icon">
-                                            <i th:class="${m.accion.contains('ACTUALIZO') ? 'bi bi-pencil-fill text-primary' : 
-                                                        (m.accion.contains('CREO') ? 'bi bi-plus-circle-fill text-success' : 
-                                                        (m.accion.contains('ELIMINO') ? 'bi bi-trash-fill text-danger' : 'bi bi-info-circle-fill text-secondary'))}"></i>
+                                            <i th:class="${m.accion.contains('UPDATE') ? 'bi bi-pencil-fill text-primary' : 
+                                                        (m.accion.contains('CREATE') ? 'bi bi-plus-circle-fill text-success' : 
+                                                        (m.accion.contains('DELETE') ? 'bi bi-trash-fill text-danger' : 'bi bi-info-circle-fill text-secondary'))}"></i>
                                         </div>
                                         <span class="audit-time" th:text="${m.getFechaFormateada()}">Fecha</span>
                                         <div>
                                             <span class="audit-user" th:text="${m.usuario}">Usuario</span>
                                             <span class="audit-action" 
-                                                  th:classappend="${m.accion.contains('ACTUALIZO') ? 'action-update' : 
-                                                                  (m.accion.contains('CREO') ? 'action-create' : 
-                                                                  (m.accion.contains('ELIMINO') ? 'action-delete' : 'action-default'))}"
+                                                  th:classappend="${m.accion.contains('UPDATE') ? 'action-update' : 
+                                                                  (m.accion.contains('CREATE') ? 'action-create' : 
+                                                                  (m.accion.contains('DELETE') ? 'action-delete' : 'action-default'))}"
                                                   th:text="${m.accion}">ACCION</span>
                                         </div>
                                         <div class="audit-detail" th:text="${m.detalle}">

@@ -55,6 +55,23 @@ public class ChecklistServicio {
         return repositorio.findByProyecto_IdAndFaseStartingWithOrderByCodigoAsc(proyectoId, prefijoFase);
     }
 
+    @Transactional(readOnly = true)
+    public List<ElementoChecklist> obtenerPorProyectoId(Long proyectoId) {
+        return repositorio.findByProyecto_IdOrderByCodigoAsc(proyectoId);
+    }
+
+  
+    private boolean esDiferente(String actual, String nuevo) {
+        String a = (actual == null) ? "" : actual.replaceAll("[\\n\\r]+", " ").trim();
+        String n = (nuevo == null) ? "" : nuevo.replaceAll("[\\n\\r]+", " ").trim();
+        
+        if (n.isEmpty() && (a.isEmpty() || a.equalsIgnoreCase("PENDING") || a.equalsIgnoreCase("Open"))) {
+            return false;
+        }
+        
+        return !n.equalsIgnoreCase(a);
+    }
+
     @Transactional
     @CacheEvict(value = "reportes", allEntries = true) 
     public void guardarChecklistCompleto(Map<String, String> allParams) {
@@ -73,7 +90,6 @@ public class ChecklistServicio {
         }
 
         List<ElementoChecklist> elementosDesdeBD = repositorio.findAllById(updatesById.keySet());
-        
         List<ElementoChecklist> elementosRealmenteModificados = new ArrayList<>();
 
         String nombreUsuarioLogueado = "Sistema"; 
@@ -84,37 +100,32 @@ public class ChecklistServicio {
 
         for (ElementoChecklist elemento : elementosDesdeBD) {
             Map<String, String> cambios = updatesById.get(elemento.getId());
-            
             final boolean[] huboCambioReal = {false}; 
             
             cambios.forEach((fieldName, fieldValue) -> {
-                String valorNuevo = (fieldValue == null) ? "" : fieldValue.replaceAll("[\\n\\r]+", " ").trim();
+                String valorNuevo = (fieldValue == null) ? "" : fieldValue.trim();
 
                 switch (fieldName) {
                     case "controlEntregable" -> {
-                        String valorActual = elemento.getControlEntregable() == null ? "" : elemento.getControlEntregable().replaceAll("[\\n\\r]+", " ").trim();
-                        if (!valorNuevo.equalsIgnoreCase(valorActual) && !(valorNuevo.isEmpty() && valorActual.isEmpty())) { 
+                        if (esDiferente(elemento.getControlEntregable(), valorNuevo)) {
                             elemento.setControlEntregable(valorNuevo); 
                             huboCambioReal[0] = true;
                         }
                     }
                     case "score" -> {
-                        String valorActual = elemento.getScore() == null ? "" : elemento.getScore().replaceAll("[\\n\\r]+", " ").trim();
-                        if (!valorNuevo.equalsIgnoreCase(valorActual) && !(valorNuevo.isEmpty() && valorActual.isEmpty())) {
+                        if (esDiferente(elemento.getScore(), valorNuevo)) {
                             elemento.setScore(valorNuevo); 
                             huboCambioReal[0] = true;
                         }
                     }
                     case "comentario" -> {
-                        String valorActual = elemento.getComentario() == null ? "" : elemento.getComentario().replaceAll("[\\n\\r]+", " ").trim();
-                        if (!valorNuevo.equalsIgnoreCase(valorActual) && !(valorNuevo.isEmpty() && valorActual.isEmpty())) {
+                        if (esDiferente(elemento.getComentario(), valorNuevo)) {
                             elemento.setComentario(valorNuevo); 
                             huboCambioReal[0] = true;
                         }
                     }
                     case "estado" -> {
-                        String valorActual = elemento.getEstado() == null ? "" : elemento.getEstado().replaceAll("[\\n\\r]+", " ").trim();
-                        if (!valorNuevo.equalsIgnoreCase(valorActual) && !(valorNuevo.isEmpty() && valorActual.isEmpty())) {
+                        if (esDiferente(elemento.getEstado(), valorNuevo)) {
                             elemento.setEstado(valorNuevo); 
                             huboCambioReal[0] = true;
                         }
@@ -153,8 +164,8 @@ public class ChecklistServicio {
             if (huboCambioReal[0]) {
                 bitacoraServicio.registrarAccion(
                     nombreUsuarioLogueado, 
-                    "ACTUALIZO_ENTREGABLE", 
-                    "Se actualizó el entregable: " + elemento.getCodigo() + " - " + elemento.getNombre()
+                    "UPDATE DELIVERABLE", 
+                    "Deliverable: " + elemento.getNombre() + " was updated."
                 );
                 elementosRealmenteModificados.add(elemento);
             }
@@ -164,6 +175,7 @@ public class ChecklistServicio {
             repositorio.saveAll(elementosRealmenteModificados);
         }
     }
+
 
    @Cacheable("reportes")
    public List<ReporteProgreso> generarReporteGlobal() {
@@ -273,7 +285,7 @@ public class ChecklistServicio {
 
         for (Proyecto p : proyectos) {
             List<Double> porcentajes = new ArrayList<>();
-            List<ElementoChecklist> items = repositorio.findByProyecto_Id(p.getId()); // Cambio: usar findByProyecto_Id
+            List<ElementoChecklist> items = repositorio.findByProyecto_Id(p.getId());
             
             for (String etapa : etapas) {
                 porcentajes.add(calcularPorcentajeEtapaVisual(items, etapa));
@@ -494,10 +506,7 @@ public class ChecklistServicio {
         return (s == null) ? "" : s.trim().toUpperCase();
     }
 
-    @Transactional(readOnly = true)
-    public List<ElementoChecklist> obtenerPorProyectoId(Long id) {
-        return repositorio.findByProyecto_IdOrderByCodigoAsc(id);
-    }
+   
     
 
 

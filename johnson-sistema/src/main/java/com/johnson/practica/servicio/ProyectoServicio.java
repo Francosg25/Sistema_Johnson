@@ -29,23 +29,21 @@ public class ProyectoServicio {
     public Proyecto guardarProyecto(Proyecto proyecto) {
         boolean isNew = proyecto.getId() == null;
 
-        // Si es un proyecto existente, simplemente lo guardamos y retornamos.
         if (!isNew) {
             return proyectoRepositorio.save(proyecto);
         }
 
-        // Si es un proyecto nuevo, primero lo guardamos para obtener un ID.
         Proyecto proyectoGuardado = proyectoRepositorio.save(proyecto);
 
         // REGISTRAR EN BITÁCORA
         String usuario = org.springframework.security.core.context.SecurityContextHolder.getContext().getAuthentication().getName();
-        bitacoraServicio.registrarAccion(usuario, "CREO_PROYECTO", "Se creó el proyecto: " + proyectoGuardado.getNombre());
+        bitacoraServicio.registrarAccion(usuario, "CREATE PROJECT", "Project created: " + proyectoGuardado.getNombre());
 
         List<CatalogoElemento> plantillaCompleta = catalogoRepositorio.findAll();
         System.out.println("DEBUG: Creando checklist para nuevo proyecto. Plantillas encontradas: " + plantillaCompleta.size());
 
         if (plantillaCompleta.isEmpty()) {
-            return proyectoGuardado; // No hay plantillas, no se puede crear checklist.
+            return proyectoGuardado; 
         }
 
         List<ElementoChecklist> nuevosItems = new java.util.ArrayList<>();
@@ -55,7 +53,6 @@ public class ProyectoServicio {
             item.setProyecto(proyectoGuardado);
             item.setCatalogo(molde);
             
-            // Copiamos los datos de la plantilla al nuevo item
             item.setCodigo(molde.getCodigo());
             item.setNombre(molde.getNombre());
             item.setGrupo(molde.getGrupo());
@@ -64,7 +61,6 @@ public class ProyectoServicio {
             item.setChampion(molde.getChampion());
             item.setEtapaVisual(molde.getEtapaVisual());
             
-            // Inicializamos valores por defecto
             item.setEstado("PENDING"); 
             item.setScore("");
             item.setControlEntregable("Open");
@@ -72,7 +68,6 @@ public class ProyectoServicio {
             nuevosItems.add(item);
         }
         
-        // Guardamos todos los nuevos items del checklist en una sola operación
         elementoRepositorio.saveAll(nuevosItems);
         
         return proyectoGuardado;
@@ -91,7 +86,7 @@ public class ProyectoServicio {
         Proyecto p = buscarPorId(id);
         if (p != null) {
             String usuario = org.springframework.security.core.context.SecurityContextHolder.getContext().getAuthentication().getName();
-            bitacoraServicio.registrarAccion(usuario, "ELIMINO_PROYECTO", "Se eliminó el proyecto: " + p.getNombre());
+            bitacoraServicio.registrarAccion(usuario, "DELETE PROJECT", "Project deleted: " + p.getNombre());
         }
 
         // Primero borramos los items del checklist para evitar error de llave foránea
