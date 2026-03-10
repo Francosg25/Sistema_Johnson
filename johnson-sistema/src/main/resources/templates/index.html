@@ -22,8 +22,57 @@
         .table td { padding: 1.2rem 1.1rem; font-size: 0.95rem; vertical-align: middle; border-bottom: 1px solid #f1f5f9; }
         .progress-mini { height: 10px; border-radius: 10px; background-color: #e2e8f0; width: 100%; }
         .alert-item { padding: 15px; border-radius: 12px; border-left: 5px solid #ef4444; background: #fff; margin-bottom: 12px; border: 1px solid #fee2e2; border-left-width: 5px; }
-        .champion-pill { border-radius: 50px; padding: 8px 18px; font-size: 0.85rem; font-weight: 700; transition: all 0.2s; cursor: pointer; border: 1px solid #e2e8f0 !important; background: white; color: #475569; display: flex; align-items: center; gap: 8px; }
-        .champion-pill.active { background: var(--je-orange) !important; color: white !important; border-color: var(--je-orange) !important; box-shadow: 0 4px 12px rgba(245, 130, 31, 0.25); }
+        /* Diseño Premium para los Champions Pills */
+        .champion-pill {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: #ffffff;
+            border: 1px solid #cbd5e1;
+            color: #475569;
+            font-weight: 700;
+            font-size: 0.85rem;
+            padding: 0.4rem 1.2rem;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            white-space: nowrap;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+        }
+        
+        .champion-pill:hover {
+            border-color: #94a3b8;
+            background: #f8fafc;
+        }
+        
+        .champion-pill.active {
+            background: var(--je-orange);
+            border-color: var(--je-orange);
+            color: white;
+            box-shadow: 0 4px 12px rgba(245, 130, 31, 0.3);
+        }
+        
+        .champion-pill .badge {
+            background-color: #f1f5f9;
+            color: #475569;
+            font-size: 0.75rem;
+            padding: 4px 8px;
+            border-radius: 12px;
+            border: 1px solid #e2e8f0;
+        }
+        
+        .champion-pill.active .badge {
+            background-color: rgba(255, 255, 255, 0.25);
+            color: #ffffff;
+            border-color: transparent;
+        }
+        .custom-scrollbar::-webkit-scrollbar {
+            height: 6px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background-color: #cbd5e1;
+            border-radius: 10px;
+        }
         .fc { --fc-border-color: #e2e8f0; font-family: inherit; height: 600px !important; }
         .btn-je-primary { background: var(--je-orange) !important; border: none !important; color: white !important; font-size: 1rem; font-weight: 700; padding: 0.8rem 2rem; border-radius: 12px; transition: all 0.2s; }
         .btn-je-primary:hover { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(245, 130, 31, 0.35); }
@@ -66,7 +115,7 @@
                         <div class="col-lg-8">
                             <div class="card glass-card">
                                 <div class="card-header glass-header d-flex justify-content-between align-items-center"><h6 class="m-0 fw-bold">ACTIVE PROJECTS TRACKING</h6><span class="badge bg-primary text-white px-3 py-1 rounded-pill small fw-bold">REAL-TIME</span></div>
-                                <div class="card-body p-0"><div class="table-responsive" style="max-height: 450px;"><table class="table table-hover align-middle mb-0"><thead><tr><th class="ps-4">Project / PN</th><th class="text-center">Customer</th><th style="width: 255px;">Overall Progress</th><th class="text-center">SOP Date</th><th class="text-center pe-4">Details</th></tr></thead><tbody>
+                                <div class="card-body p-0"><div class="table-responsive" style="max-height: 450px;"><table class="table table-hover align-middle mb-0"><thead><tr><th class="ps-4">Project</th><th class="text-center">Customer</th><th style="width: 130px;">Overall Progress</th><th class="text-center" style="width: 200px;">SOP Date</th><th class="text-center pe-4">Details</th></tr></thead><tbody>
                                     <tr th:each="p : ${reporteProgreso}"><td class="ps-4"><div class="text-dark-bold" th:text="${p.nombreProyecto}"></div><div class="text-muted" th:text="${p.numeroParte}"></div></td><td class="text-center"><span class="badge badge-customer rounded-3" th:text="${p.cliente}"></span></td><td><div class="d-flex align-items-center"><div class="progress progress-mini flex-grow-1 me-3"><div class="progress-bar" th:classappend="${p.porcentaje < 30 ? 'bg-danger' : (p.porcentaje < 70 ? 'bg-warning' : 'bg-success')}" th:style="'width: ' + ${p.porcentaje} + '%;'"></div></div><span class="text-dark-bold" th:text="${p.porcentaje + '%'}"></span></div></td><td class="text-center text-primary fw-bold" th:text="${p.sop}"></td><td class="text-center pe-4"><a th:href="@{/proyectos/checklist/{id}(id=${p.id})}" class="btn btn-sm btn-outline-primary rounded-pill px-3 fw-bold">OPEN</a></td></tr>
                                 </tbody></table></div></div>
                             </div>
@@ -93,7 +142,7 @@
                                         <div th:each="champ : ${listaChampions}" class="champion-pill" th:data-champion="${champ}" th:title="${@checklistServicio.obtenerNombreCompletoChampion(champ)}"><span th:text="${champ}"></span> <span class="badge" th:text="${conteoPorChampion.get(champ) ?: 0}">0</span></div>
                                     </div>
                                 </div>
-                                <div class="card-body p-0"><div class="table-responsive" style="max-height: 400px;"><table class="table table-hover align-middle mb-0" id="tasksTable"><thead><tr><th class="ps-4">Milestone Name</th><th class="text-center" id="col-champion-header">Responsible</th><th class="text-center">Status</th><th class="text-center pe-4">Action</th></tr></thead><tbody>
+                                <div class="card-body p-0"><div class="table-responsive" style="max-height: 400px;"><table class="table table-hover align-middle mb-0" id="tasksTable"><thead><tr><th class="ps-4">Deliverable Name</th><th class="text-center" id="col-champion-header">Responsible</th><th class="text-center">Status</th><th class="text-center pe-4">Action</th></tr></thead><tbody>
                                     <tr th:each="t : ${todasTareasPendientes}" class="task-row" th:data-champion="${@checklistServicio.normalizarChampion(t.champion)}"><td class="ps-4"><div class="text-dark-bold" th:text="${t.proyecto.nombre}"></div><div class="text-primary fw-medium" th:text="${t.nombre}"></div></td><td class="text-center champ-col"><span class="badge px-3 py-2 fw-bold shadow-sm" th:with="normChamp=${@checklistServicio.normalizarChampion(t.champion)}" th:classappend="'champ-' + ${#strings.toLowerCase(normChamp)}" th:text="${normChamp}" th:title="${@checklistServicio.obtenerNombreCompletoChampion(normChamp)}"></span></td><td class="text-center"><span class="badge rounded-pill border px-3 py-2 shadow-sm" th:classappend="${t.controlEntregable == 'NEEDS ACTION' ? 'status-action' : 'status-pending'}" th:text="${t.controlEntregable ?: 'PENDING'}"></span></td><td class="text-center pe-4"><a th:href="@{/proyectos/checklist/{id}(id=${t.proyecto.id})}" class="btn btn-sm btn-link text-primary fw-bold text-decoration-none">VIEW CHECKLIST</a></td></tr>
                                 </tbody></table></div></div>
                             </div>
@@ -164,23 +213,117 @@
 
         function initializeCharts() {
             const data = /*[[${tendencia}]]*/ {};
-            const allKeys = Object.keys(data).sort((a,b) => {
-                const [mA, yA] = a.split('/').map(Number), [mB, yB] = b.split('/').map(Number);
+            
+            // Función auxiliar para forzar el formato a dos dígitos (ej. 03/2026)
+            const formatMonthYear = (date) => {
+                return String(date.getMonth() + 1).padStart(2, '0') + "/" + date.getFullYear();
+            };
+
+            // Extraer el valor de los datos probando ambos formatos (03/2026 y 3/2026)
+            const getChartValue = (date) => {
+                const formatWithZero = formatMonthYear(date);
+                const formatWithoutZero = (date.getMonth() + 1) + "/" + date.getFullYear();
+                return data[formatWithZero] || data[formatWithoutZero] || 0;
+            };
+
+            const now = new Date();
+            const prevMesDate = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+            const nextMesDate = new Date(now.getFullYear(), now.getMonth() + 1, 1);
+            
+            const miniLabels = [formatMonthYear(prevMesDate), formatMonthYear(now), formatMonthYear(nextMesDate)];
+            const miniValues = [getChartValue(prevMesDate), getChartValue(now), getChartValue(nextMesDate)];
+
+            const ctxMini = document.getElementById('miniTrendChart').getContext('2d');
+            const gradientMini = ctxMini.createLinearGradient(0, 0, 0, 250);
+            gradientMini.addColorStop(0, 'rgba(245, 130, 31, 0.4)'); 
+            gradientMini.addColorStop(1, 'rgba(245, 130, 31, 0.0)');
+
+            const chartOptions = {
+                responsive: true, 
+                maintainAspectRatio: false, 
+                plugins: { 
+                    legend: { display: false },
+                    tooltip: {
+                        backgroundColor: '#1e293b',
+                        padding: 12,
+                        titleFont: { size: 13, family: 'Inter' },
+                        bodyFont: { size: 14, family: 'Inter', weight: 'bold' },
+                        displayColors: false,
+                        callbacks: {
+                            label: function(context) { return context.parsed.y + ' Deliverables Approved'; }
+                        }
+                    }
+                }, 
+                scales: { 
+                    y: { 
+                        beginAtZero: true,
+                        border: { display: false },
+                        grid: { color: 'rgba(0,0,0,0.04)', drawTicks: false },
+                        ticks: { stepSize: 1 } // Fuerza a que no muestre decimales
+                    }, 
+                    x: { 
+                        border: { display: false },
+                        grid: { display: false } 
+                    } 
+                }
+            };
+
+            new Chart(ctxMini, { 
+                type: 'line', 
+                data: { 
+                    labels: miniLabels, 
+                    datasets: [{ 
+                        label: 'Approved', 
+                        data: miniValues, 
+                        borderColor: '#F5821F', 
+                        backgroundColor: gradientMini, 
+                        borderWidth: 3,
+                        pointBackgroundColor: '#FFFFFF',
+                        pointBorderColor: '#F5821F',
+                        pointBorderWidth: 2,
+                        pointRadius: 5,
+                        pointHoverRadius: 7,
+                        fill: true,
+                        tension: 0.4 
+                    }] 
+                }, 
+                options: chartOptions
+            });
+
+            // Lógica robusta para el modal de año completo
+            const allKeysRaw = Object.keys(data);
+            const allKeys = allKeysRaw.sort((a,b) => {
+                const [mA, yA] = a.split('/').map(Number);
+                const [mB, yB] = b.split('/').map(Number);
                 return yA !== yB ? yA - yB : mA - mB;
             });
 
-            const now = new Date();
-            const currentMesAnio = (now.getMonth() + 1) + "/" + now.getFullYear();
-            const prevMesDate = new Date(now.getFullYear(), now.getMonth() - 1, 1);
-            const prevMesAnio = (prevMesDate.getMonth() + 1) + "/" + prevMesDate.getFullYear();
-            const nextMesDate = new Date(now.getFullYear(), now.getMonth() + 1, 1);
-            const nextMesAnio = (nextMesDate.getMonth() + 1) + "/" + nextMesDate.getFullYear();
-            
-            const miniLabels = [prevMesAnio, currentMesAnio, nextMesAnio];
-            const miniValues = miniLabels.map(k => data[k] || 0);
+            const ctxFull = document.getElementById('fullTrendChart').getContext('2d');
+            const gradientFull = ctxFull.createLinearGradient(0, 0, 0, 500);
+            gradientFull.addColorStop(0, 'rgba(245, 130, 31, 0.3)');
+            gradientFull.addColorStop(1, 'rgba(245, 130, 31, 0.0)');
 
-            new Chart(document.getElementById('miniTrendChart'), { type: 'bar', data: { labels: miniLabels, datasets: [{ label: 'Approved', data: miniValues, backgroundColor: '#F5821F', borderRadius: 8 }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true }, x: { grid: { display: false } } } } });
-            new Chart(document.getElementById('fullTrendChart'), { type: 'line', data: { labels: allKeys, datasets: [{ label: 'Annual Trend', data: allKeys.map(k => data[k]), borderColor: '#F5821F', backgroundColor: 'rgba(245, 130, 31, 0.1)', fill: true, tension: 0.4, pointRadius: 6 }] }, options: { responsive: true, maintainAspectRatio: false, scales: { y: { beginAtZero: true } } } });
+            new Chart(ctxFull, { 
+                type: 'line', 
+                data: { 
+                    labels: allKeys, 
+                    datasets: [{ 
+                        label: 'Annual Trend', 
+                        data: allKeys.map(k => data[k]), 
+                        borderColor: '#F5821F', 
+                        backgroundColor: gradientFull, 
+                        borderWidth: 3,
+                        pointBackgroundColor: '#FFFFFF',
+                        pointBorderColor: '#F5821F',
+                        pointBorderWidth: 2,
+                        pointRadius: 5,
+                        pointHoverRadius: 7,
+                        fill: true, 
+                        tension: 0.4 
+                    }] 
+                }, 
+                options: chartOptions 
+            });
         }
 
         function initializeCalendar() {

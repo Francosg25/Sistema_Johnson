@@ -120,11 +120,17 @@ public class ChecklistServicio {
                                 String msj = "The deliverable '" + elemento.getNombre() + "' in " + elemento.getProyecto().getNombre() + " was marked as OK.";
                                 String url = "/checklist?proyectoId=" + elemento.getProyecto().getId();
                                 notificacionServicio.alertarATodos(titulo, msj, "SUCCESS", url, nombreUsuarioLogueado);
+                                
+                                // NUEVO: Auto-asignar fecha si está vacía
+                                if (elemento.getFechaReal() == null) {
+                                    elemento.setFechaReal(LocalDate.now());
+                                }
                             }
                             elemento.setScore(valorNuevo); 
                             huboCambioReal[0] = true;
                         }
                     }
+                    
                     case "comentario" -> {
                         if (esDiferente(elemento.getComentario(), valorNuevo)) {
                             elemento.setComentario(valorNuevo); 
@@ -133,6 +139,9 @@ public class ChecklistServicio {
                     }
                     case "estado" -> {
                         if (esDiferente(elemento.getEstado(), valorNuevo)) {
+                            if ("OK".equalsIgnoreCase(valorNuevo) && elemento.getFechaReal() == null) {
+                                elemento.setFechaReal(LocalDate.now());
+                            }
                             elemento.setEstado(valorNuevo); 
                             huboCambioReal[0] = true;
                         }
@@ -189,8 +198,13 @@ public class ChecklistServicio {
         Map<String, Integer> tendencia = new HashMap<>();
 
         for (ElementoChecklist e : todos) {
-            if ("OK".equalsIgnoreCase(e.getScore()) && e.getFechaReal() != null) {
-                String mesAnio = String.format("%02d/%d", e.getFechaReal().getMonthValue(), e.getFechaReal().getYear());
+            boolean isScoreOk = "OK".equalsIgnoreCase(e.getScore());
+            boolean isEstadoOk = "OK".equalsIgnoreCase(e.getEstado());
+
+            if (isScoreOk || isEstadoOk) {
+                LocalDate fecha = e.getFechaReal() != null ? e.getFechaReal() : LocalDate.now();
+                
+                String mesAnio = fecha.getMonthValue() + "/" + fecha.getYear();
                 tendencia.put(mesAnio, tendencia.getOrDefault(mesAnio, 0) + 1);
             }
         }
