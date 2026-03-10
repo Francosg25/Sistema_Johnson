@@ -39,19 +39,6 @@
         </li>
     </ul>
 
-    <div class="sidebar-footer mt-auto">
-        <div class="d-flex align-items-center">
-            <div class="avatar-initial rounded-circle me-2">
-                <span th:text="${#strings.substring(#authentication?.name != null ? #authentication.name : 'U', 0, 1).toUpperCase()}">U</span>
-            </div>
-            <div class="d-flex flex-column text-truncate container-info-usuario" style="max-width: 150px;">
-                <span class="text-dark fw-bold text-truncate" style="font-size: 0.85rem; line-height: 1.1;" th:text="${#authentication?.name ?: 'Guest'}">User</span>
-                <form th:action="@{/logout}" method="post" class="m-0 p-0 mt-1">
-                    <button type="submit" class="btn btn-link p-0 m-0 border-0 align-baseline text-decoration-none small text-dark fw-bold" style="font-size: 0.75rem;">
-                        <i class="bi bi-box-arrow-right me-1"></i><span>Logout</span>
-                    </button>
-                </form>
-            </div>
-        </div>
+    
     </div>
 </div>

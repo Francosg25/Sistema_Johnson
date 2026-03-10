@@ -35,6 +35,14 @@ public class NotificacionServicio {
             Notificacion notif = new Notificacion(titulo, mensaje, tipo, usuario, autor);
             notif.setLink(link);
             repositorio.save(notif);
+
+            if (messagingTemplate != null) {
+                messagingTemplate.convertAndSendToUser(
+                    usuario.getUsername(), 
+                    "/queue/notificaciones", 
+                    "NUEVA_NOTIF"
+                );
+            }
         }
     }
 

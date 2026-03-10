@@ -9,12 +9,14 @@
 
         <div class="ms-auto d-flex align-items-center">
             <div class="dropdown me-3 mt-2" id="notifDropdownContainer">
-                <button class="btn btn-light border-0 shadow-none position-relative rounded-circle p-2" type="button" id="notifDropdown" data-bs-toggle="dropdown" aria-expanded="false" onclick="fetchNotificaciones()">
+                <button class="btn btn-light border-0 shadow-none position-relative rounded-circle p-2" type="button" id="notifDropdown" data-bs-toggle="dropdown" aria-expanded="false" onclick="registrarNotificacionesVistas();">
                     <i class="bi bi-bell fs-5 text-dark"></i>
                     <span id="notifBadge" class="position-absolute badge rounded-pill bg-danger d-none" style="z-index: 10; font-size: 0.6rem; padding: 0.35em 0.5em; top: 5px; right: 5px; transform: translate(30%, 30%);">
                         0
                     </span>
                 </button>
+
+                
                 <div class="dropdown-menu dropdown-menu-end shadow-lg border-0 p-0" aria-labelledby="notifDropdown" style="width: 350px; border-radius: 12px; overflow: hidden; z-index: 1060;">
                     <div class="bg-light p-3 border-bottom d-flex justify-content-between align-items-center">
                         <h6 class="m-0 fw-bold text-dark">Notifications</h6>
@@ -37,32 +39,28 @@
 
     <script>
         let stompClient = null;
+        let ultimaNotifIdServidor = 0;
 
         function conectarWebSocket() {
             const socket = new SockJS('/ws-johnson');
             stompClient = Stomp.over(socket);
-            stompClient.debug = null; // Oculta logs en la consola del navegador
+            stompClient.debug = null; 
 
             stompClient.connect({}, function (frame) {
                 console.log('Connected to WebSockets (Real Time Active)');
-                
-                // Suscripción al canal privado del usuario logueado
                 stompClient.subscribe('/user/queue/notificaciones', function (msg) {
-                    // Cuando llega un mensaje, actualizamos las notificaciones de inmediato
                     fetchNotificaciones(); 
                     animarCampana();
                 });
             });
         }
 
-        // Efecto visual extra para cuando llega una notificación
         function animarCampana() {
             const iconoCampana = document.querySelector('#notifDropdown i.bi-bell');
             if (iconoCampana) {
                 iconoCampana.classList.remove('bi-bell');
                 iconoCampana.classList.add('bi-bell-fill', 'text-danger');
                 iconoCampana.style.transform = 'rotate(15deg)';
-                
                 setTimeout(() => {
                     iconoCampana.style.transform = 'rotate(-15deg)';
                     setTimeout(() => {
@@ -87,8 +85,25 @@
             const badge = document.getElementById('notifBadge');
             const list = document.getElementById('notifList');
             
-            if (data && data.totalNoLeidas > 0) {
-                badge.innerText = data.totalNoLeidas;
+            let maxIdEnServidor = 0;
+            if (data && data.ultimas && data.ultimas.length > 0) {
+                maxIdEnServidor = Math.max(...data.ultimas.map(n => n.id));
+                ultimaNotifIdServidor = maxIdEnServidor;
+            }
+
+            const storedValue = localStorage.getItem('lastSeenNotifId');
+            const lastSeenId = storedValue ? parseInt(storedValue) : 0;
+
+            // Debug en consola para verificar IDs (puedes borrarlo después)
+            console.log("Max ID Servidor:", maxIdEnServidor, "Last Seen ID:", lastSeenId);
+
+            let nuevasNoVistas = 0;
+            if (data && data.ultimas) {
+                nuevasNoVistas = data.ultimas.filter(n => n.id > lastSeenId).length;
+            }
+
+            if (nuevasNoVistas > 0) {
+                badge.innerText = nuevasNoVistas;
                 badge.classList.remove('d-none');
             } else {
                 badge.classList.add('d-none');
@@ -120,6 +135,13 @@
             `).join('');
         }
 
+        function registrarNotificacionesVistas() {
+            if (ultimaNotifIdServidor > 0) {
+                localStorage.setItem('lastSeenNotifId', ultimaNotifIdServidor.toString());
+            }
+            document.getElementById('notifBadge').classList.add('d-none');
+        }
+
         function getIcon(tipo) {
             if (!tipo) return 'bi-info-circle-fill';
             const t = tipo.toUpperCase();
@@ -144,9 +166,7 @@
             } else {
                 d = new Date(fecha);
             }
-            
             if (isNaN(d.getTime())) return "";
-
             const hoy = new Date();
             if (d.toDateString() === hoy.toDateString()) {
                 return d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
@@ -164,7 +184,10 @@
 
         function marcarTodasComoLeidas() {
             fetch('/api/notificaciones/marcar-todas-leidas', { method: 'POST' })
-                .then(() => fetchNotificaciones());
+                .then(() => {
+                    localStorage.removeItem('lastSeenNotifId');
+                    fetchNotificaciones();
+                });
         }
 
         document.addEventListener('DOMContentLoaded', () => {
@@ -175,15 +198,8 @@
     </script>
     <style>
         .hover-bg-light:hover { background-color: #f8f9fa; }
-        .text-truncate-2 {
-            display: -webkit-box;
-            -webkit-line-clamp: 2;
-            -webkit-box-orient: vertical;
-            overflow: hidden;
-        }
         #notifList::-webkit-scrollbar { width: 4px; }
         #notifList::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
-        
         #notifDropdown i { transition: transform 0.15s ease-in-out; }
     </style>
 </nav>

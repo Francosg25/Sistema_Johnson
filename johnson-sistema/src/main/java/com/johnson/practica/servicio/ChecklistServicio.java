@@ -92,11 +92,12 @@ public class ChecklistServicio {
         List<ElementoChecklist> elementosDesdeBD = repositorio.findAllById(updatesById.keySet());
         List<ElementoChecklist> elementosRealmenteModificados = new ArrayList<>();
 
-        String nombreUsuarioLogueado = "Sistema"; 
+        String usuarioAudit = "Sistema"; 
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         if (auth != null && auth.isAuthenticated() && !auth.getPrincipal().equals("anonymousUser")) {
-            nombreUsuarioLogueado = auth.getName();
+            usuarioAudit = auth.getName();
         }
+        final String nombreUsuarioLogueado = usuarioAudit; // Variable final para la lambda
 
         for (ElementoChecklist elemento : elementosDesdeBD) {
             Map<String, String> cambios = updatesById.get(elemento.getId());
@@ -114,6 +115,12 @@ public class ChecklistServicio {
                     }
                     case "score" -> {
                         if (esDiferente(elemento.getScore(), valorNuevo)) {
+                            if ("OK".equalsIgnoreCase(valorNuevo)) {
+                                String titulo = "Deliverable OK";
+                                String msj = "The deliverable '" + elemento.getNombre() + "' in " + elemento.getProyecto().getNombre() + " was marked as OK.";
+                                String url = "/checklist?proyectoId=" + elemento.getProyecto().getId();
+                                notificacionServicio.alertarATodos(titulo, msj, "SUCCESS", url, nombreUsuarioLogueado);
+                            }
                             elemento.setScore(valorNuevo); 
                             huboCambioReal[0] = true;
                         }
