@@ -1,7 +1,7 @@
 package com.johnson.practica.controlador;
 
 import com.johnson.practica.servicio.UsuarioServicio;
-import jakarta.servlet.http.HttpServletRequest; // <-- Importación añadida
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;

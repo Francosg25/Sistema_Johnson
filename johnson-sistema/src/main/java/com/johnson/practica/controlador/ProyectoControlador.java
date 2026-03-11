@@ -171,19 +171,22 @@ public class ProyectoControlador {
     @Autowired
     private ExcelServicio excelServicio;
 
-    @GetMapping("/exportar-excel/{id}")
-    public ResponseEntity<byte[]> descargarExcel(@PathVariable Long id) {
+
+    @GetMapping("/exportar-master-timeline")
+    public ResponseEntity<byte[]> descargarMasterTimeline() {
         try {
-            Proyecto p = proyectoServicio.buscarPorId(id);
-            List<ElementoChecklist> items = checklistServicio.obtenerPorProyectoId(id);
-            byte[] data = excelServicio.generarExcelProyecto(p, items);
+            List<Proyecto> proyectos = proyectoRepositorio.findAll();
+            List<ElementoChecklist> todosLosElementos = checklistServicio.obtenerTodos(); 
+
+            byte[] data = excelServicio.generarMasterTimelineExcel(proyectos, todosLosElementos);
 
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
-            headers.setContentDispositionFormData("attachment", "Checklist_" + p.getNumeroParte() + ".xlsx");
+            headers.setContentDispositionFormData("attachment", "Master_Timeline_Overview.xlsx");
 
             return new ResponseEntity<>(data, headers, HttpStatus.OK);
         } catch (Exception e) {
+            e.printStackTrace();
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }

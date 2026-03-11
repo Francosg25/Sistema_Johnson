@@ -60,6 +60,10 @@ public class ChecklistServicio {
         return repositorio.findByProyecto_IdOrderByCodigoAsc(proyectoId);
     }
 
+    public List<ElementoChecklist> obtenerTodos() {
+        return repositorio.findAll();
+    }
+
   
     private boolean esDiferente(String actual, String nuevo) {
         String a = (actual == null) ? "" : actual.replaceAll("[\\n\\r]+", " ").trim();
