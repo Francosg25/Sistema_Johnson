@@ -31,6 +31,7 @@ import com.johnson.practica.servicio.FirmaEtapaServicio;
 import com.johnson.practica.modelo.FirmaEtapa;
 import java.security.Principal;
 import java.util.HashMap;
+import org.springframework.security.access.prepost.PreAuthorize;
 
 @Controller
 @RequestMapping("/proyectos")
@@ -141,6 +142,7 @@ public class ProyectoControlador {
     }
 
     @GetMapping("/eliminar/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     @CacheEvict(value = "reportes", allEntries = true) 
     public String eliminarProyecto(@PathVariable Long id) {
         proyectoServicio.eliminarProyecto(id);

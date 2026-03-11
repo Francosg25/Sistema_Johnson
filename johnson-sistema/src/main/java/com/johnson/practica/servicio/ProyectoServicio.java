@@ -81,6 +81,15 @@ public class ProyectoServicio {
         return proyectoRepositorio.findAll();
     }
 
+    @Autowired
+    private FirmaEtapaRepositorio firmaEtapaRepositorio;
+
+    @Autowired
+    private AdjuntoRepositorio adjuntoRepositorio;
+
+    @Autowired
+    private HitoProyectoRepositorio hitoProyectoRepositorio;
+
     @Transactional
     public void eliminarProyecto(Long id) {
         Proyecto p = buscarPorId(id);
@@ -89,11 +98,20 @@ public class ProyectoServicio {
             bitacoraServicio.registrarAccion(usuario, "DELETE PROJECT", "Project deleted: " + p.getNombre());
         }
 
-        // Primero borramos los items del checklist para evitar error de llave foránea
+        // Borramos firmas de etapa
+        firmaEtapaRepositorio.deleteByProyecto_Id(id);
+        
+        // Borramos adjuntos del proyecto
+        adjuntoRepositorio.deleteByProyecto_Id(id);
+
+        // Borramos hitos del proyecto
+        hitoProyectoRepositorio.deleteByProyecto_Id(id);
+
+        // Borramos los items del checklist
         List<ElementoChecklist> items = elementoRepositorio.findByProyecto_IdAndFaseStartingWithOrderByCodigoAsc(id, ""); 
         elementoRepositorio.deleteAll(items);
         
-        // Luego borramos el proyecto
+        // Borramos el proyecto
         proyectoRepositorio.deleteById(id);
     }
 }

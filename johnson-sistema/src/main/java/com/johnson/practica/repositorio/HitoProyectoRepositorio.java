@@ -6,4 +6,5 @@ import java.util.List;
 
 public interface HitoProyectoRepositorio extends JpaRepository<HitoProyecto, Long> {
     List<HitoProyecto> findByProyecto_Id(Long proyectoId);
+    void deleteByProyecto_Id(Long proyectoId);
 }

@@ -31,7 +31,6 @@ public class ExcelServicio {
             // Congelar las primeras 5 filas (Leyenda + Header) y las primeras 5 columnas
             sheet.createFreezePane(5, 5);
 
-            // ================= ESTILOS PROFESIONALES =================
             CellStyle headerStyle = workbook.createCellStyle();
             Font headerFont = workbook.createFont();
             headerFont.setBold(true); headerFont.setColor(IndexedColors.WHITE.getIndex());

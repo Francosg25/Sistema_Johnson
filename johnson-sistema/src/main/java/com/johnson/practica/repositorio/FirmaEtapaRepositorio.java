@@ -7,4 +7,5 @@ import java.util.List;
 public interface FirmaEtapaRepositorio extends JpaRepository<FirmaEtapa, Long> {
     List<FirmaEtapa> findByProyectoIdAndEtapa(Long proyectoId, Integer etapa);
     List<FirmaEtapa> findByProyectoId(Long proyectoId);
+    void deleteByProyecto_Id(Long proyectoId);
 }
