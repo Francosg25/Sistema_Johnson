@@ -178,6 +178,7 @@ public class ChecklistServicio {
                             }
                         } catch (Exception ignored) {}
                     }
+
                 }
             });
 

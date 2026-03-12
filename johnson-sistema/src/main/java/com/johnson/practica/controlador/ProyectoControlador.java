@@ -30,6 +30,7 @@ import java.util.Map;
 import com.johnson.practica.servicio.FirmaEtapaServicio;
 import com.johnson.practica.modelo.FirmaEtapa;
 import java.security.Principal;
+import java.time.LocalDate;
 import java.util.HashMap;
 import org.springframework.security.access.prepost.PreAuthorize;
 
@@ -191,6 +192,23 @@ public class ProyectoControlador {
             e.printStackTrace();
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
+    }
+
+    @PostMapping("/guardar-hitos/{id}")
+    @ResponseBody
+    public Map<String, Object> guardarHitosProyecto(@PathVariable Long id, 
+                                                    @RequestParam(required = false) LocalDate fechaCar,
+                                                    @RequestParam(required = false) LocalDate fechaBuyoff,
+                                                    @RequestParam(required = false) LocalDate fechaTransit,
+                                                    @RequestParam(required = false) LocalDate fechaSop) {
+        Proyecto proyecto = proyectoRepositorio.findById(id).orElseThrow();
+        proyecto.setFechaCar(fechaCar);
+        proyecto.setFechaBuyoff(fechaBuyoff);
+        proyecto.setFechaTransit(fechaTransit);
+        proyecto.setFechaSop(fechaSop);
+        proyectoRepositorio.save(proyecto);
+        
+        return Map.of("exito", true);
     }
 
     @GetMapping("/exportar-pdf/{id}")

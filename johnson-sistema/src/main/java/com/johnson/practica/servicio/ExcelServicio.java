@@ -3,34 +3,32 @@ package com.johnson.practica.servicio;
 import com.johnson.practica.modelo.ElementoChecklist;
 import com.johnson.practica.modelo.Proyecto;
 import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.stereotype.Service;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-import java.util.stream.Collectors;
-import java.util.ArrayList;
-import java.util.Comparator;
+
 import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 import java.time.LocalDate;
 import java.time.YearMonth;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
+import java.util.stream.Collectors;
 
 @Service
 public class ExcelServicio {
 
- 
     public byte[] generarMasterTimelineExcel(List<Proyecto> proyectos, List<ElementoChecklist> todosLosElementos) throws Exception {
         try (Workbook workbook = new XSSFWorkbook()) {
-            Sheet sheet = workbook.createSheet("Master Timeline");
+            Sheet sheet = workbook.createSheet("Launch Overview");
             sheet.setRowSumsBelow(false); 
-            sheet.setDisplayGridlines(false); 
+            sheet.setDisplayGridlines(false); // Líneas de Excel nativas desactivadas
             
-            // Congelar las primeras 5 filas (Leyenda + Header) y las primeras 5 columnas
-            sheet.createFreezePane(5, 5);
+            sheet.createFreezePane(5, 7);
 
+            // ================= ESTILOS (SIN BORDES) =================
             CellStyle headerStyle = workbook.createCellStyle();
             Font headerFont = workbook.createFont();
             headerFont.setBold(true); headerFont.setColor(IndexedColors.WHITE.getIndex());
@@ -39,7 +37,6 @@ public class ExcelServicio {
             headerStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
             headerStyle.setAlignment(HorizontalAlignment.CENTER);
             headerStyle.setVerticalAlignment(VerticalAlignment.CENTER);
-            headerStyle.setBorderBottom(BorderStyle.THIN); headerStyle.setBorderRight(BorderStyle.THIN);
 
             CellStyle projectStyle = workbook.createCellStyle();
             Font projectFont = workbook.createFont(); projectFont.setBold(true); projectFont.setFontHeightInPoints((short) 12);
@@ -47,7 +44,13 @@ public class ExcelServicio {
             projectStyle.setFillForegroundColor(IndexedColors.GREY_25_PERCENT.getIndex());
             projectStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
             projectStyle.setVerticalAlignment(VerticalAlignment.CENTER);
-            projectStyle.setBorderBottom(BorderStyle.THIN);
+
+            CellStyle projectIconStyle = workbook.createCellStyle();
+            projectIconStyle.setFont(projectFont);
+            projectIconStyle.setFillForegroundColor(IndexedColors.GREY_25_PERCENT.getIndex());
+            projectIconStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+            projectIconStyle.setVerticalAlignment(VerticalAlignment.CENTER);
+            projectIconStyle.setAlignment(HorizontalAlignment.CENTER);
 
             CellStyle stageStyle = workbook.createCellStyle();
             Font stageFont = workbook.createFont(); stageFont.setBold(true);
@@ -55,30 +58,23 @@ public class ExcelServicio {
             stageStyle.setFillForegroundColor(IndexedColors.LEMON_CHIFFON.getIndex());
             stageStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
             stageStyle.setVerticalAlignment(VerticalAlignment.CENTER);
-            stageStyle.setBorderBottom(BorderStyle.THIN);
 
             CellStyle dataStyle = workbook.createCellStyle();
             dataStyle.setVerticalAlignment(VerticalAlignment.CENTER);
-            dataStyle.setBorderBottom(BorderStyle.HAIR); dataStyle.setBorderRight(BorderStyle.HAIR);
 
             CellStyle planStyle = workbook.createCellStyle();
             planStyle.setFillForegroundColor(IndexedColors.CORNFLOWER_BLUE.getIndex());
             planStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
-            planStyle.setBorderTop(BorderStyle.THIN);
-            planStyle.setBorderBottom(BorderStyle.THIN);
-            planStyle.setBorderLeft(BorderStyle.THIN);
-            planStyle.setBorderRight(BorderStyle.THIN);
+            planStyle.setAlignment(HorizontalAlignment.CENTER);
 
             CellStyle actualStyle = workbook.createCellStyle();
             actualStyle.setFillForegroundColor(IndexedColors.LIGHT_GREEN.getIndex()); 
             actualStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
-            actualStyle.setBorderTop(BorderStyle.THIN);
-            actualStyle.setBorderBottom(BorderStyle.THIN);
-            actualStyle.setBorderLeft(BorderStyle.THIN);
-            actualStyle.setBorderRight(BorderStyle.THIN);
+            actualStyle.setAlignment(HorizontalAlignment.CENTER);
 
+            // ================= LEYENDA =================
             Row legendTitle = sheet.createRow(0);
-            legendTitle.createCell(0).setCellValue("MASTER TIMELINE - COLOR LEGEND");
+            legendTitle.createCell(0).setCellValue("MASTER TIMELINE - EXECUTIVE OVERVIEW");
             legendTitle.getCell(0).getCellStyle().setFont(projectFont);
 
             Row legendPlan = sheet.createRow(1);
@@ -89,14 +85,29 @@ public class ExcelServicio {
             Cell boxActual = legendActual.createCell(0); boxActual.setCellStyle(actualStyle);
             legendActual.createCell(1).setCellValue("Real Date (Actual / Executed)");
 
+            Row legendIcon1 = sheet.createRow(3);
+            legendIcon1.createCell(0).setCellValue("💰 CAR Approval");
+            legendIcon1.createCell(1).setCellValue("👥 Line Buy-off");
+
+            Row legendIcon2 = sheet.createRow(4);
+            legendIcon2.createCell(0).setCellValue("🚢 Equipment Transit");
+
+            // ================= CÁLCULO DE MESES =================
             List<ElementoChecklist> elementosFiltrados = todosLosElementos.stream()
                 .filter(e -> e.getFase() != null && e.getFase().equals("0. Program"))
                 .collect(Collectors.toList());
 
             List<LocalDate> todasLasFechas = new ArrayList<>();
+            
             elementosFiltrados.forEach(e -> {
                 if (e.getFechaPlan() != null) todasLasFechas.add(e.getFechaPlan());
                 if (e.getFechaReal() != null) todasLasFechas.add(e.getFechaReal());
+            });
+            
+            proyectos.forEach(p -> {
+                if (p.getFechaCar() != null) todasLasFechas.add(p.getFechaCar());
+                if (p.getFechaBuyoff() != null) todasLasFechas.add(p.getFechaBuyoff());
+                if (p.getFechaTransit() != null) todasLasFechas.add(p.getFechaTransit());
             });
 
             int minYear = todasLasFechas.stream().map(LocalDate::getYear).min(Integer::compareTo).orElse(LocalDate.now().getYear());
@@ -109,40 +120,83 @@ public class ExcelServicio {
                 }
             }
 
-            Row headerRow = sheet.createRow(4);
-            headerRow.setHeightInPoints(30);
+            // ================= ENCABEZADOS =================
+            Row yearHeaderRow = sheet.createRow(5); yearHeaderRow.setHeightInPoints(20);
+            Row monthHeaderRow = sheet.createRow(6); monthHeaderRow.setHeightInPoints(25);
             
-            String[] columnasBase = {"Project", "Champion", "Score", "Date Type", "Date Value"};
+            String[] columnasBase = {"Project / Milestones", "Champion", "Status", "Date Type", "Date Value"};
             int colIndex = 0;
             for (String col : columnasBase) {
-                Cell cell = headerRow.createCell(colIndex++);
-                cell.setCellValue(col); cell.setCellStyle(headerStyle);
+                Cell yearCell = yearHeaderRow.createCell(colIndex);
+                yearCell.setCellValue(col); yearCell.setCellStyle(headerStyle);
+                Cell monthCell = monthHeaderRow.createCell(colIndex); monthCell.setCellStyle(headerStyle);
+                sheet.addMergedRegion(new CellRangeAddress(5, 6, colIndex, colIndex));
+                colIndex++;
+            }
+            
+            DateTimeFormatter monthFormatter = DateTimeFormatter.ofPattern("MMM");
+            int currentYear = -1;
+            int startYearCol = colIndex;
+
+            for (int i = 0; i < timelineMonths.size(); i++) {
+                YearMonth ym = timelineMonths.get(i);
+                Cell monthCell = monthHeaderRow.createCell(colIndex);
+                monthCell.setCellValue(ym.format(monthFormatter));
+                monthCell.setCellStyle(headerStyle);
+                sheet.setColumnWidth(colIndex, 1500); 
+
+                if (ym.getYear() != currentYear) {
+                    if (currentYear != -1) sheet.addMergedRegion(new CellRangeAddress(5, 5, startYearCol, colIndex - 1));
+                    currentYear = ym.getYear();
+                    startYearCol = colIndex;
+                    Cell yearCell = yearHeaderRow.createCell(startYearCol);
+                    yearCell.setCellValue(String.valueOf(currentYear)); yearCell.setCellStyle(headerStyle);
+                } else {
+                    yearHeaderRow.createCell(colIndex).setCellStyle(headerStyle);
+                }
+                colIndex++;
+            }
+            if (currentYear != -1 && startYearCol < colIndex - 1) {
+                sheet.addMergedRegion(new CellRangeAddress(5, 5, startYearCol, colIndex - 1));
             }
 
-            DateTimeFormatter monthFormatter = DateTimeFormatter.ofPattern("MMM-yy");
-            for (YearMonth ym : timelineMonths) {
-                Cell cell = headerRow.createCell(colIndex++);
-                cell.setCellValue(ym.format(monthFormatter));
-                cell.setCellStyle(headerStyle);
-                sheet.setColumnWidth(colIndex - 1, 2000); 
-            }
-
-            int rowIndex = 5;
+            // ================= LLENADO DE DATOS =================
+            int rowIndex = 7;
 
             for (Proyecto proyecto : proyectos) {
                 List<ElementoChecklist> itemsProyecto = elementosFiltrados.stream()
                         .filter(e -> e.getProyecto().getId().equals(proyecto.getId()))
                         .collect(Collectors.toList());
 
-                if (itemsProyecto.isEmpty()) continue;
-
+                // 1. FILA DEL PROYECTO
                 Row projRow = sheet.createRow(rowIndex); projRow.setHeightInPoints(25);
                 Cell projCell = projRow.createCell(0);
                 projCell.setCellValue("📁 " + proyecto.getNombre() + " (" + proyecto.getNumeroParte() + ")");
                 projCell.setCellStyle(projectStyle);
-                for (int i = 1; i < columnasBase.length + timelineMonths.size(); i++) projRow.createCell(i).setCellStyle(projectStyle);
+                
+                for (int i = 1; i < columnasBase.length; i++) {
+                    projRow.createCell(i).setCellStyle(projectStyle);
+                }
+
+                int currentTimelineCol = 5;
+                for (YearMonth ym : timelineMonths) {
+                    Cell cell = projRow.createCell(currentTimelineCol++);
+                    cell.setCellStyle(projectIconStyle); 
+                    
+                    StringBuilder iconos = new StringBuilder();
+                    if (proyecto.getFechaCar() != null && YearMonth.from(proyecto.getFechaCar()).equals(ym)) iconos.append("💰 ");
+                    if (proyecto.getFechaBuyoff() != null && YearMonth.from(proyecto.getFechaBuyoff()).equals(ym)) iconos.append("👥 ");
+                    if (proyecto.getFechaTransit() != null && YearMonth.from(proyecto.getFechaTransit()).equals(ym)) iconos.append("🚢 ");
+                    
+                    if (iconos.length() > 0) {
+                        cell.setCellValue(iconos.toString().trim());
+                    }
+                }
                 int startProjRow = ++rowIndex;
 
+                if (itemsProyecto.isEmpty()) continue;
+
+                // 2. FASES Y ENTREGABLES
                 Map<String, List<ElementoChecklist>> itemsPorEtapa = itemsProyecto.stream()
                         .filter(e -> e.getEtapaVisual() != null)
                         .collect(Collectors.groupingBy(ElementoChecklist::getEtapaVisual));
@@ -158,6 +212,7 @@ public class ExcelServicio {
                     stageCell.setCellStyle(stageStyle);
                     for (int i = 1; i < columnasBase.length + timelineMonths.size(); i++) stageRow.createCell(i).setCellStyle(stageStyle);
                     int startStageRow = ++rowIndex;
+                    
                     items.sort((item1, item2) -> {
                         if (item1.getFechaPlan() == null && item2.getFechaPlan() == null) return 0;
                         if (item1.getFechaPlan() == null) return 1;
@@ -175,9 +230,9 @@ public class ExcelServicio {
                         planRow.createCell(3).setCellValue("Plan"); planRow.getCell(3).setCellStyle(dataStyle);
                         planRow.createCell(4).setCellValue(item.getFechaPlan() != null ? item.getFechaPlan().toString() : "N/A"); planRow.getCell(4).setCellStyle(dataStyle);
 
-                        int currentTimelineCol = 5;
+                        int tCol = 5;
                         for (YearMonth ym : timelineMonths) {
-                            Cell cell = planRow.createCell(currentTimelineCol++);
+                            Cell cell = planRow.createCell(tCol++);
                             cell.setCellStyle(dataStyle);
                             if (item.getFechaPlan() != null && YearMonth.from(item.getFechaPlan()).equals(ym)) {
                                 cell.setCellStyle(planStyle); 
@@ -191,9 +246,9 @@ public class ExcelServicio {
                         actualRow.createCell(3).setCellValue("Actual"); actualRow.getCell(3).setCellStyle(dataStyle);
                         actualRow.createCell(4).setCellValue(item.getFechaReal() != null ? item.getFechaReal().toString() : "N/A"); actualRow.getCell(4).setCellStyle(dataStyle);
 
-                        currentTimelineCol = 5;
+                        tCol = 5;
                         for (YearMonth ym : timelineMonths) {
-                            Cell cell = actualRow.createCell(currentTimelineCol++);
+                            Cell cell = actualRow.createCell(tCol++);
                             cell.setCellStyle(dataStyle);
                             if (item.getFechaReal() != null && YearMonth.from(item.getFechaReal()).equals(ym)) {
                                 cell.setCellStyle(actualStyle); 

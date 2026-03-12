@@ -37,13 +37,31 @@ public class Proyecto {
     private String processEngineer;
     private String projectLeader;
     
-    // Management Site Management
     private String operationsManager;
     private String qualityManager;
     private String materialsManager;
     private String scsManager;
     private String financeManager;
     private String hrManager;
+
+    private LocalDate fechaCar;
+    private LocalDate fechaBuyoff;
+    private LocalDate fechaTransit;
+    private LocalDate fechaSop;
+
+    public LocalDate getFechaCar() { return fechaCar; }
+    public void setFechaCar(LocalDate fechaCar) { this.fechaCar = fechaCar; }
+
+    public LocalDate getFechaBuyoff() { return fechaBuyoff; }
+    public void setFechaBuyoff(LocalDate fechaBuyoff) { this.fechaBuyoff = fechaBuyoff; }
+
+    public LocalDate getFechaTransit() { return fechaTransit; }
+    public void setFechaTransit(LocalDate fechaTransit) { this.fechaTransit = fechaTransit; }
+
+    public LocalDate getFechaSop() { return fechaSop; }
+    public void setFechaSop(LocalDate fechaSop) { this.fechaSop = fechaSop; }
+
+
 
     @OneToMany(mappedBy = "proyecto", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonIgnore

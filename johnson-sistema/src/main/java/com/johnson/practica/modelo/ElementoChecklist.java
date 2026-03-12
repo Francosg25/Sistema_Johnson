@@ -43,6 +43,7 @@ public class ElementoChecklist {
 
     private boolean esMainEvent = false;
 
+
     @OneToMany(mappedBy = "elementoChecklist")
     private List<Adjunto> adjuntos;
 
