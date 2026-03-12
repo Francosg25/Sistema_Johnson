@@ -87,18 +87,67 @@ public class DashboardControlador {
         // --- SECCIÓN: CALENDARIO DE EVENTOS ---
         List<Map<String, Object>> eventosCalendario = new ArrayList<>();
         for (Proyecto p : proyectos) {
+            // Evento SOP (Usamos el campo 'sop' que es el principal)
             if (p.getSop() != null) {
                 Map<String, Object> event = new HashMap<>();
                 event.put("title", "SOP: " + p.getNombre());
                 event.put("start", p.getSop().toString());
                 event.put("description", "Start of Production - PN: " + p.getNumeroParte());
-                event.put("className", "bg-warning border-0 shadow-sm"); // Naranja SOP
+                event.put("className", "bg-warning border-0 shadow-sm text-dark fw-bold"); 
                 event.put("url", "/proyectos/checklist/" + p.getId());
+                event.put("tipo", "SOP");
                 eventosCalendario.add(event);
             }
-            // Podríamos agregar hitos específicos aquí si fuera necesario
+
+            // Evento CAR
+            if (p.getFechaCar() != null) {
+                Map<String, Object> event = new HashMap<>();
+                event.put("title", "CAR: " + p.getNombre());
+                event.put("start", p.getFechaCar().toString());
+                event.put("className", "bg-primary border-0 shadow-sm text-white");
+                event.put("url", "/proyectos/checklist/" + p.getId());
+                event.put("tipo", "CAR");
+                eventosCalendario.add(event);
+            }
+
+            // Evento Buyoff
+            if (p.getFechaBuyoff() != null) {
+                Map<String, Object> event = new HashMap<>();
+                event.put("title", "Buyoff: " + p.getNombre());
+                event.put("start", p.getFechaBuyoff().toString());
+                event.put("className", "bg-success border-0 shadow-sm text-white");
+                event.put("url", "/proyectos/checklist/" + p.getId());
+                event.put("tipo", "BUYOFF");
+                eventosCalendario.add(event);
+            }
+
+            // Evento Ship (Transit)
+            if (p.getFechaTransit() != null) {
+                Map<String, Object> event = new HashMap<>();
+                event.put("title", "Ship: " + p.getNombre());
+                event.put("start", p.getFechaTransit().toString());
+                event.put("className", "bg-info border-0 shadow-sm text-white");
+                event.put("url", "/proyectos/checklist/" + p.getId());
+                event.put("tipo", "SHIP");
+                eventosCalendario.add(event);
+            }
         }
         model.addAttribute("eventosCalendario", eventosCalendario);
+
+        // --- FILTRO PARA "UPCOMING EVENTS" (Solo de hoy en adelante y ordenados) ---
+        java.time.LocalDate hoy = java.time.LocalDate.now();
+        List<Map<String, Object>> eventosProximos = eventosCalendario.stream()
+            .filter(e -> {
+                java.time.LocalDate fecha = java.time.LocalDate.parse((String)e.get("start"));
+                return !fecha.isBefore(hoy);
+            })
+            .sorted((a, b) -> {
+                java.time.LocalDate fA = java.time.LocalDate.parse((String)a.get("start"));
+                java.time.LocalDate fB = java.time.LocalDate.parse((String)b.get("start"));
+                return fA.compareTo(fB);
+            })
+            .collect(Collectors.toList());
+        model.addAttribute("eventosProximos", eventosProximos);
 
         if (principal != null) {
             model.addAttribute("usuarioLogueado", principal.getName());

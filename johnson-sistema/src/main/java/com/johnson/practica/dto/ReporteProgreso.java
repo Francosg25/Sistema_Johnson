@@ -11,6 +11,10 @@ public class ReporteProgreso {
     private int completados;
     private double porcentaje;
     private Double riesgo; 
+    private java.time.LocalDate carDate;
+    private java.time.LocalDate buyoffDate;
+    private java.time.LocalDate transitDate;
+
 
     public ReporteProgreso(Long id, String nombreProyecto, String cliente, String numeroParte, String liderProyecto, String sop, int totalEntregables, int completados, double porcentaje) {
         this.id = id;
@@ -53,4 +57,14 @@ public class ReporteProgreso {
 
     public Double getRiesgo() { return riesgo; }
     public void setRiesgo(Double riesgo) { this.riesgo = riesgo; }
+
+    public java.time.LocalDate getCarDate() { return carDate; }
+    public void setCarDate(java.time.LocalDate carDate) { this.carDate = carDate; }
+
+    public java.time.LocalDate getBuyoffDate() { return buyoffDate; }
+    public void setBuyoffDate(java.time.LocalDate buyoffDate) { this.buyoffDate = buyoffDate; }
+
+    public java.time.LocalDate getTransitDate() { return transitDate; }
+    public void setTransitDate(java.time.LocalDate transitDate) { this.transitDate = transitDate; }
+
 }

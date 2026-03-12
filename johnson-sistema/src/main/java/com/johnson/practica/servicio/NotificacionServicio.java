@@ -37,10 +37,18 @@ public class NotificacionServicio {
             repositorio.save(notif);
 
             if (messagingTemplate != null) {
-                messagingTemplate.convertAndSendToUser(
-                    usuario.getUsername(), 
-                    "/queue/notificaciones", 
-                    "NUEVA_NOTIF"
+                final String username = usuario.getUsername();
+                org.springframework.transaction.support.TransactionSynchronizationManager.registerSynchronization(
+                    new org.springframework.transaction.support.TransactionSynchronization() {
+                        @Override
+                        public void afterCommit() {
+                            messagingTemplate.convertAndSendToUser(
+                                username, 
+                                "/queue/notificaciones", 
+                                "NUEVA_NOTIF"
+                            );
+                        }
+                    }
                 );
             }
         }
@@ -57,16 +65,22 @@ public class NotificacionServicio {
             repositorio.save(notif);
 
             if (messagingTemplate != null) {
-                messagingTemplate.convertAndSendToUser(
-                    usuario.getUsername(), 
-                    "/queue/notificaciones", 
-                    "NUEVA_NOTIF"
+                final String username = usuario.getUsername();
+                org.springframework.transaction.support.TransactionSynchronizationManager.registerSynchronization(
+                    new org.springframework.transaction.support.TransactionSynchronization() {
+                        @Override
+                        public void afterCommit() {
+                            messagingTemplate.convertAndSendToUser(
+                                username, 
+                                "/queue/notificaciones", 
+                                "NUEVA_NOTIF"
+                            );
+                        }
+                    }
                 );
             }
         });
     }
-
-    
 
     @Transactional
     public void alertarAAdministradores(String titulo, String mensaje, String tipo, String link, String autor) {
@@ -78,7 +92,17 @@ public class NotificacionServicio {
                 notif.setLink(link);
                 repositorio.save(notif);
             
-                messagingTemplate.convertAndSendToUser(u.getUsername(), "/queue/notificaciones", "NUEVA_NOTIF");
+                if (messagingTemplate != null) {
+                    final String username = u.getUsername();
+                    org.springframework.transaction.support.TransactionSynchronizationManager.registerSynchronization(
+                        new org.springframework.transaction.support.TransactionSynchronization() {
+                            @Override
+                            public void afterCommit() {
+                                messagingTemplate.convertAndSendToUser(username, "/queue/notificaciones", "NUEVA_NOTIF");
+                            }
+                        }
+                    );
+                }
             }
         }
     }

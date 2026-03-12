@@ -257,6 +257,11 @@ public class ChecklistServicio {
                 porcentaje
             );
             
+            reporteProgreso.setCarDate(p.getFechaCar());
+            reporteProgreso.setBuyoffDate(p.getFechaBuyoff());
+            reporteProgreso.setTransitDate(p.getFechaTransit());
+
+            
             double riesgo = calcularRiesgoDinamico(p, todosLosItemsDelProyecto);
             
             reporteProgreso.setRiesgo(riesgo);

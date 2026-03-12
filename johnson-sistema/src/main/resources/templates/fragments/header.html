@@ -121,22 +121,11 @@
             const badge = document.getElementById('notifBadge');
             const list = document.getElementById('notifList');
             
-            let maxIdEnServidor = 0;
-            if (data && data.ultimas && data.ultimas.length > 0) {
-                maxIdEnServidor = Math.max(...data.ultimas.map(n => n.id));
-                ultimaNotifIdServidor = maxIdEnServidor;
-            }
+            // Actualizar total de no leídas (el puntito rojo)
+            const totalNoLeidas = data.totalNoLeidas || 0;
 
-            const storedValue = localStorage.getItem('lastSeenNotifId');
-            const lastSeenId = storedValue ? parseInt(storedValue) : 0;
-
-            let nuevasNoVistas = 0;
-            if (data && data.ultimas) {
-                nuevasNoVistas = data.ultimas.filter(n => n.id > lastSeenId).length;
-            }
-
-            if (nuevasNoVistas > 0) {
-                badge.innerText = nuevasNoVistas;
+            if (totalNoLeidas > 0) {
+                badge.innerText = totalNoLeidas;
                 badge.classList.remove('d-none');
             } else {
                 badge.classList.add('d-none');
@@ -169,10 +158,11 @@
         }
 
         function registrarNotificacionesVistas() {
-            if (ultimaNotifIdServidor > 0) {
-                localStorage.setItem('lastSeenNotifId', ultimaNotifIdServidor.toString());
-            }
-            document.getElementById('notifBadge').classList.add('d-none');
+            // Ya no ocultamos el badge aquí si queremos que persista hasta ser leídas,
+            // pero si el usuario quiere que el número desaparezca al abrir el menú,
+            // podemos simplemente remover el número pero mantener la lógica de "leída" en la BD.
+            // Por ahora, para que sepa que hay pendientes, lo dejamos que se actualice con fetch.
+            fetchNotificaciones();
         }
 
         function getIcon(tipo) {

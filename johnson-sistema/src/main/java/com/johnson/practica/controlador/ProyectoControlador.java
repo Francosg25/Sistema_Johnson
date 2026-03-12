@@ -142,6 +142,28 @@ public class ProyectoControlador {
         return "redirect:/";
     }
 
+    @PostMapping("/actualizar")
+    @CacheEvict(value = "reportes", allEntries = true)
+    public String actualizarProyecto(@ModelAttribute Proyecto proyecto, java.security.Principal principal) {
+        if (proyecto.getId() != null) {
+            Proyecto proyectoExistente = proyectoServicio.buscarPorId(proyecto.getId());
+            if (proyectoExistente != null) {
+                proyectoExistente.setNombre(proyecto.getNombre());
+                proyectoExistente.setNumeroParte(proyecto.getNumeroParte());
+                proyectoExistente.setCliente(proyecto.getCliente());
+                proyectoExistente.setSop(proyecto.getSop());
+                
+                proyectoServicio.guardarProyecto(proyectoExistente);
+                
+                String titulo = "Project Updated";
+                String msj = "Project " + proyectoExistente.getNombre() + " has been modified.";
+                String autor = (principal != null) ? principal.getName() : "Sistema";
+                notificacionServicio.alertarATodos(titulo, msj, "INFO", "/proyectos/checklist/" + proyecto.getId(), autor);
+            }
+        }
+        return "redirect:/";
+    }
+
     @GetMapping("/eliminar/{id}")
     @PreAuthorize("hasRole('ADMIN')")
     @CacheEvict(value = "reportes", allEntries = true) 

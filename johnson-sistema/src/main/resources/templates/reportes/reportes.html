@@ -95,7 +95,6 @@
 
             <main class="container-fluid p-4">
 
-                <!-- QUICK ACTION: MASTER TIMELINE (TOP) -->
                 <div class="row mb-4">
                     <div class="col-12">
                         <div class="card glass-card border-0 shadow-sm" style="background: linear-gradient(135deg, #f0fdf4 0%, #ffffff 100%) !important; ">
@@ -117,6 +116,28 @@
                     </div>
                 </div>
                 
+                <div class="row mb-4">
+                        <div class="col-12">
+                            <div class="card glass-card border-0 shadow-sm">
+                                <div class="card-header glass-header d-flex justify-content-between align-items-center bg-white border-bottom-0 pt-4 pb-0">
+                                    <h6 class="m-0 fw-bold text-dark"><i class="bi bi-calendar-range text-primary me-2"></i>EXECUTIVE MASTER TIMELINE</h6>
+                                    <div class="small text-muted fw-bold">
+                                        <span class="me-3">💰 CAR</span> <span class="me-3">👥 Buy-off</span> <span class="me-3">🚢 Transit</span> 
+                                    </div>
+                                </div>
+                                <div class="card-body p-0">
+                                    <div class="table-responsive overflow-auto" style="max-height: 400px;">                                        <table class="table table-borderless align-middle mb-0" id="executiveTimelineTable">
+                                            <thead id="timeline-head" class="border-bottom border-2 bg-light">
+                                                </thead>
+                                            <tbody id="timeline-body">
+                                                </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
                 <div class="row mb-4">
                     <div class="col-12">
                         <div class="card glass-card">
@@ -191,6 +212,25 @@
                 </div>
 
             </main>
+        </div>
+    </div>
+
+    <div class="modal fade" id="modalMilestone" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-sm">
+            <div class="modal-content border-0 shadow-lg text-center" style="border-radius: 16px;">
+                <div class="modal-body p-4">
+                    <div class="display-1 mb-2" id="modal-m-icon">💰</div>
+                    <h5 class="fw-bold text-dark mb-1" id="modal-m-type">CAR Approval</h5>
+                    <p class="text-muted small mb-3" id="modal-m-project">Project XYZ</p>
+                    
+                    <div class="p-3 rounded-3 border mt-3" style="background-color: #f8f9fa;">
+                        <span class="small text-muted d-block mb-1 text-uppercase fw-bold"><i class="bi bi-calendar-check me-1"></i> Exact Date</span>
+                        <h6 class="text-primary fw-bold mb-0" id="modal-m-date">August 15, 2026</h6>
+                    </div>
+                    
+                    <button type="button" class="btn btn-light border shadow-sm w-100 mt-4 fw-bold rounded-pill" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -494,6 +534,132 @@
             }
         }
         /*]]>*/
+        // Función global para abrir el Modal desde los iconos
+        function mostrarModalHito(projectName, type, icon, dateStr) {
+            document.getElementById('modal-m-icon').innerText = icon;
+            document.getElementById('modal-m-type').innerText = type;
+            document.getElementById('modal-m-project').innerText = projectName;
+            document.getElementById('modal-m-date').innerText = dateStr;
+        
+            let modal = new bootstrap.Modal(document.getElementById('modalMilestone'));
+            modal.show();
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const proyectos = /*[[${datosGrafica}]]*/ [];
+        
+            const thead = document.getElementById('timeline-head');
+            const tbody = document.getElementById('timeline-body');
+            if(!thead || !tbody || !proyectos || proyectos.length === 0) return;
+
+            // 1. Extraer todas las fechas para calcular Años dinámicos
+            let minYear = new Date().getFullYear();
+            let maxYear = minYear;
+
+            function parseDateObj(dateData) {
+                if(!dateData) return null;
+                let year, month, day;
+                if(Array.isArray(dateData)) { 
+                    year = dateData[0]; month = dateData[1]; day = dateData[2];
+                } else if (typeof dateData === 'string') {
+                    let parts = dateData.split('-');
+                    year = parseInt(parts[0], 10); month = parseInt(parts[1], 10); day = parseInt(parts[2], 10);
+                }
+                return { year, month, day };
+            }
+
+            proyectos.forEach(p => {
+                [p.carDate, p.buyoffDate, p.transitDate, p.sopDate].forEach(d => {
+                    let pDate = parseDateObj(d);
+                    if(pDate) {
+                        if(pDate.year < minYear) minYear = pDate.year;
+                        if(pDate.year > maxYear) maxYear = pDate.year;
+                    }
+                });
+            });
+
+            // 2. Generar meses desde el año mínimo hasta el año máximo
+            const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+            const timelineMonths = [];
+            for(let y = minYear; y <= maxYear; y++) {
+                for(let m = 1; m <= 12; m++) {
+                    timelineMonths.push({ year: y, month: m });
+                }
+            }
+
+            // 3. Construir Encabezado de Meses
+            let trHead = document.createElement('tr');
+            let thProj = document.createElement('th');
+            thProj.className = "text-muted small fw-bold text-uppercase ps-4 py-3 sticky-top bg-light"; // fixed left
+            thProj.style.minWidth = "250px";
+            thProj.innerText = "Project / Milestones";
+            trHead.appendChild(thProj);
+
+            timelineMonths.forEach(tm => {
+                let th = document.createElement('th');
+                th.className = "text-center text-muted small fw-bold py-3 px-3";
+                th.style.minWidth = "70px";
+                th.innerHTML = `${monthNames[tm.month - 1]}<br><span style="font-size:0.7rem; color:#adb5bd;">${tm.year}</span>`;
+                trHead.appendChild(th);
+            });
+            thead.appendChild(trHead);
+
+            // 4. Llenar Filas y crear botones interactivos
+            function formatearFecha(dateObj) {
+                let tempDate = new Date(dateObj.year, dateObj.month - 1, dateObj.day);
+                return tempDate.toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+            }
+
+            function crearIconoHTML(icono, tipo, dObj, projectName) {
+                let fechaLegible = formatearFecha(dObj);
+                // Efecto Hover y Clic integrados
+                return `<span class="d-inline-block mx-1 shadow-sm rounded-circle bg-white" 
+                          style="cursor: pointer; transition: 0.2s; font-size: 1.2rem; padding: 2px 6px;" 
+                          onmouseover="this.style.transform='scale(1.3)'; this.style.backgroundColor='#e9ecef';" 
+                          onmouseout="this.style.transform='scale(1)'; this.style.backgroundColor='white';"
+                          onclick="mostrarModalHito('${projectName}', '${tipo}', '${icono}', '${fechaLegible}')" 
+                          title="Click to view details">${icono}</span>`;
+            }
+
+            proyectos.forEach(p => {
+                let tr = document.createElement('tr');
+                tr.style.borderBottom = "1px dashed rgba(0,0,0,0.05)"; 
+            
+                let tdProj = document.createElement('td');
+                tdProj.className = "ps-4 py-3 bg-white";
+                tdProj.innerHTML = `<div class="text-dark-bold text-nowrap">📁 ${p.nombreProyecto}</div><div class="text-muted small text-nowrap">${p.numeroParte || ''}</div>`;
+                tr.appendChild(tdProj);
+
+                // Celdas del Calendario
+                timelineMonths.forEach(tm => {
+                    let td = document.createElement('td');
+                    td.className = "text-center align-middle";
+                
+                    let iconosHtml = [];
+                
+                    let car = parseDateObj(p.carDate);
+                    if(car && car.year === tm.year && car.month === tm.month) 
+                        iconosHtml.push(crearIconoHTML("💰", "CAR Approval", car, p.nombreProyecto));
+                
+                        let buy = parseDateObj(p.buyoffDate);
+                    if(buy && buy.year === tm.year && buy.month === tm.month) 
+                        iconosHtml.push(crearIconoHTML("👥", "Line Buy-off", buy, p.nombreProyecto));
+                
+                    let ship = parseDateObj(p.transitDate);
+                    if(ship && ship.year === tm.year && ship.month === tm.month) 
+                        iconosHtml.push(crearIconoHTML("🚢", "Equipment Transit", ship, p.nombreProyecto));
+                
+                    let sop = parseDateObj(p.sopDate);
+                    if(sop && sop.year === tm.year && sop.month === tm.month) 
+                        iconosHtml.push(crearIconoHTML("🏁", "SOP / Launch", sop, p.nombreProyecto));
+
+                    td.innerHTML = iconosHtml.join("");
+                    tr.appendChild(td);
+                });
+                tbody.appendChild(tr);
+            });
+        });
     </script>
-</body>
+
+    <body>
 </html>
