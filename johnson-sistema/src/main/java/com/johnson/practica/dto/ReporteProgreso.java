@@ -11,6 +11,9 @@ public class ReporteProgreso {
     private int completados;
     private double porcentaje;
     private Double riesgo; 
+    private String fechaCar;
+    private String fechaBuyoff;
+    private String fechaTransit;
 
     public ReporteProgreso(Long id, String nombreProyecto, String cliente, String numeroParte, String liderProyecto, String sop, int totalEntregables, int completados, double porcentaje) {
         this.id = id;
@@ -23,6 +26,15 @@ public class ReporteProgreso {
         this.completados = completados;
         this.porcentaje = porcentaje;
     }
+
+    public String getFechaCar() { return fechaCar; }
+    public void setFechaCar(String fechaCar) { this.fechaCar = fechaCar; }
+
+    public String getFechaBuyoff() { return fechaBuyoff; }
+    public void setFechaBuyoff(String fechaBuyoff) { this.fechaBuyoff = fechaBuyoff; }
+
+    public String getFechaTransit() { return fechaTransit; }
+    public void setFechaTransit(String fechaTransit) { this.fechaTransit = fechaTransit; }
 
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
