@@ -196,6 +196,7 @@ public class ProyectoControlador {
 
     @PostMapping("/guardar-hitos/{id}")
     @ResponseBody
+    @PreAuthorize("hasRole('ADMIN')")
     public Map<String, Object> guardarHitosProyecto(@PathVariable Long id, 
                                                     @RequestParam(required = false) LocalDate fechaCar,
                                                     @RequestParam(required = false) LocalDate fechaBuyoff,

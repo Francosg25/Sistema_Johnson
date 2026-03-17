@@ -40,6 +40,7 @@ public class EvidenciaControlador {
     @PostMapping("/subir/{itemId}")
     public String subirEvidencia(@PathVariable Long itemId, 
                                  @RequestParam("archivo") MultipartFile archivo,
+                                 java.security.Principal principal,
                                  RedirectAttributes redirectAttributes) {
         
         ElementoChecklist item = elementoRepositorio.findById(itemId).orElse(null);
@@ -63,7 +64,14 @@ public class EvidenciaControlador {
             
             adjuntoRepositorio.save(adjunto);
             
-               
+            String autor = (principal != null) ? principal.getName() : "Sistema";
+            notificacionServicio.alertarATodos(
+                "New Evidence Uploaded",
+                autor + " uploaded evidence for '" + item.getNombre() + "' in " + item.getProyecto().getNombre(),
+                "INFO",
+                "/proyectos/checklist/" + item.getProyecto().getId(),
+                autor
+            );
   
             redirectAttributes.addFlashAttribute("exito", "Archivo subido correctamente.");
         } catch (IOException e) {
@@ -78,7 +86,8 @@ public class EvidenciaControlador {
     @ResponseBody
     public ResponseEntity<Map<String, Object>> subirEvidenciaAjax(
             @PathVariable Long itemId, 
-            @RequestParam("archivo") MultipartFile archivo) {
+            @RequestParam("archivo") MultipartFile archivo,
+            java.security.Principal principal) {
         
         Map<String, Object> response = new HashMap<>();
         
@@ -101,6 +110,15 @@ public class EvidenciaControlador {
             adjunto.setSubidoEn(LocalDateTime.now());
             
             adjuntoRepositorio.save(adjunto);
+
+            String autor = (principal != null) ? principal.getName() : "Sistema";
+            notificacionServicio.alertarATodos(
+                "New Evidence Uploaded",
+                autor + " uploaded evidence for '" + item.getNombre() + "' in " + item.getProyecto().getNombre(),
+                "INFO",
+                "/proyectos/checklist/" + item.getProyecto().getId(),
+                autor
+            );
 
             response.put("exito", true);
             response.put("mensaje", "Archivo guardado con éxito");

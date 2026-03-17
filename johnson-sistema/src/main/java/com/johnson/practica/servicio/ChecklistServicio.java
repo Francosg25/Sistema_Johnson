@@ -45,6 +45,9 @@ public class ChecklistServicio {
     @Autowired
     private NotificacionServicio notificacionServicio;
 
+    @Autowired
+    private com.johnson.practica.repositorio.UsuarioRepositorio usuarioRepositorio;
+
     @Transactional(readOnly = true)
     public List<ElementoChecklist> obtenerHitosPrograma(Long proyectoId) {
         return repositorio.findByProyecto_IdAndFaseStartingWithOrderByCodigoAsc(proyectoId, "0");
@@ -139,6 +142,7 @@ public class ChecklistServicio {
                         if (esDiferente(elemento.getComentario(), valorNuevo)) {
                             elemento.setComentario(valorNuevo); 
                             huboCambioReal[0] = true;
+                            procesarMenciones(valorNuevo, elemento, nombreUsuarioLogueado);
                         }
                     }
                     case "estado" -> {
@@ -595,8 +599,18 @@ public class ChecklistServicio {
         return (s == null) ? "" : s.trim().toUpperCase();
     }
 
-   
-    
+    private void procesarMenciones(String comentario, ElementoChecklist elemento, String autor) {
+        if (comentario == null || !comentario.contains("@")) return;
 
+        Pattern pattern = Pattern.compile("@(\\w+)");
+        Matcher matcher = pattern.matcher(comentario);
+        while (matcher.find()) {
+            String username = matcher.group(1);
+            String titulo = "You were mentioned";
+            String msj = autor + " mentioned you in the remarks of '" + elemento.getNombre() + "' (" + elemento.getProyecto().getNombre() + ")";
+            String url = "/proyectos/checklist/" + elemento.getProyecto().getId();
+            notificacionServicio.alertarAUsuario(username, titulo, msj, "INFO", url, autor);
+        }
+    }
 
 }
