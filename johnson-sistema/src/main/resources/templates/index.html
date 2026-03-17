@@ -123,12 +123,19 @@
                                 <div class="card-body p-0"><div class="table-responsive" style="max-height: 600px;"><table class="table table-hover align-middle mb-0"><thead><tr><th class="ps-4">Project</th><th class="text-center">Customer</th><th style="width: 150px;">Overall Progress</th><th class="text-center" style="width: 200px;">SOP Date</th><th class="text-center pe-4">Actions</th></tr></thead><tbody>
                                     <tr th:each="p : ${reporteProgreso}"><td class="ps-4"><div class="text-dark-bold" th:text="${p.nombreProyecto}"></div><div class="text-muted" th:text="${p.numeroParte}"></div></td><td class="text-center"><span class="badge badge-customer rounded-3" th:text="${p.cliente}"></span></td><td><div class="d-flex align-items-center"><div class="progress progress-mini flex-grow-1 me-3"><div class="progress-bar" th:classappend="${p.porcentaje < 30 ? 'bg-danger' : (p.porcentaje < 70 ? 'bg-warning' : 'bg-success')}" th:style="'width: ' + ${p.porcentaje} + '%;'"></div></div><span class="text-dark-bold" th:text="${p.porcentaje + '%'}"></span></div></td><td class="text-center text-primary fw-bold" th:text="${p.sop}"></td><td class="text-center pe-4">
                                         <div class="d-flex justify-content-center gap-2">
-                                            <a th:href="@{/proyectos/checklist/{id}(id=${p.id})}" class="btn btn-sm btn-outline-primary rounded-pill px-3 fw-bold">OPEN</a>
+                                            <a th:href="@{/proyectos/checklist/{id}(id=${p.id})}" class="btn btn-sm btn-outline-primary rounded-pill px-3 fw-bold" title="Open Checklist">OPEN</a>
+                                            <button th:if="${#authorization.expression('hasRole(''ADMIN'')')}" 
+                                               class="btn btn-sm btn-outline-secondary rounded-pill px-3 fw-bold btn-edit-project"
+                                               th:data-id="${p.id}"
+                                               title="Edit Project">
+                                                <i class="bi bi-pencil"></i>
+                                            </button>
                                             <a th:if="${#authorization.expression('hasRole(''ADMIN'')')}" 
                                                th:href="@{/proyectos/eliminar/{id}(id=${p.id})}" 
                                                class="btn btn-sm btn-outline-danger rounded-pill px-3 fw-bold btn-delete-project"
                                                th:data-id="${p.id}"
-                                               th:data-nombre="${p.nombreProyecto}">
+                                               th:data-nombre="${p.nombreProyecto}"
+                                               title="Delete Project">
                                                 <i class="bi bi-trash"></i>
                                             </a>
                                         </div>
@@ -202,6 +209,24 @@
         </div>
     </div>
 
+    <!-- MODAL: EDIT PROJECT -->
+    <div class="modal fade" id="modalEditarProyecto" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content shadow-lg border-0" style="border-radius: 24px;">
+                <form th:action="@{/proyectos/guardar}" method="post">
+                    <input type="hidden" name="id" id="edit-id">
+                    <div class="modal-header bg-primary text-white py-4" style="border-radius: 24px 24px 0 0;"><h5 class="modal-title fw-bold px-2"><i class="bi bi-pencil-square me-2"></i>Edit Project</h5><button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button></div>
+                    <div class="modal-body p-4">
+                        <div class="mb-3"><label class="form-label small fw-bold text-uppercase">Project Name *</label><div class="input-group"><span class="input-group-text bg-light"><i class="bi bi-tag"></i></span><input type="text" name="nombre" id="edit-nombre" class="form-control" placeholder="e.g. Project Apollo" required></div></div>
+                        <div class="row g-3 mb-3"><div class="col-6"><label class="form-label small fw-bold text-uppercase">Part Number *</label><div class="input-group"><span class="input-group-text bg-light"><i class="bi bi-hash"></i></span><input type="text" name="numeroParte" id="edit-numeroParte" class="form-control" placeholder="JE-XXXXX" required></div></div><div class="col-6"><label class="form-label small fw-bold text-uppercase">Client *</label><div class="input-group"><span class="input-group-text bg-light"><i class="bi bi-person"></i></span><input type="text" name="cliente" id="edit-cliente" class="form-control" placeholder="Client Name" required></div></div></div>
+                        <div class="mb-3"><label class="form-label small fw-bold text-uppercase">Target SOP Date *</label><div class="input-group"><span class="input-group-text bg-light"><i class="bi bi-calendar-check"></i></span><input type="date" name="sop" id="edit-sop" class="form-control" required></div></div>
+                    </div>
+                    <div class="modal-footer border-0 p-4 pt-0"><button type="button" class="btn btn-light px-4 py-2 fw-bold" data-bs-dismiss="modal">Cancel</button><button type="submit" class="btn btn-primary px-4 py-2 fw-bold shadow">Save Changes</button></div>
+                </form>
+            </div>
+        </div>
+    </div>
+
     <div class="modal fade" id="modalEliminarProyecto" tabindex="-1">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content border-0 shadow-lg" style="border-radius: 24px;">
@@ -252,6 +277,40 @@
                     
                     const modal = new bootstrap.Modal(document.getElementById('modalEliminarProyecto'));
                     modal.show();
+                });
+            });
+
+            // Manejador para el modal de edición
+            const editButtons = document.querySelectorAll('.btn-edit-project');
+            editButtons.forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const id = this.getAttribute('data-id');
+                    fetch('/proyectos/api/' + id)
+                        .then(response => response.json())
+                        .then(data => {
+                            document.getElementById('edit-id').value = data.id;
+                            document.getElementById('edit-nombre').value = data.nombre;
+                            document.getElementById('edit-numeroParte').value = data.numeroParte;
+                            document.getElementById('edit-cliente').value = data.cliente;
+                            
+                            // Formatear fecha para el input date (yyyy-mm-dd)
+                            if (data.sop) {
+                                let dateStr = "";
+                                if (Array.isArray(data.sop)) {
+                                    const y = data.sop[0];
+                                    const m = String(data.sop[1]).padStart(2, '0');
+                                    const d = String(data.sop[2]).padStart(2, '0');
+                                    dateStr = `${y}-${m}-${d}`;
+                                } else {
+                                    dateStr = data.sop.split('T')[0]; // Por si viene como ISO string
+                                }
+                                document.getElementById('edit-sop').value = dateStr;
+                            }
+                            
+                            const modal = new bootstrap.Modal(document.getElementById('modalEditarProyecto'));
+                            modal.show();
+                        })
+                        .catch(error => console.error('Error fetching project data:', error));
                 });
             });
         });
