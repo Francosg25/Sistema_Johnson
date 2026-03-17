@@ -411,14 +411,13 @@
                                     <table class="table table-hover align-middle mb-0">
                                         <thead class="bg-light text-secondary small text-uppercase sticky-top">
                                             <tr>
-                                                <th class="ps-4">Code</th>
                                                 <th>Deliverable</th>
-                                                <th>Phase / Group</th>
+                                                <th>Stage</th>
                                                 <th class="text-center pe-4">Highlight</th>
                                             </tr>
                                         </thead>
                                         <tbody id="listaElementosMain">
-                                            <tr><td colspan="4" class="text-center py-5 text-muted fst-italic">Select a project to load the deliverables</td></tr>
+                                            <tr><td colspan="3" class="text-center py-5 text-muted fst-italic">Select a project to load the deliverables</td></tr>
                                         </tbody>
                                     </table>
                                 </div>
@@ -466,7 +465,7 @@
                 if (!pid) return;
                 fetch(`/api/hitos/proyecto/${pid}`).then(r => r.json()).then(hitos => {
                     const tbody = document.getElementById('listaHitos');
-                    tbody.innerHTML = hitos.map(h => `<tr><td class="ps-4 fw-bold">${h.etapaAsociada}</td><td class="text-primary fw-bold">${h.fecha}</td><td><span class="badge bg-je-primary">${h.porcentajeObjetivo}%</span></td><td class="text-center"><button class="btn btn-sm btn-outline-danger border-0" onclick="eliminarHito(${h.id})"><i class="bi bi-trash-fill"></i></button></td></tr>`).join('');
+                    tbody.innerHTML = hitos.map(h => `<tr><td class="ps-4 fw-bold">${h.etapaAsociada}</td><td class="text-primary fw-bold">${h.fecha}</td><td><span class="badge bg-primary">${h.porcentajeObjetivo}%</span></td><td class="text-center"><button class="btn btn-sm btn-outline-danger border-0" onclick="eliminarHito(${h.id})"><i class="bi bi-trash-fill"></i></button></td></tr>`).join('');
                 });
             }
 
@@ -481,7 +480,8 @@
 
             function renderizarTablaMainEvents(elementos) {
                 const tbody = document.getElementById('listaElementosMain');
-                tbody.innerHTML = elementos.map(el => `<tr><td class="ps-4 small fw-bold text-muted">${el.codigo}</td><td class="small fw-bold">${el.nombre}</td><td class="small text-muted">${el.fase}</td><td class="text-center"><button class="btn btn-sm ${el.esMainEvent ? 'btn-warning' : 'btn-outline-secondary'} border-0" onclick="toggleMainEvent(${el.id}, this)"><i class="bi ${el.esMainEvent ? 'bi-star-fill text-warning' : 'bi-star'}"></i></button></td></tr>`).join('');
+                elementos = elementos.filter(el => el.fase.includes('Program'));
+                tbody.innerHTML = elementos.map(el => `<tr><td class="small fw-bold">${el.nombre}</td><td class="small text-muted">${el.etapa}</td><td class="text-center"><button class="btn btn-sm ${el.esMainEvent ? 'btn-warning' : 'btn-outline-secondary'} border-0" onclick="toggleMainEvent(${el.id}, this)"><i class="bi ${el.esMainEvent ? 'bi-star-fill text-warning' : 'bi-star'}"></i></button></td></tr>`).join('') || '<tr><td colspan="3" class="text-center py-5 text-muted fst-italic">No deliverables found for Program</td></tr>';
             }
 
             window.guardarHito = function() {

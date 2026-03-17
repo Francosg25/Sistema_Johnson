@@ -329,7 +329,7 @@
                                             data-bs-toggle="tab" 
                                             th:data-bs-target="'#content-' + ${fase.id}" 
                                             type="button" role="tab" 
-                                            th:text="${fase.nombre}">
+                                            th:text="${#strings.replace(fase.nombre, 'Stage', 'Gate')}">
                                         Fase
                                     </button>
                                 </li>
@@ -542,7 +542,7 @@
                             <div th:if="${!fase.nombre.contains('Program') && !fase.nombre.contains('Stage 2')}" class="card glass-card">
                                <div class="card-body p-4">
                                     <div class="p-3 mb-4 rounded shadow-sm border" style="background-color: rgba(248, 249, 250, 0.6); backdrop-filter: blur(5px);">
-                                        <h5 class="fw-bold text-dark mb-3"><i class="bi bi-search text-primary me-2"></i>Stage Review / <span class="text-primary" th:text="${fase.nombre}"></span></h5>
+                                        <h5 class="fw-bold text-dark mb-3"><i class="bi bi-search text-primary me-2"></i>Gate Review / <span class="text-primary" th:text="${#strings.replace(fase.nombre, 'Stage', 'Gate')}"></span></h5>
                                         <div class="row g-3 small">
                                             <div class="col-md-6"><strong class="me-2 text-muted">Customer:</strong> <span class="fw-bold" th:text="${proyecto.cliente}"></span></div>
                                             <div class="col-md-6"><strong class="me-2 text-muted">Date:</strong> <span class="fw-bold"></span></div>
@@ -602,7 +602,7 @@
                                             </tbody>
                                         </table>
                                     </div>
-                                    <h6 class="text-uppercase fw-bold text-secondary mb-3 border-bottom pb-2">2. Stage Conclusion</h6>
+                                    <h6 class="text-uppercase fw-bold text-secondary mb-3 border-bottom pb-2">2. Gate Conclusion</h6>
                                     <div class="table-responsive mb-5 card glass-card border-0 shadow-none" style="background: transparent !important; backdrop-filter: none !important;">
                                         <table class="table table-hover mb-0 align-middle">
                                             <thead class="bg-light small fw-bold text-center">
@@ -644,7 +644,7 @@
                                     <div th:if="${fase.nombre == 'Stage 3'}" class="row g-4">
                                         <div class="col-md-6">
                                             <div class="card glass-card h-100 shadow-sm">
-                                                <div class="card-header bg-light bg-opacity-50 fw-bold text-primary border-0"><i class="bi bi-people-fill me-2"></i>Stage 3 Responsibles</div>
+                                                <div class="card-header bg-light bg-opacity-50 fw-bold text-primary border-0"><i class="bi bi-people-fill me-2"></i>Gate 3 Responsibles</div>
                                                 <div class="card-body p-0">
                                                     <table class="table table-hover table-sm mb-0 small border-0">
                                                         <tbody>
@@ -677,7 +677,7 @@
                                     </div>
                                     <div th:if="${fase.nombre != 'Stage 3'}" class="text-muted text-center py-4 bg-light bg-opacity-50 rounded border border-dashed">
                                         <i class="bi bi-journal-x fs-2 d-block mb-2 opacity-50"></i>
-                                        Approval table for <strong th:text="${fase.nombre}"></strong> not required in this view.
+                                        Approval table for <strong th:text="${#strings.replace(fase.nombre, 'Stage', 'Gate')}"></strong> not required in this view.
                                     </div>
                                 </div>
                             </div>

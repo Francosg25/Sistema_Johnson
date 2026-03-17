@@ -39,7 +39,7 @@ public class MilestoneControlador {
 
     @GetMapping("/proyecto/{id}/elementos")
     public ResponseEntity<List<Map<String, Object>>> obtenerElementosProyecto(@PathVariable Long id) {
-        List<com.johnson.practica.modelo.ElementoChecklist> elementos = elementoRepo.findByProyecto_Id(id);
+        List<com.johnson.practica.modelo.ElementoChecklist> elementos = elementoRepo.findByProyecto_IdOrderByCodigoAsc(id);
         
         List<Map<String, Object>> respuestaLimpia = new ArrayList<>();
         for (com.johnson.practica.modelo.ElementoChecklist el : elementos) {
@@ -49,6 +49,7 @@ public class MilestoneControlador {
             map.put("nombre", el.getNombre());
             map.put("fase", el.getFase());
             map.put("grupo", el.getGrupo());
+            map.put("etapa", el.getEtapaVisual());
             map.put("esMainEvent", el.isEsMainEvent());
             respuestaLimpia.add(map);
         }
