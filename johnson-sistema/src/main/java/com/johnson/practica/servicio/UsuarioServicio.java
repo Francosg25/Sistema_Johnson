@@ -61,14 +61,14 @@ public class UsuarioServicio {
         Usuario guardado = usuarioRepositorio.save(usuario);
         
         String mensaje = String.format(
-            "Hola %s,\n\nHas sido registrado como CHAMPION en el Sistema Johnson.\n" +
-            "Tus credenciales de acceso son:\n\n" +
-            "Usuario: %s\n" +
-            "Contraseña temporal: %s\n\n" +
-            "Por seguridad, el sistema te pedirá cambiar tu contraseña al primer ingreso.",
+            "Hello %s,\n\nYou have been registered as a CHAMPION in the Johnson System.\n" +
+            "Your access credentials are:\n\n" +
+            "Username: %s\n" +
+            "Temporary Password: %s\n\n" +
+            "For security reasons, the system will ask you to change your password upon your first login.",
             nombreCompleto, username, tempPass
         );
-        emailServicio.enviarAlertaUrgente(correo, "Bienvenida al Sistema APQP", mensaje);
+        emailServicio.enviarAlertaUrgente(correo, "Welcome to the APQP System", mensaje);
         
         return guardado;
     }

@@ -1,52 +1,69 @@
 package com.johnson.practica.servicio;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.mail.SimpleMailMessage;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
-@Service
+import jakarta.mail.internet.MimeMessage;
 
+@Service
 public class EmailServicio {
 
     @Autowired
     private JavaMailSender mailSender;
 
+    @Value("${app.mail.from:noreply@johnson.com}")
+    private String mailFrom;
+
+    @Value("${app.mail.display-name:Johnson APQP System}")
+    private String displayName;
+
     @Async 
     public void enviarAlertaUrgente(String destinatario, String asunto, String mensaje) {
         try {
-            SimpleMailMessage mail = new SimpleMailMessage();
-            mail.setTo(destinatario);
+            MimeMessage message = mailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
             
-            mail.setSubject("[ALERTA APQP] " + asunto);
-            mail.setText(mensaje + "\n\nPor favor, revise el sistema APQP lo antes posible.\n\nAtte: Johnson Electric APQP System.");
+            helper.setFrom(mailFrom, displayName);
+            helper.setTo(destinatario);
+            helper.setSubject("[APQP ALERT] " + asunto);
+            helper.setText(mensaje + "\n\nPlease review the APQP system as soon as possible.\n\nRegards,\n" + displayName + ".");
             
-            mailSender.send(mail);
-            System.out.println("Correo enviado con éxito a: " + destinatario);
+            mailSender.send(message);
+            System.out.println("Email sent successfully to: " + destinatario);
         } catch (Exception e) {
-            System.err.println("Error enviando correo: " + e.getMessage());
+            System.err.println("CRITICAL EMAIL ERROR: " + e.getMessage());
+            e.printStackTrace();
         }
     }
 
+    @Async
     public void enviarEnlaceRecuperacion(String destinatario, String token, String nombreUsuario) {
         String enlace = "http://localhost:8081/recuperar-password?token=" + token;
         String cuerpo = String.format(
-            "Hola %s,\n\nHas solicitado restablecer tu contraseña en el Sistema Johnson.\n" +
-            "Haz clic en el siguiente enlace para crear una nueva contraseña (vence en 1 hora):\n\n" +
+            "Hello %s,\n\nYou have requested to reset your password in the Johnson APQP System.\n" +
+            "Click on the following link to create a new password (expires in 1 hour):\n\n" +
             "%s\n\n" +
-            "Si no solicitaste este cambio, puedes ignorar este correo.",
+            "If you did not request this change, you can ignore this email.",
             nombreUsuario, enlace
         );
 
         try {
-            SimpleMailMessage mail = new SimpleMailMessage();
-            mail.setTo(destinatario);
-            mail.setSubject("Restablecer Contraseña - Sistema APQP");
-            mail.setText(cuerpo);
-            mailSender.send(mail);
+            MimeMessage message = mailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
+            
+            helper.setFrom(mailFrom, displayName);
+            helper.setTo(destinatario);
+            helper.setSubject("Password Reset - APQP System");
+            helper.setText(cuerpo);
+            
+            mailSender.send(message);
+            System.out.println("Recovery email sent to: " + destinatario);
         } catch (Exception e) {
-            System.err.println("Error enviando correo de recuperación: " + e.getMessage());
+            System.err.println("Error sending recovery email: " + e.getMessage());
         }
     }
 }

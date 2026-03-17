@@ -35,9 +35,9 @@ public class AdminControlador {
                                 RedirectAttributes redirectAttributes) {
         try {
             usuarioServicio.crearChampion(username, correo, nombre);
-            redirectAttributes.addFlashAttribute("mensaje", "Champion creado exitosamente. Se ha enviado un correo.");
+            redirectAttributes.addFlashAttribute("mensaje", "Champion created successfully. An email has been sent.");
         } catch (Exception e) {
-            redirectAttributes.addFlashAttribute("error", "Error al crear el champion: " + e.getMessage());
+            redirectAttributes.addFlashAttribute("error", "Error creating champion: " + e.getMessage());
         }
         return "redirect:/admin/usuarios";
     }

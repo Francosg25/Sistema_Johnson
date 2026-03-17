@@ -78,10 +78,10 @@ public class MilestoneControlador {
         hitoRepo.save(hito);
 
         if (esNuevo) {
-            String autor = (principal != null) ? principal.getName() : "Sistema";
+            String autor = (principal != null) ? principal.getName() : "System";
             notificacionServicio.alertarATodos(
-                "Nuevo Hito: " + nombre,
-                "Se ha creado un nuevo hito '" + nombre + "' en el proyecto " + p.getNombre(),
+                "New Milestone: " + nombre,
+                "A new milestone '" + nombre + "' has been created in project " + p.getNombre(),
                 "INFO",
                 "/timeline",
                 autor
