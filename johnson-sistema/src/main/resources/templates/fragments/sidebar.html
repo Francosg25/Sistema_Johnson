@@ -23,8 +23,13 @@
             </a>
         </li>
         <li class="nav-item">
-            <a th:href="@{/evidencias}" class="nav-link" th:classappend="${currentUri != null and currentUri.startsWith('/evidencias')} ? 'active' : ''">
-                <i class="bi bi-archive-fill"></i> <span>Evidences</span>
+            <a th:href="@{/evidencias}" class="nav-link" th:classappend="${currentUri == '/evidencias'} ? 'active' : ''">
+                <i class="bi bi-safe2-fill"></i> <span>Evidence Vault</span>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a th:href="@{/proyectos/vault}" class="nav-link" th:classappend="${currentUri != null and currentUri.startsWith('/proyectos/vault')} ? 'active' : ''">
+                <i class="bi bi-archive-fill"></i> <span>Historical Vault</span>
             </a>
         </li>
         <li class="nav-item">

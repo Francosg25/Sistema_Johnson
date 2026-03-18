@@ -31,7 +31,6 @@ public class Proyecto {
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     private LocalDate sop;
 
-    // Roles para Firmas APQP
     private String projectEngineer;
     private String qualityEngineer;
     private String processEngineer;
@@ -48,6 +47,12 @@ public class Proyecto {
     private LocalDate fechaBuyoff;
     private LocalDate fechaTransit;
     private LocalDate fechaSop;
+
+    @Column(name = "es_historico")
+    private boolean esHistorico = false; 
+
+    public boolean getEsHistorico() { return esHistorico; }
+    public void setEsHistorico(boolean esHistorico) { this.esHistorico = esHistorico; }
 
     public LocalDate getFechaCar() { return fechaCar; }
     public void setFechaCar(LocalDate fechaCar) { this.fechaCar = fechaCar; }

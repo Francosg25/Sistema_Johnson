@@ -42,9 +42,9 @@ public class ProyectoControlador {
     @Autowired private ChecklistServicio checklistServicio;
     @Autowired private ProyectoRepositorio proyectoRepositorio;
     @Autowired private FirmaEtapaServicio firmaEtapaServicio;
-    
-    @Autowired 
-    private NotificacionServicio notificacionServicio;
+    @Autowired private NotificacionServicio notificacionServicio;
+    @Autowired private ReporteServicio reporteServicio;
+    @Autowired private ExcelServicio excelServicio;
 
     @Data @AllArgsConstructor
     public static class FaseVista {
@@ -54,6 +54,22 @@ public class ProyectoControlador {
         private Map<String, FirmaEtapa> firmas;
     }
 
+    
+    @GetMapping("/")
+    public String index(Model model, HttpServletRequest request) {
+        // Esto trae SOLO los proyectos que NO están en la bóveda
+        List<Proyecto> lista = proyectoRepositorio.findByEsHistoricoFalse(); 
+        
+        model.addAttribute("proyectos", lista);
+        model.addAttribute("currentUri", request.getRequestURI());
+
+        Map<String, Integer> tendencia = checklistServicio.obtenerTendenciaAprobacionesOK();
+        model.addAttribute("tendencia", tendencia);
+
+        return "index";
+    }
+
+    
     @GetMapping("/checklist/{id}")
     @Transactional(readOnly = true)
     public String verChecklist(@PathVariable Long id, Model model, HttpServletRequest request) {
@@ -64,7 +80,6 @@ public class ProyectoControlador {
         model.addAttribute("proyecto", proyecto);
 
         List<ElementoChecklist> todosLosElementos = checklistServicio.obtenerPorProyectoId(id);
-
         List<FaseVista> fases = new ArrayList<>();
         
         fases.add(new FaseVista("prog", "APQP Program", todosLosElementos.stream()
@@ -89,6 +104,7 @@ public class ProyectoControlador {
         return "checklist";
     }
 
+   
     @PostMapping("/checklist/firmar/{id}")
     public String firmarEtapa(@PathVariable Long id, @RequestParam Integer etapa, @RequestParam String rol, Principal principal) {
         firmaEtapaServicio.firmar(id, etapa, rol, principal.getName());
@@ -121,19 +137,17 @@ public class ProyectoControlador {
         }
     }
 
-    
+   
     @PostMapping("/guardar")
     @CacheEvict(value = "reportes", allEntries = true) 
     public String guardarProyecto(@ModelAttribute Proyecto proyecto, java.security.Principal principal) {
         boolean esNuevo = (proyecto.getId() == null);
-        
         Proyecto proyectoGuardado = proyectoServicio.guardarProyecto(proyecto);
         
         if (esNuevo) {
             String titulo = "New Project APQP";
             String msj = "The portfolio has been initialized for the project: " + proyectoGuardado.getNombre();
             String url = "/proyectos/checklist/" + proyectoGuardado.getId();
-            
             String autor = (principal != null) ? principal.getName() : "Sistema";
             
             notificacionServicio.alertarATodos(titulo, msj, "SUCCESS", url, autor);
@@ -150,61 +164,44 @@ public class ProyectoControlador {
         return "redirect:/"; 
     }
 
-    @GetMapping("/api/{id}")
-    @ResponseBody
-    public Proyecto obtenerProyectoApi(@PathVariable Long id) {
-        return proyectoServicio.buscarPorId(id);
-    }
     
     @PostMapping("/archivar/{id}")
     @PreAuthorize("hasRole('ADMIN')")
+    @CacheEvict(value = "reportes", allEntries = true) 
     public String archivarProyecto(@PathVariable Long id, org.springframework.web.servlet.mvc.support.RedirectAttributes redirectAttributes) {
         Proyecto proyecto = proyectoServicio.buscarPorId(id);
         if (proyecto != null) {
-            Map<String, Object> validacion = checklistServicio.estaListoParaFinalizar(id);
-            boolean listo = (boolean) validacion.get("listo");
             
-            if (!listo) {
-                List<String> errores = (List<String>) validacion.get("errores");
-                redirectAttributes.addFlashAttribute("errorFinalizar", errores);
-                return "redirect:/proyectos/checklist/" + id;
-            }
-
-            proyecto.setArchivado(true);
+            proyecto.setEsHistorico(true); 
             proyectoRepositorio.save(proyecto);
             
-            notificacionServicio.alertarATodos("Project Finished", 
-                "The project " + proyecto.getNombre() + " has been successfully completed and archived.", 
-                "SUCCESS", "/evidencias", "System");
+            notificacionServicio.alertarATodos("Project Archived", 
+                "The project " + proyecto.getNombre() + " has been successfully archived.", 
+                "SUCCESS", "/proyectos/vault", "System");
                 
-            redirectAttributes.addFlashAttribute("mensajeExito", "Project finalized successfully.");
+            redirectAttributes.addFlashAttribute("mensajeExito", "Project moved to Historical Vault.");
         }
-        return "redirect:/";
+        
+        return "redirect:/proyectos/vault";
     }
 
-    @GetMapping("/")
-    public String index(Model model, HttpServletRequest request) {
-        List<Proyecto> lista = proyectoRepositorio.findAll();
-        model.addAttribute("proyectos", lista);
-        model.addAttribute("currentUri", request.getRequestURI());
 
-        Map<String, Integer> tendencia = checklistServicio.obtenerTendenciaAprobacionesOK();
-        model.addAttribute("tendencia", tendencia);
-
-        return "index";
+    @GetMapping("/vault")
+    public String verHistoricalVault(Model model, HttpServletRequest request) {
+        List<Proyecto> proyectosHistoricos = proyectoRepositorio.findByEsHistoricoTrue();
+        model.addAttribute("proyectos", proyectosHistoricos);
+        model.addAttribute("currentUri", request.getRequestURI()); 
+        
+        return "vault"; 
     }
 
-    @Autowired
-    private ReporteServicio reporteServicio;
-
-    @Autowired
-    private ExcelServicio excelServicio;
-
+ 
+    
 
     @GetMapping("/exportar-master-timeline")
     public ResponseEntity<byte[]> descargarMasterTimeline() {
         try {
-            List<Proyecto> proyectos = proyectoRepositorio.findAll();
+            List<Proyecto> proyectos = proyectoRepositorio.findByEsHistoricoFalse();
             List<ElementoChecklist> todosLosElementos = checklistServicio.obtenerTodos(); 
 
             byte[] data = excelServicio.generarMasterTimelineExcel(proyectos, todosLosElementos);
@@ -253,8 +250,9 @@ public class ProyectoControlador {
         }
     }
 
-    
-
-
-
+    @GetMapping("/api/{id}")
+    @ResponseBody
+    public Proyecto obtenerProyectoApi(@PathVariable Long id) {
+        return proyectoServicio.buscarPorId(id);
+    }
 }

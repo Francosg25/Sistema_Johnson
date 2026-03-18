@@ -24,7 +24,10 @@ public class TimelineControlador {
         
         model.addAttribute("timelineGroups", datos.get("groups"));
         model.addAttribute("timelineItems", datos.get("items"));
-        model.addAttribute("proyectos", proyectoRepo.findAll());
+        
+      
+        model.addAttribute("proyectos", proyectoRepo.findByEsHistoricoFalse()); 
+        
         model.addAttribute("statusGlobal", checklistServicio.generarReporteEstadoGlobal());
         
         return "timeline";

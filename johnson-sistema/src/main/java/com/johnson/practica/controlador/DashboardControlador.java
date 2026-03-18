@@ -8,20 +8,20 @@ import org.springframework.web.bind.annotation.GetMapping;
 import com.johnson.practica.repositorio.ProyectoRepositorio;
 import com.johnson.practica.servicio.ChecklistServicio;
 import com.johnson.practica.servicio.NotificacionServicio; 
-import com.johnson.practica.repositorio.UsuarioRepositorio; // <-- NUEVO
+import com.johnson.practica.repositorio.UsuarioRepositorio; 
 import com.johnson.practica.dto.ReporteProgreso;
 import com.johnson.practica.dto.ReporteEstadoGlobal;
 import com.johnson.practica.modelo.Notificacion; 
-import com.johnson.practica.modelo.Usuario; // <-- NUEVO
+import com.johnson.practica.modelo.Usuario; 
 
-import com.johnson.practica.modelo.ElementoChecklist; // <-- NUEVO
-import com.johnson.practica.modelo.Proyecto; // <-- NUEVO
-import java.security.Principal; // <-- NUEVO
+import com.johnson.practica.modelo.ElementoChecklist; 
+import com.johnson.practica.modelo.Proyecto; 
+import java.security.Principal; 
 import java.util.ArrayList;
-import java.util.HashMap; // <-- NUEVO
+import java.util.HashMap; 
 import java.util.List;
-import java.util.Map; // <-- NUEVO
-import java.util.stream.Collectors; // <-- NUEVO
+import java.util.Map; 
+import java.util.stream.Collectors; 
 
 @Controller
 public class DashboardControlador {
@@ -36,21 +36,25 @@ public class DashboardControlador {
     private NotificacionServicio notificacionServicio;
 
     @Autowired
-    private UsuarioRepositorio usuarioRepositorio; // Inyectamos el repo de usuarios
+    private UsuarioRepositorio usuarioRepositorio; 
 
     @Autowired
     private com.johnson.practica.servicio.BitacoraServicio bitacoraServicio;
 
     @GetMapping("/")
     public String index(Model model, jakarta.servlet.http.HttpServletRequest request, Principal principal) {
-        List<Proyecto> proyectos = proyectoRepositorio.findAll().stream()
-            .filter(p -> !p.isArchivado())
-            .toList();
+        
+        // OBTENEMOS SOLO LOS PROYECTOS ACTIVOS (Oculta los del Vault)
+        List<Proyecto> proyectos = proyectoRepositorio.findByEsHistoricoFalse();
+        
+        // Filtramos el reporte global para que solo evalúe proyectos activos
         List<ReporteProgreso> reporteGlobal = checklistServicio.generarReporteGlobal().stream()
             .filter(r -> {
                 Proyecto p = proyectoRepositorio.findById(r.getId()).orElse(null);
-                return p != null && !p.isArchivado();
+                // Usamos isEsHistorico() o getEsHistorico() dependiendo de cómo lo generó Lombok
+                return p != null && !p.getEsHistorico(); 
             }).toList();
+            
         ReporteEstadoGlobal estadoGlobal = checklistServicio.generarReporteEstadoGlobal();
         
         double avancePromedio = 0;
@@ -59,7 +63,6 @@ public class DashboardControlador {
         }
         avancePromedio = Math.round(avancePromedio * 10.0) / 10.0;
 
-        // --- SOLUCIÓN DEL ERROR: Buscamos al usuario logueado antes de pedir sus alertas ---
         List<Notificacion> notificaciones = new ArrayList<>();
         if (principal != null) {
             Usuario usuarioActual = usuarioRepositorio.findByUsername(principal.getName()).orElse(null);
@@ -72,10 +75,8 @@ public class DashboardControlador {
         model.addAttribute("reporteProgreso", reporteGlobal);
         model.addAttribute("estadoGlobal", estadoGlobal);
         model.addAttribute("alertas", checklistServicio.obtenerAlertasGlobales().stream()
-            .filter(a -> {
-                // Asumiendo que las alertas tienen alguna relación con el proyecto o filtrando por nombre
-                return proyectos.stream().anyMatch(p -> a.getNombre().contains(p.getNombre()));
-            }).toList());
+            .filter(a -> proyectos.stream().anyMatch(p -> a.getNombre().contains(p.getNombre())))
+            .toList());
         model.addAttribute("tendencia", checklistServicio.obtenerDatosTendencia());
         model.addAttribute("proximosLanzamientos", checklistServicio.obtenerLanzamientosProximos());
         model.addAttribute("avancePromedio", avancePromedio);
@@ -83,20 +84,19 @@ public class DashboardControlador {
         model.addAttribute("notificaciones", notificaciones); 
         model.addAttribute("ultimosMovimientos", bitacoraServicio.obtenerUltimosMovimientos().stream().limit(5).toList());
         
-        // --- SECCIÓN: MIS TAREAS / FILTRO POR CHAMPION ---
+        // Filtramos las tareas pendientes para que no salgan las de proyectos archivados
         List<ElementoChecklist> todasPendientes = checklistServicio.obtenerTodasTareasPendientes().stream()
-            .filter(t -> !t.getProyecto().isArchivado())
+            .filter(t -> !t.getProyecto().getEsHistorico())
             .toList();
+
         model.addAttribute("todasTareasPendientes", todasPendientes);
         model.addAttribute("listaChampions", checklistServicio.obtenerTodosLosChampions());
         
-        // Agregamos conteo por champion para el filtro moderno
         Map<String, Long> conteoPorChampion = todasPendientes.stream()
             .filter(t -> t.getChampion() != null)
             .collect(Collectors.groupingBy(t -> checklistServicio.normalizarChampion(t.getChampion()), Collectors.counting()));
         model.addAttribute("conteoPorChampion", conteoPorChampion);
 
-        // --- SECCIÓN: CALENDARIO DE EVENTOS ---
         List<Map<String, Object>> eventosCalendario = new ArrayList<>();
         for (Proyecto p : proyectos) {
             if (p.getSop() != null) {
@@ -104,11 +104,10 @@ public class DashboardControlador {
                 event.put("title", "SOP: " + p.getNombre());
                 event.put("start", p.getSop().toString());
                 event.put("description", "Start of Production - PN: " + p.getNumeroParte());
-                event.put("className", "bg-warning border-0 shadow-sm"); // Naranja SOP
+                event.put("className", "bg-warning border-0 shadow-sm"); 
                 event.put("url", "/proyectos/checklist/" + p.getId());
                 eventosCalendario.add(event);
             }
-            // Podríamos agregar hitos específicos aquí si fuera necesario
         }
         model.addAttribute("eventosCalendario", eventosCalendario);
 

@@ -67,7 +67,6 @@ public class ChecklistServicio {
         return repositorio.findAll();
     }
 
-  
     private boolean esDiferente(String actual, String nuevo) {
         String a = (actual == null) ? "" : actual.replaceAll("[\\n\\r]+", " ").trim();
         String n = (nuevo == null) ? "" : nuevo.replaceAll("[\\n\\r]+", " ").trim();
@@ -128,7 +127,6 @@ public class ChecklistServicio {
                                 String url = "/checklist?proyectoId=" + elemento.getProyecto().getId();
                                 notificacionServicio.alertarATodos(titulo, msj, "SUCCESS", url, nombreUsuarioLogueado);
                                 
-                                // NUEVO: Auto-asignar fecha si está vacía
                                 if (elemento.getFechaReal() == null) {
                                     elemento.setFechaReal(LocalDate.now());
                                 }
@@ -182,7 +180,6 @@ public class ChecklistServicio {
                             }
                         } catch (Exception ignored) {}
                     }
-
                 }
             });
 
@@ -201,37 +198,35 @@ public class ChecklistServicio {
         }
     }
 
-
     public Map<String, Integer> obtenerTendenciaAprobacionesOK() {
         List<ElementoChecklist> todos = repositorio.findAll();
         Map<String, Integer> tendencia = new HashMap<>();
 
         for (ElementoChecklist e : todos) {
-            boolean isScoreOk = "OK".equalsIgnoreCase(e.getScore());
-            boolean isEstadoOk = "OK".equalsIgnoreCase(e.getEstado());
+            // Se filtran los históricos para que la tendencia refleje solo trabajo activo
+            if (e.getProyecto() != null && !e.getProyecto().getEsHistorico()) {
+                boolean isScoreOk = "OK".equalsIgnoreCase(e.getScore());
+                boolean isEstadoOk = "OK".equalsIgnoreCase(e.getEstado());
 
-            if (isScoreOk || isEstadoOk) {
-                LocalDate fecha = e.getFechaReal() != null ? e.getFechaReal() : LocalDate.now();
-                
-                String mesAnio = fecha.getMonthValue() + "/" + fecha.getYear();
-                tendencia.put(mesAnio, tendencia.getOrDefault(mesAnio, 0) + 1);
+                if (isScoreOk || isEstadoOk) {
+                    LocalDate fecha = e.getFechaReal() != null ? e.getFechaReal() : LocalDate.now();
+                    String mesAnio = fecha.getMonthValue() + "/" + fecha.getYear();
+                    tendencia.put(mesAnio, tendencia.getOrDefault(mesAnio, 0) + 1);
+                }
             }
         }
         return tendencia;
     }
 
-
    @Cacheable("reportes")
    public List<ReporteProgreso> generarReporteGlobal() {
         List<Proyecto> proyectos = proyectoRepositorio.findAllByOrderByIdAsc().stream()
-            .filter(p -> !p.isArchivado())
+            .filter(p -> !p.getEsHistorico()) 
             .toList();
         List<ReporteProgreso> reporte = new ArrayList<>();
 
         for (Proyecto p : proyectos) {
-           
             List<ElementoChecklist> todosLosItemsDelProyecto = repositorio.findByProyecto_Id(p.getId());
-            
             List<ElementoChecklist> itemsFase0 = repositorio.findByProyecto_IdAndFaseStartingWithOrderByCodigoAsc(p.getId(), "0");
             
             int total = itemsFase0.size(); 
@@ -252,15 +247,7 @@ public class ChecklistServicio {
 
             String sopStr = (p.getSop() != null) ? p.getSop().toString() : "N/A";
             ReporteProgreso reporteProgreso = new ReporteProgreso(
-                p.getId(), 
-                p.getNombre(), 
-                p.getCliente(), 
-                p.getNumeroParte(), 
-                p.getLiderProyecto(), 
-                sopStr, 
-                total, 
-                ok, 
-                porcentaje
+                p.getId(), p.getNombre(), p.getCliente(), p.getNumeroParte(), p.getLiderProyecto(), sopStr, total, ok, porcentaje
             );
             
             reporteProgreso.setFechaCar(p.getFechaCar() != null ? p.getFechaCar().toString() : null);
@@ -268,7 +255,6 @@ public class ChecklistServicio {
             reporteProgreso.setFechaTransit(p.getFechaTransit() != null ? p.getFechaTransit().toString() : null);
 
             double riesgo = calcularRiesgoDinamico(p, todosLosItemsDelProyecto);
-            
             reporteProgreso.setRiesgo(riesgo);
 
             reporte.add(reporteProgreso);
@@ -278,7 +264,7 @@ public class ChecklistServicio {
 
     public ReporteEstadoGlobal generarReporteEstadoGlobal() {
         List<Proyecto> proyectos = proyectoRepositorio.findAllByOrderByIdAsc().stream()
-            .filter(p -> !p.isArchivado())
+            .filter(p -> !p.getEsHistorico()) // <-- CORREGIDO A isEsHistorico
             .toList();
         
         int total = 0;
@@ -332,7 +318,7 @@ public class ChecklistServicio {
     @Transactional(readOnly = true)
     public List<ReporteCascada> generarReporteCascada() {
         List<Proyecto> proyectos = proyectoRepositorio.findAllByOrderByIdAsc().stream()
-            .filter(p -> !p.isArchivado())
+            .filter(p -> !p.getEsHistorico()) // <-- CORREGIDO A isEsHistorico
             .toList();
         List<ReporteCascada> reporte = new ArrayList<>();
         List<String> etapas = Arrays.asList("STAGE 1", "STAGE 2", "STAGE 3", "STAGE 4", "STAGE 5");
@@ -355,6 +341,7 @@ public class ChecklistServicio {
     public List<ElementoChecklist> obtenerAlertasGlobales() {
         List<ElementoChecklist> todos = repositorio.findAll();
         return todos.stream()
+                .filter(e -> e.getProyecto() != null && !e.getProyecto().getEsHistorico()) 
                 .filter(e -> e.getControlEntregable() != null && e.getControlEntregable().equalsIgnoreCase("NEEDS ACTION"))
                 .toList();
     }
@@ -365,7 +352,7 @@ public class ChecklistServicio {
         Map<String, Long> tendencia = new HashMap<>();
         
         for (ElementoChecklist item : todos) {
-            if ("OK".equalsIgnoreCase(item.getScore()) && item.getFechaReal() != null) {
+            if (item.getProyecto() != null && !item.getProyecto().getEsHistorico() && "OK".equalsIgnoreCase(item.getScore()) && item.getFechaReal() != null) {
                 String mesAnio = item.getFechaReal().getMonthValue() + "/" + item.getFechaReal().getYear();
                 tendencia.put(mesAnio, tendencia.getOrDefault(mesAnio, 0L) + 1);
             }
@@ -376,7 +363,7 @@ public class ChecklistServicio {
     @Transactional(readOnly = true)
     public long obtenerLanzamientosProximos() {
         List<Proyecto> proyectos = proyectoRepositorio.findAllByOrderByIdAsc().stream()
-                .filter(p -> !p.isArchivado())
+                .filter(p -> !p.getEsHistorico()) // <-- AQUÍ SE ARREGLA EL BADGE DE SOP < 6M
                 .toList();
         LocalDate hoy = LocalDate.now();
         LocalDate limite = hoy.plusMonths(6);
@@ -415,7 +402,7 @@ public class ChecklistServicio {
    @Transactional(readOnly = true)
     public Map<String, Object> obtenerDatosTimeline() {
         List<Proyecto> proyectos = proyectoRepositorio.findAllByOrderByIdAsc().stream()
-            .filter(p -> !p.isArchivado())
+            .filter(p -> !p.getEsHistorico()) // <-- CORREGIDO A isEsHistorico
             .toList();
         List<TimelineGrupo> groups = new ArrayList<>();
         List<TimelineItem> items = new ArrayList<>();
@@ -455,7 +442,6 @@ public class ChecklistServicio {
 
                 LocalDate fecha = (item.getFechaPlan() != null) ? item.getFechaPlan() : item.getFechaReal();
                 if (fecha != null) {
-                    
                     boolean esExterno = item.getChampion() != null && (item.getChampion().contains("SCS") || item.getChampion().contains("Cliente") || item.getChampion().contains("Proveedor"));
                     boolean isDelayed = item.getFechaPlan() != null && item.getFechaPlan().isBefore(LocalDate.now()) && !"OK".equalsIgnoreCase(item.getScore());
                     
@@ -539,6 +525,7 @@ public class ChecklistServicio {
     public List<ElementoChecklist> obtenerTareasPendientesUsuario(String username) {
         List<ElementoChecklist> todos = repositorio.findAll();
         return todos.stream()
+                .filter(e -> e.getProyecto() != null && !e.getProyecto().getEsHistorico()) // <-- CORRECCIÓN TAREAS PENDIENTES
                 .filter(e -> e.getChampion() != null && 
                             e.getChampion().equalsIgnoreCase(username) && 
                             !"OK".equalsIgnoreCase(scoreFormateado(e.getScore())))
@@ -548,6 +535,7 @@ public class ChecklistServicio {
     @Transactional(readOnly = true)
     public List<ElementoChecklist> obtenerTodasTareasPendientes() {
         return repositorio.findByScoreNotIgnoreCase("OK").stream()
+                .filter(e -> e.getProyecto() != null && !e.getProyecto().getEsHistorico()) // <-- CORRECCIÓN LISTA GENERAL DE TAREAS
                 .filter(e -> e.getScore() == null || !e.getScore().equalsIgnoreCase("OK"))
                 .filter(e -> e.getFase() != null && (e.getFase().equals("0. Program") || e.getFase().equals("2. Stage 2")))
                 .toList();
@@ -567,7 +555,6 @@ public class ChecklistServicio {
         if (champ == null || champ.trim().isEmpty()) return "N/A";
         String c = champ.trim().toUpperCase();
         
-        // Mapeo estricto a siglas
         if (c.equals("DE") || c.contains("DESIGN ENGINEER") || c.contains("PRODUCT ENGINEER")) return "DE";
         if (c.equals("QE") || c.contains("QUALITY ENGINEER")) return "QE";
         if (c.equals("PE") || c.contains("PROCESS ENGINEER") || c.contains("MANUFACTURING")) return "PE";
@@ -611,8 +598,6 @@ public class ChecklistServicio {
         Map<String, Object> resultado = new HashMap<>();
         List<String> errores = new ArrayList<>();
 
-        // 1. Validar Deliverables (APQP Program / Stage 1)
-        // Solo validamos que tengan Score OK (los que no son tipo GATE)
         long entregablesSinOk = todos.stream()
                 .filter(e -> !"GATE".equals(e.getTipoInput())) 
                 .filter(e -> e.getEtapaVisual() != null && e.getEtapaVisual().contains("APQP"))
@@ -623,8 +608,6 @@ public class ChecklistServicio {
             errores.add("There are " + entregablesSinOk + " deliverables in APQP Program without 'OK' status.");
         }
 
-        // 2. Validar Gate 2 (Stage 2)
-        // Debe tener algo marcado en compliance (estado != null) para todas sus preguntas
         long gate2SinResponder = todos.stream()
                 .filter(e -> e.getCodigo() != null && e.getCodigo().startsWith("S2-"))
                 .filter(e -> e.getEstado() == null || e.getEstado().trim().isEmpty())
@@ -634,8 +617,6 @@ public class ChecklistServicio {
             errores.add("Gate 2 (Design) has " + gate2SinResponder + " requirements without compliance selection (Yes/No/NA).");
         }
 
-        // 3. Validar Gates 3, 4 y 5 (Requirements Validation)
-        // Validar específicamente los 3 puntos de la sección "Conclusion" / "Requirements Validation"
         for (int i = 3; i <= 5; i++) {
             final String prefix = "S" + i + "-CONC";
             long concSinMarcar = todos.stream()
@@ -670,5 +651,4 @@ public class ChecklistServicio {
             notificacionServicio.alertarAUsuario(username, titulo, msj, "INFO", url, autor);
         }
     }
-
 }
