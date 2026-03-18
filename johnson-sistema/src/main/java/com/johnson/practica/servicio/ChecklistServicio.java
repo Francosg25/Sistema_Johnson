@@ -223,7 +223,9 @@ public class ChecklistServicio {
 
    @Cacheable("reportes")
    public List<ReporteProgreso> generarReporteGlobal() {
-        List<Proyecto> proyectos = proyectoRepositorio.findAllByOrderByIdAsc();
+        List<Proyecto> proyectos = proyectoRepositorio.findAllByOrderByIdAsc().stream()
+            .filter(p -> !p.isArchivado())
+            .toList();
         List<ReporteProgreso> reporte = new ArrayList<>();
 
         for (Proyecto p : proyectos) {
@@ -275,7 +277,9 @@ public class ChecklistServicio {
     }
 
     public ReporteEstadoGlobal generarReporteEstadoGlobal() {
-        List<Proyecto> proyectos = proyectoRepositorio.findAllByOrderByIdAsc();
+        List<Proyecto> proyectos = proyectoRepositorio.findAllByOrderByIdAsc().stream()
+            .filter(p -> !p.isArchivado())
+            .toList();
         
         int total = 0;
         int onTime = 0;
@@ -327,7 +331,9 @@ public class ChecklistServicio {
 
     @Transactional(readOnly = true)
     public List<ReporteCascada> generarReporteCascada() {
-        List<Proyecto> proyectos = proyectoRepositorio.findAllByOrderByIdAsc();
+        List<Proyecto> proyectos = proyectoRepositorio.findAllByOrderByIdAsc().stream()
+            .filter(p -> !p.isArchivado())
+            .toList();
         List<ReporteCascada> reporte = new ArrayList<>();
         List<String> etapas = Arrays.asList("STAGE 1", "STAGE 2", "STAGE 3", "STAGE 4", "STAGE 5");
 
@@ -369,7 +375,9 @@ public class ChecklistServicio {
 
     @Transactional(readOnly = true)
     public long obtenerLanzamientosProximos() {
-        List<Proyecto> proyectos = proyectoRepositorio.findAllByOrderByIdAsc();
+        List<Proyecto> proyectos = proyectoRepositorio.findAllByOrderByIdAsc().stream()
+                .filter(p -> !p.isArchivado())
+                .toList();
         LocalDate hoy = LocalDate.now();
         LocalDate limite = hoy.plusMonths(6);
         
@@ -406,7 +414,9 @@ public class ChecklistServicio {
 
    @Transactional(readOnly = true)
     public Map<String, Object> obtenerDatosTimeline() {
-        List<Proyecto> proyectos = proyectoRepositorio.findAllByOrderByIdAsc();
+        List<Proyecto> proyectos = proyectoRepositorio.findAllByOrderByIdAsc().stream()
+            .filter(p -> !p.isArchivado())
+            .toList();
         List<TimelineGrupo> groups = new ArrayList<>();
         List<TimelineItem> items = new ArrayList<>();
 
@@ -593,6 +603,54 @@ public class ChecklistServicio {
             case "ALL" -> "Cross-Functional Team (All)";
             default -> sigla;
         };
+    }
+
+    @Transactional(readOnly = true)
+    public Map<String, Object> estaListoParaFinalizar(Long proyectoId) {
+        List<ElementoChecklist> todos = repositorio.findByProyecto_Id(proyectoId);
+        Map<String, Object> resultado = new HashMap<>();
+        List<String> errores = new ArrayList<>();
+
+        // 1. Validar Deliverables (APQP Program / Stage 1)
+        // Solo validamos que tengan Score OK (los que no son tipo GATE)
+        long entregablesSinOk = todos.stream()
+                .filter(e -> !"GATE".equals(e.getTipoInput())) 
+                .filter(e -> e.getEtapaVisual() != null && e.getEtapaVisual().contains("APQP"))
+                .filter(e -> !"OK".equalsIgnoreCase(e.getScore()))
+                .count();
+
+        if (entregablesSinOk > 0) {
+            errores.add("There are " + entregablesSinOk + " deliverables in APQP Program without 'OK' status.");
+        }
+
+        // 2. Validar Gate 2 (Stage 2)
+        // Debe tener algo marcado en compliance (estado != null) para todas sus preguntas
+        long gate2SinResponder = todos.stream()
+                .filter(e -> e.getCodigo() != null && e.getCodigo().startsWith("S2-"))
+                .filter(e -> e.getEstado() == null || e.getEstado().trim().isEmpty())
+                .count();
+
+        if (gate2SinResponder > 0) {
+            errores.add("Gate 2 (Design) has " + gate2SinResponder + " requirements without compliance selection (Yes/No/NA).");
+        }
+
+        // 3. Validar Gates 3, 4 y 5 (Requirements Validation)
+        // Validar específicamente los 3 puntos de la sección "Conclusion" / "Requirements Validation"
+        for (int i = 3; i <= 5; i++) {
+            final String prefix = "S" + i + "-CONC";
+            long concSinMarcar = todos.stream()
+                    .filter(e -> e.getCodigo() != null && e.getCodigo().startsWith(prefix))
+                    .filter(e -> e.getEstado() == null || e.getEstado().trim().isEmpty())
+                    .count();
+            
+            if (concSinMarcar > 0) {
+                errores.add("Gate " + i + " has " + concSinMarcar + " validation points not yet marked.");
+            }
+        }
+
+        resultado.put("listo", errores.isEmpty());
+        resultado.put("errores", errores);
+        return resultado;
     }
 
     private String scoreFormateado(String s) {

@@ -179,10 +179,12 @@ public class EvidenciaControlador {
         List<Adjunto> adjuntos = adjuntoRepositorio.findAllConDetalles(); 
         
         // Agrupamos por nombre de proyecto
-        Map<String, List<Map<String, Object>>> agrupadosPorProyecto = new java.util.LinkedHashMap<>();
+        Map<String, List<Map<String, Object>>> activos = new java.util.LinkedHashMap<>();
+        Map<String, List<Map<String, Object>>> archivados = new java.util.LinkedHashMap<>();
         
         for (Adjunto a : adjuntos) {
             String proyectoNombre = (a.getProyecto() != null) ? a.getProyecto().getNombre() : "Otros / Sin Proyecto";
+            boolean isArchivado = (a.getProyecto() != null) && a.getProyecto().isArchivado();
             
             Map<String, Object> infoAdjunto = new HashMap<>();
             infoAdjunto.put("id", a.getId());
@@ -190,11 +192,17 @@ public class EvidenciaControlador {
             infoAdjunto.put("subidoEn", a.getSubidoEn());
             infoAdjunto.put("entregableInfo", (a.getElementoChecklist() != null) ? 
                 a.getElementoChecklist().getNombre() : "Desconocido");
+            infoAdjunto.put("proyectoId", (a.getProyecto() != null) ? a.getProyecto().getId() : null);
             
-            agrupadosPorProyecto.computeIfAbsent(proyectoNombre, k -> new java.util.ArrayList<>()).add(infoAdjunto);
+            if (isArchivado) {
+                archivados.computeIfAbsent(proyectoNombre, k -> new java.util.ArrayList<>()).add(infoAdjunto);
+            } else {
+                activos.computeIfAbsent(proyectoNombre, k -> new java.util.ArrayList<>()).add(infoAdjunto);
+            }
         }
         
-        model.addAttribute("proyectosConEvidencias", agrupadosPorProyecto);
+        model.addAttribute("proyectosConEvidencias", activos);
+        model.addAttribute("proyectosArchivados", archivados);
         model.addAttribute("currentUri", "/evidencias");
         
         return "evidencias";

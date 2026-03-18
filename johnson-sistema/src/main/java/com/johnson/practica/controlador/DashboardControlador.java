@@ -43,8 +43,14 @@ public class DashboardControlador {
 
     @GetMapping("/")
     public String index(Model model, jakarta.servlet.http.HttpServletRequest request, Principal principal) {
-        List<Proyecto> proyectos = proyectoRepositorio.findAll();
-        List<ReporteProgreso> reporteGlobal = checklistServicio.generarReporteGlobal();
+        List<Proyecto> proyectos = proyectoRepositorio.findAll().stream()
+            .filter(p -> !p.isArchivado())
+            .toList();
+        List<ReporteProgreso> reporteGlobal = checklistServicio.generarReporteGlobal().stream()
+            .filter(r -> {
+                Proyecto p = proyectoRepositorio.findById(r.getId()).orElse(null);
+                return p != null && !p.isArchivado();
+            }).toList();
         ReporteEstadoGlobal estadoGlobal = checklistServicio.generarReporteEstadoGlobal();
         
         double avancePromedio = 0;
@@ -65,7 +71,11 @@ public class DashboardControlador {
         model.addAttribute("proyectos", proyectos);
         model.addAttribute("reporteProgreso", reporteGlobal);
         model.addAttribute("estadoGlobal", estadoGlobal);
-        model.addAttribute("alertas", checklistServicio.obtenerAlertasGlobales());
+        model.addAttribute("alertas", checklistServicio.obtenerAlertasGlobales().stream()
+            .filter(a -> {
+                // Asumiendo que las alertas tienen alguna relación con el proyecto o filtrando por nombre
+                return proyectos.stream().anyMatch(p -> a.getNombre().contains(p.getNombre()));
+            }).toList());
         model.addAttribute("tendencia", checklistServicio.obtenerDatosTendencia());
         model.addAttribute("proximosLanzamientos", checklistServicio.obtenerLanzamientosProximos());
         model.addAttribute("avancePromedio", avancePromedio);
@@ -74,7 +84,9 @@ public class DashboardControlador {
         model.addAttribute("ultimosMovimientos", bitacoraServicio.obtenerUltimosMovimientos().stream().limit(5).toList());
         
         // --- SECCIÓN: MIS TAREAS / FILTRO POR CHAMPION ---
-        List<ElementoChecklist> todasPendientes = checklistServicio.obtenerTodasTareasPendientes();
+        List<ElementoChecklist> todasPendientes = checklistServicio.obtenerTodasTareasPendientes().stream()
+            .filter(t -> !t.getProyecto().isArchivado())
+            .toList();
         model.addAttribute("todasTareasPendientes", todasPendientes);
         model.addAttribute("listaChampions", checklistServicio.obtenerTodosLosChampions());
         

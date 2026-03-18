@@ -31,7 +31,15 @@ public class RateLimitInterceptor implements HandlerInterceptor {
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
         // Solo aplicamos el límite a las rutas que empiecen por /api/
         if (request.getRequestURI().startsWith("/api/")) {
-            String ip = request.getRemoteAddr();
+            // Obtener la IP real del usuario (considerando si está detrás de un proxy/Nginx)
+            String ip = request.getHeader("X-Forwarded-For");
+            if (ip == null || ip.isEmpty() || "unknown".equalsIgnoreCase(ip)) {
+                ip = request.getRemoteAddr();
+            } else {
+                // Si hay múltiples IPs (separadas por coma), tomamos la primera que es la del cliente original
+                ip = ip.split(",")[0].trim();
+            }
+
             Bucket bucket = cache.computeIfAbsent(ip, k -> createNewBucket());
 
             if (bucket.tryConsume(1)) {

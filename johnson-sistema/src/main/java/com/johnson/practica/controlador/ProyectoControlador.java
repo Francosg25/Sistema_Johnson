@@ -156,6 +156,32 @@ public class ProyectoControlador {
         return proyectoServicio.buscarPorId(id);
     }
     
+    @PostMapping("/archivar/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
+    public String archivarProyecto(@PathVariable Long id, org.springframework.web.servlet.mvc.support.RedirectAttributes redirectAttributes) {
+        Proyecto proyecto = proyectoServicio.buscarPorId(id);
+        if (proyecto != null) {
+            Map<String, Object> validacion = checklistServicio.estaListoParaFinalizar(id);
+            boolean listo = (boolean) validacion.get("listo");
+            
+            if (!listo) {
+                List<String> errores = (List<String>) validacion.get("errores");
+                redirectAttributes.addFlashAttribute("errorFinalizar", errores);
+                return "redirect:/proyectos/checklist/" + id;
+            }
+
+            proyecto.setArchivado(true);
+            proyectoRepositorio.save(proyecto);
+            
+            notificacionServicio.alertarATodos("Project Finished", 
+                "The project " + proyecto.getNombre() + " has been successfully completed and archived.", 
+                "SUCCESS", "/evidencias", "System");
+                
+            redirectAttributes.addFlashAttribute("mensajeExito", "Project finalized successfully.");
+        }
+        return "redirect:/";
+    }
+
     @GetMapping("/")
     public String index(Model model, HttpServletRequest request) {
         List<Proyecto> lista = proyectoRepositorio.findAll();

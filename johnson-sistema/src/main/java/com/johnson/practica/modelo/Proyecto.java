@@ -70,4 +70,7 @@ public class Proyecto {
     @OneToMany(mappedBy = "proyecto", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonIgnore
     private List<HitoProyecto> hitos = new ArrayList<>();
+
+    private String faseActual = "APQP Program";
+    private boolean archivado = false;
 }

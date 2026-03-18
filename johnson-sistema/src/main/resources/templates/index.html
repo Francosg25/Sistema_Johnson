@@ -98,6 +98,16 @@
             <div th:replace="~{fragments/header :: header}"></div>
             
             <main class="container-fluid p-4">
+                <div th:if="${mensajeExito}" class="alert alert-success border-0 shadow-sm mb-4 rounded-4 animate__animated animate__fadeIn">
+                    <div class="d-flex align-items-center">
+                        <i class="bi bi-check-circle-fill fs-3 me-3 text-success"></i>
+                        <div>
+                            <h6 class="fw-bold mb-1" th:text="${mensajeExito}">Success!</h6>
+                            <p class="mb-0 small text-success">The project has been archived and notified to all users.</p>
+                        </div>
+                    </div>
+                </div>
+                
                 <div class="d-flex justify-content-between align-items-center mb-4">
                     <div>
                         <h2 class="fw-bold text-slate-900 m-0">Main Dashboard</h2>
