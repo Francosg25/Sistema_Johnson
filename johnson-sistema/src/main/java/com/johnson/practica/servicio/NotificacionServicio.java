@@ -8,6 +8,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionSynchronization;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -35,35 +37,61 @@ public class NotificacionServicio {
             Notificacion notif = new Notificacion(titulo, mensaje, tipo, usuario, autor);
             notif.setLink(link);
             repositorio.save(notif);
+        }
 
-            if (messagingTemplate != null) {
-                messagingTemplate.convertAndSendToUser(
-                    usuario.getUsername(), 
-                    "/queue/notificaciones", 
-                    "NUEVA_NOTIF"
-                );
+        // Enviar por WebSocket después del commit para evitar race conditions
+        if (messagingTemplate != null) {
+            enviarNotificacionWebSocketATodos();
+        }
+    }
+
+    private void enviarNotificacionWebSocketATodos() {
+        if (TransactionSynchronizationManager.isActualTransactionActive()) {
+            TransactionSynchronizationManager.registerSynchronization(
+                new TransactionSynchronization() {
+                    @Override
+                    public void afterCommit() {
+                        List<Usuario> todos = usuarioRepositorio.findAll();
+                        for (Usuario u : todos) {
+                            messagingTemplate.convertAndSendToUser(u.getUsername(), "/queue/notificaciones", "NUEVA_NOTIF");
+                        }
+                    }
+                }
+            );
+        } else {
+            List<Usuario> todos = usuarioRepositorio.findAll();
+            for (Usuario u : todos) {
+                messagingTemplate.convertAndSendToUser(u.getUsername(), "/queue/notificaciones", "NUEVA_NOTIF");
             }
         }
     }
 
     @Transactional
     public void alertarAUsuario(String usernameDestino, String titulo, String mensaje, String tipo, String link, String autor) {
-        
         usuarioRepositorio.findByUsername(usernameDestino).ifPresent(usuario -> {
-            
             Notificacion notif = new Notificacion(titulo, mensaje, tipo, usuario, autor);
             notif.setLink(link);
-            
             repositorio.save(notif);
 
             if (messagingTemplate != null) {
-                messagingTemplate.convertAndSendToUser(
-                    usuario.getUsername(), 
-                    "/queue/notificaciones", 
-                    "NUEVA_NOTIF"
-                );
+                enviarNotificacionWebSocketAUsuario(usuario.getUsername());
             }
         });
+    }
+
+    private void enviarNotificacionWebSocketAUsuario(String username) {
+        if (TransactionSynchronizationManager.isActualTransactionActive()) {
+            TransactionSynchronizationManager.registerSynchronization(
+                new TransactionSynchronization() {
+                    @Override
+                    public void afterCommit() {
+                        messagingTemplate.convertAndSendToUser(username, "/queue/notificaciones", "NUEVA_NOTIF");
+                    }
+                }
+            );
+        } else {
+            messagingTemplate.convertAndSendToUser(username, "/queue/notificaciones", "NUEVA_NOTIF");
+        }
     }
 
     
@@ -71,14 +99,33 @@ public class NotificacionServicio {
     @Transactional
     public void alertarAAdministradores(String titulo, String mensaje, String tipo, String link, String autor) {
         List<Usuario> usuarios = usuarioRepositorio.findAll();
+        List<String> admins = new java.util.ArrayList<>();
         for (Usuario u : usuarios) {
             boolean esAdmin = u.getRoles().stream().anyMatch(r -> r.getNombre().contains("ADMIN"));
             if (esAdmin) {
                 Notificacion notif = new Notificacion(titulo, mensaje, tipo, u, autor);
                 notif.setLink(link);
                 repositorio.save(notif);
-            
-                messagingTemplate.convertAndSendToUser(u.getUsername(), "/queue/notificaciones", "NUEVA_NOTIF");
+                admins.add(u.getUsername());
+            }
+        }
+        
+        if (messagingTemplate != null && !admins.isEmpty()) {
+            if (TransactionSynchronizationManager.isActualTransactionActive()) {
+                TransactionSynchronizationManager.registerSynchronization(
+                    new TransactionSynchronization() {
+                        @Override
+                        public void afterCommit() {
+                            for (String username : admins) {
+                                messagingTemplate.convertAndSendToUser(username, "/queue/notificaciones", "NUEVA_NOTIF");
+                            }
+                        }
+                    }
+                );
+            } else {
+                for (String username : admins) {
+                    messagingTemplate.convertAndSendToUser(username, "/queue/notificaciones", "NUEVA_NOTIF");
+                }
             }
         }
     }

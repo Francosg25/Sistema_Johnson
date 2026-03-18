@@ -124,7 +124,7 @@ public class ChecklistServicio {
                             if ("OK".equalsIgnoreCase(valorNuevo)) {
                                 String titulo = "Deliverable OK";
                                 String msj = "The deliverable '" + elemento.getNombre() + "' in " + elemento.getProyecto().getNombre() + " was marked as OK.";
-                                String url = "/checklist?proyectoId=" + elemento.getProyecto().getId();
+                                String url = "/proyectos/checklist/" + elemento.getProyecto().getId();
                                 notificacionServicio.alertarATodos(titulo, msj, "SUCCESS", url, nombreUsuarioLogueado);
                                 
                                 if (elemento.getFechaReal() == null) {

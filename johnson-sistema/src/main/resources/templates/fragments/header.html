@@ -107,24 +107,17 @@
             const list = document.getElementById('notifList');
             const bell = document.querySelector('#notifDropdown i.bi-bell');
             
-            // ID más alto en el servidor
-            let maxIdEnServidor = 0;
-            if (data.ultimas && data.ultimas.length > 0) {
-                maxIdEnServidor = Math.max(...data.ultimas.map(n => n.id));
-            }
-
-            // ID que el usuario ya "vio" al abrir la campana
+            // Obtenemos el ID de la última notificación que el usuario "vio" al abrir el panel
             const lastSeenId = parseInt(localStorage.getItem('lastSeenNotifId') || '0');
 
-            // Calculamos cuántas notificaciones son REALMENTE nuevas desde la última vez que abrió la campana
-            let nuevasDesdeVista = 0;
+            // Contamos cuántas de las no leídas son REALMENTE nuevas (posteriores al panel abierto)
+            let nuevasContadas = 0;
             if (data.ultimas) {
-                nuevasDesdeVista = data.ultimas.filter(n => n.id > lastSeenId).length;
+                nuevasContadas = data.ultimas.filter(n => n.id > lastSeenId).length;
             }
 
-            // Mostramos el badge solo si hay notificaciones nuevas (posteriores al lastSeenId)
-            if (nuevasDesdeVista > 0) {
-                badge.innerText = nuevasDesdeVista > 9 ? '9+' : nuevasDesdeVista;
+            if (nuevasContadas > 0) {
+                badge.innerText = nuevasContadas > 9 ? '9+' : nuevasContadas;
                 badge.classList.remove('d-none');
                 if (bell) bell.classList.add('notif-active');
             } else {
