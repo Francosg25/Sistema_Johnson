@@ -157,7 +157,7 @@
                             <div class="card-header premium-header d-flex justify-content-between align-items-center border-0 bg-transparent">
                                 <h6 class="m-0 premium-title">
                                     <i class="bi bi-calendar3 premium-icon" style="background: rgba(245, 130, 31, 0.1); color: #f5821f;"></i>
-                                    Master Executive Roadmap <span class="badge bg-light text-dark ms-2">2026</span>
+                                    Master Executive Roadmap <span id="currentYearBadge" class="badge bg-light text-dark ms-2"></span>
                                 </h6>
                                 <div class="d-flex gap-4 small fw-bold text-muted pe-3">
                                     <span>💰 CAR</span>
@@ -641,7 +641,8 @@
                         const shipMonth = shipDate.getMonth();
                         const factoryMonth = factoryDate.getMonth();
 
-                        if (shipDate.getFullYear() === 2026 || factoryDate.getFullYear() === 2026) {
+                        const currentYear = new Date().getFullYear();
+                        if (shipDate.getFullYear() === currentYear || factoryDate.getFullYear() === currentYear) {
                             const startX = 20 + (shipMonth * 6.66) + 3.33;
                             const endX = 20 + (factoryMonth * 6.66) + 3.33;
                             
@@ -730,7 +731,13 @@
         }
 
         // Ejecutar al cargar
-        document.addEventListener('DOMContentLoaded', initMasterTimeline);
+        document.addEventListener('DOMContentLoaded', () => {
+            initMasterTimeline();
+            
+            // Establecer el año actual en el título
+            const yearBadge = document.getElementById('currentYearBadge');
+            if (yearBadge) yearBadge.textContent = new Date().getFullYear();
+        });
 
         /*]]>*/
     </script>

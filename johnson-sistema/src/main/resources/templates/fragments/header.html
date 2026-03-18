@@ -82,8 +82,16 @@
                     fetchNotificaciones(); 
                     animarCampana();
                 });
+            }, function(error) {
+                console.log('STOMP: Connection lost. Retrying in 5s...');
+                setTimeout(conectarWebSocket, 5000);
             });
         }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            conectarWebSocket();
+            fetchNotificaciones();
+        });
 
         function animarCampana() {
             const iconoCampana = document.querySelector('#notifDropdown i.bi-bell');

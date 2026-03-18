@@ -260,8 +260,12 @@ public class ProyectoControlador {
                 "INFO", "/proyectos/checklist/" + id, usuario);
         }
 
-        return Map.of("exito", true);
-    }
+        Map<String, Object> response = new HashMap<>();
+        response.put("exito", true);
+        response.put("nombre", proyecto.getNombre());
+        response.put("numeroParte", proyecto.getNumeroParte());
+        return response;
+        }
 
     private boolean esDiferenteFecha(LocalDate actual, LocalDate nueva) {
         if (actual == null && nueva == null) return false;

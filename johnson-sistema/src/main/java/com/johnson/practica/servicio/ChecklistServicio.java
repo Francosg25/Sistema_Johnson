@@ -148,6 +148,22 @@ public class ChecklistServicio {
                             if ("OK".equalsIgnoreCase(valorNuevo) && elemento.getFechaReal() == null) {
                                 elemento.setFechaReal(LocalDate.now());
                             }
+
+                            // Notificaciones para Gate 3, 4 y 5 (Requirements Validation)
+                            boolean esGate345 = elemento.getFase() != null && 
+                                               (elemento.getFase().startsWith("3") || 
+                                                elemento.getFase().startsWith("4") || 
+                                                elemento.getFase().startsWith("5"));
+                            
+                            if (esGate345 && "GATE".equals(elemento.getTipoInput()) && "Validation".equals(elemento.getGrupo())) {
+                                String gateNum = elemento.getFase().substring(0, 1);
+                                String respuesta = "OK".equalsIgnoreCase(valorNuevo) ? "YES" : ("NOK".equalsIgnoreCase(valorNuevo) ? "NO" : valorNuevo);
+                                String titulo = "Gate " + gateNum + " Validation: " + respuesta;
+                                String msj = "The requirement '" + elemento.getNombre() + "' in " + elemento.getProyecto().getNombre() + " was marked as " + respuesta + ".";
+                                String url = "/proyectos/checklist/" + elemento.getProyecto().getId();
+                                notificacionServicio.alertarATodos(titulo, msj, "INFO", url, nombreUsuarioLogueado);
+                            }
+
                             elemento.setEstado(valorNuevo); 
                             huboCambioReal[0] = true;
                         }
