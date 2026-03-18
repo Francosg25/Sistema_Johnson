@@ -45,6 +45,7 @@ public class ProyectoControlador {
     @Autowired private NotificacionServicio notificacionServicio;
     @Autowired private ReporteServicio reporteServicio;
     @Autowired private ExcelServicio excelServicio;
+    @Autowired private com.johnson.practica.servicio.BitacoraServicio bitacoraServicio;
 
     @Data @AllArgsConstructor
     public static class FaseVista {
@@ -220,21 +221,53 @@ public class ProyectoControlador {
     @PostMapping("/guardar-hitos/{id}")
     @ResponseBody
     @PreAuthorize("hasRole('ADMIN')")
-    public Map<String, Object> guardarHitosProyecto(@PathVariable Long id, 
+    @Transactional
+    public Map<String, Object> guardarHitosProyecto(@PathVariable Long id,
                                                     @RequestParam(required = false) LocalDate fechaCar,
                                                     @RequestParam(required = false) LocalDate fechaBuyoff,
                                                     @RequestParam(required = false) LocalDate fechaTransit,
-                                                    @RequestParam(required = false) LocalDate fechaSop) {
+                                                    @RequestParam(required = false) LocalDate fechaSop,
+                                                    Principal principal) {
         Proyecto proyecto = proyectoRepositorio.findById(id).orElseThrow();
-        proyecto.setFechaCar(fechaCar);
-        proyecto.setFechaBuyoff(fechaBuyoff);
-        proyecto.setFechaTransit(fechaTransit);
-        proyecto.setFechaSop(fechaSop);
-        proyectoRepositorio.save(proyecto);
-        
+        String usuario = (principal != null) ? principal.getName() : "System";
+        StringBuilder cambios = new StringBuilder();
+
+        if (esDiferenteFecha(proyecto.getFechaCar(), fechaCar)) {
+            cambios.append("CAR Approval: ").append(fechaCar != null ? fechaCar : "N/A").append(". ");
+            proyecto.setFechaCar(fechaCar);
+        }
+        if (esDiferenteFecha(proyecto.getFechaBuyoff(), fechaBuyoff)) {
+            cambios.append("Line Buy-off: ").append(fechaBuyoff != null ? fechaBuyoff : "N/A").append(". ");
+            proyecto.setFechaBuyoff(fechaBuyoff);
+        }
+        if (esDiferenteFecha(proyecto.getFechaTransit(), fechaTransit)) {
+            cambios.append("Equipment Ship: ").append(fechaTransit != null ? fechaTransit : "N/A").append(". ");
+            proyecto.setFechaTransit(fechaTransit);
+        }
+        if (esDiferenteFecha(proyecto.getFechaSop(), fechaSop)) {
+            cambios.append("SOP: ").append(fechaSop != null ? fechaSop : "N/A").append(". ");
+            proyecto.setFechaSop(fechaSop);
+        }
+
+        if (cambios.length() > 0) {
+            proyectoRepositorio.save(proyecto);
+
+            String msg = "Project Executive Milestones updated for " + proyecto.getNombre() + ": " + cambios.toString();
+            bitacoraServicio.registrarAccion(usuario, "UPDATE MILESTONES", msg);
+
+            notificacionServicio.alertarATodos("Executive Milestones Updated", 
+                "Milestones for " + proyecto.getNombre() + " were modified by " + usuario + ": " + cambios.toString(), 
+                "INFO", "/proyectos/checklist/" + id, usuario);
+        }
+
         return Map.of("exito", true);
     }
 
+    private boolean esDiferenteFecha(LocalDate actual, LocalDate nueva) {
+        if (actual == null && nueva == null) return false;
+        if (actual == null || nueva == null) return true;
+        return !actual.equals(nueva);
+    }
     @GetMapping("/exportar-pdf/{id}")
     public ResponseEntity<byte[]> descargarReportePdf(@PathVariable Long id) {
         try {

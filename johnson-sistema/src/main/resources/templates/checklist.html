@@ -299,7 +299,7 @@
 
                         <div class="card glass-card border-0 shadow-sm mb-4 border-start border-4 border-warning">
                             <div class="card-body py-3 px-4">
-                                <h6 class="fw-bold text-dark mb-3"><i class="bi bi-flag-fill text-warning me-2"></i>Project Executive Milestones (Launch Overview)</h6>
+                                <h6 class="fw-bold text-dark mb-3"></i>Project Executive Milestones (Launch Overview)</h6>
                                 <form th:action="@{/proyectos/guardar-hitos/{id}(id=${proyecto.id})}" method="post" id="formHitosProyecto">
                                     <div class="row g-3">
                                         <div class="col-md-3">
@@ -814,7 +814,6 @@
         </div>
     </div>
 
-    <!-- MODAL: FINALIZE PROJECT -->
     <div class="modal fade" id="modalFinalizarProyecto" tabindex="-1">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content shadow-lg border-0" style="border-radius: 24px;">
@@ -831,15 +830,6 @@
                         </div>
                         <h4 class="fw-bold text-dark mb-3">Is the project ready?</h4>
                         <p class="text-muted mb-4">This action will move <strong class="text-dark" th:text="${proyecto.nombre}"></strong> to the historic Evidence Vault and notify all users.</p>
-                        
-                        <div class="bg-light p-3 rounded-4 border border-dashed text-start small">
-                            <h6 class="fw-bold text-dark small mb-2"><i class="bi bi-info-circle me-1"></i> System will validate:</h6>
-                            <ul class="mb-0 text-muted ps-3">
-                                <li>All deliverables in Program are marked as <strong>OK</strong>.</li>
-                                <li>Gate 2 Compliance is fully selected.</li>
-                                <li>Gate 3, 4 & 5 Validation points are marked.</li>
-                            </ul>
-                        </div>
                     </div>
                     <div class="modal-footer border-0 p-4 pt-0">
                         <button type="button" class="btn btn-light px-4 py-2 fw-bold" data-bs-dismiss="modal">Cancel</button>

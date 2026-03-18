@@ -88,17 +88,8 @@
         function animarCampana() {
             const iconoCampana = document.querySelector('#notifDropdown i.bi-bell');
             if (iconoCampana) {
-                iconoCampana.classList.remove('bi-bell');
-                iconoCampana.classList.add('bi-bell-fill', 'text-danger');
-                iconoCampana.style.transform = 'rotate(15deg)';
-                setTimeout(() => {
-                    iconoCampana.style.transform = 'rotate(-15deg)';
-                    setTimeout(() => {
-                        iconoCampana.style.transform = 'rotate(0deg)';
-                        iconoCampana.classList.remove('bi-bell-fill', 'text-danger');
-                        iconoCampana.classList.add('bi-bell');
-                    }, 150);
-                }, 150);
+                iconoCampana.classList.add('notif-shake');
+                setTimeout(() => iconoCampana.classList.remove('notif-shake'), 500);
             }
         }
 
@@ -114,26 +105,31 @@
         function renderNotificaciones(data) {
             const badge = document.getElementById('notifBadge');
             const list = document.getElementById('notifList');
+            const bell = document.querySelector('#notifDropdown i.bi-bell');
             
+            // ID más alto en el servidor
             let maxIdEnServidor = 0;
-            if (data && data.ultimas && data.ultimas.length > 0) {
+            if (data.ultimas && data.ultimas.length > 0) {
                 maxIdEnServidor = Math.max(...data.ultimas.map(n => n.id));
-                ultimaNotifIdServidor = maxIdEnServidor;
             }
 
-            const storedValue = localStorage.getItem('lastSeenNotifId');
-            const lastSeenId = storedValue ? parseInt(storedValue) : 0;
+            // ID que el usuario ya "vio" al abrir la campana
+            const lastSeenId = parseInt(localStorage.getItem('lastSeenNotifId') || '0');
 
-            let nuevasNoVistas = 0;
-            if (data && data.ultimas) {
-                nuevasNoVistas = data.ultimas.filter(n => n.id > lastSeenId).length;
+            // Calculamos cuántas notificaciones son REALMENTE nuevas desde la última vez que abrió la campana
+            let nuevasDesdeVista = 0;
+            if (data.ultimas) {
+                nuevasDesdeVista = data.ultimas.filter(n => n.id > lastSeenId).length;
             }
 
-            if (nuevasNoVistas > 0) {
-                badge.innerText = nuevasNoVistas;
+            // Mostramos el badge solo si hay notificaciones nuevas (posteriores al lastSeenId)
+            if (nuevasDesdeVista > 0) {
+                badge.innerText = nuevasDesdeVista > 9 ? '9+' : nuevasDesdeVista;
                 badge.classList.remove('d-none');
+                if (bell) bell.classList.add('notif-active');
             } else {
                 badge.classList.add('d-none');
+                if (bell) bell.classList.remove('notif-active');
             }
 
             if (!list) return;
@@ -163,10 +159,19 @@
         }
 
         function registrarNotificacionesVistas() {
-            if (ultimaNotifIdServidor > 0) {
-                localStorage.setItem('lastSeenNotifId', ultimaNotifIdServidor.toString());
-            }
-            document.getElementById('notifBadge').classList.add('d-none');
+            // Obtenemos el resumen actual para saber cuál es el ID más alto a marcar como visto
+            fetch('/api/notificaciones/resumen')
+                .then(r => r.json())
+                .then(data => {
+                    if (data.ultimas && data.ultimas.length > 0) {
+                        const maxId = Math.max(...data.ultimas.map(n => n.id));
+                        localStorage.setItem('lastSeenNotifId', maxId.toString());
+                    }
+                    // Ocultamos el badge inmediatamente para dar feedback visual
+                    document.getElementById('notifBadge').classList.add('d-none');
+                    const bell = document.querySelector('#notifDropdown i.bi-bell');
+                    if (bell) bell.classList.remove('notif-active');
+                });
         }
 
         function getIcon(tipo) {
@@ -231,5 +236,27 @@
         #notifList::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
         #notifDropdown i { transition: transform 0.15s ease-in-out; }
         .dropdown-item:active { background-color: #f8f9fa; color: inherit; }
+        
+        /* Animaciones para Notificaciones */
+        @keyframes shake {
+            0% { transform: rotate(0); }
+            15% { transform: rotate(15deg); }
+            30% { transform: rotate(-15deg); }
+            45% { transform: rotate(10deg); }
+            60% { transform: rotate(-10deg); }
+            75% { transform: rotate(5deg); }
+            85% { transform: rotate(-5deg); }
+            100% { transform: rotate(0); }
+        }
+        .notif-shake { animation: shake 0.5s ease-in-out; }
+        
+        .notif-active { color: #000000 !important; }
+        
+        @keyframes pulse-black {
+            0% { box-shadow: 0 0 0 0 rgba(0, 0, 0, 0.2); }
+            70% { box-shadow: 0 0 0 10px rgba(0, 0, 0, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(0, 0, 0, 0); }
+        }
+        .notif-pulse { animation: pulse-black 2s infinite; }
     </style>
 </nav>

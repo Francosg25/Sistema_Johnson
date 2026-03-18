@@ -187,8 +187,22 @@ public class ChecklistServicio {
                 bitacoraServicio.registrarAccion(
                     nombreUsuarioLogueado, 
                     "UPDATE DELIVERABLE", 
-                    "Deliverable: " + elemento.getNombre() + " was updated."
+                    "Deliverable: " + elemento.getNombre() + " was updated in project " + elemento.getProyecto().getNombre()
                 );
+                
+                // NOTIFICAR AL LÍDER DEL PROYECTO
+                String lider = elemento.getProyecto().getLiderProyecto();
+                if (lider != null && !lider.equalsIgnoreCase(nombreUsuarioLogueado)) {
+                    notificacionServicio.alertarAUsuario(
+                        lider,
+                        "Deliverable Updated",
+                        "The item '" + elemento.getNombre() + "' has been updated by " + nombreUsuarioLogueado,
+                        "INFO",
+                        "/proyectos/checklist/" + elemento.getProyecto().getId(),
+                        nombreUsuarioLogueado
+                    );
+                }
+
                 elementosRealmenteModificados.add(elemento);
             }
         }
