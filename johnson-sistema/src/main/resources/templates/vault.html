@@ -59,9 +59,15 @@
                                         <td class="text-center"><span class="badge bg-secondary px-3 py-2 shadow-sm" th:text="${p.cliente}"></span></td>
                                         <td class="text-center text-muted fw-bold" th:text="${p.sop}"></td>
                                         <td class="text-center pe-4">
-                                            <a th:href="@{/proyectos/checklist/{id}(id=${p.id})}" class="btn btn-sm btn-dark rounded-pill px-4 fw-bold shadow-sm">
-                                                <i class="bi bi-eye-fill me-1"></i> VIEW RECORD
-                                            </a>
+                                            <div class="btn-group shadow-sm" style="border-radius: 20px; overflow: hidden;">
+                                                <a th:href="@{/proyectos/checklist/{id}(id=${p.id})}" class="btn btn-sm btn-dark px-3 fw-bold d-inline-flex align-items-center justify-content-center">
+                                                    <i class="bi bi-eye-fill me-1"></i> RECORD
+                                                </a>
+                                                <button type="button" class="btn btn-sm btn-primary px-3 fw-bold d-inline-flex align-items-center justify-content-center" 
+                                                        th:attr="onclick=|abrirModalEvidencias('${p.id}', '${p.nombre}')|">
+                                                    <i class="bi bi-folder-fill me-1"></i> EVIDENCE
+                                                </button>
+                                            </div>
                                         </td>
                                     </tr>
                                 </tbody>
@@ -72,6 +78,99 @@
             </main>
         </div>
     </div>
+
+    <!-- Modal para ver Evidencias del Proyecto Archivado -->
+    <div class="modal fade" id="modalEvidenciasProyecto" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content border-0 shadow-lg" style="border-radius: 20px;">
+                <div class="modal-header bg-primary text-white py-3" style="border-radius: 20px 20px 0 0;">
+                    <h5 class="modal-title fw-bold">
+                        <i class="bi bi-archive-fill me-2"></i>Evidence Vault: <span id="modalProyectoNombre"></span>
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white shadow-none" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body p-0">
+                    <div id="loadingEvidencias" class="text-center py-5">
+                        <div class="spinner-border text-primary" role="status"></div>
+                        <p class="mt-2 text-muted fw-bold">Retrieving archive...</p>
+                    </div>
+                    <div id="tablaEvidenciasContainer" style="display: none;">
+                        <div class="table-responsive">
+                            <table class="table table-hover align-middle mb-0">
+                                <thead class="bg-light small fw-bold text-muted">
+                                    <tr>
+                                        <th class="ps-4">File Name</th>
+                                        <th>APQP Deliverable</th>
+                                        <th class="text-center pe-4">Download</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="cuerpoTablaEvidencias">
+                                    <!-- Se llena con JS -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div id="noEvidenciasMsg" class="text-center py-5" style="display: none;">
+                        <i class="bi bi-folder-x display-4 text-muted opacity-25"></i>
+                        <p class="mt-2 text-muted fw-bold">No evidence files found for this project.</p>
+                    </div>
+                </div>
+                <div class="modal-footer border-0 bg-light py-3" style="border-radius: 0 0 20px 20px;">
+                    <button type="button" class="btn btn-secondary btn-sm fw-bold px-4 rounded-pill" data-bs-dismiss="modal">Close Vault</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        function abrirModalEvidencias(proyectoId, proyectoNombre) {
+            const modal = new bootstrap.Modal(document.getElementById('modalEvidenciasProyecto'));
+            document.getElementById('modalProyectoNombre').textContent = proyectoNombre;
+            
+            // UI Reset
+            document.getElementById('loadingEvidencias').style.display = 'block';
+            document.getElementById('tablaEvidenciasContainer').style.display = 'none';
+            document.getElementById('noEvidenciasMsg').style.display = 'none';
+            document.getElementById('cuerpoTablaEvidencias').innerHTML = '';
+
+            modal.show();
+
+            fetch('/evidencias/proyecto/' + proyectoId)
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('loadingEvidencias').style.display = 'none';
+                    
+                    if (data && data.length > 0) {
+                        const tbody = document.getElementById('cuerpoTablaEvidencias');
+                        data.forEach(ev => {
+                            const tr = document.createElement('tr');
+                            tr.innerHTML = `
+                                <td class="ps-4">
+                                    <div class="d-flex align-items-center">
+                                        <i class="bi bi-file-earmark-lock-fill text-primary fs-5 me-2"></i>
+                                        <span class="fw-bold text-dark small">${ev.nombre}</span>
+                                    </div>
+                                </td>
+                                <td class="text-muted small fw-bold">${ev.entregable}</td>
+                                <td class="text-center pe-4">
+                                    <a href="/evidencias/descargar/${ev.id}" class="btn btn-sm btn-outline-primary rounded-circle">
+                                        <i class="bi bi-cloud-arrow-down-fill"></i>
+                                    </a>
+                                </td>
+                            `;
+                            tbody.appendChild(tr);
+                        });
+                        document.getElementById('tablaEvidenciasContainer').style.display = 'block';
+                    } else {
+                        document.getElementById('noEvidenciasMsg').style.display = 'block';
+                    }
+                })
+                .catch(err => {
+                    console.error('Error fetching evidences:', err);
+                    alert("Error connection to the vault archive.");
+                });
+        }
+    </script>
 </body>
 </html>

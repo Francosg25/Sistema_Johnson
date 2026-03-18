@@ -178,13 +178,14 @@ public class EvidenciaControlador {
     public String verRepositorioGlobal(Model model) {
         List<Adjunto> adjuntos = adjuntoRepositorio.findAllConDetalles(); 
         
-        // Agrupamos por nombre de proyecto
+        // Agrupamos SOLO proyectos activos por nombre
         Map<String, List<Map<String, Object>>> activos = new java.util.LinkedHashMap<>();
-        Map<String, List<Map<String, Object>>> archivados = new java.util.LinkedHashMap<>();
         
         for (Adjunto a : adjuntos) {
+            boolean isArchivado = (a.getProyecto() != null) && a.getProyecto().getEsHistorico();
+            if (isArchivado) continue; // Ignorar archivados en esta vista
+
             String proyectoNombre = (a.getProyecto() != null) ? a.getProyecto().getNombre() : "Otros / Sin Proyecto";
-            boolean isArchivado = (a.getProyecto() != null) && a.getProyecto().isArchivado();
             
             Map<String, Object> infoAdjunto = new HashMap<>();
             infoAdjunto.put("id", a.getId());
@@ -194,18 +195,31 @@ public class EvidenciaControlador {
                 a.getElementoChecklist().getNombre() : "Desconocido");
             infoAdjunto.put("proyectoId", (a.getProyecto() != null) ? a.getProyecto().getId() : null);
             
-            if (isArchivado) {
-                archivados.computeIfAbsent(proyectoNombre, k -> new java.util.ArrayList<>()).add(infoAdjunto);
-            } else {
-                activos.computeIfAbsent(proyectoNombre, k -> new java.util.ArrayList<>()).add(infoAdjunto);
-            }
+            activos.computeIfAbsent(proyectoNombre, k -> new java.util.ArrayList<>()).add(infoAdjunto);
         }
         
         model.addAttribute("proyectosConEvidencias", activos);
-        model.addAttribute("proyectosArchivados", archivados);
         model.addAttribute("currentUri", "/evidencias");
         
         return "evidencias";
+    }
+
+    @GetMapping("/proyecto/{proyectoId}")
+    @ResponseBody
+    @Transactional(readOnly = true)
+    public List<Map<String, Object>> obtenerEvidenciasPorProyecto(@PathVariable Long proyectoId) {
+        List<Adjunto> adjuntos = adjuntoRepositorio.findByProyecto_Id(proyectoId);
+        List<Map<String, Object>> response = new java.util.ArrayList<>();
+        
+        for (Adjunto a : adjuntos) {
+            Map<String, Object> map = new HashMap<>();
+            map.put("id", a.getId());
+            map.put("nombre", a.getNombreArchivo());
+            map.put("fecha", a.getSubidoEn());
+            map.put("entregable", (a.getElementoChecklist() != null) ? a.getElementoChecklist().getNombre() : "N/A");
+            response.add(map);
+        }
+        return response;
     }
 
 

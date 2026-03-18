@@ -202,72 +202,7 @@
                     </div>
                 </div>
 
-                <div th:if="${proyectosArchivados != null and !proyectosArchivados.isEmpty()}" class="mt-5 pt-4 border-top">
-                    <div class="mb-4">
-                        <h4 class="fw-bold text-secondary m-0"><i class="bi bi-archive-fill me-2"></i>Archived Projects Vault</h4>
-                        <p class="text-muted small mt-1 mb-0">Historical repository of finished projects and their evidences.</p>
-                    </div>
-
-                    <div th:each="entry, iter : ${proyectosArchivados}" class="mb-4">
-                        <div class="d-flex align-items-center mb-3">
-                            <button class="btn btn-link p-0 text-decoration-none d-flex align-items-center" 
-                                    type="button" data-bs-toggle="collapse" 
-                                    th:data-bs-target="'#collapse-arch-' + ${iter.index}" 
-                                    aria-expanded="false">
-                                <i class="bi bi-folder-fill text-secondary fs-3 me-2"></i>
-                                <h5 class="fw-bold text-secondary m-0 proyecto-busqueda" th:text="${entry.key}">Nombre del Proyecto</h5>
-                                <span class="badge bg-secondary bg-opacity-10 text-secondary ms-3 rounded-pill" th:text="${entry.value.size() + ' files'}">0 files</span>
-                                <i class="bi bi-chevron-down ms-2 text-muted small"></i>
-                            </button>
-                            <form th:action="@{/proyectos/desarchivar/{id}(id=${entry.value[0].proyectoId})}" method="post" class="ms-auto" sec:authorize="hasRole('ADMIN')">
-                                <button type="submit" class="btn btn-sm btn-outline-secondary rounded-pill px-3 fw-bold">
-                                    <i class="bi bi-arrow-up-circle me-1"></i> RESTORE
-                                </button>
-                            </form>
-                        </div>
-
-                        <div class="collapse" th:id="'collapse-arch-' + ${iter.index}">
-                            <div class="card glass-card border-0 opacity-75">
-                                <div class="table-responsive">
-                                    <table class="table table-hover align-middle">
-                                        <thead>
-                                            <tr>
-                                                <th style="width: 45%;">File</th>
-                                                <th style="width: 35%;">APQP Deliverable</th>
-                                                <th style="width: 15%;">Upload Date</th>
-                                                <th style="width: 10%;" class="text-center">Actions</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            <tr th:each="adj : ${entry.value}" class="fila-archivo">
-                                                <td>
-                                                    <div class="d-flex align-items-center">
-                                                        <div class="file-icon icon-default">
-                                                            <i class="bi bi-file-earmark-lock-fill"></i>
-                                                        </div>
-                                                        <div class="d-flex flex-column text-truncate" style="max-width: 400px;">
-                                                            <span class="text-dark text-truncate nombre-busqueda fw-bold" th:text="${adj.nombreArchivo}">Documento.pdf</span>
-                                                            <span class="text-muted small fw-normal">Archived evidence</span> 
-                                                        </div>
-                                                    </div>
-                                                </td>
-                                                <td><span class="text-muted fw-normal entregable-busqueda" style="font-size: 0.85rem;" th:text="${adj.entregableInfo}">Deliverable</span></td>
-                                                <td><span class="text-muted fw-normal" style="font-size: 0.85rem;" th:text="${adj.subidoEn != null ? #temporals.format(adj.subidoEn, 'dd MMM yyyy') : 'No date'}">01 Ene 2026</span></td>
-                                                <td class="text-center">
-                                                    <a th:href="@{'/evidencias/descargar/' + ${adj.id}}" class="btn-action btn-download" title="Download">
-                                                        <i class="bi bi-cloud-arrow-down-fill fs-5"></i>
-                                                    </a>
-                                                </td>
-                                            </tr>
-                                        </tbody>
-                                    </table>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div th:if="${(proyectosConEvidencias == null or proyectosConEvidencias.isEmpty()) and (proyectosArchivados == null or proyectosArchivados.isEmpty())}" class="text-center py-5">
+                <div th:if="${proyectosConEvidencias == null or proyectosConEvidencias.isEmpty()}" class="text-center py-5">
                     <i class="bi bi-archive text-muted display-1 mb-3 opacity-25"></i>
                     <h5 class="text-muted">No evidence has been uploaded yet.</h5>
                 </div>

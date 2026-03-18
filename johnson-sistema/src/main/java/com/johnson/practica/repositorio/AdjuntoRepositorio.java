@@ -14,4 +14,6 @@ public interface AdjuntoRepositorio extends JpaRepository<Adjunto, Long> {
     List<Adjunto> findAllConDetalles();
 
     void deleteByProyecto_Id(Long proyectoId);
+
+    List<Adjunto> findByProyecto_Id(Long proyectoId);
 }
