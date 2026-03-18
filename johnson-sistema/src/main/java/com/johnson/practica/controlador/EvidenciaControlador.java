@@ -135,17 +135,26 @@ public class EvidenciaControlador {
    
     @GetMapping("/descargar/{adjuntoId}")
     public ResponseEntity<Resource> descargarEvidencia(@PathVariable Long adjuntoId) {
+        return servirArchivo(adjuntoId, false);
+    }
+
+    @GetMapping("/visualizar/{adjuntoId}")
+    public ResponseEntity<Resource> visualizarEvidencia(@PathVariable Long adjuntoId) {
+        return servirArchivo(adjuntoId, true);
+    }
+
+    private ResponseEntity<Resource> servirArchivo(Long adjuntoId, boolean inline) {
         Adjunto adjunto = adjuntoRepositorio.findById(adjuntoId).orElse(null);
-        
         if (adjunto == null || adjunto.getDatos() == null) {
             return ResponseEntity.notFound().build();
         }
 
         ByteArrayResource recurso = new ByteArrayResource(adjunto.getDatos());
+        String disposition = inline ? "inline" : "attachment";
 
         return ResponseEntity.ok()
                 .contentType(MediaType.parseMediaType(adjunto.getTipoContenido()))
-                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + adjunto.getNombreArchivo() + "\"")
+                .header(HttpHeaders.CONTENT_DISPOSITION, disposition + "; filename=\"" + adjunto.getNombreArchivo() + "\"")
                 .body(recurso);
     }
 
