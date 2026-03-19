@@ -7,6 +7,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
     <style>
         .mention-tag {
             font-weight: 800;
@@ -212,6 +213,30 @@
             background-color: #ffffff !important;
             font-weight: 500 !important;
         }
+
+        /* --- MINI RECUADROS DE FIRMA EN TABLA --- */
+        .mini-signature-box {
+            border: 2px dashed #cbd5e1;
+            border-radius: 8px;
+            padding: 6px 10px;
+            text-align: center;
+            cursor: pointer;
+            background-color: #f8fafc;
+            transition: all 0.2s;
+            display: inline-block;
+            min-width: 90px;
+        }
+        .mini-signature-box.unsigned:hover {
+            border-color: #3b82f6;
+            background-color: #eff6ff;
+            transform: translateY(-2px);
+        }
+        .mini-signature-box.signed {
+            border: 2px solid #10b981;
+            background-color: #ecfdf5;
+            cursor: default;
+        }
+
     </style>
 </head>
 
@@ -636,123 +661,133 @@
                                             </tbody>
                                         </table>
                                     </div>
-                                    <h6 class="text-uppercase fw-bold text-secondary mb-3 border-bottom pb-2">2. Gate Conclusion</h6>
-                                    <div class="table-responsive mb-5 card glass-card border-0 shadow-none" style="background: transparent !important; backdrop-filter: none !important;">
-                                        <table class="table table-hover mb-0 align-middle">
-                                            <thead class="bg-light small fw-bold text-center">
-                                                <tr>
-                                                    <th style="width: 15%;">Date</th>
-                                                    <th style="width: 20%;">Conclusion</th>
-                                                    <th class="text-start ps-3">Description</th>
-                                                    <th style="width: 30%;">Comments</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                <tr th:each="item : ${fase.items}" th:if="${item.grupo == 'Conclusion'}">
-                                                    <td class="text-center"><input type="date" class="form-control form-control-sm border shadow-sm text-center fw-bold text-primary" th:name="'fechaReal-' + ${item.id}" th:value="${item.fechaReal}"></td>
-                                                    <td class="text-center"><span class="badge bg-secondary px-3 py-2 shadow-sm" th:text="${item.nombre.split(':')[0]}"></span></td>
-                                                    <td class="text-muted fw-bold ps-3" th:text="${item.nombre.split(':').length > 1 ? item.nombre.split(':')[1] : ''}"></td>
-                                                    
-                                                    <td style="max-width: 250px; vertical-align: middle; padding-right: 15px;">
-                                                        <div class="d-flex justify-content-between align-items-center bg-white bg-opacity-50 rounded p-1 border shadow-sm"
-                                                             style="cursor: pointer; transition: 0.2s;" onmouseover="this.style.borderColor='#80bdff'" onmouseout="this.style.borderColor='#dee2e6'" th:onclick="abrirEditorComentarios([[${item.id}]], [[${item.codigo}]])">
-                                                            <div class="text-truncate small ms-2 w-100" th:id="'preview-comentario-' + ${item.id}"
-                                                                 th:classappend="${item.comentario == null or item.comentario.isEmpty() ? 'text-muted fst-italic' : 'text-dark fw-bold'}"
-                                                                 th:text="${item.comentario == null or item.comentario.isEmpty() ? '' : item.comentario}">
-                                                            </div>
-                                                            <button type="button" th:id="'btn-comentario-' + ${item.id}" 
-                                                                    class="btn btn-sm border-0 rounded-circle ms-1 flex-shrink-0 shadow-sm"
-                                                                    th:classappend="${item.comentario == null or item.comentario.isEmpty() ? 'btn-light text-secondary' : 'btn-primary text-white'}"
-                                                                    th:attr="onclick=|abrirEditorComentarios('${item.id}', '${item.codigo}')|">
-                                                                <i th:id="'btn-icon-comentario-' + ${item.id}" 
-                                                                   th:class="${item.comentario == null or item.comentario.isEmpty() ? 'bi bi-pencil' : 'bi bi-chat-text-fill'}"></i>
-                                                            </button>
-                                                        </div>
-                                                        <textarea class="d-none" th:name="'comentario-' + ${item.id}" th:id="'real-comentario-' + ${item.id}" th:text="${item.comentario}"></textarea>
-                                                    </td>
-                                                </tr>
-                                            </tbody>
-                                        </table>
-                                    </div>
                                     <h6 class="text-uppercase fw-bold text-secondary mb-3 border-bottom pb-2">3. Approvals</h6>
+                                    
                                     <div th:if="${fase.nombre == 'Stage 3' or fase.nombre == 'Stage 4' or fase.nombre == 'Stage 5'}" class="row g-4">
-                                        <div class="col-md-6">
-                                            <div class="card glass-card h-100 shadow-sm">
-                                                <div class="card-header bg-light bg-opacity-50 fw-bold text-primary border-0">
-                                                    <i class="bi bi-people-fill me-2"></i>Gate <span th:text="${fase.nombre.split(' ')[1]}"></span> Responsibles
-                                                </div>
-                                                <div class="card-body p-0">
-                                                    <table class="table table-hover table-sm mb-0 small border-0">
-                                                        <tbody>
-                                                            <tr><td class="fw-bold text-muted ps-3 w-50 border-0">Project Engineer</td><td class="fw-bold border-0">Eduardo Tejeida</td></tr>
-                                                            <tr><td class="fw-bold text-muted ps-3">Quality Engineer</td><td class="fw-bold">Gabriel Romero</td></tr>
-                                                            <tr><td class="fw-bold text-muted ps-3">Process Engineer</td><td class="fw-bold">Jesus Urena</td></tr>
-                                                            <tr><td class="fw-bold text-muted ps-3">Project Leader</td><td class="fw-bold">Eduardo Tejeida</td></tr>
-                                                        </tbody>
-                                                    </table>
+                                        <th:block th:with="
+                                            etapaNum=${fase.nombre == 'Stage 3' ? 3 : (fase.nombre == 'Stage 4' ? 4 : 5)},
+                                            mapaFirmas=${etapaNum == 3 ? firmasGate3 : (etapaNum == 4 ? firmasGate4 : firmasGate5)}">
+                                            
+                                            <div class="col-md-6">
+                                                <div class="card glass-card h-100 shadow-sm">
+                                                    <div class="card-header bg-light bg-opacity-50 fw-bold text-primary border-0">
+                                                        <i class="bi bi-people-fill me-2"></i>Gate <span th:text="${etapaNum}"></span> Responsibles
+                                                    </div>
+                                                    <div class="card-body p-0">
+                                                        <table class="table table-hover table-sm mb-0 small border-0">
+                                                            <tbody>
+                                                                <th:block th:each="info : ${ {'Project Engineer:Eduardo Tejeida', 'Quality Engineer:Gabriel Romero', 'Process Engineer:Jesus Urena', 'Project Leader:Eduardo Tejeida'} }">
+                                                                    <tr th:with="rol=${info.split(':')[0]}, nombre=${info.split(':')[1]}, firma=${mapaFirmas != null ? mapaFirmas.get(rol) : null}">
+                                                                        <td class="fw-bold text-muted ps-3 w-50 border-0 align-middle" th:text="${rol}"></td>
+                                                                        <td class="fw-bold border-0 align-middle" th:text="${nombre}"></td>
+                                                                        
+                                                                        <td class="border-0 text-end pe-3 align-middle" style="width: 120px;">
+                                                                            <div th:if="${firma != null}" 
+                                                                                 class="mini-signature-box signed shadow-sm border-success bg-success bg-opacity-10 btn-firmado-trigger" 
+                                                                                 th:data-firmante="${firma.nombreCompleto != null ? firma.nombreCompleto : (firma.username != null ? firma.username : rol)}"
+                                                                                 th:data-fecha="${#temporals.format(firma.fechaFirma, 'dd/MM/yyyy')}"
+                                                                                 style="border-style: solid !important; border-width: 2px !important; min-width: 100px;">
+                                                                                <i class="bi bi-patch-check-fill text-success mb-1 d-block" style="font-size: 1.3rem;"></i>
+                                                                                <span class="small fw-bold text-success d-block text-truncate" style="line-height: 1; max-width: 90px;" th:text="${firma.nombreCompleto != null ? firma.nombreCompleto.split(' ')[0] : 'SIGNED'}"></span>
+                                                                            </div>
+                                                                            
+                                                                            <div th:if="${firma == null}" 
+                                                                                 class="mini-signature-box unsigned btn-firmar-trigger"
+                                                                                 th:data-proyecto="${proyecto.id}" th:data-etapa="${etapaNum}" th:data-rol="${rol}"
+                                                                                 sec:authorize="hasAnyRole('ADMIN', 'CHAMPION')" title="Click to Sign">
+                                                                                <i class="bi bi-pen text-secondary mb-1 d-block" style="font-size: 1.1rem;"></i>
+                                                                                <span class="small fw-bold text-primary">Sign</span>
+                                                                            </div>  
+                                                                        </td>
+                                                                    </tr>
+                                                                </th:block>
+                                                            </tbody>
+                                                        </table>
+                                                    </div>
                                                 </div>
                                             </div>
-                                        </div>
-                                        <div class="col-md-6">
-                                            <div class="card glass-card h-100 shadow-sm">
-                                                <div class="card-header bg-light bg-opacity-50 fw-bold text-primary border-0"><i class="bi bi-building me-2"></i>Manufacturing Site Management</div>
-                                                <div class="card-body p-0">
-                                                    <table class="table table-hover table-sm mb-0 small border-0">
-                                                        <tbody>
-                                                            <tr><td class="fw-bold text-muted ps-3 w-50 border-0">Operations Manager</td><td class="fw-bold border-0">Fermin Flores</td></tr>
-                                                            <tr><td class="fw-bold text-muted ps-3">Quality Manager</td><td class="fw-bold">Rodrigo Rabelo</td></tr>
-                                                            <tr><td class="fw-bold text-muted ps-3">Materials Manager</td><td class="fw-bold">Juan Carlos Arizpe</td></tr>
-                                                            <tr><td class="fw-bold text-muted ps-3">SCS Manager</td><td class="fw-bold">Kevin Swisher</td></tr>
-                                                            <tr><td class="fw-bold text-muted ps-3">Finance Manager</td><td class="fw-bold">Bernardo Marines</td></tr>
-                                                            <tr><td class="fw-bold text-muted ps-3 border-bottom-0">HR Manager</td><td class="fw-bold border-bottom-0">Claudia Castañeda</td></tr>
-                                                        </tbody>
-                                                    </table>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div th:if="${fase.nombre != 'Stage 3' and fase.nombre != 'Stage 4' and fase.nombre != 'Stage 5'}" class="text-muted text-center py-4 bg-light bg-opacity-50 rounded border border-dashed">
-                                        <i class="bi bi-journal-x fs-2 d-block mb-2 opacity-50"></i>
-                                        Approval table for <strong th:text="${#strings.replace(fase.nombre, 'Stage', 'Gate')}"></strong> not required in this view.
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </form>
-                <th:block th:each="fase : ${fases}">
-                    <th:block th:each="item : ${fase.items}">
-                        <div class="modal fade" th:id="'modalEvidencia_' + ${item.id}" tabindex="-1" aria-hidden="true">
-                            <div class="modal-dialog modal-dialog-centered">
-                                <div class="modal-content border-0 shadow-lg">
-                                    <div class="modal-header bg-light border-bottom-0 pb-0">
-                                        <div>
-                                            <h5 class="modal-title fw-bold text-dark mb-0">
-                                                <i class="bi bi-folder-check text-primary me-2"></i>Evidence
-                                            </h5>
-                                            <p class="text-muted small mb-0 mt-1" th:text="${item.codigo} + ' - ' + ${item.nombre}"></p>
-                                        </div>
-                                        <button type="button" class="btn-close shadow-none" data-bs-dismiss="modal" aria-label="Close"></button>
-                                    </div>
-                                    <div class="modal-body pt-4">
-                                        <div th:id="'alerta-' + ${item.id}"></div>
-                                        <form th:action="@{'/evidencias/subir-ajax/' + ${item.id}}" th:data-item-id="${item.id}" method="post" enctype="multipart/form-data" class="mb-4 form-evidencia-ajax" sec:authorize="hasAnyRole('ADMIN', 'CHAMPION')">
-                                            <div class="p-4 border rounded bg-light text-center border-primary border-opacity-25" style="border-style: dashed !important; border-width: 2px !important;">
-                                                <i class="bi bi-cloud-upload fs-1 text-primary mb-2 d-block"></i>
-                                                <label th:for="'archivo_' + ${item.id}" class="form-label fw-bold mb-1">Select a file</label>
-                                                <p class="text-muted small mb-3">PDF, Excel, Word (Max 15MB)</p>
-                                                <input class="form-control form-control-sm shadow-sm" type="file" th:id="'archivo_' + ${item.id}" name="archivo" required>
-                                                <button type="submit" class="btn btn-primary btn-sm w-100 mt-3 fw-bold shadow-sm btn-subir">Upload File</button>
-                                            </div>
-                                        </form>
 
-                                        <h6 class="fw-bold small mb-3 text-secondary border-bottom pb-2">ATTACHED FILES</h6>
-                                        <ul class="list-group list-group-flush small" th:id="'lista-' + ${item.id}">
-                                            <li th:if="${item.adjuntos == null or item.adjuntos.isEmpty()}" th:id="'msg-vacio-' + ${item.id}" class="list-group-item d-flex justify-content-between align-items-center px-0 bg-transparent border-bottom-dashed text-muted fst-italic">
-                                                No evidence uploaded yet.
-                                            </li>
-                                           <li th:each="adj : ${item.adjuntos}" class="list-group-item d-flex justify-content-between align-items-center px-0 bg-transparent border-bottom-dashed py-2">
-                                                <div class="d-flex align-items-center text-truncate pe-3">
+                                            <div class="col-md-6">
+                                                <div class="card glass-card h-100 shadow-sm">
+                                                    <div class="card-header bg-light bg-opacity-50 fw-bold text-primary border-0"><i class="bi bi-building me-2"></i>Manufacturing Site Management</div>
+                                                    <div class="card-body p-0">
+                                                        <table class="table table-hover table-sm mb-0 small border-0">
+                                                            <tbody>
+                                                                <th:block th:each="info : ${ {'Operations Manager:Fermin Flores', 'Quality Manager:Rodrigo Rabelo', 'Materials Manager:Juan Carlos Arizpe', 'SCS Manager:Kevin Swisher', 'Finance Manager:Bernardo Marines', 'HR Manager:Claudia Castañeda'} }">
+                                                                    <tr th:with="rol=${info.split(':')[0]}, nombre=${info.split(':')[1]}, firma=${mapaFirmas != null ? mapaFirmas.get(rol) : null}">
+                                                                        <td class="fw-bold text-muted ps-3 w-50 border-0 align-middle" th:text="${rol}"></td>
+                                                                        <td class="fw-bold border-0 align-middle" th:text="${nombre}"></td>
+                                                                        
+                                                                        <td class="border-0 text-end pe-3 align-middle" style="width: 120px;">
+                                                                            <div th:if="${firma != null}" 
+                                                                                 class="mini-signature-box signed shadow-sm border-success bg-success bg-opacity-10 btn-firmado-trigger" 
+                                                                                 th:data-firmante="${firma.nombreCompleto != null ? firma.nombreCompleto : (firma.username != null ? firma.username : rol)}"
+                                                                                 th:data-fecha="${#temporals.format(firma.fechaFirma, 'dd/MM/yyyy')}"
+                                                                                 style="border-style: solid !important; border-width: 2px !important; min-width: 100px;">
+                                                                                <i class="bi bi-patch-check-fill text-success mb-1 d-block" style="font-size: 1.3rem;"></i>
+                                                                                <span class="small fw-bold text-success d-block text-truncate" style="line-height: 1; max-width: 90px;" th:text="${firma.nombreCompleto != null ? firma.nombreCompleto.split(' ')[0] : 'SIGNED'}"></span>
+                                                                            </div>
+                                                                            
+                                                                            <div th:if="${firma == null}" 
+                                                                                 class="mini-signature-box unsigned btn-firmar-trigger"
+                                                                                 th:data-proyecto="${proyecto.id}" th:data-etapa="${etapaNum}" th:data-rol="${rol}"
+                                                                                 sec:authorize="hasAnyRole('ADMIN', 'CHAMPION')" title="Click to Sign">
+                                                                                <i class="bi bi-pen text-secondary mb-1 d-block" style="font-size: 1.1rem;"></i>
+                                                                                <span class="small fw-bold text-primary">Sign</span>
+                                                                            </div>
+                                                                        </td>
+                                                                    </tr>
+                                                                </th:block>
+                                                            </tbody>
+                                                        </table>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </th:block>
+                                    </div>
+                                    
+                                        <div th:if="${fase.nombre != 'Stage 3' and fase.nombre != 'Stage 4' and fase.nombre != 'Stage 5'}" class="text-muted text-center py-4 bg-light bg-opacity-50 rounded border border-dashed">
+                                            <i class="bi bi-journal-x fs-2 d-block mb-2 opacity-50"></i>
+                                            Approval table for <strong th:text="${#strings.replace(fase.nombre, 'Stage', 'Gate')}"></strong> not required in this view.
+                                        </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        </div>
+                                </form>
+                                    <th:block th:each="fase : ${fases}">
+                                    <th:block th:each="item : ${fase.items}">
+                                        <div class="modal fade" th:id="'modalEvidencia_' + ${item.id}" tabindex="-1" aria-hidden="true">
+                                    <div class="modal-dialog modal-dialog-centered">
+                                        <div class="modal-content border-0 shadow-lg">
+                                            <div class="modal-header bg-light border-bottom-0 pb-0">
+                                            <div>
+                                                <h5 class="modal-title fw-bold text-dark mb-0">
+                                                    <i class="bi bi-folder-check text-primary me-2"></i>Evidence
+                                                </h5>
+                                                <p class="text-muted small mb-0 mt-1" th:text="${item.codigo} + ' - ' + ${item.nombre}"></p>
+                                            </div>
+                                            <button type="button" class="btn-close shadow-none" data-bs-dismiss="modal" aria-label="Close"></button>
+                                        </div>
+                                        <div class="modal-body pt-4">
+                                            <div th:id="'alerta-' + ${item.id}"></div>
+                                            <form th:action="@{'/evidencias/subir-ajax/' + ${item.id}}" th:data-item-id="${item.id}" method="post" enctype="multipart/form-data" class="mb-4 form-evidencia-ajax" sec:authorize="hasAnyRole('ADMIN', 'CHAMPION')">
+                                                <div class="p-4 border rounded bg-light text-center border-primary border-opacity-25" style="border-style: dashed !important; border-width: 2px !important;">
+                                                    <i class="bi bi-cloud-upload fs-1 text-primary mb-2 d-block"></i>
+                                                    <label th:for="'archivo_' + ${item.id}" class="form-label fw-bold mb-1">Select a file</label>
+                                                    <p class="text-muted small mb-3">PDF, Excel, Word (Max 15MB)</p>
+                                                    <input class="form-control form-control-sm shadow-sm" type="file" th:id="'archivo_' + ${item.id}" name="archivo" required>
+                                                    <button type="submit" class="btn btn-primary btn-sm w-100 mt-3 fw-bold shadow-sm btn-subir">Upload File</button>
+                                                </div>
+                                            </form>
+
+                                            <h6 class="fw-bold small mb-3 text-secondary border-bottom pb-2">ATTACHED FILES</h6>
+                                            <ul class="list-group list-group-flush small" th:id="'lista-' + ${item.id}">
+                                                <li th:if="${item.adjuntos == null or item.adjuntos.isEmpty()}" th:id="'msg-vacio-' + ${item.id}" class="list-group-item d-flex justify-content-between align-items-center px-0 bg-transparent border-bottom-dashed text-muted fst-italic">
+                                                    No evidence uploaded yet.
+                                                </li>
+                                               <li th:each="adj : ${item.adjuntos}" class="list-group-item d-flex justify-content-between align-items-center px-0 bg-transparent border-bottom-dashed py-2">
+                                                    <div class="d-flex align-items-center text-truncate pe-3">
                                                         <i class="bi bi-file-earmark-check-fill text-success fs-4 me-2"></i>
                                                         <span class="text-truncate fw-bold text-dark" th:text="${adj.nombreArchivo}"></span>
                                                 </div>
@@ -858,6 +893,29 @@
             </div>
         </div>
     </div>
+
+    <div class="modal fade" id="modalConfirmarFirma" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-0 shadow-lg" style="border-radius: 20px;">
+                <div class="modal-header text-white border-0" style="background: linear-gradient(135deg, #F5821F 0%, #e0600d 100%); border-radius: 20px 20px 0 0;">
+                    <h5 class="modal-title fw-bold"><i class="bi bi-patch-check me-2"></i>Apply Approval Seal</h5>
+                    <button type="button" class="btn-close btn-close-white shadow-none" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body text-center p-4">
+                    <i class="bi bi-shield-lock-fill text-warning" style="font-size: 3.5rem;"></i>
+                    <h4 class="fw-bold mt-3 text-dark">Are you completely sure?</h4>
+                    <p class="text-muted mb-0">You are about to officially sign and approve <b>Gate <span id="modalGateText" class="text-primary"></span></b> as <b><span id="modalRolText" class="text-primary"></span></b>.</p>
+                </div>
+                <div class="modal-footer bg-light border-0 d-flex justify-content-center" style="border-radius: 0 0 20px 20px;">
+                    <button type="button" class="btn btn-outline-secondary fw-bold rounded-pill px-4" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" id="btnConfirmarFirmaAjax" class="btn btn-success fw-bold rounded-pill px-4 shadow-sm">
+                        <i class="bi bi-vector-pen me-2"></i>Yes, Apply Seal
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
 
     <link rel="stylesheet" href="https://unpkg.com/tributejs/dist/tribute.css">
     <script src="https://unpkg.com/tributejs/dist/tribute.min.js"></script>
@@ -1278,10 +1336,7 @@
     </script>
 
     <script>
-        /**
-         * Aplica reglas de negocio antes de enviar al servidor para que el usuario
-         * vea los cambios (como LATE o ON TIME) inmediatamente sin refrescar.
-         */
+        
         function procesarReglasNegocioFrontend() {
             const hoy = new Date();
             hoy.setHours(0,0,0,0);
@@ -1299,11 +1354,9 @@
                 const scoreOk = (selectScore && selectScore.value === 'OK');
                 const currentVal = selectControl.value;
 
-                // Solo actuamos si no es ya DECISION o NEEDS ACTION (que son manuales)
                 if (currentVal === 'DECISION' || currentVal === 'NEEDS ACTION') return;
 
                 if (inputReal && inputReal.value) {
-                    // Si tiene fecha real, comparamos
                     const fechaReal = new Date(inputReal.value + 'T00:00:00');
                     if (fechaReal > fechaPlan) {
                         selectControl.value = 'Closed late';
@@ -1315,7 +1368,6 @@
                     selectControl.value = 'Closed late';
                 }
 
-                // Disparar evento change para que se apliquen los estilos CSS (colores)
                 if (currentVal !== selectControl.value) {
                     selectControl.dispatchEvent(new Event('change', { bubbles: true }));
                 }
@@ -1393,44 +1445,6 @@
 
     document.addEventListener("DOMContentLoaded", function() {
         const esHistorico = /*[[${proyecto.esHistorico}]]*/ false;
-        
-        if (esHistorico) {
-            console.log("Proyecto Histórico detectado: Bloqueando edición.");
-            
-            const formElements = document.querySelectorAll('input, select, textarea');
-            formElements.forEach(el => {
-                el.disabled = true;
-                el.style.backgroundColor = '#f8fafc'; 
-                el.style.cursor = 'not-allowed';
-            });
-            
-            const actionButtons = document.querySelectorAll('.btn-upload, .btn-primary, .btn-success, .btn-danger, button[type="submit"]');
-            actionButtons.forEach(btn => {
-                btn.style.display = 'none';
-            });
-
-            const contentEditables = document.querySelectorAll('[contenteditable="true"]');
-            contentEditables.forEach(el => {
-                el.setAttribute('contenteditable', 'false');
-                el.style.backgroundColor = '#f8fafc';
-            });
-        }
-    });
-
-    window.addEventListener('load', function() {
-        setTimeout(() => {
-            const skeleton = document.getElementById('checklist-skeleton');
-            const content = document.getElementById('checklist-content');
-            
-            if(skeleton && content) {
-                skeleton.style.display = 'none';
-                content.style.display = 'block';
-            }
-        }, 200);
-    });
-
-    document.addEventListener("DOMContentLoaded", function() {
-        const esHistorico = /*[[${proyecto.esHistorico}]]*/ false;
         const esVisitante = /*[[${#authorization.expression('hasRole(''VIEWER'')')}]]*/ false;
         
         if (esHistorico || esVisitante) {
@@ -1457,7 +1471,116 @@
         }
     });
 
-</script>
+        function mostrarNotificacion(mensaje) {
+            const vieja = document.getElementById('notificacionSello');
+            if(vieja) vieja.remove();
 
-</body>
+            const toast = document.createElement('div');
+            toast.id = 'notificacionSello';
+            toast.className = 'animate__animated animate__fadeInUp shadow-lg';
+            toast.style.cssText = 'position: fixed; bottom: 30px; right: 30px; background: white; border-left: 5px solid #10b981; border-radius: 8px; padding: 15px 20px; z-index: 9999; display: flex; align-items: center; gap: 15px; color: #1e293b; font-weight: 500; min-width: 300px;';
+            
+            toast.innerHTML = `
+                <i class="bi bi-patch-check-fill text-success" style="font-size: 1.5rem;"></i>
+                <span>${mensaje}</span>
+            `;
+            
+            document.body.appendChild(toast);
+            
+            setTimeout(() => {
+                toast.classList.replace('animate__fadeInUp', 'animate__fadeOutDown');
+                setTimeout(() => toast.remove(), 1000);
+            }, 4000);
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            let firmaData = {}; 
+            const modalElement = document.getElementById('modalConfirmarFirma');
+            if(!modalElement) return; 
+            
+            const modalFirma = new bootstrap.Modal(modalElement);
+            
+            document.querySelectorAll('.btn-firmado-trigger').forEach(box => {
+                box.addEventListener('click', function() {
+                    const firmante = this.getAttribute('data-firmante');
+                    const fecha = this.getAttribute('data-fecha');
+                    mostrarNotificacion(`Gate sellado por <b>${firmante}</b> el ${fecha}.`);
+                });
+            });
+
+            document.querySelectorAll('.btn-firmar-trigger').forEach(box => {
+                box.addEventListener('click', function() {
+                    const esVisitante = /*[[${#authorization.expression('hasRole(''VIEWER'')')}]]*/ false;
+                    if(esVisitante) return; 
+
+                    firmaData = {
+                        proyectoId: this.getAttribute('data-proyecto'),
+                        etapa: this.getAttribute('data-etapa'),
+                        rol: this.getAttribute('data-rol')
+                    };
+
+                    document.getElementById('modalGateText').textContent = firmaData.etapa;
+                    document.getElementById('modalRolText').textContent = firmaData.rol;
+                    
+                    modalFirma.show();
+                });
+            });
+
+            const btnConfirmar = document.getElementById('btnConfirmarFirmaAjax');
+            if(btnConfirmar) {
+                btnConfirmar.addEventListener('click', function() {
+                    const originalHtml = this.innerHTML;
+                    this.innerHTML = '<span class="spinner-border spinner-border-sm"></span> Sealing...';
+                    this.disabled = true;
+
+                    const params = new URLSearchParams();
+                    params.append('etapa', firmaData.etapa);
+                    params.append('rol', firmaData.rol);
+
+                    fetch(`/proyectos/checklist/firmar-ajax/${firmaData.proyectoId}`, {
+                        method: 'POST',
+                        body: params,
+                        headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
+                    })
+                    .then(response => {
+                        if(!response.ok) throw new Error("Server error");
+                        return response.json();
+                    })
+                    .then(data => {
+                        if(data.exito) {
+                            const modalBody = document.querySelector('#modalConfirmarFirma .modal-body');
+                            const modalFooter = document.querySelector('#modalConfirmarFirma .modal-footer');
+                            
+                            if(modalBody) {
+                                modalBody.innerHTML = `
+                                    <div class="animate__animated animate__zoomIn text-center">
+                                        <div class="mb-3">
+                                            <i class="bi bi-patch-check-fill text-success" style="font-size: 5.5rem; filter: drop-shadow(0 4px 10px rgba(25,135,84,0.3));"></i>
+                                        </div>
+                                        <h2 class="fw-bold text-dark mb-2">¡Gate Sellado!</h2>
+                                        <p class="text-muted fs-5 mb-0">La aprobación de <br><b class="text-primary">${firmaData.rol}</b><br> ha sido registrada.</p>
+                                    </div>
+                                `;
+                            }
+                            if(modalFooter) modalFooter.style.display = 'none';
+                            
+                            // Recargar la página suavemente después de 1.8 segundos
+                            setTimeout(() => { window.location.reload(); }, 1800);
+                        } else {
+                            alert("Atención: " + data.mensaje);
+                            this.innerHTML = originalHtml; this.disabled = false;
+                            modalFirma.hide();
+                        }
+                    })
+                    .catch(error => {
+                        console.error("Error:", error);
+                        alert("Error de conexión. Se canceló la firma.");
+                        this.innerHTML = originalHtml; this.disabled = false;
+                        modalFirma.hide();
+                    });
+                });
+            }
+        });
+    </script>
+    </body>
 </html>

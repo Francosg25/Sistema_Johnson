@@ -47,6 +47,7 @@ public class ProyectoControlador {
     @Autowired private ExcelServicio excelServicio;
     @Autowired private com.johnson.practica.servicio.BitacoraServicio bitacoraServicio;
 
+
     @Data @AllArgsConstructor
     public static class FaseVista {
         private String id;
@@ -66,6 +67,8 @@ public class ProyectoControlador {
 
         Map<String, Integer> tendencia = checklistServicio.obtenerTendenciaAprobacionesOK();
         model.addAttribute("tendencia", tendencia);
+
+        
 
         return "index";
     }
@@ -102,17 +105,37 @@ public class ProyectoControlador {
                 firmaEtapaServicio.obtenerFirmasPorEtapa(id, 5)));
 
         model.addAttribute("fases", fases); 
+        model.addAttribute("firmasGate3", firmaEtapaServicio.obtenerFirmasPorEtapa(id, 3));
+        model.addAttribute("firmasGate4", firmaEtapaServicio.obtenerFirmasPorEtapa(id, 4));
+        model.addAttribute("firmasGate5", firmaEtapaServicio.obtenerFirmasPorEtapa(id, 5));
+
+       
         return "checklist";
     }
 
    
     @PostMapping("/checklist/firmar/{id}")
-    @PreAuthorize("hasAnyRole('ADMIN', 'CHAMPION')") 
+    @PreAuthorize("hasAnyRole('ADMIN', 'CHAMPION')")
     public String firmarEtapa(@PathVariable Long id, @RequestParam Integer etapa, @RequestParam String rol, Principal principal) {
         firmaEtapaServicio.firmar(id, etapa, rol, principal.getName());
         return "redirect:/proyectos/checklist/" + id;
     }
 
+    @PostMapping("/checklist/firmar-ajax/{id}")
+    @PreAuthorize("hasAnyRole('ADMIN', 'CHAMPION')")
+    @ResponseBody
+    public Map<String, Object> firmarEtapaAjax(@PathVariable Long id, @RequestParam Integer etapa, @RequestParam String rol, Principal principal) {
+        Map<String, Object> response = new HashMap<>();
+        try {
+            firmaEtapaServicio.firmar(id, etapa, rol, principal.getName());
+            response.put("exito", true);
+            response.put("mensaje", "Signature applied successfully.");
+        } catch (Exception e) {
+            response.put("exito", false);
+            response.put("mensaje", e.getMessage());
+        }
+        return response;
+    }
     @PostMapping("/checklist/guardar-todo/{proyectoId}")
     @PreAuthorize("hasAnyRole('ADMIN', 'CHAMPION')") 
     public String guardarChecklistCompleto(@PathVariable Long proyectoId, @RequestParam Map<String, String> allParams) {

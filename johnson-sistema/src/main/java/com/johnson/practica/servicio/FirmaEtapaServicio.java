@@ -22,6 +22,7 @@ public class FirmaEtapaServicio {
     private final ProyectoRepositorio proyectoRepositorio;
     private final UsuarioRepositorio usuarioRepositorio;
     private final BitacoraServicio bitacoraServicio;
+    private final NotificacionServicio notificacionServicio;
 
     public Map<String, FirmaEtapa> obtenerFirmasPorEtapa(Long proyectoId, Integer etapa) {
         return firmaEtapaRepositorio.findByProyectoIdAndEtapa(proyectoId, etapa)
@@ -37,7 +38,6 @@ public class FirmaEtapaServicio {
         Usuario usuario = usuarioRepositorio.findByUsername(username)
                 .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
 
-        // Verificar si ya está firmado
         List<FirmaEtapa> existentes = firmaEtapaRepositorio.findByProyectoIdAndEtapa(proyectoId, etapa);
         boolean yaFirmado = existentes.stream().anyMatch(f -> f.getRol().equals(rol));
         
@@ -45,10 +45,25 @@ public class FirmaEtapaServicio {
             throw new RuntimeException("Este rol ya ha firmado esta etapa");
         }
 
-        FirmaEtapa firma = new FirmaEtapa(proyecto, etapa, rol, username, usuario.getNombreCompleto());
+        FirmaEtapa firma = new FirmaEtapa();
+        firma.setProyecto(proyecto);
+        firma.setEtapa(etapa);
+        firma.setRol(rol);
+        firma.setUsername(username);
+        firma.setNombreCompleto(usuario.getNombreCompleto());
+        firma.setFechaFirma(java.time.LocalDateTime.now());
+        
         firmaEtapaRepositorio.save(firma);
 
         bitacoraServicio.registrarAccion(username, "FIRMA_ELECTRONICA", 
                 "Firmó como " + rol + " en el Stage " + etapa + " del proyecto " + proyecto.getNombre());
+                
+        String msj = "✅ SELLO DE APROBADO aplicado por " + usuario.getNombreCompleto() + 
+                     " como " + rol + " en el Gate " + etapa + " (" + proyecto.getNombre() + ")";
+        String url = "/proyectos/checklist/" + proyecto.getId();
+        
+        notificacionServicio.alertarATodos("Aprobación Gate " + etapa, msj, "SUCCESS", url, username);
     }
+
+    
 }
