@@ -6,6 +6,7 @@ import com.johnson.practica.repositorio.AdjuntoRepositorio;
 import com.johnson.practica.repositorio.ElementoChecklistRepositorio;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
@@ -38,6 +39,7 @@ public class EvidenciaControlador {
 
 
     @PostMapping("/subir/{itemId}")
+    @PreAuthorize("hasAnyRole('ADMIN', 'CHAMPION')") 
     public String subirEvidencia(@PathVariable Long itemId, 
                                  @RequestParam("archivo") MultipartFile archivo,
                                  java.security.Principal principal,
@@ -84,6 +86,7 @@ public class EvidenciaControlador {
 
     @PostMapping("/subir-ajax/{itemId}")
     @ResponseBody
+    @PreAuthorize("hasAnyRole('ADMIN', 'CHAMPION')") 
     public ResponseEntity<Map<String, Object>> subirEvidenciaAjax(
             @PathVariable Long itemId, 
             @RequestParam("archivo") MultipartFile archivo,
@@ -134,6 +137,7 @@ public class EvidenciaControlador {
 
    
     @GetMapping("/descargar/{adjuntoId}")
+    @PreAuthorize("hasAnyRole('ADMIN', 'CHAMPION')") 
     public ResponseEntity<Resource> descargarEvidencia(@PathVariable Long adjuntoId) {
         Adjunto adjunto = adjuntoRepositorio.findById(adjuntoId).orElse(null);
         
@@ -150,6 +154,7 @@ public class EvidenciaControlador {
     }
 
     @GetMapping("/visualizar/{adjuntoId}")
+    @PreAuthorize("hasAnyRole('ADMIN', 'CHAMPION')") 
     public ResponseEntity<Resource> visualizarEvidencia(@PathVariable Long adjuntoId) {
         Adjunto adjunto = adjuntoRepositorio.findById(adjuntoId).orElse(null);
         
@@ -168,6 +173,7 @@ public class EvidenciaControlador {
 
     @PostMapping("/eliminar-ajax/{adjuntoId}")
     @ResponseBody
+    @PreAuthorize("hasAnyRole('ADMIN', 'CHAMPION')") 
     public ResponseEntity<Map<String, Object>> eliminarEvidenciaAjax(@PathVariable Long adjuntoId) {
         Map<String, Object> response = new HashMap<>();
         try {

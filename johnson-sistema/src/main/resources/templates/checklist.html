@@ -750,9 +750,18 @@
                                                         <span class="text-truncate fw-bold text-dark" th:text="${adj.nombreArchivo}"></span>
                                                 </div>
                                                 <div class="d-flex gap-2">
-                                                    <a th:href="@{'/evidencias/descargar/' + ${adj.id}}" class="btn btn-sm btn-light border rounded-circle shadow-sm text-primary" title="Download">
-                                                        <i class="bi bi-download"></i>
-                                                    </a>
+                                                    <div sec:authorize="hasAnyRole('ADMIN', 'CHAMPION')" style="display:inline;">
+                                                        <a th:href="@{'/evidencias/descargar/' + ${adj.id}}" 
+                                                            class="btn btn-sm btn-light border rounded-circle shadow-sm text-primary" 
+                                                            title="Download">
+                                                            <i class="bi bi-download"></i>
+                                                        </a>
+                                                    </div>
+
+                                                    <span sec:authorize="hasRole('VIEWER')" class="text-muted small">
+                                                            <i class="bi bi-lock-fill"></i>
+                                                    </span>
+                                                </div>
                                                     <button type="button" class="btn btn-sm btn-light border rounded-circle shadow-sm text-danger" title="Delete" 
                                                             th:onclick="'eliminarEvidenciaAjax(' + ${adj.id} + ', this, ' + ${item.id} + ')'"
                                                             sec:authorize="hasAnyRole('ADMIN', 'CHAMPION')">
@@ -1333,7 +1342,6 @@
         if (esHistorico) {
             console.log("Proyecto Histórico detectado: Bloqueando edición.");
             
-            // Bloqueamos TODOS los inputs, selects y textareas
             const formElements = document.querySelectorAll('input, select, textarea');
             formElements.forEach(el => {
                 el.disabled = true;
@@ -1341,7 +1349,6 @@
                 el.style.cursor = 'not-allowed';
             });
             
-            // Ocultamos todos los botones de "Subir Archivo", "Firmar", "Guardar" y "Borrar"
             const actionButtons = document.querySelectorAll('.btn-upload, .btn-primary, .btn-success, .btn-danger, button[type="submit"]');
             actionButtons.forEach(btn => {
                 btn.style.display = 'none';
@@ -1351,6 +1358,46 @@
             contentEditables.forEach(el => {
                 el.setAttribute('contenteditable', 'false');
                 el.style.backgroundColor = '#f8fafc';
+            });
+        }
+    });
+
+    window.addEventListener('load', function() {
+        setTimeout(() => {
+            const skeleton = document.getElementById('checklist-skeleton');
+            const content = document.getElementById('checklist-content');
+            
+            if(skeleton && content) {
+                skeleton.style.display = 'none';
+                content.style.display = 'block';
+            }
+        }, 200);
+    });
+
+    document.addEventListener("DOMContentLoaded", function() {
+        const esHistorico = /*[[${proyecto.esHistorico}]]*/ false;
+        const esVisitante = /*[[${#authorization.expression('hasRole(''VIEWER'')')}]]*/ false;
+        
+        if (esHistorico || esVisitante) {
+            console.log("Modo Lectura Activado: Bloqueando edición.");
+            
+            const formElements = document.querySelectorAll('input, select, textarea');
+            formElements.forEach(el => {
+                el.disabled = true;
+                el.style.backgroundColor = '#f8fafc'; 
+                el.style.cursor = 'not-allowed';
+            });
+            
+            const actionButtons = document.querySelectorAll('.btn-upload, .btn-primary, .btn-success, .btn-danger, .btn-download, a[href*="descargar"], button[type="submit"]');
+            actionButtons.forEach(btn => {
+                btn.style.setProperty('display', 'none', 'important');
+            });
+
+            document.querySelectorAll('a').forEach(link => {
+                if (link.href.includes('descargar')) {
+                    link.addEventListener('click', (e) => e.preventDefault());
+                    link.style.display = 'none';
+                }
             });
         }
     });

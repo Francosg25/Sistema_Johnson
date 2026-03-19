@@ -27,15 +27,15 @@ public class AdminControlador {
         return "admin/usuarios"; 
     }
 
-    // NUEVO: Ruta genérica que recibe el parámetro "rol"
     @PostMapping("/usuarios/crear-usuario")
     public String crearUsuario(@RequestParam String username, 
                                @RequestParam String correo, 
                                @RequestParam String nombre,
-                               @RequestParam String rol, // <-- Recibimos el rol seleccionado
+                               @RequestParam String rol, 
+                               @RequestParam String departamento, 
                                RedirectAttributes redirectAttributes) {
         try {
-            usuarioServicio.crearUsuarioConRol(username, correo, nombre, rol);
+            usuarioServicio.crearUsuarioConRol(username, correo, nombre, rol, departamento);
             redirectAttributes.addFlashAttribute("mensaje", "User created successfully. An email has been sent.");
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("error", "Error creating user: " + e.getMessage());

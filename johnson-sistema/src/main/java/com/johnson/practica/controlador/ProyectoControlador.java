@@ -107,12 +107,14 @@ public class ProyectoControlador {
 
    
     @PostMapping("/checklist/firmar/{id}")
+    @PreAuthorize("hasAnyRole('ADMIN', 'CHAMPION')") 
     public String firmarEtapa(@PathVariable Long id, @RequestParam Integer etapa, @RequestParam String rol, Principal principal) {
         firmaEtapaServicio.firmar(id, etapa, rol, principal.getName());
         return "redirect:/proyectos/checklist/" + id;
     }
 
     @PostMapping("/checklist/guardar-todo/{proyectoId}")
+    @PreAuthorize("hasAnyRole('ADMIN', 'CHAMPION')") 
     public String guardarChecklistCompleto(@PathVariable Long proyectoId, @RequestParam Map<String, String> allParams) {
         if (allParams != null) {
             checklistServicio.guardarChecklistCompleto(allParams);
@@ -121,6 +123,7 @@ public class ProyectoControlador {
     }
 
     @PostMapping("/checklist/guardar-ajax/{proyectoId}")
+    @PreAuthorize("hasAnyRole('ADMIN', 'CHAMPION')") 
     @ResponseBody
     public ResponseEntity<Map<String, Object>> guardarChecklistAjax(@PathVariable Long proyectoId, @RequestParam Map<String, String> allParams) {
         Map<String, Object> response = new HashMap<>();
@@ -140,7 +143,8 @@ public class ProyectoControlador {
 
    
     @PostMapping("/guardar")
-    @CacheEvict(value = "reportes", allEntries = true) 
+    @PreAuthorize("hasRole('ADMIN')") 
+    @CacheEvict(value = "reportes", allEntries = true)
     public String guardarProyecto(@ModelAttribute Proyecto proyecto, java.security.Principal principal) {
         boolean esNuevo = (proyecto.getId() == null);
         Proyecto proyectoGuardado = proyectoServicio.guardarProyecto(proyecto);

@@ -47,4 +47,8 @@ public class Usuario {
         inverseJoinColumns = @JoinColumn(name = "rol_id")
     )
     private Set<Rol> roles;
+
+    @Column(name = "departamento")
+    private String departamento;
+
 }
