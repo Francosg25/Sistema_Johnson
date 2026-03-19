@@ -13,6 +13,7 @@ import org.springframework.transaction.support.TransactionSynchronizationManager
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class NotificacionServicio {
@@ -33,9 +34,23 @@ public class NotificacionServicio {
     public void alertarATodos(String titulo, String mensaje, String tipo, String link, String autor) {
         List<Usuario> todosLosUsuarios = usuarioRepositorio.findAll();
         
+        // Buscamos departamento del autor si es champion
+        String departamento = null;
+        if (autor != null && !"System".equalsIgnoreCase(autor)) {
+            Optional<Usuario> uOpt = usuarioRepositorio.findByUsername(autor);
+            if (uOpt.isPresent()) {
+                Usuario u = uOpt.get();
+                boolean esChamp = u.getRoles().stream().anyMatch(r -> r.getNombre().equals("ROLE_CHAMPION"));
+                if (esChamp) {
+                    departamento = u.getDepartamento();
+                }
+            }
+        }
+
         for (Usuario usuario : todosLosUsuarios) {
             Notificacion notif = new Notificacion(titulo, mensaje, tipo, usuario, autor);
             notif.setLink(link);
+            notif.setAutorDepartamento(departamento);
             repositorio.save(notif);
         }
 
@@ -68,9 +83,22 @@ public class NotificacionServicio {
 
     @Transactional
     public void alertarAUsuario(String usernameDestino, String titulo, String mensaje, String tipo, String link, String autor) {
+        // Buscamos departamento del autor si es champion
+        String deptoFinal = null;
+        if (autor != null && !"System".equalsIgnoreCase(autor)) {
+            Optional<Usuario> uOpt = usuarioRepositorio.findByUsername(autor);
+            if (uOpt.isPresent()) {
+                Usuario u = uOpt.get();
+                boolean esChamp = u.getRoles().stream().anyMatch(r -> r.getNombre().equals("ROLE_CHAMPION"));
+                if (esChamp) deptoFinal = u.getDepartamento();
+            }
+        }
+        final String departamento = deptoFinal;
+
         usuarioRepositorio.findByUsername(usernameDestino).ifPresent(usuario -> {
             Notificacion notif = new Notificacion(titulo, mensaje, tipo, usuario, autor);
             notif.setLink(link);
+            notif.setAutorDepartamento(departamento);
             repositorio.save(notif);
 
             if (messagingTemplate != null) {
@@ -98,6 +126,18 @@ public class NotificacionServicio {
 
     @Transactional
     public void alertarAAdministradores(String titulo, String mensaje, String tipo, String link, String autor) {
+        // Buscamos departamento del autor si es champion
+        String deptoFinal = null;
+        if (autor != null && !"System".equalsIgnoreCase(autor)) {
+            Optional<Usuario> uOpt = usuarioRepositorio.findByUsername(autor);
+            if (uOpt.isPresent()) {
+                Usuario u = uOpt.get();
+                boolean esChamp = u.getRoles().stream().anyMatch(r -> r.getNombre().equals("ROLE_CHAMPION"));
+                if (esChamp) deptoFinal = u.getDepartamento();
+            }
+        }
+        final String departamento = deptoFinal;
+
         List<Usuario> usuarios = usuarioRepositorio.findAll();
         List<String> admins = new java.util.ArrayList<>();
         for (Usuario u : usuarios) {
@@ -105,6 +145,7 @@ public class NotificacionServicio {
             if (esAdmin) {
                 Notificacion notif = new Notificacion(titulo, mensaje, tipo, u, autor);
                 notif.setLink(link);
+                notif.setAutorDepartamento(departamento);
                 repositorio.save(notif);
                 admins.add(u.getUsername());
             }

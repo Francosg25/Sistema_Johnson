@@ -25,6 +25,7 @@ public class Notificacion {
     private String link;
 
     private String autorAccion; 
+    private String autorDepartamento; 
 
     @ManyToOne
     @JoinColumn(name = "destinatario_id")

@@ -51,12 +51,12 @@ public class UsuarioControlador {
                                   Authentication auth,
                                   RedirectAttributes redirectAttributes) {
         if (!newPassword.equals(confirmPassword)) {
-            redirectAttributes.addFlashAttribute("error", "Las contraseñas no coinciden.");
+            redirectAttributes.addFlashAttribute("error", "Passwords do not match.");
             return "redirect:/cambiar-password";
         }
 
         if (newPassword.length() < 8) {
-            redirectAttributes.addFlashAttribute("error", "La contraseña debe tener al menos 8 caracteres.");
+            redirectAttributes.addFlashAttribute("error", "The password must be at least 8 characters long.");
             return "redirect:/cambiar-password";
         }
 
@@ -66,7 +66,7 @@ public class UsuarioControlador {
             usuario.setPassword(passwordEncoder.encode(newPassword));
             usuario.setPasswordChanged(true);
             usuarioServicio.guardarUsuario(usuario);
-            redirectAttributes.addFlashAttribute("mensaje", "Contraseña cambiada exitosamente.");
+            redirectAttributes.addFlashAttribute("mensaje", "Password updated successfully.");
             return "redirect:/";
         }
 
