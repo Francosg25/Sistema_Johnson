@@ -1270,6 +1270,50 @@
     </script>
 
     <script>
+        /**
+         * Aplica reglas de negocio antes de enviar al servidor para que el usuario
+         * vea los cambios (como LATE o ON TIME) inmediatamente sin refrescar.
+         */
+        function procesarReglasNegocioFrontend() {
+            const hoy = new Date();
+            hoy.setHours(0,0,0,0);
+
+            // Buscamos todos los selects de controlEntregable
+            document.querySelectorAll('select[name^="controlEntregable-"]').forEach(selectControl => {
+                const itemId = selectControl.name.split('-')[1];
+                const inputPlan = document.querySelector(`input[name="fechaPlan-${itemId}"]`);
+                const inputReal = document.querySelector(`input[name="fechaReal-${itemId}"]`);
+                const selectScore = document.querySelector(`select[name="score-${itemId}"]`);
+
+                if (!inputPlan || !inputPlan.value) return;
+
+                const fechaPlan = new Date(inputPlan.value + 'T00:00:00');
+                const scoreOk = (selectScore && selectScore.value === 'OK');
+                const currentVal = selectControl.value;
+
+                // Solo actuamos si no es ya DECISION o NEEDS ACTION (que son manuales)
+                if (currentVal === 'DECISION' || currentVal === 'NEEDS ACTION') return;
+
+                if (inputReal && inputReal.value) {
+                    // Si tiene fecha real, comparamos
+                    const fechaReal = new Date(inputReal.value + 'T00:00:00');
+                    if (fechaReal > fechaPlan) {
+                        selectControl.value = 'Closed late';
+                    } else {
+                        selectControl.value = 'Closed on time';
+                    }
+                } else if (fechaPlan < hoy && !scoreOk) {
+                    // Si no hay fecha real, pero el plan ya pasó y no está OK
+                    selectControl.value = 'Closed late';
+                }
+
+                // Disparar evento change para que se apliquen los estilos CSS (colores)
+                if (currentVal !== selectControl.value) {
+                    selectControl.dispatchEvent(new Event('change', { bubbles: true }));
+                }
+            });
+        }
+
         document.addEventListener('DOMContentLoaded', function() {
             const formChecklist = document.getElementById('formChecklist');
             const btnGuardarTodo = document.getElementById('btnGuardarTodo');
@@ -1277,6 +1321,9 @@
             if (formChecklist) {
                 formChecklist.addEventListener('submit', function(e) {
                     e.preventDefault();
+
+                    // Aplicar reglas automáticas (LATE / ON TIME) antes de enviar
+                    procesarReglasNegocioFrontend();
 
                     const formData = new FormData(this);
                     const params = new URLSearchParams(formData); 

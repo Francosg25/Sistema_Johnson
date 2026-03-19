@@ -199,6 +199,37 @@ public class ChecklistServicio {
                 }
             });
 
+            // RE-EVALUAR STATUS (ON TIME / LATE) automáticamente según fechas
+            if (elemento.getFechaPlan() != null) {
+                String currentCtrl = (elemento.getControlEntregable() == null) ? "" : elemento.getControlEntregable();
+                
+                // Caso 1: Tiene fecha real (Entregado/Finalizado)
+                if (elemento.getFechaReal() != null) {
+                    if (elemento.getFechaReal().isAfter(elemento.getFechaPlan())) {
+                        if (!"Closed late".equalsIgnoreCase(currentCtrl)) {
+                            elemento.setControlEntregable("Closed late");
+                            huboCambioReal[0] = true;
+                        }
+                    } else {
+                        // Si se entregó a tiempo o antes, marcar como On Time
+                        // (solo si no es ya DECISION o NEEDS ACTION que el usuario quiera mantener)
+                        if (!"Closed on time".equalsIgnoreCase(currentCtrl) && 
+                            !"DECISION".equalsIgnoreCase(currentCtrl) && 
+                            !"NEEDS ACTION".equalsIgnoreCase(currentCtrl)) {
+                            elemento.setControlEntregable("Closed on time");
+                            huboCambioReal[0] = true;
+                        }
+                    }
+                } 
+                // Caso 2: No tiene fecha real pero ya pasó la fecha plan y no está OK
+                else if (elemento.getFechaPlan().isBefore(LocalDate.now()) && !"OK".equalsIgnoreCase(elemento.getScore())) {
+                    if (!"Closed late".equalsIgnoreCase(currentCtrl) && !"Closed on time".equalsIgnoreCase(currentCtrl)) {
+                        elemento.setControlEntregable("Closed late");
+                        huboCambioReal[0] = true;
+                    }
+                }
+            }
+
             if (huboCambioReal[0]) {
                 bitacoraServicio.registrarAccion(
                     nombreUsuarioLogueado, 
@@ -666,6 +697,28 @@ public class ChecklistServicio {
 
     private String scoreFormateado(String s) {
         return (s == null) ? "" : s.trim().toUpperCase();
+    }
+
+    @Transactional
+    public void actualizarEntregablesVencidos() {
+        LocalDate hoy = LocalDate.now();
+        List<ElementoChecklist> todos = repositorio.findAll();
+        List<ElementoChecklist> paraActualizar = new ArrayList<>();
+
+        for (ElementoChecklist e : todos) {
+            // Si tiene fecha plan, ya pasó hoy, no está OK y no está ya como Late o On Time
+            if (e.getFechaPlan() != null && e.getFechaPlan().isBefore(hoy) 
+                && !"OK".equalsIgnoreCase(e.getScore())
+                && (e.getControlEntregable() == null || (!e.getControlEntregable().equalsIgnoreCase("Closed late") && !e.getControlEntregable().equalsIgnoreCase("Closed on time")))) {
+                
+                e.setControlEntregable("Closed late");
+                paraActualizar.add(e);
+            }
+        }
+
+        if (!paraActualizar.isEmpty()) {
+            repositorio.saveAll(paraActualizar);
+        }
     }
 
     private void procesarMenciones(String comentario, ElementoChecklist elemento, String autor) {
