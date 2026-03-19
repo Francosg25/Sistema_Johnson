@@ -111,16 +111,20 @@ public class ReporteServicio {
 
         
         //ESTATUS GLOBAL
-        String gEstatus = descargarGraficaBase64("{type:'doughnut',data:{labels:['OK','Action','Pend.'],datasets:[{data:["+okCount+","+actionCount+","+pendingCount+"],backgroundColor:['#10b981','#ef4444','#cbd5e1'],borderWidth:0}]},options:{cutoutPercentage:70,plugins:{datalabels:{display:false},doughnutlabel:{labels:[{text:'"+Math.round(progreso)+"%',font:{size:24,weight:'bold'}},{text:'Progress'}]}}}}");
+        String gEstatus = descargarGraficaBase64("{type:'doughnut',data:{labels:['OK','Action','Pend.'],datasets:[{data:["+okCount+","+actionCount+","+pendingCount+"],backgroundColor:['#10b981','#ef4444','#cbd5e1'],borderWidth:0}]},options:{cutoutPercentage:70,plugins:{datalabels:{display:false}}}}");
         
-       // PROGRESO POR ETAPA (Horizontal Bar) - Muestra el número en blanco, pero oculta los "0" para no manchar el diseño
-        String gEtapas = descargarGraficaBase64("{type:'horizontalBar',data:{labels:['STAGE 1','STAGE 2','STAGE 3','STAGE 4','STAGE 5'],datasets:[{label:'% Completed',data:"+progresoEtapas.values().toString()+",backgroundColor:['#3b82f6','#0ea5e9','#10b981','#f59e0b','#8b5cf6']}]},options:{legend:{display:false},scales:{xAxes:[{ticks:{min:0,max:100}}]},plugins:{datalabels:{color:'white',font:{weight:'bold',size:14},display:function(context){return context.dataset.data[context.dataIndex]>0;}}}}}");
+        // PROGRESO POR ETAPA (Horizontal Bar)
+        String labelsEtapas = "['STAGE 1','STAGE 2','STAGE 3','STAGE 4','STAGE 5']";
+        String dataEtapas = progresoEtapas.values().toString();
+        String gEtapas = descargarGraficaBase64("{type:'horizontalBar',data:{labels:"+labelsEtapas+",datasets:[{label:'% Completed',data:"+dataEtapas+",backgroundColor:['#3b82f6','#0ea5e9','#10b981','#f59e0b','#8b5cf6']}]},options:{legend:{display:false},scales:{xAxes:[{ticks:{min:0,max:100}}]}}}");
         
-        // HEALTH TASK (Doughnut) - Los datalabels internos siguen apagados, pero el conteo se agrega dinámicamente al texto de la leyenda
-        String gHealth = descargarGraficaBase64("{type:'doughnut',data:{labels:['ON TIME ("+onTimeCount+")','LATE ("+lateCount+")','ACTION ("+needsActionCount+")','DECISION ("+decisionCount+")','TBD ("+unassignedCount+")'],datasets:[{data:["+onTimeCount+","+lateCount+","+needsActionCount+","+decisionCount+","+unassignedCount+"],backgroundColor:['#10b981','#ef4444','#f59e0b','#3b82f6','#cbd5e1'],borderWidth:0}]},options:{cutoutPercentage:70,plugins:{datalabels:{display:false},legend:{position:'right',labels:{boxWidth:12,fontSize:11,fontStyle:'bold'}}}}}");
-        //RISK METER (Gauge) - Arreglado a medio círculo exacto usando Math.PI en radianes
+        // HEALTH TASK (Doughnut)
+        String gHealth = descargarGraficaBase64("{type:'doughnut',data:{labels:['ON TIME','LATE','ACTION','DECISION','TBD'],datasets:[{data:["+onTimeCount+","+lateCount+","+needsActionCount+","+decisionCount+","+unassignedCount+"],backgroundColor:['#10b981','#ef4444','#f59e0b','#3b82f6','#cbd5e1'],borderWidth:0}]},options:{cutoutPercentage:70,plugins:{legend:{position:'right',labels:{boxWidth:12,fontSize:10}}}}}");
+
+        // RISK METER (Doughnut as Gauge)
         String riskColor = roundedRisk >= 50 ? "#ef4444" : (roundedRisk >= 20 ? "#f59e0b" : "#10b981");
-        String gRisk = descargarGraficaBase64("{type:'doughnut',data:{datasets:[{data:["+roundedRisk+","+(100-roundedRisk)+"],backgroundColor:['"+riskColor+"','#e2e8f0'],borderWidth:0}]},options:{circumference:Math.PI,rotation:Math.PI,cutoutPercentage:75,plugins:{datalabels:{display:false},doughnutlabel:{labels:[{text:'"+roundedRisk+"%',font:{size:30,weight:'bold'},color:'"+riskColor+"'},{text:'RISK LEVEL',font:{size:12,color:'#64748b'}}]}}}}");
+        // Using a simpler gauge-like doughnut without Math.PI or complex plugins
+        String gRisk = descargarGraficaBase64("{type:'doughnut',data:{datasets:[{data:["+roundedRisk+","+(100-roundedRisk)+"],backgroundColor:['"+riskColor+"','#e2e8f0'],borderWidth:0}]},options:{circumference:180,rotation:180,cutoutPercentage:80,plugins:{datalabels:{display:false}}}}");
         
         Map<String, Object> variables = new HashMap<>();
         variables.put("proyecto", proyecto);

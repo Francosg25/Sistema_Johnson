@@ -6,7 +6,7 @@
     <style>
         @page {
             size: A4;
-            margin: 12mm;
+            margin: 10mm;
             @bottom-right {
                 content: "Page " counter(page) " of " counter(pages);
                 font-size: 8pt;
@@ -15,211 +15,177 @@
         }
         body {
             font-family: 'Helvetica', 'Arial', sans-serif;
-            font-size: 10pt;
+            font-size: 9pt;
             color: #2b3035;
-            line-height: 1.3;
+            line-height: 1.2;
             margin: 0;
             padding: 0;
         }
         .header {
             text-align: center;
-            border-bottom: 3px solid #f5821f;
-            margin-bottom: 15px;
-            padding-bottom: 8px;
+            border-bottom: 2px solid #f5821f;
+            margin-bottom: 10px;
+            padding-bottom: 5px;
         }
         .header h1 {
             color: #2b3035;
             margin: 0;
-            font-size: 18pt;
-            font-weight: 900;
-            text-transform: uppercase;
-        }
-        .header p {
-            margin: 3px 0 0;
-            color: #666;
-            font-size: 9pt;
+            font-size: 16pt;
             font-weight: bold;
+            text-transform: uppercase;
         }
         
         /* --- KPIs --- */
-        .kpi-row {
+        .kpi-table {
             width: 100%;
-            margin-bottom: 15px;
+            margin-bottom: 10px;
             border-collapse: collapse;
         }
         .kpi-box {
             width: 25%;
             text-align: center;
-            border: 1px solid #f0f0f0;
-            padding: 8px 0;
+            border: 1px solid #eee;
+            padding: 5px 0;
         }
         .kpi-value {
-            font-size: 14pt;
-            font-weight: 900;
+            font-size: 13pt;
+            font-weight: bold;
             display: block;
         }
         .kpi-label {
             font-size: 7pt;
             color: #888;
             text-transform: uppercase;
-            font-weight: bold;
         }
 
         .section-title {
-            background-color: #2b3035;
+            background-color: #343a40;
             color: white;
-            padding: 5px 10px;
+            padding: 4px 8px;
             font-weight: bold;
-            margin-top: 15px;
-            margin-bottom: 10px;
-            border-radius: 4px;
-            font-size: 10pt;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-        
-        .info-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-bottom: 15px;
-        }
-        .info-table td {
-            padding: 6px;
-            border: 1px solid #eee;
+            margin-top: 10px;
+            margin-bottom: 8px;
             font-size: 9pt;
-        }
-        .label {
-            font-weight: bold;
-            background-color: #f8f9fa;
-            width: 18%;
-        }
-        .value {
-            width: 32%;
-            font-weight: 600;
+            text-transform: uppercase;
         }
 
         /* --- Executive Roadmap --- */
-        .roadmap-container {
+        .roadmap-wrapper {
             width: 100%;
-            height: 80px;
+            height: 70px;
             position: relative;
-            margin: 20px 0 35px 0;
-            border-bottom: 2px solid #ddd;
+            margin: 15px 0 25px 0;
+            border-bottom: 1.5px solid #ccc;
         }
-        .month-labels {
+        .month-table {
             width: 100%;
             border-collapse: collapse;
             position: absolute;
-            bottom: -20px;
+            bottom: -18px;
         }
-        .month-labels td {
+        .month-table td {
             width: 8.33%;
             text-align: center;
-            font-size: 7pt;
-            color: #999;
+            font-size: 6.5pt;
+            color: #777;
             font-weight: bold;
-            text-transform: uppercase;
-        }
-        .roadmap-line {
-            position: absolute;
-            bottom: 0;
-            height: 2px;
-            background-color: #f5821f;
-            width: 100%;
         }
         .roadmap-hito {
             position: absolute;
             text-align: center;
-            width: 60px;
-            margin-left: -30px;
+            width: 50px;
+            margin-left: -25px;
         }
         .hito-icon {
-            font-size: 14pt;
+            font-size: 12pt;
             display: block;
-            margin-bottom: 2px;
         }
         .hito-name {
-            font-size: 6pt;
+            font-size: 5.5pt;
             font-weight: bold;
-            white-space: nowrap;
             display: block;
-            background: rgba(255,255,255,0.8);
         }
         .hito-date {
-            font-size: 5.5pt;
-            color: #666;
-            white-space: nowrap;
+            font-size: 5pt;
+            color: #555;
             display: block;
         }
 
-        /* --- Grid layout --- */
-        .dashboard-grid {
+        /* --- Dashboard Grid using Tables (Reliable for IText) --- */
+        .dashboard-table {
             width: 100%;
             border-collapse: collapse;
-            margin-bottom: 15px;
         }
-        .dashboard-grid td {
+        .dashboard-table td {
             width: 50%;
-            padding: 5px;
+            padding: 4px;
             vertical-align: top;
         }
-        .chart-card {
+        .chart-container {
             border: 1px solid #f0f0f0;
-            border-radius: 8px;
-            padding: 8px;
+            padding: 5px;
+            text-align: center;
+            position: relative;
+            min-height: 140px;
+        }
+        .chart-title {
+            font-size: 7.5pt;
+            font-weight: bold;
+            color: #444;
+            margin-bottom: 4px;
+            text-transform: uppercase;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        .chart-img {
+            width: 100%;
+            max-width: 220px;
+        }
+        .chart-overlay {
+            position: absolute;
+            top: 60%;
+            left: 50%;
+            width: 60px;
+            margin-left: -30px;
             text-align: center;
         }
-        .chart-card h6 {
-            margin: 0 0 8px 0;
-            font-size: 8pt;
-            color: #555;
-            text-transform: uppercase;
-            border-bottom: 1px solid #f8f9fa;
-            padding-bottom: 3px;
+        .overlay-val {
+            font-size: 14pt;
+            font-weight: bold;
+            display: block;
         }
-        .chart-card img {
-            width: 100%;
-            max-width: 250px;
+        .overlay-lbl {
+            font-size: 6pt;
+            color: #777;
+            display: block;
         }
 
         /* --- Detailed Table --- */
-        .checklist-table {
+        .data-table {
             width: 100%;
             border-collapse: collapse;
-            margin-top: 10px;
+            margin-top: 5px;
         }
-        .checklist-table th {
-            background-color: #f8f9fa;
+        .data-table th {
+            background-color: #f1f3f5;
             text-align: left;
-            padding: 8px;
-            border-bottom: 2px solid #dee2e6;
-            font-size: 8pt;
-            text-transform: uppercase;
+            padding: 5px;
+            border-bottom: 1.5px solid #adb5bd;
+            font-size: 7.5pt;
         }
-        .checklist-table td {
-            padding: 6px 8px;
+        .data-table td {
+            padding: 4px 5px;
             border-bottom: 1px solid #eee;
-            font-size: 8pt;
+            font-size: 7.5pt;
         }
-        .badge {
-            padding: 2px 5px;
-            border-radius: 3px;
-            font-size: 7pt;
-            font-weight: bold;
-            text-transform: uppercase;
-        }
-        .bg-success { background-color: #d1e7dd; color: #0f5132; }
-        .bg-danger { background-color: #f8d7da; color: #842029; }
-        .bg-warning { background-color: #fff3cd; color: #664d03; }
-        .bg-info { background-color: #cff4fc; color: #055160; }
-        .bg-secondary { background-color: #e2e3e5; color: #41464b; }
+        .badge-ok { color: #0f5132; font-weight: bold; }
+        .badge-na { color: #6c757d; font-style: italic; }
 
         .footer {
-            margin-top: 30px;
+            margin-top: 20px;
             border-top: 1px solid #eee;
-            padding-top: 8px;
-            font-size: 7pt;
-            color: #999;
+            padding-top: 5px;
+            font-size: 6.5pt;
+            color: #aaa;
             text-align: center;
         }
     </style>
@@ -227,111 +193,117 @@
 <body>
     <div class="header">
         <h1>Executive APQP Report</h1>
-        <p th:text="${proyecto.nombre} + ' - Part No: ' + ${proyecto.numeroParte}"></p>
-        <div style="font-size: 7.5pt; color: #999;" th:text="'Generated: ' + ${#dates.format(#dates.createNow(), 'MMM dd, yyyy HH:mm')}"></div>
+        <div style="font-weight: bold; font-size: 11pt;" th:text="${proyecto.nombre} + ' (PN: ' + ${proyecto.numeroParte} + ')'"></div>
+        <div style="font-size: 7pt; color: #888;" th:text="'Report generated on: ' + ${#dates.format(#dates.createNow(), 'MMMM dd, yyyy HH:mm')}"></div>
     </div>
 
-    <table class="kpi-row">
+    <table class="kpi-table">
         <tr>
             <td class="kpi-box">
-                <span class="kpi-value" th:text="${progreso} + '%'" style="color: #3b82f6;"></span>
-                <span class="kpi-label">Progress</span>
+                <span class="kpi-value" th:text="${progreso} + '%'" style="color: #0d6efd;"></span>
+                <span class="kpi-label">Progreso</span>
             </td>
             <td class="kpi-box">
-                <span class="kpi-value" th:text="${tareasOk}" style="color: #10b981;"></span>
-                <span class="kpi-label">Completed</span>
+                <span class="kpi-value" th:text="${tareasOk}" style="color: #198754;"></span>
+                <span class="kpi-label">Completados</span>
             </td>
             <td class="kpi-box">
-                <span class="kpi-value" th:text="${tareasLate}" style="color: #ef4444;"></span>
-                <span class="kpi-label">Late</span>
+                <span class="kpi-value" th:text="${tareasLate}" style="color: #dc3545;"></span>
+                <span class="kpi-label">Atrasados</span>
             </td>
             <td class="kpi-box">
                 <span class="kpi-value" th:text="${riesgoScore} + '%'" 
-                      th:style="'color: ' + (${riesgoScore} >= 50 ? '#ef4444' : (${riesgoScore} >= 20 ? '#f59e0b' : '#10b981'))"></span>
-                <span class="kpi-label">Risk Level</span>
+                      th:style="'color: ' + (${riesgoScore} >= 50 ? '#dc3545' : (${riesgoScore} >= 20 ? '#fd7e14' : '#198754'))"></span>
+                <span class="kpi-label">Nivel de Riesgo</span>
             </td>
         </tr>
     </table>
 
-    <div class="section-title">Master Executive Roadmap 2026</div>
-    <div class="roadmap-container">
-        <div class="roadmap-line"></div>
-        <table class="month-labels">
+    <div class="section-title">Executive Roadmap 2026</div>
+    <div class="roadmap-wrapper">
+        <table class="month-table">
             <tr>
                 <td>Jan</td><td>Feb</td><td>Mar</td><td>Apr</td><td>May</td><td>Jun</td>
                 <td>Jul</td><td>Aug</td><td>Sep</td><td>Oct</td><td>Nov</td><td>Dec</td>
             </tr>
         </table>
-        
-        <!-- Icons placed dynamically -->
         <div th:each="hito, iter : ${roadmapHitos}" class="roadmap-hito" 
-             th:style="'left: ' + ${hito.posicion} + '%; top: ' + (${iter.index % 2 == 0 ? '0px' : '25px'})">
+             th:style="'left: ' + ${hito.posicion} + '%; top: ' + (${iter.index % 2 == 0 ? '2px' : '28px'})">
             <span class="hito-icon" th:text="${hito.icono}"></span>
             <span class="hito-name" th:text="${hito.nombre}"></span>
             <span class="hito-date" th:text="${#temporals.format(hito.fecha, 'dd/MM')}"></span>
         </div>
     </div>
 
-    <div class="section-title">Executive Dashboard</div>
-    <table class="dashboard-grid">
+    <div class="section-title">Dashboards</div>
+    <table class="dashboard-table">
         <tr>
             <td>
-                <div class="chart-card">
-                    <h6>Task Health Distribution</h6>
-                    <img th:src="${gHealth}" alt="Health Chart" />
+                <div class="chart-container">
+                    <div class="chart-title">Health Task Distribution</div>
+                    <img th:src="${gHealth}" class="chart-img" />
                 </div>
             </td>
             <td>
-                <div class="chart-card">
-                    <h6>Risk Assessment Meter</h6>
-                    <img th:src="${gRisk}" alt="Risk Chart" />
+                <div class="chart-container">
+                    <div class="chart-title">Risk Level Meter</div>
+                    <img th:src="${gRisk}" class="chart-img" />
+                    <div class="chart-overlay">
+                        <span class="overlay-val" th:text="${riesgoScore} + '%'" 
+                              th:style="'color: ' + (${riesgoScore} >= 50 ? '#dc3545' : (${riesgoScore} >= 20 ? '#fd7e14' : '#198754'))"></span>
+                        <span class="overlay-lbl">RISK</span>
+                    </div>
                 </div>
             </td>
         </tr>
         <tr>
             <td>
-                <div class="chart-card">
-                    <h6>APQP Program Status</h6>
-                    <img th:src="${gEstatus}" alt="Status Chart" />
+                <div class="chart-container">
+                    <div class="chart-title">General APQP Status</div>
+                    <img th:src="${gEstatus}" class="chart-img" />
+                    <div class="chart-overlay" style="top: 55%;">
+                        <span class="overlay-val" th:text="${progreso} + '%'" style="color: #0d6efd;"></span>
+                        <span class="overlay-lbl">COMPLETION</span>
+                    </div>
                 </div>
             </td>
             <td>
-                <div class="chart-card">
-                    <h6>Completion per Stage</h6>
-                    <img th:src="${gEtapas}" alt="Stage Chart" />
+                <div class="chart-container">
+                    <div class="chart-title">Completion per Stage</div>
+                    <img th:src="${gEtapas}" class="chart-img" />
                 </div>
             </td>
         </tr>
     </table>
 
-    <div class="section-title">Detailed Checklist Status</div>
-    <table class="checklist-table">
+    <div class="section-title">APQP Program Deliverables</div>
+    <table class="data-table">
         <thead>
             <tr>
-                <th style="width: 45%">Deliverable</th>
-                <th style="width: 15%">Stage</th>
-                <th style="width: 15%">Responsible</th>
-                <th style="width: 15%">Due Date</th>
-                <th style="width: 10%">Score</th>
+                <th style="width: 50%">Entregable</th>
+                <th style="width: 15%">Etapa</th>
+                <th style="width: 15%">Responsable</th>
+                <th style="width: 12%">Fecha</th>
+                <th style="width: 8%">Status</th>
             </tr>
         </thead>
         <tbody>
             <tr th:each="e : ${entregables}">
-                <td th:text="${e.nombre}" style="font-weight: 600;"></td>
+                <td th:text="${e.nombre}" style="font-weight: bold;"></td>
                 <td th:text="${e.etapaVisual != null ? e.etapaVisual : e.fase}"></td>
                 <td th:text="${e.champion}"></td>
-                <td th:text="${e.fechaPlan != null ? #temporals.format(e.fechaPlan, 'MMM dd') : '-'}"></td>
-                <td>
-                    <span th:if="${e.score == 'OK'}" class="badge bg-success">OK</span>
-                    <span th:if="${e.score == 'N/A'}" class="badge bg-secondary">N/A</span>
-                    <span th:if="${e.score == null or e.score == ''}" class="text-muted" style="padding-left: 10px;">-</span>
+                <td th:text="${e.fechaPlan != null ? #temporals.format(e.fechaPlan, 'dd/MM/yy') : '-'}"></td>
+                <td style="text-align: center;">
+                    <span th:if="${e.score == 'OK'}" class="badge-ok">OK</span>
+                    <span th:if="${e.score == 'N/A'}" class="badge-na">N/A</span>
+                    <span th:if="${e.score == null or e.score == '' or e.score == 'PENDING'}">-</span>
                 </td>
             </tr>
         </tbody>
     </table>
 
     <div class="footer">
-        <p>Official Document - Johnson Electric APQP Management System &copy; 2026</p>
+        Johnson Electric &copy; 2026 - Confidential APQP Management Report
     </div>
 </body>
 </html>

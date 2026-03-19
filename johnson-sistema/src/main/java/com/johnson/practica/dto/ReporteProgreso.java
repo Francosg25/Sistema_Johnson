@@ -14,6 +14,10 @@ public class ReporteProgreso {
     private String fechaCar;
     private String fechaBuyoff;
     private String fechaTransit;
+    private int onTimeCount;
+    private int lateCount;
+    private int needsActionCount;
+    private int decisionCount;
 
     public ReporteProgreso(Long id, String nombreProyecto, String cliente, String numeroParte, String liderProyecto, String sop, int totalEntregables, int completados, double porcentaje) {
         this.id = id;
@@ -65,4 +69,16 @@ public class ReporteProgreso {
 
     public Double getRiesgo() { return riesgo; }
     public void setRiesgo(Double riesgo) { this.riesgo = riesgo; }
+
+    public int getOnTimeCount() { return onTimeCount; }
+    public void setOnTimeCount(int onTimeCount) { this.onTimeCount = onTimeCount; }
+
+    public int getLateCount() { return lateCount; }
+    public void setLateCount(int lateCount) { this.lateCount = lateCount; }
+
+    public int getNeedsActionCount() { return needsActionCount; }
+    public void setNeedsActionCount(int needsActionCount) { this.needsActionCount = needsActionCount; }
+
+    public int getDecisionCount() { return decisionCount; }
+    public void setDecisionCount(int decisionCount) { this.decisionCount = decisionCount; }
 }

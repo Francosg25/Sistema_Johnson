@@ -315,6 +315,23 @@ public class ChecklistServicio {
             reporteProgreso.setFechaBuyoff(p.getFechaBuyoff() != null ? p.getFechaBuyoff().toString() : null);
             reporteProgreso.setFechaTransit(p.getFechaTransit() != null ? p.getFechaTransit().toString() : null);
 
+            // Health task counts for individual project
+            int pOnTime = 0, pLate = 0, pNeedsAction = 0, pDecision = 0;
+            for (ElementoChecklist item : todosLosItemsDelProyecto) {
+                String control = item.getControlEntregable();
+                if (control != null) {
+                    String c = control.toUpperCase();
+                    if (c.contains("ON TIME")) pOnTime++;
+                    else if (c.contains("LATE")) pLate++;
+                    else if (c.contains("NEEDS ACTION")) pNeedsAction++;
+                    else if (c.contains("DECISION")) pDecision++;
+                }
+            }
+            reporteProgreso.setOnTimeCount(pOnTime);
+            reporteProgreso.setLateCount(pLate);
+            reporteProgreso.setNeedsActionCount(pNeedsAction);
+            reporteProgreso.setDecisionCount(pDecision);
+
             double riesgo = calcularRiesgoDinamico(p, todosLosItemsDelProyecto);
             reporteProgreso.setRiesgo(riesgo);
 

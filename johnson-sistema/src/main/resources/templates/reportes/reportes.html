@@ -238,11 +238,14 @@
                     
                     <div class="col-md-6">
                         <div class="card glass-card">
-                            <div class="card-header premium-header">
+                            <div class="card-header premium-header d-flex justify-content-between align-items-center">
                                 <h6 class="m-0 premium-title">
                                     <i class="bi bi-pie-chart-fill premium-icon" style="background: rgba(16, 185, 129, 0.1); color: #10b981;"></i>
                                     Health Task
                                 </h6>
+                                <select id="selectHealthProyecto" class="form-select form-select-sm border-0 bg-light fw-bold text-secondary shadow-none" style="width: auto; max-width: 600px; cursor: pointer;">
+                                    <option value="GLOBAL">Global</option>
+                                </select>
                             </div>
                             <div class="card-body chart-container d-flex align-items-center justify-content-center" style="height: 350px;">
                                 <canvas id="chartVolumen" style="max-height: 280px;"></canvas>
@@ -487,8 +490,10 @@
             });
         }
    
-        //3. GRAFICA DONA 
+        //3. GRAFICA DONA (HEALTH TASK)
         const ctx3 = document.getElementById('chartVolumen');
+        const selectHealth = document.getElementById('selectHealthProyecto');
+
         if (ctx3 && datosEstadoGlobal) {
             chartVolumenInstance = new Chart(ctx3, {
                 type: 'doughnut',
@@ -496,14 +501,83 @@
                     labels: ['ON TIME', 'LATE', 'NEEDS ACTION', 'DECISION'],
                     datasets: [{
                         data: [datosEstadoGlobal.onTimePercentage, datosEstadoGlobal.latePercentage, datosEstadoGlobal.needsActionPercentage, datosEstadoGlobal.decisionPercentage],
+                        rawCounts: [datosEstadoGlobal.onTimeCount, datosEstadoGlobal.delayedCount, datosEstadoGlobal.escalationCount, datosEstadoGlobal.decisionCount || 0],
                         backgroundColor: paletteStatus, borderWidth: 0, borderRadius: 4, spacing: 2, hoverOffset: 8
                     }]
                 },
                 options: { 
                     responsive: true, maintainAspectRatio: false, cutout: '75%', 
-                    plugins: { legend: { position: 'bottom', labels: { boxWidth: 12, padding: 15, usePointStyle: true, font: {size: 12} } } } 
+                    plugins: { 
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    const label = context.label || '';
+                                    const dataset = context.dataset;
+                                    const count = dataset.rawCounts[context.dataIndex];
+                                    const percentage = dataset.data[context.dataIndex];
+                                    return label + ': ' + count + ' deliverables (' + percentage + '%)';
+                                }
+                            }
+                        },
+                        legend: { 
+                            position: 'bottom', 
+                            labels: { 
+                                boxWidth: 12, 
+                                padding: 15, 
+                                usePointStyle: true, 
+                                font: {size: 12},
+                                callback: function(label, chartData) {
+                                    const dataset = chartData.datasets[0];
+                                    const index = chartData.labels.indexOf(label);
+                                    const value = dataset.data[index];
+                                    return label + " (" + value + "%)";
+                                }
+                            } 
+                        } 
+                    } 
                 }
             });
+
+            if (selectHealth) {
+                selectHealth.innerHTML = '<option value="GLOBAL">Global</option>';
+
+                reportes.forEach((repo, index) => {
+                    let opt = document.createElement('option');
+                    opt.value = index; 
+                    let n = repo.nombreProyecto;
+                    opt.textContent = n.length > 25 ? n.substring(0, 25) + '...' : n; 
+                    selectHealth.appendChild(opt);
+                });
+
+                selectHealth.addEventListener('change', function() {
+                    const val = this.value;
+                    let newData = [];
+                    let newRaw = [];
+
+                    if (val === 'GLOBAL') {
+                        newData = [datosEstadoGlobal.onTimePercentage, datosEstadoGlobal.latePercentage, datosEstadoGlobal.needsActionPercentage, datosEstadoGlobal.decisionPercentage];
+                        newRaw = [datosEstadoGlobal.onTimeCount, datosEstadoGlobal.delayedCount, datosEstadoGlobal.escalationCount, datosEstadoGlobal.decisionCount || 0];
+                    } else {
+                        const repo = reportes[val];
+                        const total = repo.onTimeCount + repo.lateCount + repo.needsActionCount + repo.decisionCount;
+                        newRaw = [repo.onTimeCount, repo.lateCount, repo.needsActionCount, repo.decisionCount];
+                        if (total > 0) {
+                            newData = [
+                                Math.round((repo.onTimeCount / total) * 100),
+                                Math.round((repo.lateCount / total) * 100),
+                                Math.round((repo.needsActionCount / total) * 100),
+                                Math.round((repo.decisionCount / total) * 100)
+                            ];
+                        } else {
+                            newData = [0, 0, 0, 0];
+                        }
+                    }
+
+                    chartVolumenInstance.data.datasets[0].data = newData;
+                    chartVolumenInstance.data.datasets[0].rawCounts = newRaw;
+                    chartVolumenInstance.update();
+                });
+            }
         }
 
         //4. MEDIDOR DE RIESGO INDIVIDUAL
