@@ -70,7 +70,7 @@
 
     <script>
         let stompClient = null;
-        let ultimaNotifIdServidor = 0;
+        let maxIdEnPantalla = 0;
 
         function conectarWebSocket() {
             const socket = new SockJS('/ws-johnson');
@@ -87,11 +87,6 @@
                 setTimeout(conectarWebSocket, 5000);
             });
         }
-
-        document.addEventListener('DOMContentLoaded', () => {
-            conectarWebSocket();
-            fetchNotificaciones();
-        });
 
         function animarCampana() {
             const iconoCampana = document.querySelector('#notifDropdown i.bi-bell');
@@ -115,13 +110,15 @@
             const list = document.getElementById('notifList');
             const bell = document.querySelector('#notifDropdown i.bi-bell');
             
-            // Obtenemos el ID de la última notificación que el usuario "vio" al abrir el panel
+            // Leemos el último ID que el usuario "vio"
             const lastSeenId = parseInt(localStorage.getItem('lastSeenNotifId') || '0');
-
-            // Contamos cuántas de las no leídas son REALMENTE nuevas (posteriores al panel abierto)
+            
             let nuevasContadas = 0;
-            if (data.ultimas) {
+            if (data.ultimas && data.ultimas.length > 0) {
+                // Solo contamos como "nuevas" las que tengan ID superior al visto
                 nuevasContadas = data.ultimas.filter(n => n.id > lastSeenId).length;
+                // Guardamos el ID más alto disponible actualmente en la lista
+                maxIdEnPantalla = Math.max(...data.ultimas.map(n => n.id));
             }
 
             if (nuevasContadas > 0) {
@@ -168,19 +165,14 @@
         }
 
         function registrarNotificacionesVistas() {
-            // Obtenemos el resumen actual para saber cuál es el ID más alto a marcar como visto
-            fetch('/api/notificaciones/resumen')
-                .then(r => r.json())
-                .then(data => {
-                    if (data.ultimas && data.ultimas.length > 0) {
-                        const maxId = Math.max(...data.ultimas.map(n => n.id));
-                        localStorage.setItem('lastSeenNotifId', maxId.toString());
-                    }
-                    // Ocultamos el badge inmediatamente para dar feedback visual
-                    document.getElementById('notifBadge').classList.add('d-none');
-                    const bell = document.querySelector('#notifDropdown i.bi-bell');
-                    if (bell) bell.classList.remove('notif-active');
-                });
+            // Al abrir la campana, marcamos el maxIdEnPantalla como "visto" en el navegador
+            if (maxIdEnPantalla > 0) {
+                localStorage.setItem('lastSeenNotifId', maxIdEnPantalla.toString());
+            }
+            // Ocultamos el badge visualmente
+            document.getElementById('notifBadge').classList.add('d-none');
+            const bell = document.querySelector('#notifDropdown i.bi-bell');
+            if (bell) bell.classList.remove('notif-active');
         }
 
         function getIcon(tipo) {
@@ -225,14 +217,13 @@
         function marcarTodasComoLeidas() {
             fetch('/api/notificaciones/marcar-todas-leidas', { method: 'POST' })
                 .then(() => {
-                    localStorage.removeItem('lastSeenNotifId');
                     fetchNotificaciones();
                 });
         }
 
         document.addEventListener('DOMContentLoaded', () => {
+            conectarWebSocket();
             fetchNotificaciones();
-            conectarWebSocket();   
         });
         
     </script>
