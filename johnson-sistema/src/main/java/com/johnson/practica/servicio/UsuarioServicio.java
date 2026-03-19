@@ -42,6 +42,53 @@ public class UsuarioServicio {
         return usuarioRepositorio.save(usuario);
     }
 
+    // --- NUEVO MÉTODO MAESTRO DINÁMICO ---
+    @Transactional
+    public void crearUsuarioConRol(String username, String correo, String nombreCompleto, String nombreRol) throws Exception {
+        // 1. Evitamos duplicados críticos
+        if (buscarPorUsername(username).isPresent()) {
+            throw new Exception("The username '" + username + "' is already in use.");
+        }
+
+        String tempPass = generarPasswordAleatoria();
+        
+        // 2. Creamos la entidad
+        Usuario usuario = new Usuario();
+        usuario.setUsername(username);
+        usuario.setCorreo(correo);
+        usuario.setNombreCompleto(nombreCompleto);
+        usuario.setPassword(passwordEncoder.encode(tempPass));
+        
+        // Obligamos al usuario a cambiar la clave en su primer inicio de sesión
+        usuario.setPasswordChanged(false); 
+        usuario.setEnabled(true);
+
+        // 3. Asignamos el Rol dinámicamente
+        Rol rolSeleccionado = rolRepositorio.findByNombre(nombreRol)
+                .orElseThrow(() -> new Exception("Error: El rol " + nombreRol + " no existe en la base de datos."));
+
+        Set<Rol> roles = new HashSet<>();
+        roles.add(rolSeleccionado);
+        usuario.setRoles(roles);
+
+        // 4. Guardamos en Base de Datos
+        usuarioRepositorio.save(usuario);
+        
+        // 5. Enviamos el correo dinámico
+        String nombreRolLimpio = nombreRol.replace("ROLE_", ""); // Limpiamos el texto para el email (ej. "CHAMPION" o "VIEWER")
+        String mensaje = String.format(
+            "Hello %s,\n\nYou have been registered as a %s in the Johnson System.\n" +
+            "Your access credentials are:\n\n" +
+            "Username: %s\n" +
+            "Temporary Password: %s\n\n" +
+            "For security reasons, the system will ask you to change your password upon your first login.",
+            nombreCompleto, nombreRolLimpio, username, tempPass
+        );
+        
+        emailServicio.enviarAlertaUrgente(correo, "Welcome to the APQP System", mensaje);
+    }
+
+    // (Mantenemos el original por compatibilidad por si lo usas en otro lado, si no, puedes borrarlo)
     @Transactional
     public Usuario crearChampion(String username, String correo, String nombreCompleto) {
         String tempPass = generarPasswordAleatoria();

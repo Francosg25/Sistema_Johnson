@@ -24,20 +24,21 @@ public class AdminControlador {
     @GetMapping("/usuarios")
     public String gestionarUsuarios(org.springframework.ui.Model model, HttpServletRequest request) {
         model.addAttribute("currentUri", request.getRequestURI());
-        
         return "admin/usuarios"; 
     }
 
-    @PostMapping("/usuarios/crear-champion")
-    public String crearChampion(@RequestParam String username, 
-                                @RequestParam String correo, 
-                                @RequestParam String nombre,
-                                RedirectAttributes redirectAttributes) {
+    // NUEVO: Ruta genérica que recibe el parámetro "rol"
+    @PostMapping("/usuarios/crear-usuario")
+    public String crearUsuario(@RequestParam String username, 
+                               @RequestParam String correo, 
+                               @RequestParam String nombre,
+                               @RequestParam String rol, // <-- Recibimos el rol seleccionado
+                               RedirectAttributes redirectAttributes) {
         try {
-            usuarioServicio.crearChampion(username, correo, nombre);
-            redirectAttributes.addFlashAttribute("mensaje", "Champion created successfully. An email has been sent.");
+            usuarioServicio.crearUsuarioConRol(username, correo, nombre, rol);
+            redirectAttributes.addFlashAttribute("mensaje", "User created successfully. An email has been sent.");
         } catch (Exception e) {
-            redirectAttributes.addFlashAttribute("error", "Error creating champion: " + e.getMessage());
+            redirectAttributes.addFlashAttribute("error", "Error creating user: " + e.getMessage());
         }
         return "redirect:/admin/usuarios";
     }

@@ -7,6 +7,7 @@ import com.johnson.practica.servicio.UsuarioServicio;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,6 +24,9 @@ public class CargadorDatos implements CommandLineRunner {
     private final UsuarioServicio usuarioServicio;
     private final RolRepositorio rolRepositorio;
 
+    @Value("${app.admin.default-password}")
+    private String defaultAdminPassword;
+
     public CargadorDatos(UsuarioServicio usuarioServicio, RolRepositorio rolRepositorio) {
         this.usuarioServicio = usuarioServicio;
         this.rolRepositorio = rolRepositorio;
@@ -36,13 +40,15 @@ public class CargadorDatos implements CommandLineRunner {
 
         Optional<Usuario> adminOpt = usuarioServicio.buscarPorUsername("admin");
         if (adminOpt.isEmpty()) {
-            logger.info("Creando usuario 'admin'...");
+            logger.info("Creando usuario 'admin' de sistema...");
             Usuario admin = new Usuario();
             admin.setUsername("admin");
-            admin.setPassword("adminpass"); 
-            admin.setCorreo("admin@example.com");
+            
+            admin.setPassword(defaultAdminPassword); 
+            admin.setCorreo("admin@johnsonelectric.com");
             admin.setEnabled(true);
-            admin.setPasswordChanged(true);
+            
+            admin.setPasswordChanged(false);
 
             Set<Rol> roles = new HashSet<>();
             roles.add(rolRepositorio.findByNombre("ROLE_ADMIN").get());
@@ -51,13 +57,9 @@ public class CargadorDatos implements CommandLineRunner {
             admin.setRoles(roles);
 
             usuarioServicio.guardarUsuario(admin);
-            logger.info("Usuario 'admin' creado y guardado.");
+            logger.info("Usuario 'admin' creado exitosamente.");
         } else {
-            logger.info("Forzando re-encriptación de contraseña del admin...");
-            Usuario admin = adminOpt.get();
-            admin.setPassword("adminpass");
-            admin.setPasswordChanged(true);
-            usuarioServicio.guardarUsuario(admin);
+            logger.info("Usuario 'admin' ya existe. Respetando su contraseña actual.");
         }
 
         Optional<Usuario> visitanteOpt = usuarioServicio.buscarPorUsername("visitante");
@@ -66,22 +68,19 @@ public class CargadorDatos implements CommandLineRunner {
             Usuario visitante = new Usuario();
             visitante.setUsername("visitante");
             visitante.setPassword("visitantepass"); 
-            visitante.setCorreo("visitante@example.com");
+            visitante.setCorreo("visitante@johnsonelectric.com");
             visitante.setEnabled(true);
-            visitante.setPasswordChanged(true);
+            
+            visitante.setPasswordChanged(false);
 
             Set<Rol> rolesVis = new HashSet<>();
             rolesVis.add(rolRepositorio.findByNombre("ROLE_VIEWER").get());
             visitante.setRoles(rolesVis);
 
             usuarioServicio.guardarUsuario(visitante);
-            logger.info("Usuario 'visitante' creado y guardado.");
+            logger.info("Usuario 'visitante' creado exitosamente.");
         } else {
-            logger.info("Forzando re-encriptación de contraseña del visitante...");
-            Usuario visitante = visitanteOpt.get();
-            visitante.setPassword("visitantepass");
-            visitante.setPasswordChanged(true);
-            usuarioServicio.guardarUsuario(visitante);
+            logger.info("Usuario 'visitante' ya existe. Respetando su contraseña actual.");
         }
     }
 }

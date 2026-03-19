@@ -109,22 +109,19 @@ public class ReporteServicio {
         }
         agregarHito(roadmapHitos, "SOP", "🏁", proyecto.getFechaSop(), yearActual);
 
-        // --- GENERACIÓN DE GRÁFICAS (QUICKCHART.IO) ---
         
-        // A. ESTATUS GLOBAL (Donut)
-        String gEstatus = descargarGraficaBase64("{type:'doughnut',data:{labels:['OK','Action','Pend.'],datasets:[{data:["+okCount+","+actionCount+","+pendingCount+"],backgroundColor:['#10b981','#ef4444','#cbd5e1'],borderWidth:0}]},options:{cutoutPercentage:60,plugins:{doughnutlabel:{labels:[{text:'"+Math.round(progreso)+"%',font:{size:20}},{text:'Progress'}]}}}}");
+        //ESTATUS GLOBAL
+        String gEstatus = descargarGraficaBase64("{type:'doughnut',data:{labels:['OK','Action','Pend.'],datasets:[{data:["+okCount+","+actionCount+","+pendingCount+"],backgroundColor:['#10b981','#ef4444','#cbd5e1'],borderWidth:0}]},options:{cutoutPercentage:70,plugins:{datalabels:{display:false},doughnutlabel:{labels:[{text:'"+Math.round(progreso)+"%',font:{size:24,weight:'bold'}},{text:'Progress'}]}}}}");
         
-        // B. PROGRESO POR ETAPA (Horizontal Bar)
-        String gEtapas = descargarGraficaBase64("{type:'horizontalBar',data:{labels:['STAGE 1','STAGE 2','STAGE 3','STAGE 4','STAGE 5'],datasets:[{label:'% Completed',data:"+progresoEtapas.values().toString()+",backgroundColor:['#3b82f6','#0ea5e9','#10b981','#f59e0b','#8b5cf6']}]},options:{scales:{xAxes:[{ticks:{min:0,max:100}}]}}}");
+       // PROGRESO POR ETAPA (Horizontal Bar) - Muestra el número en blanco, pero oculta los "0" para no manchar el diseño
+        String gEtapas = descargarGraficaBase64("{type:'horizontalBar',data:{labels:['STAGE 1','STAGE 2','STAGE 3','STAGE 4','STAGE 5'],datasets:[{label:'% Completed',data:"+progresoEtapas.values().toString()+",backgroundColor:['#3b82f6','#0ea5e9','#10b981','#f59e0b','#8b5cf6']}]},options:{legend:{display:false},scales:{xAxes:[{ticks:{min:0,max:100}}]},plugins:{datalabels:{color:'white',font:{weight:'bold',size:14},display:function(context){return context.dataset.data[context.dataIndex]>0;}}}}}");
         
-        // C. HEALTH TASK (Doughnut)
-        String gHealth = descargarGraficaBase64("{type:'doughnut',data:{labels:['ON TIME','LATE','ACTION','DECISION','TBD'],datasets:[{data:["+onTimeCount+","+lateCount+","+needsActionCount+","+decisionCount+","+unassignedCount+"],backgroundColor:['#10b981','#ef4444','#f59e0b','#3b82f6','#cbd5e1'],borderWidth:0}]},options:{plugins:{legend:{position:'bottom'}},cutoutPercentage:60}}");
-
-        // D. RISK METER (Gauge)
+        // HEALTH TASK (Doughnut) - Los datalabels internos siguen apagados, pero el conteo se agrega dinámicamente al texto de la leyenda
+        String gHealth = descargarGraficaBase64("{type:'doughnut',data:{labels:['ON TIME ("+onTimeCount+")','LATE ("+lateCount+")','ACTION ("+needsActionCount+")','DECISION ("+decisionCount+")','TBD ("+unassignedCount+")'],datasets:[{data:["+onTimeCount+","+lateCount+","+needsActionCount+","+decisionCount+","+unassignedCount+"],backgroundColor:['#10b981','#ef4444','#f59e0b','#3b82f6','#cbd5e1'],borderWidth:0}]},options:{cutoutPercentage:70,plugins:{datalabels:{display:false},legend:{position:'right',labels:{boxWidth:12,fontSize:11,fontStyle:'bold'}}}}}");
+        //RISK METER (Gauge) - Arreglado a medio círculo exacto usando Math.PI en radianes
         String riskColor = roundedRisk >= 50 ? "#ef4444" : (roundedRisk >= 20 ? "#f59e0b" : "#10b981");
-        // Reducimos cutoutPercentage a 60 para que la franja de color sea más gruesa y "llene" más el radio
-        String gRisk = descargarGraficaBase64("{type:'doughnut',data:{datasets:[{data:["+roundedRisk+","+(100-roundedRisk)+"],backgroundColor:['"+riskColor+"','#e2e8f0'],borderWidth:0}]},options:{circumference:180,rotation:270,cutoutPercentage:60,plugins:{doughnutlabel:{labels:[{text:'"+roundedRisk+"%',font:{size:25},color:'"+riskColor+"'},{text:'RISK LEVEL',font:{size:10}}]}}}}");
-
+        String gRisk = descargarGraficaBase64("{type:'doughnut',data:{datasets:[{data:["+roundedRisk+","+(100-roundedRisk)+"],backgroundColor:['"+riskColor+"','#e2e8f0'],borderWidth:0}]},options:{circumference:Math.PI,rotation:Math.PI,cutoutPercentage:75,plugins:{datalabels:{display:false},doughnutlabel:{labels:[{text:'"+roundedRisk+"%',font:{size:30,weight:'bold'},color:'"+riskColor+"'},{text:'RISK LEVEL',font:{size:12,color:'#64748b'}}]}}}}");
+        
         Map<String, Object> variables = new HashMap<>();
         variables.put("proyecto", proyecto);
         variables.put("entregables", entregablesPrograma);

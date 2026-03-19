@@ -30,7 +30,7 @@
                         <div class="card border-0 shadow-sm rounded-4" style="background: rgba(255, 255, 255, 0.8); backdrop-filter: blur(10px);">
                             <div class="card-header bg-white border-bottom py-3">
                                 <h6 class="mb-0 fw-bold text-dark text-uppercase">
-                                    <i class="bi bi-person-plus-fill text-primary me-2"></i> Register New Champion
+                                    <i class="bi bi-person-plus-fill text-primary me-2"></i> Register New User
                                 </h6>
                             </div>
                             <div class="card-body p-4">
@@ -41,7 +41,7 @@
                                     <i class="bi bi-exclamation-triangle-fill me-2"></i> <span th:text="${error}"></span>
                                 </div>
 
-                                <form th:action="@{/admin/usuarios/crear-champion}" method="post">
+                                <form th:action="@{/admin/usuarios/crear-usuario}" method="post">
                                     <div class="row g-3">
                                         <div class="col-md-6">
                                             <label class="form-label fw-bold small text-dark mb-1">Full Name</label>
@@ -51,13 +51,20 @@
                                             <label class="form-label fw-bold small text-dark mb-1">Username (Login)</label>
                                             <input type="text" name="username" class="form-control" placeholder="Ex. jperez" required>
                                         </div>
-                                        <div class="col-md-12">
-                                            <label class="form-label fw-bold small text-dark mb-1">Email Address (For password sending)</label>
+                                        <div class="col-md-6">
+                                            <label class="form-label fw-bold small text-dark mb-1">Email Address</label>
                                             <input type="email" name="correo" class="form-control" placeholder="juan.perez@johnsonelectric.com" required>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label class="form-label fw-bold small text-dark mb-1">Account Role</label>
+                                            <select name="rol" class="form-select fw-bold text-secondary" required>
+                                                <option value="ROLE_CHAMPION">Champion (Edit Permissions)</option>
+                                                <option value="ROLE_VIEWER">Visitor / Viewer (Read-Only)</option>
+                                            </select>
                                         </div>
                                         <div class="col-12 mt-4 text-end">
                                             <button type="submit" class="btn btn-primary px-4 fw-bold shadow-sm" style="background: linear-gradient(135deg, #F5821F 0%, #e0600d 100%); border: none;">
-                                                <i></i> Create Account and Send Invitation
+                                                <i class="bi bi-person-plus-fill me-2"></i> Create Account and Send Invitation
                                             </button>
                                         </div>
                                     </div>
