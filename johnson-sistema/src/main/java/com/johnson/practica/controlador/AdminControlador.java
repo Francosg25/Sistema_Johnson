@@ -24,6 +24,7 @@ public class AdminControlador {
     @GetMapping("/usuarios")
     public String gestionarUsuarios(org.springframework.ui.Model model, HttpServletRequest request) {
         model.addAttribute("currentUri", request.getRequestURI());
+        model.addAttribute("usuarios", usuarioServicio.listarTodos());
         return "admin/usuarios"; 
     }
 
@@ -39,6 +40,17 @@ public class AdminControlador {
             redirectAttributes.addFlashAttribute("mensaje", "User created successfully. An email has been sent.");
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("error", "Error creating user: " + e.getMessage());
+        }
+        return "redirect:/admin/usuarios";
+    }
+
+    @PostMapping("/usuarios/eliminar")
+    public String eliminarUsuario(@RequestParam Long id, RedirectAttributes redirectAttributes) {
+        try {
+            usuarioServicio.eliminarUsuario(id);
+            redirectAttributes.addFlashAttribute("mensaje", "User deleted successfully.");
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("error", "Error deleting user: " + e.getMessage());
         }
         return "redirect:/admin/usuarios";
     }

@@ -22,6 +22,11 @@
                         <h4 class="fw-bold text-dark m-0"><i class="bi bi-people-fill text-primary me-2"></i>User Management</h4>
                         <p class="text-muted small fw-medium mb-0 mt-1">APQP Accounts Administration Panel</p>
                     </div>
+                    <div>
+                        <button type="button" class="btn btn-dark shadow-sm fw-bold px-3" data-bs-toggle="modal" data-bs-target="#modalListaUsuarios">
+                            <i class="bi bi-person-lines-fill me-2"></i> View All Users
+                        </button>
+                    </div>
                 </div>
 
                 <div class="row justify-content-center">
@@ -61,6 +66,7 @@
                                             <select name="rol" id="rolSelect" class="form-select fw-bold text-secondary" required>
                                                 <option value="ROLE_CHAMPION">Champion (Edit)</option>
                                                 <option value="ROLE_VIEWER">Visitor (Read-Only)</option>
+                                                <option value="ROLE_ADMIN">Administrator (Full Access)</option>
                                             </select>
                                         </div>
                                         
@@ -93,9 +99,9 @@
                             <div class="card-body p-4">
                                 <h6 class="fw-bold text-dark mb-3"><i class="bi bi-shield-lock-fill text-warning me-2"></i>Security Information</h6>
                                 <ul class="mb-0 text-muted small" style="line-height: 1.8;">
-                                    <li>Created accounts will have the <strong>ROLE_CHAMPION</strong> role by default.</li>
-                                    <li>The system requires the user to <strong>change their temporary password</strong> on the first login.</li>
                                     <li>Passwords are stored encrypted with the industry-standard <strong>BCrypt</strong>.</li>
+                                    <li>The system requires the user to <strong>change their temporary password</strong> on the first login.</li>
+                                    <li>Administrators can create other administrators, champions, or visitors.</li>
                                 </ul>
                             </div>
                         </div>
@@ -106,9 +112,109 @@
         </div>
     </div>
 
+    <!-- MODAL LISTA DE USUARIOS -->
+    <div class="modal fade" id="modalListaUsuarios" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-xl modal-dialog-centered">
+            <div class="modal-content border-0 shadow-lg rounded-4">
+                <div class="modal-header bg-light py-3">
+                    <h5 class="modal-title fw-bold text-dark"><i class="bi bi-person-lines-fill text-primary me-2"></i> Registered Users</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body p-0">
+                    <div class="table-responsive" style="max-height: 60vh; overflow-y: auto;">
+                        <table class="table table-hover align-middle mb-0">
+                            <thead class="bg-light sticky-top" style="z-index: 1;">
+                                <tr class="small text-uppercase fw-bold text-muted">
+                                    <th class="ps-4">Full Name</th>
+                                    <th>Username</th>
+                                    <th>Department</th>
+                                    <th>Roles</th>
+                                    <th class="pe-4 text-end">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr th:each="user : ${usuarios}">
+                                    <td class="ps-4">
+                                        <div class="d-flex align-items-center">
+                                            <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center fw-bold me-3" style="width: 35px; height: 35px; font-size: 0.8rem;">
+                                                <span th:text="${user.nombreCompleto != null and !#strings.isEmpty(user.nombreCompleto) ? #strings.substring(user.nombreCompleto, 0, 1).toUpperCase() : 'U'}">U</span>
+                                            </div>
+                                            <span class="fw-bold text-dark" th:text="${user.nombreCompleto ?: 'No Name'}">Nombre</span>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <code class="text-primary small fw-bold" th:text="${user.username}">user</code>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-light text-dark border fw-bold" th:text="${user.departamento}">DE</span>
+                                    </td>
+                                    <td>
+                                        <span th:each="rol : ${user.roles}" 
+                                              class="badge rounded-pill fw-bold ms-1" 
+                                              th:classappend="${rol.nombre == 'ROLE_ADMIN' ? 'bg-danger' : (rol.nombre == 'ROLE_CHAMPION' ? 'bg-primary' : 'bg-secondary')}"
+                                              th:text="${#strings.replace(rol.nombre, 'ROLE_', '')}">ROL</span>
+                                    </td>
+                                    <td class="pe-4 text-end">
+                                        <button type="button" class="btn btn-sm btn-outline-danger border-0 rounded-circle" 
+                                                th:disabled="${user.username == #authentication.name}"
+                                                th:onclick="'prepararEliminacion(' + ${user.id} + ', \'' + ${user.nombreCompleto} + '\')'">
+                                            <i class="bi bi-trash-fill"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="modal-footer bg-light py-2">
+                    <button type="button" class="btn btn-secondary btn-sm fw-bold px-3" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL CONFIRMACIÓN ELIMINACIÓN PROFESIONAL -->
+    <div class="modal fade" id="modalConfirmarEliminarUsuario" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-sm">
+            <div class="modal-content border-0 shadow-lg rounded-4">
+                <div class="modal-body text-center p-4">
+                    <div class="mb-3">
+                        <i class="bi bi-exclamation-circle text-danger" style="font-size: 3.5rem; opacity: 0.8;"></i>
+                    </div>
+                    <h5 class="fw-bold text-dark mb-2">Delete User?</h5>
+                    <p class="text-muted small mb-4">You are about to delete <strong id="nombreUsuarioAEliminar" class="text-dark"></strong>. This action cannot be undone.</p>
+                    
+                    <form id="formEliminarUsuario" th:action="@{/admin/usuarios/eliminar}" method="post">
+                        <input type="hidden" name="id" id="idUsuarioAEliminar">
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-danger fw-bold shadow-sm">
+                                <i class="bi bi-trash3-fill me-2"></i> Delete Permanently
+                            </button>
+                            <button type="button" class="btn btn-light fw-bold border shadow-sm" data-bs-dismiss="modal">
+                                Cancel
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
     <script>
+        let modalConfirmarEliminar = null;
+
+        function prepararEliminacion(id, nombre) {
+            document.getElementById('idUsuarioAEliminar').value = id;
+            document.getElementById('nombreUsuarioAEliminar').innerText = nombre || "this user";
+            
+            if (!modalConfirmarEliminar) {
+                modalConfirmarEliminar = new bootstrap.Modal(document.getElementById('modalConfirmarEliminarUsuario'));
+            }
+            modalConfirmarEliminar.show();
+        }
+
         document.addEventListener('DOMContentLoaded', function() {
             const rolSelect = document.getElementById('rolSelect');
             const deptoSelect = document.getElementById('deptoSelect');
@@ -116,11 +222,16 @@
 
             if(rolSelect && deptoSelect) {
                 rolSelect.addEventListener('change', function() {
-                    if (this.value === 'ROLE_VIEWER') {
+                    if (this.value === 'ROLE_VIEWER' || this.value === 'ROLE_ADMIN') {
                         deptoSelect.value = 'ALL';
-                        deptoSelect.disabled = true;
-                        deptoSelect.style.backgroundColor = '#e9ecef'; 
-                        deptoSelect.style.cursor = 'not-allowed';
+                        deptoSelect.disabled = (this.value === 'ROLE_VIEWER');
+                        if (this.value === 'ROLE_VIEWER') {
+                            deptoSelect.style.backgroundColor = '#e9ecef'; 
+                            deptoSelect.style.cursor = 'not-allowed';
+                        } else {
+                            deptoSelect.style.backgroundColor = '';
+                            deptoSelect.style.cursor = 'pointer';
+                        }
                     } else {
                         deptoSelect.disabled = false;
                         deptoSelect.style.backgroundColor = '';
@@ -138,8 +249,6 @@
             }
         });
     </script>
-
-
 
 </body>
 </html>

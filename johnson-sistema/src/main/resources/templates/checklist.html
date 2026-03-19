@@ -828,11 +828,11 @@
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content shadow-lg border-0" style="border-radius: 24px;">
                 <form th:action="@{/proyectos/archivar/{id}(id=${proyecto.id})}" method="post">
-                    <div class="modal-header bg-dark text-white py-4" style="border-radius: 24px 24px 0 0;">
-                        <h5 class="modal-title fw-bold px-2">
+                    <div class="modal-header bg-light py-4" style="border-radius: 24px 24px 0 0; border-bottom: 1px solid rgba(0,0,0,0.05);">
+                        <h5 class="modal-title fw-bold px-2 text-dark">
                             <i class="bi bi-check-circle-fill me-2 text-success"></i>Finalize & Archive Project
                         </h5>
-                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                     </div>
                     <div class="modal-body p-5 text-center">
                         <div class="mb-4">

@@ -35,6 +35,25 @@ public class UsuarioServicio {
     }
 
     @Transactional
+    public void eliminarUsuario(Long id) throws Exception {
+        Usuario usuario = usuarioRepositorio.findById(id)
+                .orElseThrow(() -> new Exception("User not found"));
+        
+        // Evitar que el admin se borre a sí mismo o que nos quedemos sin admins
+        boolean esAdmin = usuario.getRoles().stream().anyMatch(r -> r.getNombre().equals("ROLE_ADMIN"));
+        if (esAdmin) {
+            long countAdmins = usuarioRepositorio.findAll().stream()
+                    .filter(u -> u.getRoles().stream().anyMatch(r -> r.getNombre().equals("ROLE_ADMIN")))
+                    .count();
+            if (countAdmins <= 1) {
+                throw new Exception("Cannot delete the last administrator in the system.");
+            }
+        }
+        
+        usuarioRepositorio.delete(usuario);
+    }
+
+    @Transactional
     public Usuario guardarUsuario(Usuario usuario) {
         if (!usuario.getPassword().startsWith("$2a$")) { // Solo encriptar si no está ya encriptada
             usuario.setPassword(passwordEncoder.encode(usuario.getPassword()));
