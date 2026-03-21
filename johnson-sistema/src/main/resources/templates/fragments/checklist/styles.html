@@ -1,0 +1,212 @@
+<th:block xmlns:th="http://www.thymeleaf.org" th:fragment="styles">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+    <style>
+        .mention-tag {
+            font-weight: 800;
+            color: #ffffff !important;
+            background: #7a7979 !important;
+            padding: 2px 8px;
+            border-radius: 12px;
+            display: inline-block;
+            box-shadow: 0 2px 4px rgba(111, 66, 193, 0.3);
+            margin: 0 2px;
+        }
+        #editor-textarea {
+            min-height: 200px;
+            max-height: 400px;
+            overflow-y: auto;
+            outline: none;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+        #editor-textarea:empty:before {
+            content: "Write your observations here... ";
+            color: #adb5bd;
+            font-style: italic;
+        }
+        body {
+            font-family: 'Inter', system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background-color: #f4f6f9; 
+            color: #495057; 
+            min-height: 100vh;
+            position: relative;
+            overflow-x: hidden;
+        }
+        .bg-blob {
+            position: fixed;
+            width: 500px;
+            height: 500px;
+            background: linear-gradient(135deg, rgba(245, 130, 31, 0.3) 0%, rgba(245, 130, 31, 0.1) 100%);
+            filter: blur(100px);
+            border-radius: 50%;
+            z-index: -1;
+            pointer-events: none;
+        }
+        .blob-1 { top: -150px; right: -150px; }
+        .blob-2 { bottom: -150px; left: -150px; background: linear-gradient(135deg, rgba(13, 110, 253, 0.25) 0%, rgba(13, 110, 253, 0.08) 100%); }
+        .glass-card {
+            background: rgba(255, 255, 255, 0.9) !important;
+            border: 1px solid rgba(0, 0, 0, 0.08) !important;
+            border-radius: 20px !important;
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.05) !important;
+            overflow: hidden;
+        }
+        h1, h2, h3, h4, h5, h6, .h1, .h2, .h3, .h4, .h5, .h6 {
+            color: #2b3035;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+        }
+        .nav-tabs {
+            border-bottom: 2px solid rgba(0,0,0,0.05) !important;
+            gap: 4px; 
+        }
+        .nav-tabs .nav-link {
+            border: none !important;
+            color: #6c757d;
+            font-weight: 600;
+            padding: 0.8rem 1.5rem;
+            border-radius: 12px 12px 0 0 !important;
+            background-color: #f1f3f5 !important;
+            transition: all 0.2s ease;
+        }
+        .nav-tabs .nav-link:hover {
+            color: #0d6efd;
+            background-color: #e9ecef !important;
+        }
+        .nav-tabs .nav-link.active {
+            color: #0d6efd !important;
+            background-color: #fff !important;
+            border-bottom: 3px solid #0d6efd !important;
+            box-shadow: 0 -4px 10px rgba(0,0,0,0.02) !important;
+        }
+        .table {
+            border-collapse: separate;
+            border-spacing: 0;
+            margin-bottom: 0;
+            background: transparent !important;
+        }
+        .table thead th {
+            border-bottom: 1px solid rgba(0,0,0,0.05) !important;
+            font-weight: 700;
+            color: #6c757d;
+            letter-spacing: 0.03em;
+            background-color: #f8f9fa !important;
+        }
+        .table td, .table th {
+            border-color: rgba(0,0,0,0.03);
+        }
+        .table-hover tbody tr:hover td {
+            background-color: rgba(255, 255, 255, 0.4) !important; 
+        }
+        .table-group-header td {
+            background-color: #f1f3f5 !important;
+            border-top: 1px solid rgba(0,0,0,0.05) !important;
+            border-bottom: 1px solid rgba(0,0,0,0.05) !important;
+            letter-spacing: 0.02em;
+        }
+        .form-control, .form-select {
+            border-radius: 6px;
+            background-color: #fff !important;
+            border: 1px solid #dee2e6 !important;
+            transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out, background-color 0.3s ease;
+        }
+        .form-control:focus, .form-select:focus {
+            background-color: rgba(255, 255, 255, 0.8) !important;
+            border-color: #ec9d6b !important;
+            box-shadow: 0 0 0 3px rgba(13, 110, 253, 0.12);
+        }
+        .border-0:focus {
+            box-shadow: 0 0 0 2px rgba(13, 110, 253, 0.25) inset !important;
+            border-radius: 6px !important;
+            background-color: #fff !important;
+        }
+        .btn {
+            font-weight: 600;
+            border-radius: 8px;
+            transition: all 0.2s ease;
+        }
+        .btn-sm { border-radius: 6px; }
+        .btn-je-primary, .btn-primary {
+            background: linear-gradient(to bottom, #f5831fd6, #f5831fd6) !important;
+            border: none !important;
+            color: white !important;
+            box-shadow: 0 2px 6px rgba(13, 110, 253, 0.3) !important;
+        }
+        .btn-je-primary:hover, .btn-primary:hover {
+            background: linear-gradient(to bottom, #f5831fd6, #f5831fd6) !important;
+            box-shadow: 0 4px 10px rgba(13, 110, 253, 0.4) !important;
+            transform: translateY(-1px);
+        }
+        .btn-group .btn {
+            border-radius: 6px;
+            margin: 0 2px;
+            box-shadow: none !important;
+        }
+        .btn-check:checked + .btn {
+            box-shadow: 0 2px 5px rgba(0,0,0,0.15) !important;
+            transform: scale(1.02);
+            font-weight: 800;
+        }
+        .modal-content {
+            border-radius: 16px;
+            border: none;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+        .modal-header { border-radius: 16px 16px 0 0; }
+        .badge { padding: 0.4em 0.6em; border-radius: 6px; font-weight: 700; letter-spacing: 0.02em; }
+        .champ-qe { background-color: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .champ-de { background-color: #cce5ff; color: #004085; border: 1px solid #b8daff; }
+        .champ-pe { background-color: #fff3cd; color: #856404; border: 1px solid #ffeeba; }
+        .champ-proj { background-color: #e2e3e5; color: #383d41; border: 1px solid #d6d8db; }
+        .champ-scs { background-color: #e6e6fa; color: #6f42c1; border: 1px solid #d6d6f5; }
+        .champ-fin { background-color: #d1ecf1; color: #0c5460; border: 1px solid #bee5eb; }
+        .champ-ops { background-color: #fce4ec; color: #880e4f; border: 1px solid #f8bbd0; }
+        .champ-hr { background-color: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+        .champ-mat { background-color: #fffaf0; color: #8b4513; border: 1px solid #ffebcd; }
+        .champ-cust { background-color: #e0f7fa; color: #006064; border: 1px solid #b2ebf2; }
+        .champ-supp { background-color: #f3e5f5; color: #4a148c; border: 1px solid #e1bee7; }
+        .champ-qe-pe { background-color: #e0f2f1; color: #004d40; border: 1px solid #b2dfdb; }
+        .champ-all { background-color: #f8f9fa; color: #6c757d; border: 1px solid #e9ecef; }
+        .champ-n-a { background-color: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+        .champ-generic { background-color: #ffffff; color: #495057; border: 1px solid #dee2e6; }
+        .status-on-time { color: #198754 !important; font-weight: 800 !important; background-color: rgba(25, 135, 84, 0.06) !important; border: 1.5px solid rgba(25, 135, 84, 0.2) !important; }
+        .status-on-time:focus { background-color: rgba(25, 135, 84, 0.12) !important; box-shadow: 0 0 0 3px rgba(25, 135, 84, 0.15) !important; }
+        .status-late { color: #dc3545 !important; font-weight: 800 !important; background-color: rgba(220, 53, 69, 0.06) !important; border: 1.5px solid rgba(220, 53, 69, 0.2) !important; }
+        .status-late:focus { background-color: rgba(220, 53, 69, 0.12) !important; box-shadow: 0 0 0 3px rgba(220, 53, 69, 0.15) !important; }
+        .status-decision { color: #0dcaf0 !important; font-weight: 800 !important; background-color: rgba(13, 202, 240, 0.06) !important; border: 1.5px solid rgba(13, 202, 240, 0.2) !important; }
+        .status-decision:focus { background-color: rgba(13, 202, 240, 0.12) !important; box-shadow: 0 0 0 3px rgba(13, 202, 240, 0.15) !important; }
+        .status-needs-action { color: #f5821f !important; font-weight: 800 !important; background-color: rgba(245, 130, 31, 0.06) !important; border: 1.5px solid rgba(245, 130, 31, 0.2) !important; }
+        .status-needs-action:focus { background-color: rgba(245, 130, 31, 0.12) !important; box-shadow: 0 0 0 3px rgba(245, 130, 31, 0.15) !important; }
+        .status-default { color: #6c757d !important; font-weight: 600 !important; border: 1.5px solid transparent !important; }
+        .status-default:focus { background-color: #fff !important; }
+        select option {
+            color: #2b3035 !important;
+            background-color: #ffffff !important;
+            font-weight: 500 !important;
+        }
+        .mini-signature-box {
+            border: 2px dashed #cbd5e1;
+            border-radius: 8px;
+            padding: 6px 10px;
+            text-align: center;
+            cursor: pointer;
+            background-color: #f8fafc;
+            transition: all 0.2s;
+            display: inline-block;
+            min-width: 90px;
+        }
+        .mini-signature-box.unsigned:hover {
+            border-color: #3b82f6;
+            background-color: #eff6ff;
+            transform: translateY(-2px);
+        }
+        .mini-signature-box.signed {
+            border: 2px solid #10b981;
+            background-color: #ecfdf5;
+            cursor: default;
+        }
+    </style>
+</th:block>

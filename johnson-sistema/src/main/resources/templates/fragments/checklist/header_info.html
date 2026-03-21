@@ -1,0 +1,54 @@
+<th:block xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security" th:fragment="header_info">
+    <div th:if="${errorFinalizar}" class="alert alert-danger border-0 shadow-sm mb-4 rounded-4 animate__animated animate__fadeIn">
+        <div class="d-flex align-items-center">
+            <i class="bi bi-exclamation-octagon-fill fs-3 me-3"></i>
+            <div>
+                <h6 class="fw-bold mb-1">Cannot Finalize Project</h6>
+                <p class="mb-0 small">The following requirements must be met before archiving:</p>
+                <ul class="mb-0 small mt-2">
+                    <li th:each="err : ${errorFinalizar}" th:text="${err}">Error</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <div class="d-flex justify-content-between align-items-end mb-4">
+        <div>
+            <h6 class="text-uppercase text-muted small fw-bold mb-1">Project</h6>
+            <span class="badge bg-secondary fs-6 shadow-sm" th:text="${proyecto.numeroParte}">NUM</span>
+            <span class="ms-2 fw-bold text-dark fs-5" th:text="${proyecto.nombre}">Nombre</span>
+        </div>
+        <div class="d-flex align-items-center">
+            <div th:if="${proyecto.esHistorico or proyecto.archivado}" class="badge bg-secondary bg-opacity-10 text-secondary border border-secondary border-opacity-25 px-3 py-2 me-3 rounded-pill d-flex align-items-center" style="font-size: 0.75rem;">
+                <i class="bi bi-lock-fill me-2"></i>
+                <span class="fw-bold">READ-ONLY MODE</span>
+            </div>
+            
+            <a href="/" class="btn btn-outline-secondary btn-sm me-3 shadow-sm fw-bold">Back</a>
+            
+            <div sec:authorize="hasRole('ADMIN')" class="me-3">
+                <button type="button" class="btn btn-sm btn-dark fw-bold shadow-sm px-3" data-bs-toggle="modal" data-bs-target="#modalFinalizarProyecto" th:if="${!proyecto.esHistorico and !proyecto.archivado}">
+                    <i class="bi bi-check-circle-fill me-1"></i> FINISH PROJECT
+                </button>
+            </div>
+
+            <div class="btn-group shadow-sm">
+                <button type="submit" id="btnGuardarTodo" form="formChecklist" class="btn btn-je-primary btn-sm px-3 d-flex align-items-center" th:if="${!proyecto.esHistorico and !proyecto.archivado}" sec:authorize="hasAnyRole('ADMIN', 'CHAMPION')" title="Save all changes">
+                    <i class="bi bi-save2-fill me-2"></i> Save
+                </button>
+                <a th:href="@{/reportes/proyecto/ver/{id}(id=${proyecto.id})}" target="_blank"
+                        style="background-color: #0b6ded; border: none; color: white;"
+                        class="btn btn-sm px-3 d-flex align-items-center"
+                        title="View Executive Report Online">
+                        <i class="bi bi-eye-fill"></i>
+                </a>
+                <a th:href="@{/proyectos/exportar-pdf/{id}(id=${proyecto.id})}" target="_blank"
+                    style="background-color: #d84040; border: none; color: white;"
+                    class="btn btn-sm px-3 d-flex align-items-center" 
+                    title="Download PDF Report">
+                    <i class="bi bi-file-earmark-pdf-fill"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+</th:block>

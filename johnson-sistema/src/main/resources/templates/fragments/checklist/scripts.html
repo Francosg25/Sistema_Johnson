@@ -1,0 +1,216 @@
+<th:block xmlns:th="http://www.thymeleaf.org" th:fragment="scripts">
+    <script th:inline="javascript">
+        function abrirEditorComentarios(itemId, itemCodigo) {
+            const realTextarea = document.getElementById('real-comentario-' + itemId);
+            const editorTextarea = document.getElementById('editor-textarea');
+            const currentItemIdInput = document.getElementById('current-item-id');
+            
+            currentItemIdInput.value = itemId;
+            
+            let text = realTextarea.value || "";
+            text = text.replace(/@(\w+)/g, '<span class="mention-tag">@$1</span>');
+            editorTextarea.innerHTML = text;
+            
+            const modal = new bootstrap.Modal(document.getElementById('modalComentarios'));
+            modal.show();
+            
+            setTimeout(() => editorTextarea.focus(), 500);
+        }
+
+        function guardarComentarioEditor() {
+            const itemId = document.getElementById('current-item-id').value;
+            const editorTextarea = document.getElementById('editor-textarea');
+            const realTextarea = document.getElementById('real-comentario-' + itemId);
+            const previewDiv = document.getElementById('preview-comentario-' + itemId);
+            const btnIcon = document.getElementById('btn-icon-comentario-' + itemId);
+            const btn = document.getElementById('btn-comentario-' + itemId);
+
+            let plainText = editorTextarea.innerText;
+            realTextarea.value = plainText;
+            
+            if (plainText.trim() !== "") {
+                previewDiv.innerText = plainText;
+                previewDiv.classList.remove('text-muted', 'fst-italic');
+                previewDiv.classList.add('text-dark', 'fw-bold');
+                btnIcon.className = 'bi bi-chat-text-fill';
+                btn.className = 'btn btn-sm btn-primary border-0 rounded-circle ms-1 shadow-sm flex-shrink-0';
+            } else {
+                previewDiv.innerText = "";
+                previewDiv.classList.add('text-muted', 'fst-italic');
+                btnIcon.className = 'bi bi-pencil';
+                btn.className = 'btn btn-sm btn-light text-secondary border-0 rounded-circle ms-1 shadow-sm flex-shrink-0';
+            }
+            
+            bootstrap.Modal.getInstance(document.getElementById('modalComentarios')).hide();
+        }
+
+        document.getElementById('editor-textarea')?.addEventListener('input', function(e) {
+            let sel = window.getSelection();
+            if (sel.rangeCount > 0) {
+                let range = sel.getRangeAt(0);
+                let textBefore = range.startContainer.textContent.substring(0, range.startOffset);
+                let match = textBefore.match(/@(\w*)$/);
+                if (match) {
+                    console.log("Searching user: " + match[1]);
+                }
+            }
+        });
+
+        const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+        const tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+            return new bootstrap.Tooltip(tooltipTriggerEl);
+        });
+
+        document.querySelectorAll('.update-hito').forEach(input => {
+            input.addEventListener('change', function() {
+                const form = document.getElementById('formHitosProyecto');
+                const formData = new FormData(form);
+                
+                fetch(form.action, {
+                    method: 'POST',
+                    body: new URLSearchParams(formData)
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if(data.exito) {
+                        console.log("Milestones updated");
+                        const toast = document.createElement('div');
+                        toast.className = 'position-fixed bottom-0 end-0 p-3';
+                        toast.style.zIndex = '1100';
+                        toast.innerHTML = `<div class="toast align-items-center text-white bg-success border-0 show" role="alert"><div class="d-flex"><div class="toast-body"><i class="bi bi-check-circle-fill me-2"></i>Milestones saved</div></div></div>`;
+                        document.body.appendChild(toast);
+                        setTimeout(() => toast.remove(), 3000);
+                    }
+                });
+            });
+        });
+
+        document.querySelectorAll('.form-evidencia-ajax').forEach(form => {
+            form.addEventListener('submit', function(e) {
+                e.preventDefault();
+                const itemId = this.querySelector('input[name="itemId"]').value;
+                const alertaDiv = document.getElementById('alerta-subida-' + itemId);
+                const formData = new FormData(this);
+                const btn = this.querySelector('button');
+                const originalText = btn.innerHTML;
+
+                btn.disabled = true;
+                btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Uploading...';
+
+                fetch('/evidencias/subir-ajax', {
+                    method: 'POST',
+                    body: formData
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if(data.exito) {
+                        alertaDiv.innerHTML = '<div class="alert alert-success py-1 px-2 small mt-2">Success!</div>';
+                        const lista = document.getElementById('lista-' + itemId);
+                        const msgVacio = document.getElementById('msg-vacio-' + itemId);
+                        if(msgVacio) msgVacio.remove();
+
+                        const li = document.createElement('li');
+                        li.className = 'list-group-item d-flex justify-content-between align-items-center px-0 bg-transparent border-bottom-dashed py-2';
+                        li.innerHTML = `
+                            <div class="d-flex align-items-center text-truncate pe-3">
+                                <i class="bi bi-file-earmark-check-fill text-success fs-4 me-2"></i>
+                                <span class="text-truncate fw-bold text-dark">${data.nombreArchivo}</span>
+                            </div>
+                            <div class="d-flex gap-2">
+                                <a href="/evidencias/descargar/${data.id}" class="btn btn-sm btn-light border rounded-circle shadow-sm text-primary"><i class="bi bi-download"></i></a>
+                                <button type="button" class="btn btn-sm btn-light border rounded-circle shadow-sm text-danger" onclick="eliminarEvidenciaAjax(${data.id}, this, ${itemId})"><i class="bi bi-trash"></i></button>
+                            </div>
+                        `;
+                        lista.appendChild(li);
+                        
+                        document.getElementById('btn-evidencia-' + itemId).className = 'btn btn-sm btn-primary border shadow-sm rounded-circle';
+                        document.getElementById('btn-icon-evidencia-' + itemId).className = 'bi bi-cloud-arrow-up-fill text-white';
+
+                        this.reset();
+                    } else {
+                        alertaDiv.innerHTML = '<div class="alert alert-danger py-1 px-2 small mt-2">Error: ' + data.mensaje + '</div>';
+                    }
+                    btn.disabled = false;
+                    btn.innerHTML = originalText;
+                    setTimeout(() => alertaDiv.innerHTML = '', 3000);
+                })
+                .catch(err => {
+                    alertaDiv.innerHTML = '<div class="alert alert-danger py-1 px-2 small mt-2">Communication error</div>';
+                    btn.disabled = false; btn.innerHTML = originalText;
+                });
+            });
+        });
+
+        function eliminarEvidenciaAjax(id, btn, itemId) {
+            const modal = new bootstrap.Modal(document.getElementById('modalConfirmarEliminacion'));
+            document.getElementById('btnConfirmarEliminar').onclick = function() {
+                fetch('/evidencias/eliminar-ajax/' + id, { method: 'POST' })
+                .then(r => r.json())
+                .then(data => {
+                    if(data.exito) {
+                        btn.closest('li').remove();
+                        const lista = document.getElementById('lista-' + itemId);
+                        if(lista.children.length === 0) {
+                            lista.innerHTML = `<li id="msg-vacio-${itemId}" class="list-group-item d-flex flex-column align-items-center justify-content-center py-5 bg-transparent border-0 opacity-50"><i class="bi bi-folder2-open fs-1 mb-2"></i><p class="small fw-medium mb-0">No evidence uploaded yet.</p></li>`;
+                            document.getElementById('btn-evidencia-' + itemId).className = 'btn btn-sm btn-light border shadow-sm rounded-circle';
+                            document.getElementById('btn-icon-evidencia-' + itemId).className = 'bi bi-cloud-arrow-up-fill text-primary';
+                        }
+                    }
+                    modal.hide();
+                });
+            };
+            modal.show();
+        }
+
+        let pendingSignature = null;
+        document.querySelectorAll('.btn-firmar-trigger').forEach(box => {
+            box.addEventListener('click', function() {
+                pendingSignature = {
+                    proyectoId: this.dataset.proyecto,
+                    etapa: this.dataset.etapa,
+                    rol: this.dataset.rol,
+                    element: this
+                };
+                document.getElementById('modalRolText').innerText = this.dataset.rol;
+                document.getElementById('modalGateText').innerText = "Gate " + this.dataset.etapa;
+                new bootstrap.Modal(document.getElementById('modalConfirmarFirma')).show();
+            });
+        });
+
+        document.getElementById('btnConfirmarFirmaAjax')?.addEventListener('click', function() {
+            if(!pendingSignature) return;
+            const btn = this;
+            const originalHtml = btn.innerHTML;
+            btn.disabled = true; btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Signing...';
+
+            const params = new URLSearchParams();
+            params.append('etapa', pendingSignature.etapa);
+            params.append('rol', pendingSignature.rol);
+
+            fetch('/proyectos/checklist/firmar-ajax/' + pendingSignature.proyectoId, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: params
+            })
+            .then(r => r.json())
+            .then(data => {
+                if(data.exito) {
+                    const box = pendingSignature.element;
+                    box.classList.remove('unsigned', 'btn-firmar-trigger');
+                    box.classList.add('signed', 'btn-firmado-trigger');
+                    box.querySelector('.text-muted').className = 'small text-success fw-bold';
+                    box.querySelector('.text-muted').innerHTML = '<i class="bi bi-check-all me-1"></i>OK';
+                    
+                    const modalFirma = bootstrap.Modal.getInstance(document.getElementById('modalConfirmarFirma'));
+                    btn.innerHTML = originalHtml; btn.disabled = false;
+                    modalFirma.hide();
+                    
+                    location.reload(); 
+                } else {
+                    alert("Error: " + data.mensaje);
+                    btn.innerHTML = originalHtml; btn.disabled = false;
+                }
+            });
+        });
+    </script>
+</th:block>

@@ -90,6 +90,21 @@ public class ProyectoServicio {
     @Autowired
     private HitoProyectoRepositorio hitoProyectoRepositorio;
 
+    @Autowired
+    private com.johnson.practica.servicio.NotificacionServicio notificacionServicio;
+
+    @Transactional
+    public void archivarProyecto(Long id) {
+        Proyecto proyecto = buscarPorId(id);
+        if (proyecto != null) {
+            proyecto.setEsHistorico(true);
+            proyectoRepositorio.save(proyecto);
+            notificacionServicio.alertarATodos("Project Archived", 
+                "The project " + proyecto.getNombre() + " has been successfully archived.", 
+                "SUCCESS", "/proyectos/vault", "System");
+        }
+    }
+
     @Transactional
     public void eliminarProyecto(Long id) {
         Proyecto p = buscarPorId(id);

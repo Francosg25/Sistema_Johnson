@@ -1,0 +1,89 @@
+<th:block xmlns:th="http://www.thymeleaf.org" th:fragment="styles">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f4f6f9;
+            min-height: 100vh;
+            position: relative;
+            overflow-x: hidden;
+        }
+        .transit-row { position: relative; }
+        .transit-track {
+            position: absolute;
+            height: 2px;
+            background: repeating-linear-gradient(to right, #3b82f6 0, #3b82f6 5px, transparent 5px, transparent 10px);
+            z-index: 1;
+            top: 50%;
+            transform: translateY(-50%);
+            opacity: 0.6;
+        }
+        .ship-moving {
+            position: absolute;
+            z-index: 3;
+            font-size: 1.5rem;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            transition: all 1s ease-in-out;
+            background: transparent;
+            border: none;
+        }
+        .factory-destination {
+            position: absolute;
+            z-index: 2;
+            font-size: 1.5rem;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            background: transparent;
+            border: none;
+        }
+        .bg-blob {
+            position: fixed;
+            width: 400px;
+            height: 400px;
+            background: linear-gradient(135deg, rgba(245, 130, 31, 0.15) 0%, rgba(245, 130, 31, 0.05) 100%);
+            filter: blur(80px);
+            border-radius: 50%;
+            z-index: -1;
+            pointer-events: none;
+        }
+        .blob-1 { top: -100px; right: -100px; }
+        .blob-2 { bottom: -100px; left: -100px; background: linear-gradient(135deg, rgba(13, 110, 253, 0.12) 0%, rgba(13, 110, 253, 0.05) 100%); }
+        .glass-card {
+            background: rgba(255, 255, 255, 0.6) !important;
+            backdrop-filter: blur(12px) !important;
+            -webkit-backdrop-filter: blur(12px) !important;
+            border: 1px solid rgba(255, 255, 255, 0.4) !important;
+            border-radius: 20px !important;
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.07) !important;
+            overflow: hidden;
+            height: 100%;
+        }
+        .premium-header {
+            background: rgba(255, 255, 255, 0.3) !important;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2) !important;
+            padding: 1.25rem 1.5rem;
+        }
+        .premium-title {
+            font-size: 1.05rem;
+            font-weight: 700;
+            color: #2b3035;
+            letter-spacing: -0.01em;
+            display: flex;
+            align-items: center;
+        }
+        .premium-icon {
+            padding: 8px 10px;
+            border-radius: 10px;
+            background: rgba(63, 106, 216, 0.1);
+            color: #3f6ad8;
+            margin-right: 12px;
+            font-size: 1.1rem;
+        }
+        .chart-container { position: relative; padding: 1.5rem; width: 100%; }
+        .waterfall-container { overflow-y: auto; overflow-x: hidden; padding-right: 10px; }
+        .waterfall-container::-webkit-scrollbar { width: 8px; }
+        .waterfall-container::-webkit-scrollbar-track { background: #f1f1f1; border-radius: 10px; }
+        .waterfall-container::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+        .waterfall-container::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+    </style>
+</th:block>

@@ -1,0 +1,46 @@
+<th:block xmlns:th="http://www.thymeleaf.org" th:fragment="executive_roadmap">
+    <div class="row mb-5">
+        <div class="col-12">
+            <div class="card glass-card border-0">
+                <div class="card-header premium-header d-flex justify-content-between align-items-center border-0 bg-transparent">
+                    <h6 class="m-0 premium-title">
+                        <i class="bi bi-calendar3 premium-icon" style="background: rgba(245, 130, 31, 0.1); color: #f5821f;"></i>
+                        Master Executive Roadmap <span id="currentYearBadge" class="badge bg-light text-dark ms-2"></span>
+                    </h6>
+                    <div class="d-flex gap-4 small fw-bold text-muted pe-3">
+                        <span>💰 CAR</span>
+                        <span>🚢 Ship</span>
+                        <span>🏭 Factory</span>
+                        <span>👥 Buy-off</span>
+                    </div>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-borderless align-middle mb-0" style="min-width: 1400px; table-layout: fixed;">
+                            <thead class="text-center" style="background: rgba(248, 249, 250, 0.3);">
+                                <tr>
+                                    <th style="width: 280px; text-align: left;" class="ps-4 py-4 fw-900 text-uppercase small text-muted">Project</th>
+                                    <th class="py-4 small text-uppercase fw-900 text-muted">Jan</th>
+                                    <th class="py-4 small text-uppercase fw-900 text-muted">Feb</th>
+                                    <th class="py-4 small text-uppercase fw-900 text-muted">Mar</th>
+                                    <th class="py-4 small text-uppercase fw-900 text-muted">Apr</th>
+                                    <th class="py-4 small text-uppercase fw-900 text-muted">May</th>
+                                    <th class="py-4 small text-uppercase fw-900 text-muted">Jun</th>
+                                    <th class="py-4 small text-uppercase fw-900 text-muted">Jul</th>
+                                    <th class="py-4 small text-uppercase fw-900 text-muted">Aug</th>
+                                    <th class="py-4 small text-uppercase fw-900 text-muted">Sep</th>
+                                    <th class="py-4 small text-uppercase fw-900 text-muted">Oct</th>
+                                    <th class="py-4 small text-uppercase fw-900 text-muted">Nov</th>
+                                    <th class="py-4 small text-uppercase fw-900 text-muted">Dec</th>
+                                </tr>
+                            </thead>
+                            <tbody id="masterTimelineBody">
+                                <!-- Filas generadas dinámicamente -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</th:block>

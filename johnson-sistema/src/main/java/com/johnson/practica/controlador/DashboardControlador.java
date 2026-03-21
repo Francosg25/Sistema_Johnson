@@ -1,27 +1,26 @@
 package com.johnson.practica.controlador;
 
+import com.johnson.practica.dto.ReporteEstadoGlobal;
+import com.johnson.practica.dto.ReporteProgreso;
+import com.johnson.practica.modelo.ElementoChecklist;
+import com.johnson.practica.modelo.Notificacion;
+import com.johnson.practica.modelo.Proyecto;
+import com.johnson.practica.modelo.Usuario;
+import com.johnson.practica.repositorio.ProyectoRepositorio;
+import com.johnson.practica.repositorio.UsuarioRepositorio;
+import com.johnson.practica.servicio.*;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 
-import com.johnson.practica.repositorio.ProyectoRepositorio;
-import com.johnson.practica.servicio.ChecklistServicio;
-import com.johnson.practica.servicio.NotificacionServicio; 
-import com.johnson.practica.repositorio.UsuarioRepositorio; 
-import com.johnson.practica.dto.ReporteProgreso;
-import com.johnson.practica.dto.ReporteEstadoGlobal;
-import com.johnson.practica.modelo.Notificacion; 
-import com.johnson.practica.modelo.Usuario; 
-
-import com.johnson.practica.modelo.ElementoChecklist; 
-import com.johnson.practica.modelo.Proyecto; 
-import java.security.Principal; 
+import java.security.Principal;
 import java.util.ArrayList;
-import java.util.HashMap; 
+import java.util.HashMap;
 import java.util.List;
-import java.util.Map; 
-import java.util.stream.Collectors; 
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Controller
 public class DashboardControlador {
@@ -33,29 +32,32 @@ public class DashboardControlador {
     private ChecklistServicio checklistServicio;
 
     @Autowired
+    private ChecklistReporteServicio checklistReporteServicio;
+
+    @Autowired
+    private ChecklistLogicServicio checklistLogicServicio;
+
+    @Autowired
     private NotificacionServicio notificacionServicio;
 
     @Autowired
     private UsuarioRepositorio usuarioRepositorio; 
 
     @Autowired
-    private com.johnson.practica.servicio.BitacoraServicio bitacoraServicio;
+    private BitacoraServicio bitacoraServicio;
 
     @GetMapping("/")
-    public String index(Model model, jakarta.servlet.http.HttpServletRequest request, Principal principal) {
+    public String index(Model model, HttpServletRequest request, Principal principal) {
         
-        // OBTENEMOS SOLO LOS PROYECTOS ACTIVOS (Oculta los del Vault)
         List<Proyecto> proyectos = proyectoRepositorio.findByEsHistoricoFalse();
         
-        // Filtramos el reporte global para que solo evalúe proyectos activos
-        List<ReporteProgreso> reporteGlobal = checklistServicio.generarReporteGlobal().stream()
+        List<ReporteProgreso> reporteGlobal = checklistReporteServicio.generarReporteGlobal().stream()
             .filter(r -> {
                 Proyecto p = proyectoRepositorio.findById(r.getId()).orElse(null);
-                // Usamos isEsHistorico() o getEsHistorico() dependiendo de cómo lo generó Lombok
                 return p != null && !p.getEsHistorico(); 
             }).toList();
             
-        ReporteEstadoGlobal estadoGlobal = checklistServicio.generarReporteEstadoGlobal();
+        ReporteEstadoGlobal estadoGlobal = checklistReporteServicio.generarReporteEstadoGlobal();
         
         double avancePromedio = 0;
         if (!reporteGlobal.isEmpty()) {
@@ -77,14 +79,13 @@ public class DashboardControlador {
         model.addAttribute("alertas", checklistServicio.obtenerAlertasGlobales().stream()
             .filter(a -> proyectos.stream().anyMatch(p -> a.getNombre().contains(p.getNombre())))
             .toList());
-        model.addAttribute("tendencia", checklistServicio.obtenerDatosTendencia());
-        model.addAttribute("proximosLanzamientos", checklistServicio.obtenerLanzamientosProximos());
+        model.addAttribute("tendencia", checklistReporteServicio.obtenerDatosTendencia());
+        model.addAttribute("proximosLanzamientos", checklistReporteServicio.obtenerLanzamientosProximos());
         model.addAttribute("avancePromedio", avancePromedio);
         
         model.addAttribute("notificaciones", notificaciones); 
         model.addAttribute("ultimosMovimientos", bitacoraServicio.obtenerUltimosMovimientos().stream().limit(5).toList());
         
-        // Filtramos las tareas pendientes para que no salgan las de proyectos archivados
         List<ElementoChecklist> todasPendientes = checklistServicio.obtenerTodasTareasPendientes().stream()
             .filter(t -> !t.getProyecto().getEsHistorico())
             .toList();
@@ -94,7 +95,7 @@ public class DashboardControlador {
         
         Map<String, Long> conteoPorChampion = todasPendientes.stream()
             .filter(t -> t.getChampion() != null)
-            .collect(Collectors.groupingBy(t -> checklistServicio.normalizarChampion(t.getChampion()), Collectors.counting()));
+            .collect(Collectors.groupingBy(t -> checklistLogicServicio.normalizarChampion(t.getChampion()), Collectors.counting()));
         model.addAttribute("conteoPorChampion", conteoPorChampion);
 
         List<Map<String, Object>> eventosCalendario = new ArrayList<>();

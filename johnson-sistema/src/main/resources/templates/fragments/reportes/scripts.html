@@ -1,0 +1,242 @@
+<th:block xmlns:th="http://www.thymeleaf.org" th:fragment="scripts">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script th:inline="javascript">
+        /*<![CDATA[*/
+        var reportes = /*[[${datosGrafica}]]*/ [];
+        var datosEstadoGlobal = /*[[${datosEstadoGlobal}]]*/ null;
+        var datosCascada = /*[[${datosCascada}]]*/ []; 
+
+        var nombres = reportes.map(r => r.nombreProyecto);
+        var porcentajes = reportes.map(r => r.porcentaje);
+
+        let chartProgresoInstance = null;
+        let chartCascadaInstance = null;
+        let chartVolumenInstance = null;
+        let chartRiesgoInstance = null;
+      
+        Chart.defaults.font.family = "'Inter', sans-serif";
+        Chart.defaults.font.size = 13; 
+        Chart.defaults.color = '#64748b'; 
+        
+        Chart.defaults.plugins.tooltip.backgroundColor = 'rgba(15, 23, 42, 0.95)';
+        Chart.defaults.plugins.tooltip.titleFont = { size: 14, weight: 'bold' };
+        Chart.defaults.plugins.tooltip.bodyFont = { size: 13 };
+        Chart.defaults.plugins.tooltip.padding = 12;
+        Chart.defaults.plugins.tooltip.cornerRadius = 8;
+        Chart.defaults.plugins.tooltip.usePointStyle = true;
+
+        const paletteWaterfall = ['#3b82f6', '#0ea5e9', '#10b981', '#f59e0b', '#8b5cf6'];
+        const paletteStatus = ['#10b981', '#ef4444', '#f59e0b', '#3b82f6']; 
+
+        // 1. GRAFICA DE BARRAS 
+        const ctx1 = document.getElementById('chartProgreso');
+        if(ctx1 && nombres.length > 0) {
+            const context1 = ctx1.getContext('2d');
+            let gradientBlue = context1.createLinearGradient(0, 0, 0, 400);
+            gradientBlue.addColorStop(0, 'rgba(59, 130, 246, 1)');   
+            gradientBlue.addColorStop(1, 'rgba(59, 130, 246, 0.1)'); 
+
+            chartProgresoInstance = new Chart(context1, {
+                type: 'bar',
+                data: {
+                    labels: nombres,
+                    datasets: [{
+                        label: 'Avance %',
+                        data: porcentajes,
+                        backgroundColor: gradientBlue,
+                        borderColor: '#3b82f6',
+                        borderWidth: 1,
+                        borderRadius: { topLeft: 6, topRight: 6 },
+                        barPercentage: 0.6, 
+                        categoryPercentage: 0.8
+                    }]
+                },
+                options: {
+                    responsive: true, 
+                    maintainAspectRatio: false,
+                    plugins: { 
+                        legend: { display: false },
+                        tooltip: {
+                            callbacks: {
+                                title: function(context) {
+                                    return nombres[context[0].dataIndex];
+                                }
+                            }
+                        }
+                    },
+                    scales: { 
+                        y: { beginAtZero: true, max: 100, border: { display: false }, ticks: { callback: v => v + '%' } },
+                        x: { 
+                            grid: { display: false }, 
+                            border: { display: false },
+                            ticks: {
+                                maxRotation: 0, 
+                                minRotation: 0,
+                                font: { size: 13 },
+                                callback: function(value, index, values) {
+                                    let label = nombres[index] || '';
+                                    return label.length > 40 ? label.substring(0, 25) + '..' : label;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        // 2. GRAFICA CASCADA 
+        const ctxCascada = document.getElementById('chartCascada');
+        if (ctxCascada && datosCascada.length > 0) {
+            const alturaMinimaPorBarra = 120; 
+            const alturaCalculada = Math.max(datosCascada.length * alturaMinimaPorBarra, 350);
+            document.getElementById('cascadaInnerContainer').style.height = alturaCalculada + 'px';
+
+            const projectNamesCascada = datosCascada.map(d => {
+                let n = d.nombreProyecto;
+                return n.length > 25 ? n.substring(0, 25) + '...' : n;
+            });
+            const sopsCascada = datosCascada.map(d => d.sop); 
+            const s1Data = [], s2Data = [], s3Data = [], s4Data = [], s5Data = [], totalData = [];
+
+            datosCascada.forEach(d => {
+                const capped = d.porcentajesPorFase.map(pct => Math.min(pct, 100));
+                let p1 = Math.min((capped[0] || 0) / 5, 20); let p2 = Math.min((capped[1] || 0) / 5, 20);
+                let p3 = Math.min((capped[2] || 0) / 5, 20); let p4 = Math.min((capped[3] || 0) / 5, 20);
+                let p5 = Math.min((capped[4] || 0) / 5, 20);
+                let end1 = p1; let end2 = end1 + p2; let end3 = end2 + p3; let end4 = end3 + p4; let end5 = end4 + p5;
+
+                s1Data.push(p1 > 0 ? [0, end1] : null); s2Data.push(p2 > 0 ? [end1, end2] : null);
+                s3Data.push(p3 > 0 ? [end2, end3] : null); s4Data.push(p4 > 0 ? [end3, end4] : null);
+                s5Data.push(p5 > 0 ? [end4, end5] : null); totalData.push([0, end5]); 
+            });
+
+            chartCascadaInstance = new Chart(ctxCascada, {
+                type: 'bar',
+                data: {
+                    labels: projectNamesCascada,
+                    datasets: [
+                        { label: 'STAGE 1', data: s1Data, backgroundColor: paletteWaterfall[0], borderRadius: 4, barPercentage: 0.8, realPct: datosCascada.map(d => d.porcentajesPorFase[0]) }, 
+                        { label: 'STAGE 2', data: s2Data, backgroundColor: paletteWaterfall[1], borderRadius: 4, barPercentage: 0.8, realPct: datosCascada.map(d => d.porcentajesPorFase[1]) },
+                        { label: 'STAGE 3', data: s3Data, backgroundColor: paletteWaterfall[2], borderRadius: 4, barPercentage: 0.8, realPct: datosCascada.map(d => d.porcentajesPorFase[2]) },
+                        { label: 'STAGE 4', data: s4Data, backgroundColor: paletteWaterfall[3], borderRadius: 4, barPercentage: 0.8, realPct: datosCascada.map(d => d.porcentajesPorFase[3]) },
+                        { label: 'STAGE 5', data: s5Data, backgroundColor: paletteWaterfall[4], borderRadius: 4, barPercentage: 0.8, realPct: datosCascada.map(d => d.porcentajesPorFase[4]) },
+                        { label: 'TOTAL',   data: totalData, backgroundColor: '#cbd5e1', borderRadius: 4, barPercentage: 0.8, realPct: reportes.map(r => r.porcentaje) }
+                    ]
+                },
+                plugins: [{
+                    id: 'sopLabels',
+                    afterDatasetsDraw(chart) {
+                        const { ctx, data } = chart;
+                        const totalDatasetIndex = data.datasets.findIndex(ds => ds.label === 'TOTAL');
+                        if (totalDatasetIndex === -1) return;
+                        const meta = chart.getDatasetMeta(totalDatasetIndex);
+                        ctx.save(); ctx.textBaseline = 'middle';
+                        meta.data.forEach((bar, index) => {
+                            if(!sopsCascada[index]) return; 
+                            const textoSOP = "SOP: " + sopsCascada[index];
+                            ctx.font = 'bold 11px Inter, sans-serif'; 
+                            const textWidth = ctx.measureText(textoSOP).width;
+                            ctx.fillStyle = 'rgba(239, 68, 68, 0.1)';
+                            ctx.beginPath(); ctx.roundRect(bar.x + 12, bar.y - 12, textWidth + 12, 24, 6); ctx.fill();
+                            ctx.fillStyle = '#ef4444'; ctx.fillText(textoSOP, bar.x + 18, bar.y);
+                        });
+                        ctx.restore();
+                    }
+                }, {
+                    id: 'barLabels',
+                    afterDatasetsDraw(chart) {
+                        const { ctx, data } = chart;
+                        ctx.save(); ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.font = 'bold 10px Inter, sans-serif';
+
+                        chart.data.datasets.forEach((dataset, i) => {
+                            if (dataset.label === 'TOTAL') return;
+                            const meta = chart.getDatasetMeta(i);
+                            meta.data.forEach((bar, index) => {
+                                const val = dataset.realPct && dataset.realPct[index];
+                                if (val > 0 && bar.width > 10) { 
+                                    ctx.fillStyle = '#ffffff';
+                                    ctx.fillText(Math.round(val) + '%', bar.x - (bar.width / 2), bar.y);
+                                }
+                            });
+                        });
+                        ctx.restore();
+                    }
+                }],
+                options: { 
+                    indexAxis: 'y', 
+                    responsive: true, 
+                    maintainAspectRatio: false, 
+                    layout: { padding: { right: 130 } }, 
+                    plugins: {
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    const dataset = context.dataset;
+                                    const index = context.dataIndex;
+                                    const val = dataset.realPct[index];
+                                    return dataset.label + ': ' + (val ? val.toFixed(1) : '0') + '%';
+                                }
+                            }
+                        }
+                    },
+                    scales: { 
+                        x: { max: 100, border: { display: false }, ticks: { callback: v => v + '%' } }, 
+                        y: { grid: { display: false }, border: { display: false }, ticks: { font: { weight: 'bold', color: '#334155', size: 12 } } } 
+                    },
+                    interaction: { mode: 'y' } 
+                }
+            });
+        }
+
+        // 3. GRAFICA DONA (HEALTH TASK)
+        const ctx3 = document.getElementById('chartVolumen');
+        if (ctx3 && datosEstadoGlobal) {
+            chartVolumenInstance = new Chart(ctx3, {
+                type: 'doughnut',
+                data: {
+                    labels: ['On Time', 'Late', 'Needs Action', 'Decision'],
+                    datasets: [{
+                        data: [datosEstadoGlobal.onTimeCount, datosEstadoGlobal.delayedCount, datosEstadoGlobal.escalationCount, datosEstadoGlobal.decisionCount],
+                        backgroundColor: paletteStatus,
+                        borderWidth: 0,
+                        hoverOffset: 15
+                    }]
+                },
+                options: {
+                    responsive: true, maintainAspectRatio: false,
+                    plugins: {
+                        legend: { position: 'bottom', labels: { usePointStyle: true, padding: 20 } }
+                    },
+                    cutout: '70%'
+                }
+            });
+        }
+
+        // 4. GRAFICA VELOCIMETRO (RISK)
+        const ctxRiesgo = document.getElementById('chartRiesgo');
+        if (ctxRiesgo && datosEstadoGlobal) {
+            chartRiesgoInstance = new Chart(ctxRiesgo, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Risk', 'Safe'],
+                    datasets: [{
+                        data: [datosEstadoGlobal.riskHigh, datosEstadoGlobal.riskLow],
+                        backgroundColor: ['#ef4444', '#10b981'],
+                        circumference: 180,
+                        rotation: 270,
+                        borderWidth: 0
+                    }]
+                },
+                options: {
+                    responsive: true, maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: { enabled: false }
+                    },
+                    cutout: '80%'
+                }
+            });
+        }
+        /*]]>*/
+    </script>
+</th:block>

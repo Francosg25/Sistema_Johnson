@@ -1,0 +1,23 @@
+<th:block xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security" th:fragment="milestones_card">
+    <div class="card glass-card border-0 shadow-sm mb-4 border-start border-4 border-warning">
+        <div class="card-body py-3 px-4">
+            <h6 class="fw-bold text-dark mb-3">Project Executive Milestones (Launch Overview)</h6>
+            <form th:action="@{/proyectos/guardar-hitos/{id}(id=${proyecto.id})}" method="post" id="formHitosProyecto">
+                <div class="row g-3">
+                    <div class="col-md-3">
+                        <label class="form-label small fw-bold text-muted mb-1">💰 CAR Approval</label>
+                        <input type="date" class="form-control form-control-sm border-0 bg-light update-hito" name="fechaCar" th:value="${proyecto.fechaCar}" th:disabled="${!#authorization.expression('hasRole(''ADMIN'')')}">
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label small fw-bold text-muted mb-1">👥 Line Buy-off</label>
+                        <input type="date" class="form-control form-control-sm border-0 bg-light update-hito" name="fechaBuyoff" th:value="${proyecto.fechaBuyoff}" th:disabled="${!#authorization.expression('hasRole(''ADMIN'')')}">
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label small fw-bold text-muted mb-1">🚢 Equipment Ship</label>
+                        <input type="date" class="form-control form-control-sm border-0 bg-light update-hito" name="fechaTransit" th:value="${proyecto.fechaTransit}" th:disabled="${!#authorization.expression('hasRole(''ADMIN'')')}">
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</th:block>
