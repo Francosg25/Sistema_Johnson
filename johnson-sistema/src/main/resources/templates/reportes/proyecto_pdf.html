@@ -201,20 +201,20 @@
         <tr>
             <td class="kpi-box">
                 <span class="kpi-value" th:text="${progreso} + '%'" style="color: #0d6efd;"></span>
-                <span class="kpi-label">Progreso</span>
+                <span class="kpi-label">Progress</span>
             </td>
             <td class="kpi-box">
                 <span class="kpi-value" th:text="${tareasOk}" style="color: #198754;"></span>
-                <span class="kpi-label">Completados</span>
+                <span class="kpi-label">Completed</span>
             </td>
             <td class="kpi-box">
                 <span class="kpi-value" th:text="${tareasLate}" style="color: #dc3545;"></span>
-                <span class="kpi-label">Atrasados</span>
+                <span class="kpi-label">Late</span>
             </td>
             <td class="kpi-box">
                 <span class="kpi-value" th:text="${riesgoScore} + '%'" 
                       th:style="'color: ' + (${riesgoScore} >= 50 ? '#dc3545' : (${riesgoScore} >= 20 ? '#fd7e14' : '#198754'))"></span>
-                <span class="kpi-label">Nivel de Riesgo</span>
+                <span class="kpi-label">Risk Level</span>
             </td>
         </tr>
     </table>

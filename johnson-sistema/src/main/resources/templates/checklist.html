@@ -1494,93 +1494,97 @@
         }
 
         document.addEventListener('DOMContentLoaded', function() {
-            let firmaData = {}; 
-            const modalElement = document.getElementById('modalConfirmarFirma');
-            if(!modalElement) return; 
-            
-            const modalFirma = new bootstrap.Modal(modalElement);
-            
-            document.querySelectorAll('.btn-firmado-trigger').forEach(box => {
-                box.addEventListener('click', function() {
-                    const firmante = this.getAttribute('data-firmante');
-                    const fecha = this.getAttribute('data-fecha');
-                    mostrarNotificacion(`Gate sellado por <b>${firmante}</b> el ${fecha}.`);
-                });
-            });
-
-            document.querySelectorAll('.btn-firmar-trigger').forEach(box => {
-                box.addEventListener('click', function() {
-                    const esVisitante = /*[[${#authorization.expression('hasRole(''VIEWER'')')}]]*/ false;
-                    if(esVisitante) return; 
-
-                    firmaData = {
-                        proyectoId: this.getAttribute('data-proyecto'),
-                        etapa: this.getAttribute('data-etapa'),
-                        rol: this.getAttribute('data-rol')
-                    };
-
-                    document.getElementById('modalGateText').textContent = firmaData.etapa;
-                    document.getElementById('modalRolText').textContent = firmaData.rol;
-                    
-                    modalFirma.show();
-                });
-            });
-
-            const btnConfirmar = document.getElementById('btnConfirmarFirmaAjax');
-            if(btnConfirmar) {
-                btnConfirmar.addEventListener('click', function() {
-                    const originalHtml = this.innerHTML;
-                    this.innerHTML = '<span class="spinner-border spinner-border-sm"></span> Sealing...';
-                    this.disabled = true;
-
-                    const params = new URLSearchParams();
-                    params.append('etapa', firmaData.etapa);
-                    params.append('rol', firmaData.rol);
-
-                    fetch(`/proyectos/checklist/firmar-ajax/${firmaData.proyectoId}`, {
-                        method: 'POST',
-                        body: params,
-                        headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
-                    })
-                    .then(response => {
-                        if(!response.ok) throw new Error("Server error");
-                        return response.json();
-                    })
-                    .then(data => {
-                        if(data.exito) {
-                            const modalBody = document.querySelector('#modalConfirmarFirma .modal-body');
-                            const modalFooter = document.querySelector('#modalConfirmarFirma .modal-footer');
-                            
-                            if(modalBody) {
-                                modalBody.innerHTML = `
-                                    <div class="animate__animated animate__zoomIn text-center">
-                                        <div class="mb-3">
-                                            <i class="bi bi-patch-check-fill text-success" style="font-size: 5.5rem; filter: drop-shadow(0 4px 10px rgba(25,135,84,0.3));"></i>
-                                        </div>
-                                        <h2 class="fw-bold text-dark mb-2">¡Gate Sellado!</h2>
-                                        <p class="text-muted fs-5 mb-0">La aprobación de <br><b class="text-primary">${firmaData.rol}</b><br> ha sido registrada.</p>
-                                    </div>
-                                `;
-                            }
-                            if(modalFooter) modalFooter.style.display = 'none';
-                            
-                            // Recargar la página suavemente después de 1.8 segundos
-                            setTimeout(() => { window.location.reload(); }, 1800);
-                        } else {
-                            alert("Atención: " + data.mensaje);
-                            this.innerHTML = originalHtml; this.disabled = false;
-                            modalFirma.hide();
-                        }
-                    })
-                    .catch(error => {
-                        console.error("Error:", error);
-                        alert("Error de conexión. Se canceló la firma.");
-                        this.innerHTML = originalHtml; this.disabled = false;
-                        modalFirma.hide();
-                    });
-                });
-            }
+    let firmaData = {}; 
+    const modalElement = document.getElementById('modalConfirmarFirma');
+    if(!modalElement) return; 
+    
+    const modalFirma = new bootstrap.Modal(modalElement);
+    
+    // Trigger for already signed boxes
+    document.querySelectorAll('.btn-firmado-trigger').forEach(box => {
+        box.addEventListener('click', function() {
+            const firmante = this.getAttribute('data-firmante');
+            const fecha = this.getAttribute('data-fecha');
+            // Translation: "Gate sealed by [Name] on [Date]"
+            mostrarNotificacion(`Gate sealed by <b>${firmante}</b> on ${fecha}.`);
         });
+    });
+
+    // Trigger to open the signing modal
+    document.querySelectorAll('.btn-firmar-trigger').forEach(box => {
+        box.addEventListener('click', function() {
+            const esVisitante = /*[[${#authorization.expression('hasRole(''VIEWER'')')}]]*/ false;
+            if(esVisitante) return; 
+
+            firmaData = {
+                proyectoId: this.getAttribute('data-proyecto'),
+                etapa: this.getAttribute('data-etapa'),
+                rol: this.getAttribute('data-rol')
+            };
+
+            document.getElementById('modalGateText').textContent = firmaData.etapa;
+            document.getElementById('modalRolText').textContent = firmaData.rol;
+            
+            modalFirma.show();
+        });
+    });
+
+    const btnConfirmar = document.getElementById('btnConfirmarFirmaAjax');
+    if(btnConfirmar) {
+        btnConfirmar.addEventListener('click', function() {
+            const originalHtml = this.innerHTML;
+            this.innerHTML = '<span class="spinner-border spinner-border-sm"></span> Sealing...';
+            this.disabled = true;
+
+            const params = new URLSearchParams();
+            params.append('etapa', firmaData.etapa);
+            params.append('rol', firmaData.rol);
+
+            fetch(`/proyectos/checklist/firmar-ajax/${firmaData.proyectoId}`, {
+                method: 'POST',
+                body: params,
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
+            })
+            .then(response => {
+                if(!response.ok) throw new Error("Server error");
+                return response.json();
+            })
+            .then(data => {
+                if(data.exito) {
+                    const modalBody = document.querySelector('#modalConfirmarFirma .modal-body');
+                    const modalFooter = document.querySelector('#modalConfirmarFirma .modal-footer');
+                    
+                    if(modalBody) {
+                        modalBody.innerHTML = `
+                            <div class="animate__animated animate__zoomIn text-center">
+                                <div class="mb-3">
+                                    <i class="bi bi-patch-check-fill text-success" style="font-size: 5.5rem; filter: drop-shadow(0 4px 10px rgba(25,135,84,0.3));"></i>
+                                </div>
+                                <h2 class="fw-bold text-dark mb-2">Gate Sealed!</h2>
+                                <p class="text-muted fs-5 mb-0">The approval from <br><b class="text-primary">${firmaData.rol}</b><br> has been successfully recorded.</p>
+                            </div>
+                        `;
+                    }
+                    if(modalFooter) modalFooter.style.display = 'none';
+                    
+                    setTimeout(() => { window.location.reload(); }, 1800);
+                } else {
+                    alert("Attention: " + data.mensaje);
+                    this.innerHTML = originalHtml; 
+                    this.disabled = false;
+                    modalFirma.hide();
+                }
+            })
+            .catch(error => {
+                console.error("Error:", error);
+                alert("Connection error. The signing process was cancelled.");
+                this.innerHTML = originalHtml; 
+                this.disabled = false;
+                modalFirma.hide();
+            });
+        });
+    }
+});
     </script>
-    </body>
+</body>
 </html>

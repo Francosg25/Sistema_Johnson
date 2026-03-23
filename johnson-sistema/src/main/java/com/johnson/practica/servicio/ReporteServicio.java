@@ -53,7 +53,7 @@ public class ReporteServicio {
             progresoEtapas.put(etapa, totalE == 0 ? 0 : Math.round((okE * 100.0) / totalE * 10.0) / 10.0);
         }
 
-        // --- 3. DATOS PARA HEALTH TASK (DONA) ---
+        // DATOS PARA HEALTH TASK (DONA)
         long onTimeCount = entregablesPrograma.stream().filter(e -> "Closed on time".equalsIgnoreCase(e.getControlEntregable())).count();
         long lateCount = entregablesPrograma.stream().filter(e -> "Closed late".equalsIgnoreCase(e.getControlEntregable())).count();
         long needsActionCount = entregablesPrograma.stream().filter(e -> "NEEDS ACTION".equalsIgnoreCase(e.getControlEntregable())).count();
@@ -110,21 +110,120 @@ public class ReporteServicio {
         agregarHito(roadmapHitos, "SOP", "🏁", proyecto.getFechaSop(), yearActual);
 
         
-        //ESTATUS GLOBAL
-        String gEstatus = descargarGraficaBase64("{type:'doughnut',data:{labels:['OK','Action','Pend.'],datasets:[{data:["+okCount+","+actionCount+","+pendingCount+"],backgroundColor:['#10b981','#ef4444','#cbd5e1'],borderWidth:0}]},options:{cutoutPercentage:70,plugins:{datalabels:{display:false}}}}");
-        
-        // PROGRESO POR ETAPA (Horizontal Bar)
+        // 1. GENERAL APQP STATUS (Leyenda mucho más grande)
+        String gEstatus = descargarGraficaBase64("{"
+            + "type:'doughnut',"
+            + "data:{"
+                + "labels:['OK','Action','Pend.'],"
+                + "datasets:[{"
+                    + "data:["+okCount+","+actionCount+","+pendingCount+"],"
+                    + "backgroundColor:['#10b981','#ef4444','#cbd5e1'],"
+                    + "borderWidth: 2,"
+                    + "borderColor: '#ffffff'"
+                + "}]"
+            + "},"
+            + "options:{"
+                + "layout:{padding: {top: 15, bottom: 20, left: 40, right: 40} },"
+                + "cutoutPercentage: 65,"
+                + "legend:{"
+                    + "position:'top',"
+                    + "labels:{boxWidth:20, fontSize:16, padding:20, fontStyle:'bold'}"
+                + "},"
+                + "plugins:{"
+                    + "datalabels:{display:false}"
+                + "}"
+            + "}"
+        + "}", 600, 500);       
+        // PROGRESO POR ETAPA
         String labelsEtapas = "['STAGE 1','STAGE 2','STAGE 3','STAGE 4','STAGE 5']";
         String dataEtapas = progresoEtapas.values().toString();
-        String gEtapas = descargarGraficaBase64("{type:'horizontalBar',data:{labels:"+labelsEtapas+",datasets:[{label:'% Completed',data:"+dataEtapas+",backgroundColor:['#3b82f6','#0ea5e9','#10b981','#f59e0b','#8b5cf6']}]},options:{legend:{display:false},scales:{xAxes:[{ticks:{min:0,max:100}}]}}}");
-        
-        // HEALTH TASK (Doughnut)
-        String gHealth = descargarGraficaBase64("{type:'doughnut',data:{labels:['ON TIME','LATE','ACTION','DECISION','TBD'],datasets:[{data:["+onTimeCount+","+lateCount+","+needsActionCount+","+decisionCount+","+unassignedCount+"],backgroundColor:['#10b981','#ef4444','#f59e0b','#3b82f6','#cbd5e1'],borderWidth:0}]},options:{cutoutPercentage:70,plugins:{legend:{position:'right',labels:{boxWidth:12,fontSize:10}}}}}");
+        String gEtapas = descargarGraficaBase64("{"
+            + "type:'horizontalBar',"
+            + "data:{"
+                + "labels:" + labelsEtapas + ","
+                + "datasets:[{"
+                    + "label:'% Completed',"
+                    + "data:" + dataEtapas + ","
+                    + "backgroundColor:['#3b82f6','#0ea5e9','#10b981','#f59e0b','#8b5cf6'],"
+                    + "borderWidth:1"
+                + "}]"
+            + "},"
+            + "options:{"
+                + "layout:{padding: {top: 20, bottom: 20, left: 10, right: 30} },"
+                + "legend:{display:false},"
+                + "scales:{"
+                    + "xAxes:[{ticks:{min:0, max:100, fontSize:14}}],"
+                    + "yAxes:[{ticks:{fontSize:15, fontStyle:'bold', fontColor:'#475569'}}]"
+                + "},"
+                + "plugins:{"
+                    + "datalabels:{"
+                        + "display:true,"
+                        + "color:'#fff',"
+                        + "font:{weight:'bold', size:16}," 
+                        + "anchor:'center',"
+                        + "align:'center',"
+                        + "formatter: function(val) { return val + '%'; }"
+                    + "}"
+                + "}"
+            + "}"
+        + "}", 600, 500); 
+               
+       // HEALTH TASK DISTRIBUTION 
+        String gHealth = descargarGraficaBase64("{"
+            + "type:'doughnut',"
+            + "data:{"
+                + "labels:['ON TIME','LATE','ACTION','DECISION','TBD'],"
+                + "datasets:[{"
+                    + "data:["+onTimeCount+","+lateCount+","+needsActionCount+","+decisionCount+","+unassignedCount+"],"
+                    + "backgroundColor:['#10b981','#ef4444','#f59e0b','#3b82f6','#cbd5e1'],"
+                    + "borderWidth: 2,"
+                    + "borderColor: '#ffffff'"
+                + "}]"
+            + "},"
+            + "options:{"
+                + "layout:{padding: {top: 50, bottom: 10, left: 45, right: 45} },"
+                + "cutoutPercentage: 55,"
+                + "legend:{"                
+                    + "position:'bottom',"
+                    + "labels:{boxWidth:12,fontSize:14,padding:15}"
+                + "},"
+                + "plugins:{"
+                    + "datalabels:{"
+                        + "display: function(ctx) { return ctx.dataset.data[ctx.dataIndex] > 0; },"
+                        + "align: function(ctx) { return ctx.dataset.data[ctx.dataIndex] <= 5 ? 'end' : 'center'; },"
+                        + "anchor: function(ctx) { return ctx.dataset.data[ctx.dataIndex] <= 5 ? 'end' : 'center'; },"
+                        + "color: function(ctx) { "
+                            + "const val = ctx.dataset.data[ctx.dataIndex];"
+                            + "return (ctx.dataIndex === 4 || val <= 5) ? '#000000' : '#ffffff';"
+                        + "},"
+                        + "font:{weight:'bold',size:18},"
+                        + "offset: 2" 
+                    + "}"
+                + "}"
+            + "}"
+        + "}", 600, 500);
 
-        // RISK METER (Doughnut as Gauge)
-        String riskColor = roundedRisk >= 50 ? "#ef4444" : (roundedRisk >= 20 ? "#f59e0b" : "#10b981");
-        // Using a simpler gauge-like doughnut without Math.PI or complex plugins
-        String gRisk = descargarGraficaBase64("{type:'doughnut',data:{datasets:[{data:["+roundedRisk+","+(100-roundedRisk)+"],backgroundColor:['"+riskColor+"','#e2e8f0'],borderWidth:0}]},options:{circumference:180,rotation:180,cutoutPercentage:80,plugins:{datalabels:{display:false}}}}");
+        String riskColor = roundedRisk > 66 ? "#ef4444" : (roundedRisk > 33 ? "#f59e0b" : "#10b981");
+
+        // RISK METER 
+        String gRisk = descargarGraficaBase64("{"
+            + "type:'doughnut',"
+            + "data:{"
+                + "datasets:[{"
+                    + "data:["+roundedRisk+","+(100-roundedRisk)+"],"
+                    + "backgroundColor:['"+riskColor+"','#f1f5f9'],"
+                    + "borderWidth:0"
+                + "}]"
+            + "},"
+            + "options:{"
+                + "circumference: Math.PI,"
+                + "rotation: Math.PI,"
+                + "cutoutPercentage:80,"
+                + "plugins:{"
+                    + "datalabels:{display:false}"
+                + "}"
+            + "}"
+        + "}");
         
         Map<String, Object> variables = new HashMap<>();
         variables.put("proyecto", proyecto);
@@ -183,8 +282,12 @@ public class ReporteServicio {
     }
 
     private String descargarGraficaBase64(String config) {
+        return descargarGraficaBase64(config, 350, 200);
+    }
+
+    private String descargarGraficaBase64(String config, int width, int height) {
         try {
-            String url = "https://quickchart.io/chart?w=350&h=200&bkg=white&c=" + URLEncoder.encode(config, "UTF-8");
+            String url = "https://quickchart.io/chart?w=" + width + "&h=" + height + "&bkg=white&c=" + URLEncoder.encode(config, "UTF-8");
             try (InputStream is = new URL(url).openStream()) {
                 return "data:image/png;base64," + Base64.getEncoder().encodeToString(is.readAllBytes());
             }

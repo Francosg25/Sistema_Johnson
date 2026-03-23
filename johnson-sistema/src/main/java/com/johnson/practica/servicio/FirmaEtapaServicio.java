@@ -33,16 +33,16 @@ public class FirmaEtapaServicio {
     @Transactional
     public void firmar(Long proyectoId, Integer etapa, String rol, String username) {
         Proyecto proyecto = proyectoRepositorio.findById(proyectoId)
-                .orElseThrow(() -> new RuntimeException("Proyecto no encontrado"));
+                .orElseThrow(() -> new RuntimeException("Project not found"));
         
         Usuario usuario = usuarioRepositorio.findByUsername(username)
-                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+                .orElseThrow(() -> new RuntimeException("User not found"));
 
         List<FirmaEtapa> existentes = firmaEtapaRepositorio.findByProyectoIdAndEtapa(proyectoId, etapa);
         boolean yaFirmado = existentes.stream().anyMatch(f -> f.getRol().equals(rol));
         
         if (yaFirmado) {
-            throw new RuntimeException("Este rol ya ha firmado esta etapa");
+            throw new RuntimeException("This role has already signed this stage");
         }
 
         FirmaEtapa firma = new FirmaEtapa();
@@ -55,14 +55,14 @@ public class FirmaEtapaServicio {
         
         firmaEtapaRepositorio.save(firma);
 
-        bitacoraServicio.registrarAccion(username, "FIRMA_ELECTRONICA", 
-                "Firmó como " + rol + " en el Stage " + etapa + " del proyecto " + proyecto.getNombre());
+        bitacoraServicio.registrarAccion(username, "ELECTRONIC_SIGNATURE", 
+                "Signed as " + rol + " in Stage " + etapa + " of project " + proyecto.getNombre());
                 
-        String msj = "✅ SELLO DE APROBADO aplicado por " + usuario.getNombreCompleto() + 
-                     " como " + rol + " en el Gate " + etapa + " (" + proyecto.getNombre() + ")";
+        String msj = "✅ APPROVAL SEAL applied by " + usuario.getNombreCompleto() + 
+                     " as " + rol + " in Gate " + etapa + " (" + proyecto.getNombre() + ")";
         String url = "/proyectos/checklist/" + proyecto.getId();
         
-        notificacionServicio.alertarATodos("Aprobación Gate " + etapa, msj, "SUCCESS", url, username);
+        notificacionServicio.alertarATodos("Gate " + etapa + " Approval", msj, "SUCCESS", url, username);
     }
 
     
