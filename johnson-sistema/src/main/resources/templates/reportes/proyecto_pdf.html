@@ -138,11 +138,16 @@
         }
         .chart-img {
             width: 100%;
-            max-width: 220px;
+            max-width: 420px;
+        }
+        .chart-img-donut {
+            width: 100%;
+            max-width: 250px;
+            padding: 10px;
         }
         .chart-overlay {
             position: absolute;
-            top: 60%;
+            top: 58%;
             left: 50%;
             width: 60px;
             margin-left: -30px;
@@ -241,13 +246,13 @@
             <td>
                 <div class="chart-container">
                     <div class="chart-title">Health Task Distribution</div>
-                    <img th:src="${gHealth}" class="chart-img" />
+                    <img th:src="${gHealth}" class="chart-img-donut" />
                 </div>
             </td>
             <td>
                 <div class="chart-container">
                     <div class="chart-title">Risk Level Meter</div>
-                    <img th:src="${gRisk}" class="chart-img" />
+                    <img th:src="${gRisk}" class="chart-img-donut" />
                     <div class="chart-overlay">
                         <span class="overlay-val" th:text="${riesgoScore} + '%'" 
                               th:style="'color: ' + (${riesgoScore} >= 50 ? '#dc3545' : (${riesgoScore} >= 20 ? '#fd7e14' : '#198754'))"></span>
@@ -260,8 +265,8 @@
             <td>
                 <div class="chart-container">
                     <div class="chart-title">General APQP Status</div>
-                    <img th:src="${gEstatus}" class="chart-img" />
-                    <div class="chart-overlay" style="top: 55%;">
+                    <img th:src="${gEstatus}" class="chart-img-donut" />
+                    <div class="chart-overlay" style="top: 52%;">
                         <span class="overlay-val" th:text="${progreso} + '%'" style="color: #0d6efd;"></span>
                         <span class="overlay-lbl">COMPLETION</span>
                     </div>
@@ -280,11 +285,11 @@
     <table class="data-table">
         <thead>
             <tr>
-                <th style="width: 50%">Entregable</th>
-                <th style="width: 15%">Etapa</th>
-                <th style="width: 15%">Responsable</th>
-                <th style="width: 12%">Fecha</th>
-                <th style="width: 8%">Status</th>
+                <th style="width: 50%">Deliverable</th>
+                <th style="width: 15%">Stage</th>
+                <th style="width: 15%">Responsible</th>
+                <th style="width: 12%">Date</th>
+                <th style="width: 8%">Score</th>
             </tr>
         </thead>
         <tbody>

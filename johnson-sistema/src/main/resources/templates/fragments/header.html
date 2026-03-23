@@ -110,15 +110,19 @@
             const list = document.getElementById('notifList');
             const bell = document.querySelector('#notifDropdown i.bi-bell');
             
-            // Leemos el último ID que el usuario "vio"
-            const lastSeenId = parseInt(localStorage.getItem('lastSeenNotifId') || '0');
+            let lastSeenId = parseInt(localStorage.getItem('lastSeenNotifId') || '0');
             
             let nuevasContadas = 0;
             if (data.ultimas && data.ultimas.length > 0) {
-                // Solo contamos como "nuevas" las que tengan ID superior al visto
-                nuevasContadas = data.ultimas.filter(n => n.id > lastSeenId).length;
-                // Guardamos el ID más alto disponible actualmente en la lista
                 maxIdEnPantalla = Math.max(...data.ultimas.map(n => n.id));
+
+                // EL PARCHE MÁGICO: Detectar si la base de datos se reinició
+                if (maxIdEnPantalla < lastSeenId) {
+                    lastSeenId = 0;
+                    localStorage.setItem('lastSeenNotifId', '0');
+                }
+
+                nuevasContadas = data.ultimas.filter(n => n.id > lastSeenId).length;
             }
 
             if (nuevasContadas > 0) {
@@ -139,8 +143,11 @@
 
             list.innerHTML = data.ultimas.map(n => {
                 const f = formatoFecha(n.fechaCreacion);
+                // Extra: Le agregamos un pequeño borde azul a las que son realmente "nuevas"
+                const esNueva = n.id > lastSeenId ? 'bg-white border-start border-primary border-4' : '';
+
                 return `
-                <div class="p-3 border-bottom position-relative hover-bg-light" style="cursor: pointer;" onclick="marcarLeida(${n.id}, '${n.link}')">
+                <div class="p-3 border-bottom position-relative hover-bg-light ${esNueva}" style="cursor: pointer;" onclick="marcarLeida(${n.id}, '${n.link}')">
                     <div class="d-flex align-items-start">
                         <div class="rounded-circle p-2 me-3 d-flex align-items-center justify-content-center ${getIconBg(n.tipo)}" style="width: 32px; height: 32px; flex-shrink: 0;">
                             <i class="bi ${getIcon(n.tipo)} text-white" style="font-size: 0.9rem;"></i>

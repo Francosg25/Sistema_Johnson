@@ -123,17 +123,17 @@ public class ReporteServicio {
                 + "}]"
             + "},"
             + "options:{"
-                + "layout:{padding: {top: 15, bottom: 20, left: 40, right: 40} },"
+                + "layout:{padding: {top: 20, bottom: 20, left: 30, right: 30} },"
                 + "cutoutPercentage: 65,"
                 + "legend:{"
                     + "position:'top',"
-                    + "labels:{boxWidth:20, fontSize:16, padding:20, fontStyle:'bold'}"
+                    + "labels:{boxWidth:30, fontSize:22, padding:15, fontStyle:'bold'}"
                 + "},"
                 + "plugins:{"
                     + "datalabels:{display:false}"
                 + "}"
             + "}"
-        + "}", 600, 500);       
+        + "}", 500, 400);       
         // PROGRESO POR ETAPA
         String labelsEtapas = "['STAGE 1','STAGE 2','STAGE 3','STAGE 4','STAGE 5']";
         String dataEtapas = progresoEtapas.values().toString();
@@ -149,7 +149,7 @@ public class ReporteServicio {
                 + "}]"
             + "},"
             + "options:{"
-                + "layout:{padding: {top: 20, bottom: 20, left: 10, right: 30} },"
+                + "layout:{padding: {top: 10, bottom: 10, left: 10, right: 35} },"
                 + "legend:{display:false},"
                 + "scales:{"
                     + "xAxes:[{ticks:{min:0, max:100, fontSize:14}}],"
@@ -166,7 +166,7 @@ public class ReporteServicio {
                     + "}"
                 + "}"
             + "}"
-        + "}", 600, 500); 
+        + "}", 1000, 600); 
                
        // HEALTH TASK DISTRIBUTION 
         String gHealth = descargarGraficaBase64("{"
@@ -181,11 +181,11 @@ public class ReporteServicio {
                 + "}]"
             + "},"
             + "options:{"
-                + "layout:{padding: {top: 50, bottom: 10, left: 45, right: 45} },"
+                + "layout:{padding: {top: 55, bottom: 15, left: 35, right: 35} },"
                 + "cutoutPercentage: 55,"
                 + "legend:{"                
                     + "position:'bottom',"
-                    + "labels:{boxWidth:12,fontSize:14,padding:15}"
+                    + "labels:{boxWidth:25,fontSize:18,padding:10}"
                 + "},"
                 + "plugins:{"
                     + "datalabels:{"
@@ -196,12 +196,12 @@ public class ReporteServicio {
                             + "const val = ctx.dataset.data[ctx.dataIndex];"
                             + "return (ctx.dataIndex === 4 || val <= 5) ? '#000000' : '#ffffff';"
                         + "},"
-                        + "font:{weight:'bold',size:18},"
-                        + "offset: 2" 
+                        + "font:{weight:'bold',size:16},"
+                        + "offset: 4" 
                     + "}"
                 + "}"
             + "}"
-        + "}", 600, 500);
+        + "}", 500, 400);
 
         String riskColor = roundedRisk > 66 ? "#ef4444" : (roundedRisk > 33 ? "#f59e0b" : "#10b981");
 
