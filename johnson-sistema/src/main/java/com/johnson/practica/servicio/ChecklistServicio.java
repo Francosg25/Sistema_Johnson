@@ -48,8 +48,8 @@ public class ChecklistServicio {
     }
 
     @Transactional
-    public void guardarChecklistCompleto(Map<String, String> allParams) {
-        checklistUpdateServicio.guardarChecklistCompleto(allParams);
+    public void guardarChecklistCompleto(Map<String, String> todosLosParametros) {
+        checklistUpdateServicio.guardarChecklistCompleto(todosLosParametros);
     }
 
     @Transactional(readOnly = true)
@@ -88,13 +88,13 @@ public class ChecklistServicio {
     }
 
     @Transactional(readOnly = true)
-    public List<ElementoChecklist> obtenerTareasPendientesUsuario(String username) {
+    public List<ElementoChecklist> obtenerTareasPendientesUsuario(String nombreUsuario) {
         List<ElementoChecklist> todos = repositorio.findAll();
         return todos.stream()
                 .filter(e -> e.getProyecto() != null && !e.getProyecto().getEsHistorico())
                 .filter(e -> e.getChampion() != null && 
-                            e.getChampion().equalsIgnoreCase(username) && 
-                            !"OK".equalsIgnoreCase(scoreFormateado(e.getScore())))
+                            e.getChampion().equalsIgnoreCase(nombreUsuario) && 
+                            !"OK".equalsIgnoreCase(formatearResultado(e.getScore())))
                 .toList();
     }
 
@@ -142,7 +142,7 @@ public class ChecklistServicio {
         }
     }
 
-    private String scoreFormateado(String s) {
+    private String formatearResultado(String s) {
         return (s == null) ? "" : s.trim().toUpperCase();
     }
 }

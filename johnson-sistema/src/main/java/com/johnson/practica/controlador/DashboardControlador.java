@@ -47,7 +47,7 @@ public class DashboardControlador {
     private BitacoraServicio bitacoraServicio;
 
     @GetMapping("/")
-    public String index(Model model, HttpServletRequest request, Principal principal) {
+    public String index(Model modelo, HttpServletRequest solicitud, Principal principal) {
         
         List<Proyecto> proyectos = proyectoRepositorio.findByEsHistoricoFalse();
         
@@ -73,51 +73,51 @@ public class DashboardControlador {
             }
         }
 
-        model.addAttribute("proyectos", proyectos);
-        model.addAttribute("reporteProgreso", reporteGlobal);
-        model.addAttribute("estadoGlobal", estadoGlobal);
-        model.addAttribute("alertas", checklistServicio.obtenerAlertasGlobales().stream()
+        modelo.addAttribute("proyectos", proyectos);
+        modelo.addAttribute("reporteProgreso", reporteGlobal);
+        modelo.addAttribute("estadoGlobal", estadoGlobal);
+        modelo.addAttribute("alertas", checklistServicio.obtenerAlertasGlobales().stream()
             .filter(a -> proyectos.stream().anyMatch(p -> a.getNombre().contains(p.getNombre())))
             .toList());
-        model.addAttribute("tendencia", checklistReporteServicio.obtenerDatosTendencia());
-        model.addAttribute("proximosLanzamientos", checklistReporteServicio.obtenerLanzamientosProximos());
-        model.addAttribute("avancePromedio", avancePromedio);
+        modelo.addAttribute("tendencia", checklistReporteServicio.obtenerDatosTendencia());
+        modelo.addAttribute("proximosLanzamientos", checklistReporteServicio.obtenerLanzamientosProximos());
+        modelo.addAttribute("avancePromedio", avancePromedio);
         
-        model.addAttribute("notificaciones", notificaciones); 
-        model.addAttribute("ultimosMovimientos", bitacoraServicio.obtenerUltimosMovimientos().stream().limit(5).toList());
+        modelo.addAttribute("notificaciones", notificaciones); 
+        modelo.addAttribute("ultimosMovimientos", bitacoraServicio.obtenerUltimosMovimientos().stream().limit(5).toList());
         
         List<ElementoChecklist> todasPendientes = checklistServicio.obtenerTodasTareasPendientes().stream()
             .filter(t -> !t.getProyecto().getEsHistorico())
             .toList();
 
-        model.addAttribute("todasTareasPendientes", todasPendientes);
-        model.addAttribute("listaChampions", checklistServicio.obtenerTodosLosChampions());
+        modelo.addAttribute("todasTareasPendientes", todasPendientes);
+        modelo.addAttribute("listaChampions", checklistServicio.obtenerTodosLosChampions());
         
         Map<String, Long> conteoPorChampion = todasPendientes.stream()
             .filter(t -> t.getChampion() != null)
             .collect(Collectors.groupingBy(t -> checklistLogicServicio.normalizarChampion(t.getChampion()), Collectors.counting()));
-        model.addAttribute("conteoPorChampion", conteoPorChampion);
+        modelo.addAttribute("conteoPorChampion", conteoPorChampion);
 
         List<Map<String, Object>> eventosCalendario = new ArrayList<>();
         for (Proyecto p : proyectos) {
             if (p.getSop() != null) {
-                Map<String, Object> event = new HashMap<>();
-                event.put("title", "SOP: " + p.getNombre());
-                event.put("start", p.getSop().toString());
-                event.put("description", "Start of Production - PN: " + p.getNumeroParte());
-                event.put("className", "bg-warning border-0 shadow-sm"); 
-                event.put("url", "/proyectos/checklist/" + p.getId());
-                eventosCalendario.add(event);
+                Map<String, Object> evento = new HashMap<>();
+                evento.put("title", "SOP: " + p.getNombre());
+                evento.put("start", p.getSop().toString());
+                evento.put("description", "Inicio de Producción - PN: " + p.getNumeroParte());
+                evento.put("className", "bg-warning border-0 shadow-sm"); 
+                evento.put("url", "/proyectos/checklist/" + p.getId());
+                eventosCalendario.add(evento);
             }
         }
-        model.addAttribute("eventosCalendario", eventosCalendario);
+        modelo.addAttribute("eventosCalendario", eventosCalendario);
 
         if (principal != null) {
-            model.addAttribute("usuarioLogueado", principal.getName());
+            modelo.addAttribute("usuarioLogueado", principal.getName());
         }
 
-        model.addAttribute("titulo", "Dashboard de Proyectos APQP - Johnson Electric");
-        model.addAttribute("currentUri", request.getRequestURI());
+        modelo.addAttribute("titulo", "Dashboard de Proyectos APQP - Johnson Electric");
+        modelo.addAttribute("currentUri", solicitud.getRequestURI());
         return "index"; 
     }
 }

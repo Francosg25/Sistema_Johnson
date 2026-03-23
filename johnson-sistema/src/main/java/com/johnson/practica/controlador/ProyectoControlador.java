@@ -39,13 +39,13 @@ public class ProyectoControlador {
     @Autowired private BitacoraServicio bitacoraServicio;
 
     @GetMapping("/")
-    public String index(Model model, HttpServletRequest request) {
+    public String index(Model modelo, HttpServletRequest solicitud) {
         List<Proyecto> lista = proyectoRepositorio.findByEsHistoricoFalse(); 
-        model.addAttribute("proyectos", lista);
-        model.addAttribute("currentUri", request.getRequestURI());
+        modelo.addAttribute("proyectos", lista);
+        modelo.addAttribute("currentUri", solicitud.getRequestURI());
 
         Map<String, Integer> tendencia = checklistReporteServicio.obtenerTendenciaAprobacionesOK();
-        model.addAttribute("tendencia", tendencia);
+        modelo.addAttribute("tendencia", tendencia);
 
         return "index";
     }
@@ -58,9 +58,9 @@ public class ProyectoControlador {
         Proyecto proyectoGuardado = proyectoServicio.guardarProyecto(proyecto);
         
         if (esNuevo) {
-            String autor = (principal != null) ? principal.getName() : "Sistema";
-            notificacionServicio.alertarATodos("New Project APQP", 
-                "The portfolio has been initialized for the project: " + proyectoGuardado.getNombre(), 
+            String autor = (principal != null) ? principal.getName() : "System";
+            notificacionServicio.alertarATodos("New APQP Project", 
+                "Portfolio has been initialized for project: " + proyectoGuardado.getNombre(), 
                 "SUCCESS", "/proyectos/checklist/" + proyectoGuardado.getId(), autor);
         }
         
@@ -78,17 +78,17 @@ public class ProyectoControlador {
     @PostMapping("/archivar/{id}")
     @PreAuthorize("hasRole('ADMIN')")
     @CacheEvict(value = "reportes", allEntries = true) 
-    public String archivarProyecto(@PathVariable Long id, RedirectAttributes redirectAttributes) {
+    public String archivarProyecto(@PathVariable Long id, RedirectAttributes atributosRedireccion) {
         proyectoServicio.archivarProyecto(id);
-        redirectAttributes.addFlashAttribute("mensajeExito", "Project moved to Historical Vault.");
+        atributosRedireccion.addFlashAttribute("mensajeExito", "Project moved to Historical Vault.");
         return "redirect:/proyectos/vault";
     }
 
     @GetMapping("/vault")
-    public String verHistoricalVault(Model model, HttpServletRequest request) {
+    public String verBaulHistorico(Model modelo, HttpServletRequest solicitud) {
         List<Proyecto> proyectosHistoricos = proyectoRepositorio.findByEsHistoricoTrue();
-        model.addAttribute("proyectos", proyectosHistoricos);
-        model.addAttribute("currentUri", request.getRequestURI()); 
+        modelo.addAttribute("proyectos", proyectosHistoricos);
+        modelo.addAttribute("currentUri", solicitud.getRequestURI()); 
         return "vault"; 
     }
 
@@ -97,13 +97,13 @@ public class ProyectoControlador {
         try {
             List<Proyecto> proyectos = proyectoRepositorio.findByEsHistoricoFalse();
             List<ElementoChecklist> todosLosElementos = checklistServicio.obtenerTodos(); 
-            byte[] data = excelServicio.generarMasterTimelineExcel(proyectos, todosLosElementos);
+            byte[] datos = excelServicio.generarExcelMasterTimeline(proyectos, todosLosElementos);
 
-            HttpHeaders headers = new HttpHeaders();
-            headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
-            headers.setContentDispositionFormData("attachment", "Master_Timeline_Overview.xlsx");
+            HttpHeaders encabezados = new HttpHeaders();
+            encabezados.setContentType(MediaType.APPLICATION_OCTET_STREAM);
+            encabezados.setContentDispositionFormData("attachment", "Master_Timeline_Overview.xlsx");
 
-            return new ResponseEntity<>(data, headers, HttpStatus.OK);
+            return new ResponseEntity<>(datos, encabezados, HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
@@ -123,38 +123,38 @@ public class ProyectoControlador {
         String usuario = (principal != null) ? principal.getName() : "System";
         StringBuilder cambios = new StringBuilder();
 
-        if (esDiferenteFecha(proyecto.getFechaCar(), fechaCar)) {
+        if (esFechaDiferente(proyecto.getFechaCar(), fechaCar)) {
             cambios.append("CAR Approval: ").append(fechaCar != null ? fechaCar : "N/A").append(". ");
             proyecto.setFechaCar(fechaCar);
         }
-        if (esDiferenteFecha(proyecto.getFechaBuyoff(), fechaBuyoff)) {
+        if (esFechaDiferente(proyecto.getFechaBuyoff(), fechaBuyoff)) {
             cambios.append("Line Buy-off: ").append(fechaBuyoff != null ? fechaBuyoff : "N/A").append(". ");
             proyecto.setFechaBuyoff(fechaBuyoff);
         }
-        if (esDiferenteFecha(proyecto.getFechaTransit(), fechaTransit)) {
-            cambios.append("Equipment Ship: ").append(fechaTransit != null ? fechaTransit : "N/A").append(". ");
+        if (esFechaDiferente(proyecto.getFechaTransit(), fechaTransit)) {
+            cambios.append("Equipment Transit: ").append(fechaTransit != null ? fechaTransit : "N/A").append(". ");
             proyecto.setFechaTransit(fechaTransit);
         }
-        if (esDiferenteFecha(proyecto.getFechaSop(), fechaSop)) {
+        if (esFechaDiferente(proyecto.getFechaSop(), fechaSop)) {
             cambios.append("SOP: ").append(fechaSop != null ? fechaSop : "N/A").append(". ");
             proyecto.setFechaSop(fechaSop);
         }
 
         if (cambios.length() > 0) {
             proyectoRepositorio.save(proyecto);
-            String msg = "Project Executive Milestones updated for " + proyecto.getNombre() + ": " + cambios.toString();
-            bitacoraServicio.registrarAccion(usuario, "UPDATE MILESTONES", msg);
-            notificacionServicio.alertarATodos("Executive Milestones Updated", msg, "INFO", "/proyectos/checklist/" + id, usuario);
+            String mensaje = "Executive milestones updated for " + proyecto.getNombre() + ": " + cambios.toString();
+            bitacoraServicio.registrarAccion(usuario, "UPDATE MILESTONES", mensaje);
+            notificacionServicio.alertarATodos("Executive Milestones Updated", mensaje, "INFO", "/proyectos/checklist/" + id, usuario);
         }
 
-        Map<String, Object> response = new HashMap<>();
-        response.put("exito", true);
-        response.put("nombre", proyecto.getNombre());
-        response.put("numeroParte", proyecto.getNumeroParte());
-        return response;
+        Map<String, Object> respuesta = new HashMap<>();
+        respuesta.put("exito", true);
+        respuesta.put("nombre", proyecto.getNombre());
+        respuesta.put("numeroParte", proyecto.getNumeroParte());
+        return respuesta;
     }
 
-    private boolean esDiferenteFecha(LocalDate actual, LocalDate nueva) {
+    private boolean esFechaDiferente(LocalDate actual, LocalDate nueva) {
         if (actual == null && nueva == null) return false;
         if (actual == null || nueva == null) return true;
         return !actual.equals(nueva);
@@ -164,10 +164,10 @@ public class ProyectoControlador {
     public ResponseEntity<byte[]> descargarReportePdf(@PathVariable Long id) {
         try {
             byte[] pdf = reporteServicio.generarPdfProyecto(id);
-            HttpHeaders headers = new HttpHeaders();
-            headers.setContentType(MediaType.APPLICATION_PDF);
-            headers.setContentDispositionFormData("attachment", "Reporte_APQP_Proyecto_" + id + ".pdf");
-            return new ResponseEntity<>(pdf, headers, HttpStatus.OK);
+            HttpHeaders encabezados = new HttpHeaders();
+            encabezados.setContentType(MediaType.APPLICATION_PDF);
+            encabezados.setContentDispositionFormData("attachment", "Report_APQP_Project_" + id + ".pdf");
+            return new ResponseEntity<>(pdf, encabezados, HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }

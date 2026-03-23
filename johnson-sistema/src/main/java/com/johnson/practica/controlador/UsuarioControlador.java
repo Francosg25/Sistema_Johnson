@@ -9,12 +9,11 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import java.util.Optional;
-
-import org.springframework.web.bind.annotation.ResponseBody;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Controller
@@ -39,24 +38,24 @@ public class UsuarioControlador {
     public static record MentionDto(String key, String value) {}
 
     @GetMapping("/cambiar-password")
-    public String cambiarPasswordForm(Authentication auth, Model model) {
+    public String cambiarPasswordForm(Authentication auth, Model modelo) {
         if (auth == null) return "redirect:/login";
-        model.addAttribute("username", auth.getName());
-        return "usuario/cambiar-password";
+        modelo.addAttribute("username", auth.getName());
+        return "usuarios/cambio-password";
     }
 
     @PostMapping("/cambiar-password")
     public String cambiarPassword(@RequestParam String newPassword, 
                                   @RequestParam String confirmPassword,
                                   Authentication auth,
-                                  RedirectAttributes redirectAttributes) {
+                                  RedirectAttributes atributosRedireccion) {
         if (!newPassword.equals(confirmPassword)) {
-            redirectAttributes.addFlashAttribute("error", "Passwords do not match.");
+            atributosRedireccion.addFlashAttribute("error", "Passwords do not match.");
             return "redirect:/cambiar-password";
         }
 
         if (newPassword.length() < 8) {
-            redirectAttributes.addFlashAttribute("error", "The password must be at least 8 characters long.");
+            atributosRedireccion.addFlashAttribute("error", "The password must be at least 8 characters long.");
             return "redirect:/cambiar-password";
         }
 
@@ -66,7 +65,7 @@ public class UsuarioControlador {
             usuario.setPassword(passwordEncoder.encode(newPassword));
             usuario.setPasswordChanged(true);
             usuarioServicio.guardarUsuario(usuario);
-            redirectAttributes.addFlashAttribute("mensaje", "Password updated successfully.");
+            atributosRedireccion.addFlashAttribute("mensaje", "Password updated successfully.");
             return "redirect:/";
         }
 

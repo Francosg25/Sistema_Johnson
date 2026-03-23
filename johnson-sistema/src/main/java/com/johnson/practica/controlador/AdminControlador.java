@@ -4,6 +4,7 @@ import com.johnson.practica.servicio.UsuarioServicio;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -22,10 +23,10 @@ public class AdminControlador {
     }
 
     @GetMapping("/usuarios")
-    public String gestionarUsuarios(org.springframework.ui.Model model, HttpServletRequest request) {
-        model.addAttribute("currentUri", request.getRequestURI());
-        model.addAttribute("usuarios", usuarioServicio.listarTodos());
-        return "admin/usuarios"; 
+    public String gestionarUsuarios(Model modelo, HttpServletRequest solicitud) {
+        modelo.addAttribute("currentUri", solicitud.getRequestURI());
+        modelo.addAttribute("usuarios", usuarioServicio.listarTodos());
+        return "usuarios/gestion"; 
     }
 
     @PostMapping("/usuarios/crear-usuario")
@@ -34,23 +35,23 @@ public class AdminControlador {
                                @RequestParam String nombre,
                                @RequestParam String rol, 
                                @RequestParam String departamento, 
-                               RedirectAttributes redirectAttributes) {
+                               RedirectAttributes atributosRedireccion) {
         try {
             usuarioServicio.crearUsuarioConRol(username, correo, nombre, rol, departamento);
-            redirectAttributes.addFlashAttribute("mensaje", "User created successfully. An email has been sent.");
+            atributosRedireccion.addFlashAttribute("mensaje", "User created successfully. A verification email has been sent.");
         } catch (Exception e) {
-            redirectAttributes.addFlashAttribute("error", "Error creating user: " + e.getMessage());
+            atributosRedireccion.addFlashAttribute("error", "Error creating user: " + e.getMessage());
         }
         return "redirect:/admin/usuarios";
     }
 
     @PostMapping("/usuarios/eliminar")
-    public String eliminarUsuario(@RequestParam Long id, RedirectAttributes redirectAttributes) {
+    public String eliminarUsuario(@RequestParam Long id, RedirectAttributes atributosRedireccion) {
         try {
             usuarioServicio.eliminarUsuario(id);
-            redirectAttributes.addFlashAttribute("mensaje", "User deleted successfully.");
+            atributosRedireccion.addFlashAttribute("mensaje", "User deleted successfully.");
         } catch (Exception e) {
-            redirectAttributes.addFlashAttribute("error", "Error deleting user: " + e.getMessage());
+            atributosRedireccion.addFlashAttribute("error", "Error deleting user: " + e.getMessage());
         }
         return "redirect:/admin/usuarios";
     }

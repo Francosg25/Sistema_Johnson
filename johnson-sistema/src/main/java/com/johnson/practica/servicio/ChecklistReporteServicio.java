@@ -18,7 +18,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Service
 public class ChecklistReporteServicio {
@@ -71,7 +70,7 @@ public class ChecklistReporteServicio {
             reporteProgreso.setFechaBuyoff(p.getFechaBuyoff() != null ? p.getFechaBuyoff().toString() : null);
             reporteProgreso.setFechaTransit(p.getFechaTransit() != null ? p.getFechaTransit().toString() : null);
 
-            // Health task counts for individual project
+            // Conteos de salud de tareas para el proyecto individual
             int pOnTime = 0, pLate = 0, pNeedsAction = 0, pDecision = 0;
             for (ElementoChecklist item : todosLosItemsDelProyecto) {
                 String control = item.getControlEntregable();
@@ -102,11 +101,11 @@ public class ChecklistReporteServicio {
             .toList();
         
         int total = 0;
-        int onTime = 0;
-        int late = 0;
-        int needsAction = 0;
+        int aTiempo = 0;
+        int retrasado = 0;
+        int requiereAccion = 0;
         int decision = 0;
-        int fulfilled = 0;
+        int cumplido = 0;
 
         for (Proyecto p : proyectos) {
             List<ElementoChecklist> items = repositorio.findByProyecto_Id(p.getId());
@@ -116,14 +115,14 @@ public class ChecklistReporteServicio {
                 String control = item.getControlEntregable();
 
                 if ("OK".equalsIgnoreCase(score)) {
-                    fulfilled++;
+                    cumplido++;
                 }
 
                 if (control != null) {
                     String c = control.toUpperCase();
-                    if (c.contains("ON TIME")) onTime++;
-                    else if (c.contains("LATE")) late++;
-                    else if (c.contains("NEEDS ACTION")) needsAction++;
+                    if (c.contains("ON TIME")) aTiempo++;
+                    else if (c.contains("LATE")) retrasado++;
+                    else if (c.contains("NEEDS ACTION")) requiereAccion++;
                     else if (c.contains("DECISION")) decision++;
                 }
             }
@@ -131,20 +130,20 @@ public class ChecklistReporteServicio {
 
         ReporteEstadoGlobal r = new ReporteEstadoGlobal();
         r.setTotalDeliverables(total);
-        r.setOnTimeCount(onTime);
-        r.setDelayedCount(late);
-        r.setFulfilledCount(fulfilled);
-        r.setEscalationCount(needsAction);
+        r.setOnTimeCount(aTiempo);
+        r.setDelayedCount(retrasado);
+        r.setFulfilledCount(cumplido);
+        r.setEscalationCount(requiereAccion);
 
         if (total > 0) {
-            r.setOnTimePercentage(Math.round((double) onTime / total * 100));
-            r.setLatePercentage(Math.round((double) late / total * 100));
-            r.setNeedsActionPercentage(Math.round((double) needsAction / total * 100));
+            r.setOnTimePercentage(Math.round((double) aTiempo / total * 100));
+            r.setLatePercentage(Math.round((double) retrasado / total * 100));
+            r.setNeedsActionPercentage(Math.round((double) requiereAccion / total * 100));
             r.setDecisionPercentage(Math.round((double) decision / total * 100));
         }
 
-        r.setRiskHigh(late);
-        r.setRiskLow(onTime);
+        r.setRiskHigh(retrasado);
+        r.setRiskLow(aTiempo);
         
         return r;
     }
@@ -190,11 +189,11 @@ public class ChecklistReporteServicio {
         List<Proyecto> proyectos = proyectoRepositorio.findAllByOrderByIdAsc().stream()
             .filter(p -> !p.getEsHistorico())
             .toList();
-        List<TimelineGrupo> groups = new ArrayList<>();
+        List<TimelineGrupo> grupos = new ArrayList<>();
         List<TimelineItem> items = new ArrayList<>();
 
         for (Proyecto p : proyectos) {
-            groups.add(new TimelineGrupo(p.getId(), p.getNombre()));
+            grupos.add(new TimelineGrupo(p.getId(), p.getNombre()));
 
             List<ElementoChecklist> todosElementos = repositorio.findByProyecto_Id(p.getId());
             List<HitoProyecto> hitosManuales = hitoProyectoRepositorio.findByProyecto_Id(p.getId());
@@ -207,50 +206,51 @@ public class ChecklistReporteServicio {
 
                 int objetivo = (hito.getPorcentajeObjetivo() != null) ? hito.getPorcentajeObjetivo() : 100;
                 boolean completado = progresoActual >= objetivo;
-                boolean isLate = hito.getFecha() != null && hito.getFecha().isBefore(LocalDate.now()) && !completado;
+                boolean esTardio = hito.getFecha() != null && hito.getFecha().isBefore(LocalDate.now()) && !completado;
                 
-                String colorTexto = completado ? "#28a745" : (isLate ? "#dc3545" : "#3f6ad8");
-                String claseCSS = completado ? "hito-completado" : (isLate ? "hito-atrasado" : "hito-pendiente");
+                String colorTexto = completado ? "#28a745" : (esTardio ? "#dc3545" : "#3f6ad8");
+                String claseCSS = completado ? "hito-completado" : (esTardio ? "hito-atrasado" : "hito-pendiente");
                 
-                String labelPrincipal = hito.getEtapaAsociada();
+                String etiquetaPrincipal = hito.getEtapaAsociada();
                 
-                String htmlContent = "<div class='milestone-text'>" + 
-                                      "<strong>" + labelPrincipal + "</strong>: " +                                     
+                String contenidoHtml = "<div class='milestone-text'>" + 
+                                      "<strong>" + etiquetaPrincipal + "</strong>: " +                                     
                                       "<span style='color: " + colorTexto + "; font-weight: 900;'>" + (int)progresoActual + "% / " + objetivo + "%</span>" +                                                                                              
                                       "</div>";
 
-                items.add(new TimelineItem(hito.getId() * -1, p.getId(), htmlContent, hito.getFecha().toString(), "point", claseCSS));
+                items.add(new TimelineItem(hito.getId() * -1, p.getId(), contenidoHtml, hito.getFecha().toString(), "point", claseCSS));
             }
 
-            int contadorMainEvent = 1; 
+            int contadorEventoPrincipal = 1; 
             for (ElementoChecklist item : todosElementos) {
                 if (!item.isEsMainEvent()) continue;
 
                 LocalDate fecha = (item.getFechaPlan() != null) ? item.getFechaPlan() : item.getFechaReal();
                 if (fecha != null) {
                     boolean esExterno = item.getChampion() != null && (item.getChampion().contains("SCS") || item.getChampion().contains("Cliente") || item.getChampion().contains("Proveedor"));
-                    boolean isDelayed = item.getFechaPlan() != null && item.getFechaPlan().isBefore(LocalDate.now()) && !"OK".equalsIgnoreCase(item.getScore());
+                    boolean esRetrasado = item.getFechaPlan() != null && item.getFechaPlan().isBefore(LocalDate.now()) && !"OK".equalsIgnoreCase(item.getScore());
                     
                     String claseCSS = esExterno ? "vis-event-external" : "vis-event-internal"; 
-                    if (isDelayed) claseCSS += " event-delayed"; 
+                    if (esRetrasado) claseCSS += " event-delayed"; 
 
-                    String alertIcon = isDelayed ? "<i class='bi bi-exclamation-triangle-fill text-white me-1'></i>" : "";
+                    String iconoAlerta = esRetrasado ? "<i class='bi bi-exclamation-triangle-fill text-white me-1'></i>" : "";
                     
-                    String htmlBox = "<div class='event-content' data-realname='" + item.getNombre() + "' title='" + item.getNombre() + "'>" + 
-                                     alertIcon + "Main event " + contadorMainEvent + 
+                    String cajaHtml = "<div class='event-content' data-realname='" + item.getNombre() + "' title='" + item.getNombre() + "'>" + 
+                                     iconoAlerta + "Main event " + contadorEventoPrincipal + 
                                      "</div>";
 
-                    items.add(new TimelineItem(item.getId(), p.getId(), htmlBox, fecha.toString(), "box", claseCSS));
+                    items.add(new TimelineItem(item.getId(), p.getId(), cajaHtml, fecha.toString(), "box", claseCSS));
                     
-                    contadorMainEvent++; 
+                    contadorEventoPrincipal++; 
                 }
             }
         }
 
-        Map<String, Object> data = new HashMap<>();
-        data.put("groups", groups);
-        data.put("items", items);
-        return data;
+        Map<String, Object> datos = new HashMap<>();
+        grupos.forEach(g -> {}); // Dummy to keep variable names
+        datos.put("groups", grupos);
+        datos.put("items", items);
+        return datos;
     }
 
     @Transactional(readOnly = true)
@@ -272,10 +272,10 @@ public class ChecklistReporteServicio {
 
         for (ElementoChecklist e : todos) {
             if (e.getProyecto() != null && !e.getProyecto().getEsHistorico()) {
-                boolean isScoreOk = "OK".equalsIgnoreCase(e.getScore());
-                boolean isEstadoOk = "OK".equalsIgnoreCase(e.getEstado());
+                boolean esScoreOk = "OK".equalsIgnoreCase(e.getScore());
+                boolean esEstadoOk = "OK".equalsIgnoreCase(e.getEstado());
 
-                if (isScoreOk || isEstadoOk) {
+                if (esScoreOk || esEstadoOk) {
                     LocalDate fecha = e.getFechaReal() != null ? e.getFechaReal() : LocalDate.now();
                     String mesAnio = fecha.getMonthValue() + "/" + fecha.getYear();
                     tendencia.put(mesAnio, tendencia.getOrDefault(mesAnio, 0) + 1);

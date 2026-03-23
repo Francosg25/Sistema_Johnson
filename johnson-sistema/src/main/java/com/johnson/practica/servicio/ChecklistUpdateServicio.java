@@ -32,53 +32,52 @@ public class ChecklistUpdateServicio {
 
     @Transactional
     @CacheEvict(value = "reportes", allEntries = true)
-    public void guardarChecklistCompleto(Map<String, String> allParams) {
-        if (allParams == null || allParams.isEmpty()) return;
+    public void guardarChecklistCompleto(Map<String, String> todosLosParametros) {
+        if (todosLosParametros == null || todosLosParametros.isEmpty()) return;
 
-        Map<Long, Map<String, String>> updatesById = groupingParamsById(allParams);
+        Map<Long, Map<String, String>> actualizacionesPorId = agruparParametrosPorId(todosLosParametros);
 
-        List<ElementoChecklist> elementosDesdeBD = repositorio.findAllById(updatesById.keySet());
-        List<ElementoChecklist> elementosRealmenteModificados = new ArrayList<>();
+        List<ElementoChecklist> elementosDesdeBD = repositorio.findAllById(actualizacionesPorId.keySet());
+        List<ElementoChecklist> elementosModificados = new ArrayList<>();
 
-        String nombreUsuarioLogueado = getAuthenticatedUsername();
+        String usuarioLogueado = obtenerUsuarioAutenticado();
 
         for (ElementoChecklist elemento : elementosDesdeBD) {
-            Map<String, String> cambios = updatesById.get(elemento.getId());
-            boolean huboCambioReal = applyChangesToElement(elemento, cambios, nombreUsuarioLogueado);
+            Map<String, String> cambios = actualizacionesPorId.get(elemento.getId());
+            boolean huboCambioReal = aplicarCambiosAElemento(elemento, cambios, usuarioLogueado);
 
-            // Auto-reevaluate status
-            if (reevaluateStatus(elemento)) {
+            if (reevaluarEstadoControl(elemento)) {
                 huboCambioReal = true;
             }
 
             if (huboCambioReal) {
-                registrarYNotificarCambio(elemento, nombreUsuarioLogueado);
-                elementosRealmenteModificados.add(elemento);
+                registrarYNotificarCambio(elemento, usuarioLogueado);
+                elementosModificados.add(elemento);
             }
         }
         
-        if (!elementosRealmenteModificados.isEmpty()) {
-            repositorio.saveAll(elementosRealmenteModificados);
+        if (!elementosModificados.isEmpty()) {
+            repositorio.saveAll(elementosModificados);
         }
     }
 
-    private Map<Long, Map<String, String>> groupingParamsById(Map<String, String> allParams) {
-        Map<Long, Map<String, String>> updatesById = new HashMap<>();
-        for (Map.Entry<String, String> entry : allParams.entrySet()) {
-            String key = entry.getKey();
-            if (key.contains("-")) {
+    private Map<Long, Map<String, String>> agruparParametrosPorId(Map<String, String> todosLosParametros) {
+        Map<Long, Map<String, String>> mapa = new HashMap<>();
+        for (Map.Entry<String, String> entrada : todosLosParametros.entrySet()) {
+            String clave = entrada.getKey();
+            if (clave.contains("-")) {
                 try {
-                    String[] parts = key.split("-");
-                    Long itemId = Long.parseLong(parts[1]);
-                    updatesById.computeIfAbsent(itemId, k -> new HashMap<>()).put(parts[0], entry.getValue());
-                } catch (NumberFormatException ignored) {}
+                    String[] partes = clave.split("-");
+                    Long idItem = Long.parseLong(partes[1]);
+                    mapa.computeIfAbsent(idItem, k -> new HashMap<>()).put(partes[0], entrada.getValue());
+                } catch (NumberFormatException ignorado) {}
             }
         }
-        return updatesById;
+        return mapa;
     }
 
-    private String getAuthenticatedUsername() {
-        String usuarioAudit = "Sistema";
+    private String obtenerUsuarioAutenticado() {
+        String usuarioAudit = "System";
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         if (auth != null && auth.isAuthenticated() && !auth.getPrincipal().equals("anonymousUser")) {
             usuarioAudit = auth.getName();
@@ -86,19 +85,19 @@ public class ChecklistUpdateServicio {
         return usuarioAudit;
     }
 
-    private boolean applyChangesToElement(ElementoChecklist elemento, Map<String, String> cambios, String usuario) {
+    private boolean aplicarCambiosAElemento(ElementoChecklist elemento, Map<String, String> cambios, String usuario) {
         final boolean[] huboCambio = {false};
-        cambios.forEach((fieldName, fieldValue) -> {
-            String valorNuevo = (fieldValue == null) ? "" : fieldValue.trim();
-            if (updateField(elemento, fieldName, valorNuevo, usuario)) {
+        cambios.forEach((nombreCampo, valorCampo) -> {
+            String valorNuevo = (valorCampo == null) ? "" : valorCampo.trim();
+            if (actualizarCampo(elemento, nombreCampo, valorNuevo, usuario)) {
                 huboCambio[0] = true;
             }
         });
         return huboCambio[0];
     }
 
-    private boolean updateField(ElementoChecklist elemento, String fieldName, String valorNuevo, String usuario) {
-        switch (fieldName) {
+    private boolean actualizarCampo(ElementoChecklist elemento, String nombreCampo, String valorNuevo, String usuario) {
+        switch (nombreCampo) {
             case "controlEntregable" -> {
                 if (esDiferente(elemento.getControlEntregable(), valorNuevo)) {
                     elemento.setControlEntregable(valorNuevo);
@@ -129,22 +128,22 @@ public class ChecklistUpdateServicio {
                     if ("OK".equalsIgnoreCase(valorNuevo) && elemento.getFechaReal() == null) {
                         elemento.setFechaReal(LocalDate.now());
                     }
-                    notificarGateValidation(elemento, valorNuevo, usuario);
+                    notificarValidacionGate(elemento, valorNuevo, usuario);
                     elemento.setEstado(valorNuevo);
                     return true;
                 }
             }
             case "fechaReal" -> {
-                return updateDateReal(elemento, valorNuevo);
+                return actualizarFechaReal(elemento, valorNuevo);
             }
             case "fechaPlan" -> {
-                return updateDatePlan(elemento, valorNuevo);
+                return actualizarFechaPlan(elemento, valorNuevo);
             }
         }
         return false;
     }
 
-    private boolean updateDateReal(ElementoChecklist elemento, String valorNuevo) {
+    private boolean actualizarFechaReal(ElementoChecklist elemento, String valorNuevo) {
         try {
             if (!valorNuevo.isEmpty()) {
                 LocalDate nuevaFecha = LocalDate.parse(valorNuevo);
@@ -156,11 +155,11 @@ public class ChecklistUpdateServicio {
                 elemento.setFechaReal(null);
                 return true;
             }
-        } catch (Exception ignored) {}
+        } catch (Exception ignorado) {}
         return false;
     }
 
-    private boolean updateDatePlan(ElementoChecklist elemento, String valorNuevo) {
+    private boolean actualizarFechaPlan(ElementoChecklist elemento, String valorNuevo) {
         try {
             if (!valorNuevo.isEmpty()) {
                 LocalDate nuevaFecha = LocalDate.parse(valorNuevo);
@@ -172,7 +171,7 @@ public class ChecklistUpdateServicio {
                 elemento.setFechaPlan(null);
                 return true;
             }
-        } catch (Exception ignored) {}
+        } catch (Exception ignorado) {}
         return false;
     }
 
@@ -183,56 +182,56 @@ public class ChecklistUpdateServicio {
         notificacionServicio.alertarATodos(titulo, msj, "SUCCESS", url, usuario);
     }
 
-    private void notificarGateValidation(ElementoChecklist elemento, String valorNuevo, String usuario) {
+    private void notificarValidacionGate(ElementoChecklist elemento, String valorNuevo, String usuario) {
         boolean esGate345 = elemento.getFase() != null && 
                            (elemento.getFase().startsWith("3") || 
                             elemento.getFase().startsWith("4") || 
                             elemento.getFase().startsWith("5"));
         
         if (esGate345 && "GATE".equals(elemento.getTipoInput()) && "Validation".equals(elemento.getGrupo())) {
-            String gateNum = elemento.getFase().substring(0, 1);
+            String numGate = elemento.getFase().substring(0, 1);
             String respuesta = "OK".equalsIgnoreCase(valorNuevo) ? "YES" : ("NOK".equalsIgnoreCase(valorNuevo) ? "NO" : valorNuevo);
-            String titulo = "Gate " + gateNum + " Validation: " + respuesta;
+            String titulo = "Gate " + numGate + " Validation: " + respuesta;
             String msj = "The requirement '" + elemento.getNombre() + "' in " + elemento.getProyecto().getNombre() + " was marked as " + respuesta + ".";
             String url = "/proyectos/checklist/" + elemento.getProyecto().getId();
             notificacionServicio.alertarATodos(titulo, msj, "INFO", url, usuario);
         }
     }
 
-    private boolean reevaluateStatus(ElementoChecklist elemento) {
+    private boolean reevaluarEstadoControl(ElementoChecklist elemento) {
         if (elemento.getFechaPlan() == null) return false;
 
-        String currentCtrl = (elemento.getControlEntregable() == null) ? "" : elemento.getControlEntregable();
-        boolean changed = false;
+        String ctrlActual = (elemento.getControlEntregable() == null) ? "" : elemento.getControlEntregable();
+        boolean cambio = false;
 
         if (elemento.getFechaReal() != null) {
             if (elemento.getFechaReal().isAfter(elemento.getFechaPlan())) {
-                if (!"Closed late".equalsIgnoreCase(currentCtrl)) {
+                if (!"Closed late".equalsIgnoreCase(ctrlActual)) {
                     elemento.setControlEntregable("Closed late");
-                    changed = true;
+                    cambio = true;
                 }
             } else {
-                if (!"Closed on time".equalsIgnoreCase(currentCtrl) && 
-                    !"DECISION".equalsIgnoreCase(currentCtrl) && 
-                    !"NEEDS ACTION".equalsIgnoreCase(currentCtrl)) {
+                if (!"Closed on time".equalsIgnoreCase(ctrlActual) && 
+                    !"DECISION".equalsIgnoreCase(ctrlActual) && 
+                    !"NEEDS ACTION".equalsIgnoreCase(ctrlActual)) {
                     elemento.setControlEntregable("Closed on time");
-                    changed = true;
+                    cambio = true;
                 }
             }
         } else if (elemento.getFechaPlan().isBefore(LocalDate.now()) && !"OK".equalsIgnoreCase(elemento.getScore())) {
-            if (!"Closed late".equalsIgnoreCase(currentCtrl) && !"Closed on time".equalsIgnoreCase(currentCtrl)) {
+            if (!"Closed late".equalsIgnoreCase(ctrlActual) && !"Closed on time".equalsIgnoreCase(ctrlActual)) {
                 elemento.setControlEntregable("Closed late");
-                changed = true;
+                cambio = true;
             }
         }
-        return changed;
+        return cambio;
     }
 
     private void registrarYNotificarCambio(ElementoChecklist elemento, String usuario) {
         bitacoraServicio.registrarAccion(
             usuario, 
             "UPDATE DELIVERABLE", 
-            "Deliverable: " + elemento.getNombre() + " was updated in project " + elemento.getProyecto().getNombre()
+            "Deliverable: " + elemento.getNombre() + " updated in project " + elemento.getProyecto().getNombre()
         );
         
         String lider = elemento.getProyecto().getLiderProyecto();
