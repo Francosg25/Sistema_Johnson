@@ -107,13 +107,13 @@
                                     </td>
                                     <td class="pe-4 text-end">
                                         <button type="button" class="btn btn-sm btn-outline-danger border-0 rounded-circle" 
-                                            th:if="${user.username != null}"
-                                            th:disabled="${user.username == #authentication.name}"
-                                            th:data-id="${user.id}"
-                                            th:data-nombre="${user.nombreCompleto != null ? user.nombreCompleto : 'Este usuario'}"
-                                            onclick="prepararEliminacion(this.getAttribute('data-id'), this.getAttribute('data-nombre'))">
-                                        <i class="bi bi-trash-fill"></i>
-                                    </button>
+                                                th:if="${user.username != null}"
+                                                th:disabled="${user.username == #authentication.name}"
+                                                th:data-id="${user.id}"
+                                                th:data-nombre="${user.nombreCompleto != null ? user.nombreCompleto : user.username}"
+                                                onclick="prepararEliminacion(this.getAttribute('data-id'), this.getAttribute('data-nombre'))">
+                                            <i class="bi bi-trash-fill"></i>
+                                        </button>
                                     </td>
                                 </tr>
                             </tbody>

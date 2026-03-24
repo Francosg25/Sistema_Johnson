@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<body>
+
+    <div th:fragment="modalEvidencia(item)" class="modal fade" th:id="'modalEvidencia_' + ${item.id}" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-0 shadow-lg">
+                <div class="modal-header bg-light border-bottom-0 pb-0">
+                    <div>
+                        <h5 class="modal-title fw-bold text-dark mb-0"><i class="bi bi-folder-check text-primary me-2"></i>Evidence</h5>
+                        <p class="text-muted small mb-0 mt-1" th:text="${item.codigo} + ' - ' + ${item.nombre}"></p>
+                    </div>
+                    <button type="button" class="btn-close shadow-none" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body pt-4">
+                    <div th:id="'alerta-' + ${item.id}"></div>
+                    <form th:action="@{'/evidencias/subir-ajax/' + ${item.id}}" th:data-item-id="${item.id}" method="post" enctype="multipart/form-data" class="mb-4 form-evidencia-ajax" sec:authorize="hasAnyRole('ADMIN', 'CHAMPION')">
+                        <div class="p-4 border rounded bg-light text-center border-primary border-opacity-25" style="border-style: dashed !important; border-width: 2px !important;">
+                            <i class="bi bi-cloud-upload fs-1 text-primary mb-2 d-block"></i>
+                            <label th:for="'archivo_' + ${item.id}" class="form-label fw-bold mb-1">Select a file</label>
+                            <p class="text-muted small mb-3">PDF, Excel, Word (Max 15MB)</p>
+                            <input class="form-control form-control-sm shadow-sm" type="file" th:id="'archivo_' + ${item.id}" name="archivo" required>
+                            <button type="submit" class="btn btn-primary btn-sm w-100 mt-3 fw-bold shadow-sm btn-subir">Upload File</button>
+                        </div>
+                    </form>
+
+                    <h6 class="fw-bold small mb-3 text-secondary border-bottom pb-2">ATTACHED FILES</h6>
+                    <ul class="list-group list-group-flush small" th:id="'lista-' + ${item.id}">
+                        <li th:if="${item.adjuntos == null or item.adjuntos.isEmpty()}" th:id="'msg-vacio-' + ${item.id}" class="list-group-item d-flex justify-content-between align-items-center px-0 bg-transparent border-bottom-dashed text-muted fst-italic">
+                            No evidence uploaded yet.
+                        </li>
+                        <li th:each="adj : ${item.adjuntos}" class="list-group-item d-flex justify-content-between align-items-center px-0 bg-transparent border-bottom-dashed py-2">
+                            <div class="d-flex align-items-center text-truncate pe-3">
+                                <i class="bi bi-file-earmark-check-fill text-success fs-4 me-2"></i>
+                                <span class="text-truncate fw-bold text-dark" th:text="${adj.nombreArchivo}"></span>
+                            </div>
+                            <div class="d-flex gap-2">
+                                <div sec:authorize="hasAnyRole('ADMIN', 'CHAMPION')" style="display:inline;">
+                                    <a th:href="@{'/evidencias/descargar/' + ${adj.id}}" class="btn btn-sm btn-light border rounded-circle shadow-sm text-primary" title="Download">
+                                        <i class="bi bi-download"></i>
+                                    </a>
+                                </div>
+                                <span sec:authorize="hasRole('VIEWER')" class="text-muted small"><i class="bi bi-lock-fill"></i></span>
+                                <button type="button" class="btn btn-sm btn-light border rounded-circle shadow-sm text-danger" title="Delete" th:onclick="'eliminarEvidenciaAjax(' + ${adj.id} + ', this, ' + ${item.id} + ')'" sec:authorize="hasAnyRole('ADMIN', 'CHAMPION')">
+                                    <i class="bi bi-trash"></i>
+                                </button>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div th:fragment="modalComentarios" class="modal fade" id="modalEditorComentarios" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content shadow-lg border-0">
+                <div class="modal-header bg-light border-bottom-0 pb-3">
+                    <h5 class="modal-title fw-bold text-dark"><i class="bi bi-card-text text-primary me-2"></i>Remarks <span id="editor-codigo" class="badge bg-secondary ms-2 fw-normal shadow-sm"></span></h5>
+                    <button type="button" class="btn-close shadow-none" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body pt-0 bg-light">
+                    <div class="p-3 bg-white rounded border shadow-sm">
+                        <p class="small text-muted mb-2"><i class="bi bi-info-circle me-1"></i> You can use multiple lines, lists and dates. Use <strong>@</strong> to mention.</p>
+                        <input type="hidden" id="editor-item-id">
+                        <div id="editor-textarea" contenteditable="true" class="form-control border-secondary-subtle"></div>
+                    </div>
+                </div>
+                <div class="modal-footer bg-light border-top-0">
+                    <button type="button" class="btn btn-outline-secondary btn-sm fw-bold px-3 shadow-sm" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary btn-sm fw-bold px-4 shadow-sm" onclick="guardarComentarioModal()"><i class="bi bi-check2-circle me-2"></i> Apply to Checklist</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div th:fragment="modalEliminarEvidencia" class="modal fade" id="modalConfirmarEliminacion" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-sm">
+            <div class="modal-content border-0 shadow-lg">
+                <div class="modal-body text-center p-4">
+                    <i class="bi bi-exclamation-circle text-danger display-4 mb-3 d-block"></i>
+                    <h6 class="fw-bold text-dark mb-2">Delete Evidence?</h6>
+                    <p class="text-muted small mb-4">The file will be permanently deleted.</p>
+                    <div class="d-flex justify-content-center gap-2">
+                        <button type="button" class="btn btn-light btn-sm px-3 border shadow-sm fw-bold" data-bs-dismiss="modal">Cancel</button>
+                        <button type="button" class="btn btn-danger btn-sm px-4 fw-bold shadow-sm" id="btnConfirmarEliminar">Delete</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div th:fragment="modalFinalizarProyecto(proyecto)" class="modal fade" id="modalFinalizarProyecto" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content shadow-lg border-0" style="border-radius: 24px;">
+                <form th:action="@{/proyectos/archivar/{id}(id=${proyecto.id})}" method="post">
+                    <div class="modal-header bg-light py-4" style="border-radius: 24px 24px 0 0; border-bottom: 1px solid rgba(0,0,0,0.05);">
+                        <h5 class="modal-title fw-bold px-2 text-dark"><i class="bi bi-check-circle-fill me-2 text-success"></i>Finalize & Archive Project</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body p-5 text-center">
+                        <div class="mb-4"><i class="bi bi-archive-fill text-dark" style="font-size: 4rem; opacity: 0.1;"></i></div>
+                        <h4 class="fw-bold text-dark mb-3">Is the project ready?</h4>
+                        <p class="text-muted mb-4">This action will move <strong class="text-dark" th:text="${proyecto.nombre}"></strong> to the historic Evidence Vault and notify all users.</p>
+                    </div>
+                    <div class="modal-footer border-0 p-4 pt-0">
+                        <button type="button" class="btn btn-light px-4 py-2 fw-bold" data-bs-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn btn-dark px-4 py-2 fw-bold shadow"><i class="bi bi-check2-all me-2"></i>FINALIZE NOW</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div th:fragment="modalFirmas" class="modal fade" id="modalConfirmarFirma" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-0 shadow-lg" style="border-radius: 20px;">
+                <div class="modal-header text-white border-0" style="background: linear-gradient(135deg, #F5821F 0%, #e0600d 100%); border-radius: 20px 20px 0 0;">
+                    <h5 class="modal-title fw-bold"><i class="bi bi-patch-check me-2"></i>Apply Approval Seal</h5>
+                    <button type="button" class="btn-close btn-close-white shadow-none" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body text-center p-4">
+                    <i class="bi bi-shield-lock-fill text-warning" style="font-size: 3.5rem;"></i>
+                    <h4 class="fw-bold mt-3 text-dark">Are you completely sure?</h4>
+                    <p class="text-muted mb-0">You are about to officially sign and approve <b>Gate <span id="modalGateText" class="text-primary"></span></b> as <b><span id="modalRolText" class="text-primary"></span></b>.</p>
+                </div>
+                <div class="modal-footer bg-light border-0 d-flex justify-content-center" style="border-radius: 0 0 20px 20px;">
+                    <button type="button" class="btn btn-outline-secondary fw-bold rounded-pill px-4" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" id="btnConfirmarFirmaAjax" class="btn btn-success fw-bold rounded-pill px-4 shadow-sm"><i class="bi bi-vector-pen me-2"></i>Yes, Apply Seal</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>

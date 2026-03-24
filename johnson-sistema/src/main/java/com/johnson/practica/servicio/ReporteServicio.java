@@ -95,7 +95,6 @@ public class ReporteServicio {
         
         long roundedRisk = Math.round(riesgoScore);
 
-        // --- 5. LÓGICA DEL EXECUTIVE ROADMAP (HITOS) ---
         List<Map<String, Object>> roadmapHitos = new java.util.ArrayList<>();
         int yearActual = 2026; 
 
@@ -103,7 +102,6 @@ public class ReporteServicio {
         agregarHito(roadmapHitos, "Line Buy-off", "👥", proyecto.getFechaBuyoff(), yearActual);
         agregarHito(roadmapHitos, "Equipment Ship", "🚢", proyecto.getFechaTransit(), yearActual);
         
-        // Factory Arrival (Transit + 60 days)
         if (proyecto.getFechaTransit() != null) {
             agregarHito(roadmapHitos, "Factory Arrival", "🏭", proyecto.getFechaTransit().plusDays(60), yearActual);
         }

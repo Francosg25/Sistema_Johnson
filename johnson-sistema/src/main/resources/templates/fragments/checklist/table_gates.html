@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<body>
+    <div th:fragment="tablaGates(fase, proyecto, firmasGate3, firmasGate4, firmasGate5)" th:if="${!fase.nombre.contains('Program') && !fase.nombre.contains('Stage 2')}" class="card glass-card">
+        <div class="card-body p-4">
+            <div class="p-3 mb-4 rounded shadow-sm border" style="background-color: rgba(248, 249, 250, 0.6); backdrop-filter: blur(5px);">
+                <h5 class="fw-bold text-dark mb-3"><i class="bi bi-search text-primary me-2"></i>Gate Review / <span class="text-primary" th:text="${#strings.replace(fase.nombre, 'Stage', 'Gate')}"></span></h5>
+                <div class="row g-3 small">
+                    <div class="col-md-6"><strong class="me-2 text-muted">Customer:</strong> <span class="fw-bold" th:text="${proyecto.cliente}"></span></div>
+                    <div class="col-md-6"><strong class="me-2 text-muted">Date:</strong> <span class="fw-bold"></span></div>
+                    <div class="col-md-6"><strong class="me-2 text-muted">Project Name:</strong> <span class="fw-bold" th:text="${proyecto.nombre}"></span></div>
+                    <div class="col-md-6"><strong class="me-2 text-muted">Part Number:</strong> <span class="fw-bold" th:text="${proyecto.numeroParte}"></span></div>
+                </div>
+            </div>
+            <h6 class="text-uppercase fw-bold text-secondary mb-3 border-bottom pb-2">1. Requirements Validation</h6>
+            <div class="table-responsive mb-5 card glass-card border-0 shadow-none" style="background: transparent !important; backdrop-filter: none !important;">
+                <table class="table table-hover mb-0 align-middle">
+                    <thead class="bg-light small fw-bold text-center">
+                        <tr>
+                            <th style="width: 50px;" title="Evidence"><i class="bi bi-paperclip fs-5 text-secondary"></i></th>
+                            <th style="width: 8%;">Yes</th>
+                            <th style="width: 8%;">No</th>
+                            <th class="text-start ps-3">Requirement</th>
+                            <th style="width: 30%;">Comments</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="item : ${fase.items}" th:if="${item.grupo == 'Conclusion'}">
+                            <td class="text-center align-middle">
+                                <button type="button" class="btn btn-sm border shadow-sm rounded-circle" 
+                                        th:id="'btn-evidencia-' + ${item.id}"
+                                        th:classappend="${item.adjuntos != null and !item.adjuntos.isEmpty()} ? 'btn-primary' : 'btn-light'"
+                                        data-bs-toggle="modal" 
+                                        th:data-bs-target="'#modalEvidencia_' + ${item.id}">
+                                    <i th:id="'btn-icon-evidencia-' + ${item.id}" class="bi bi-cloud-arrow-up-fill" th:classappend="${item.adjuntos != null and !item.adjuntos.isEmpty()} ? 'text-white' : 'text-primary'"></i>
+                                </button>
+                            </td>
+                            <td class="text-center">
+                                <input class="form-check-input fs-5 shadow-sm border-success" type="radio" th:name="'estado-' + ${item.id}" value="OK" th:checked="${item.estado == 'OK'}">
+                            </td>
+                            <td class="text-center">
+                                <input class="form-check-input fs-5 shadow-sm border-danger" type="radio" th:name="'estado-' + ${item.id}" value="NOK" th:checked="${item.estado == 'NOK'}">
+                            </td>
+                            <td class="fw-bold text-dark ps-3" th:text="${item.nombre}"></td>
+                            
+                            <td style="max-width: 250px; vertical-align: middle; padding-right: 15px;">
+                                <div class="d-flex justify-content-between align-items-center bg-white bg-opacity-50 rounded p-1 border shadow-sm"
+                                     style="cursor: pointer; transition: 0.2s;" onmouseover="this.style.borderColor='#80bdff'" onmouseout="this.style.borderColor='#dee2e6'" th:onclick="abrirEditorComentarios([[${item.id}]], [[${item.codigo}]])">
+                                    <div class="text-truncate small ms-2 w-100" th:id="'preview-comentario-' + ${item.id}"
+                                         th:classappend="${item.comentario == null or item.comentario.isEmpty() ? 'text-muted fst-italic' : 'text-dark fw-bold'}"
+                                         th:text="${item.comentario == null or item.comentario.isEmpty() ? '' : item.comentario}">
+                                    </div>
+                                    <button type="button" th:id="'btn-comentario-' + ${item.id}" 
+                                            class="btn btn-sm border-0 rounded-circle ms-1 flex-shrink-0 shadow-sm"
+                                            th:classappend="${item.comentario == null or item.comentario.isEmpty() ? 'btn-light text-secondary' : 'btn-primary text-white'}"
+                                            th:attr="onclick=|abrirEditorComentarios('${item.id}', '${item.codigo}')|">
+                                        <i th:id="'btn-icon-comentario-' + ${item.id}" 
+                                           th:class="${item.comentario == null or item.comentario.isEmpty() ? 'bi bi-pencil' : 'bi bi-chat-text-fill'}"></i>
+                                    </button>
+                                </div>
+                                <textarea class="d-none" th:name="'comentario-' + ${item.id}" th:id="'real-comentario-' + ${item.id}" th:text="${item.comentario}"></textarea>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <h6 class="text-uppercase fw-bold text-secondary mb-3 border-bottom pb-2">3. Approvals</h6>
+            
+            <div th:if="${fase.nombre == 'Stage 3' or fase.nombre == 'Stage 4' or fase.nombre == 'Stage 5'}" class="row g-4">
+                <th:block th:with="
+                    etapaNum=${fase.nombre == 'Stage 3' ? 3 : (fase.nombre == 'Stage 4' ? 4 : 5)},
+                    mapaFirmas=${etapaNum == 3 ? firmasGate3 : (etapaNum == 4 ? firmasGate4 : firmasGate5)}">
+                    
+                    <div class="col-md-6">
+                        <div class="card glass-card h-100 shadow-sm">
+                            <div class="card-header bg-light bg-opacity-50 fw-bold text-primary border-0">
+                                <i class="bi bi-people-fill me-2"></i>Gate <span th:text="${etapaNum}"></span> Responsibles
+                            </div>
+                            <div class="card-body p-0">
+                                <table class="table table-hover table-sm mb-0 small border-0">
+                                    <tbody>
+                                        <th:block th:each="info : ${ {'Project Engineer:Eduardo Tejeida', 'Quality Engineer:Gabriel Romero', 'Process Engineer:Jesus Urena', 'Project Leader:Eduardo Tejeida'} }">
+                                            <tr th:with="rol=${info.split(':')[0]}, nombre=${info.split(':')[1]}, firma=${mapaFirmas != null ? mapaFirmas.get(rol) : null}">
+                                                <td class="fw-bold text-muted ps-3 w-50 border-0 align-middle" th:text="${rol}"></td>
+                                                <td class="fw-bold border-0 align-middle" th:text="${nombre}"></td>
+                                                
+                                                <td class="border-0 text-end pe-3 align-middle" style="width: 120px;">
+                                                    <div th:if="${firma != null}" 
+                                                         class="mini-signature-box signed shadow-sm border-success bg-success bg-opacity-10 btn-firmado-trigger" 
+                                                         th:data-firmante="${firma.nombreCompleto != null ? firma.nombreCompleto : (firma.username != null ? firma.username : rol)}"
+                                                         th:data-fecha="${#temporals.format(firma.fechaFirma, 'dd/MM/yyyy')}"
+                                                         style="border-style: solid !important; border-width: 2px !important; min-width: 100px;">
+                                                        <i class="bi bi-patch-check-fill text-success mb-1 d-block" style="font-size: 1.3rem;"></i>
+                                                        <span class="small fw-bold text-success d-block text-truncate" style="line-height: 1; max-width: 90px;" th:text="${firma.nombreCompleto != null ? firma.nombreCompleto.split(' ')[0] : 'SIGNED'}"></span>
+                                                    </div>
+                                                    
+                                                    <div th:if="${firma == null}" 
+                                                         class="mini-signature-box unsigned btn-firmar-trigger"
+                                                         th:data-proyecto="${proyecto.id}" th:data-etapa="${etapaNum}" th:data-rol="${rol}"
+                                                         sec:authorize="hasAnyRole('ADMIN', 'CHAMPION')" title="Click to Sign">
+                                                        <i class="bi bi-pen text-secondary mb-1 d-block" style="font-size: 1.1rem;"></i>
+                                                        <span class="small fw-bold text-primary">Sign</span>
+                                                    </div>  
+                                                </td>
+                                            </tr>
+                                        </th:block>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="card glass-card h-100 shadow-sm">
+                            <div class="card-header bg-light bg-opacity-50 fw-bold text-primary border-0"><i class="bi bi-building me-2"></i>Manufacturing Site Management</div>
+                            <div class="card-body p-0">
+                                <table class="table table-hover table-sm mb-0 small border-0">
+                                    <tbody>
+                                        <th:block th:each="info : ${ {'Operations Manager:Fermin Flores', 'Quality Manager:Rodrigo Rabelo', 'Materials Manager:Juan Carlos Arizpe', 'SCS Manager:Kevin Swisher', 'Finance Manager:Bernardo Marines', 'HR Manager:Claudia Castañeda'} }">
+                                            <tr th:with="rol=${info.split(':')[0]}, nombre=${info.split(':')[1]}, firma=${mapaFirmas != null ? mapaFirmas.get(rol) : null}">
+                                                <td class="fw-bold text-muted ps-3 w-50 border-0 align-middle" th:text="${rol}"></td>
+                                                <td class="fw-bold border-0 align-middle" th:text="${nombre}"></td>
+                                                
+                                                <td class="border-0 text-end pe-3 align-middle" style="width: 120px;">
+                                                    <div th:if="${firma != null}" 
+                                                         class="mini-signature-box signed shadow-sm border-success bg-success bg-opacity-10 btn-firmado-trigger" 
+                                                         th:data-firmante="${firma.nombreCompleto != null ? firma.nombreCompleto : (firma.username != null ? firma.username : rol)}"
+                                                         th:data-fecha="${#temporals.format(firma.fechaFirma, 'dd/MM/yyyy')}"
+                                                         style="border-style: solid !important; border-width: 2px !important; min-width: 100px;">
+                                                        <i class="bi bi-patch-check-fill text-success mb-1 d-block" style="font-size: 1.3rem;"></i>
+                                                        <span class="small fw-bold text-success d-block text-truncate" style="line-height: 1; max-width: 90px;" th:text="${firma.nombreCompleto != null ? firma.nombreCompleto.split(' ')[0] : 'SIGNED'}"></span>
+                                                    </div>
+                                                    
+                                                    <div th:if="${firma == null}" 
+                                                         class="mini-signature-box unsigned btn-firmar-trigger"
+                                                         th:data-proyecto="${proyecto.id}" th:data-etapa="${etapaNum}" th:data-rol="${rol}"
+                                                         sec:authorize="hasAnyRole('ADMIN', 'CHAMPION')" title="Click to Sign">
+                                                        <i class="bi bi-pen text-secondary mb-1 d-block" style="font-size: 1.1rem;"></i>
+                                                        <span class="small fw-bold text-primary">Sign</span>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        </th:block>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </th:block>
+            </div>
+            
+            <div th:if="${fase.nombre != 'Stage 3' and fase.nombre != 'Stage 4' and fase.nombre != 'Stage 5'}" class="text-muted text-center py-4 bg-light bg-opacity-50 rounded border border-dashed">
+                <i class="bi bi-journal-x fs-2 d-block mb-2 opacity-50"></i>
+                Approval table for <strong th:text="${#strings.replace(fase.nombre, 'Stage', 'Gate')}"></strong> not required in this view.
+            </div>
+        </div>
+    </div>
+</body>
+</html>

@@ -34,7 +34,7 @@ public class DashboardControlador {
     private ChecklistServicio checklistServicio;
 
     @Autowired
-    private ChecklistReporteServicio checklistReporteServicio; // <-- NUEVO
+    private ChecklistReporteServicio checklistReporteServicio; 
 
     @Autowired
     private NotificacionServicio notificacionServicio;

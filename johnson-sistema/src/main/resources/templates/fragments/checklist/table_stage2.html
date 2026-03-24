@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+    <div th:fragment="tablaStage2(fase)" th:if="${fase.nombre.contains('Stage 2')}" class="card glass-card">
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover mb-0 align-middle" style="font-size: 0.85rem;">
+                    <thead class="bg-light small fw-bold text-uppercase">
+                        <tr>
+                            <th style="width: 10%;" class="text-center">ID</th>
+                            <th style="width: 40%;">Requirement</th>
+                            <th style="width: 10%;" class="text-center">Compliance</th>
+                            <th style="width: 20%;">Comments</th>
+                            <th style="width: 10%;" class="text-center">Responsible</th>
+                            <th style="width: 10%;" class="text-center">Date</th>
+                            <th class="text-center" style="width: 50px;" title="Evidence">
+                                <i class="bi bi-paperclip fs-5 text-secondary"></i>
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <th:block th:each="item, iterStat : ${fase.items}">
+                            <tr th:if="${iterStat.index == 0 || !fase.items[iterStat.index - 1].grupo.equals(item.grupo)}" class="table-group-header">
+                                <td colspan="7" class="fw-bold text-uppercase small py-2 px-3 text-dark">
+                                    <i class="bi bi-folder2-open me-2 text-primary"></i><span th:text="${item.grupo}">Grupo</span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="text-muted fw-bold text-center" th:text="${item.codigo}"></td>
+                                <td th:text="${item.nombre}" class="fw-bold text-dark"></td>
+
+                                <td class="text-center">
+                                    <div class="btn-group btn-group-sm w-100 shadow-sm">
+                                        <input type="radio" class="btn-check" th:name="'estado-' + ${item.id}" value="OK" th:id="'si_'+${item.id}" th:checked="${item.estado == 'OK'}">
+                                        <label class="btn btn-outline-success fw-bold" th:for="'si_'+${item.id}">Yes</label>
+                                        <input type="radio" class="btn-check" th:name="'estado-' + ${item.id}" value="NOK" th:id="'no_'+${item.id}" th:checked="${item.estado == 'NOK'}">
+                                        <label class="btn btn-outline-danger fw-bold" th:for="'no_'+${item.id}">No</label>
+                                        <input type="radio" class="btn-check" th:name="'estado-' + ${item.id}" value="NA" th:id="'na_'+${item.id}" th:checked="${item.estado == 'NA'}">
+                                        <label class="btn btn-outline-secondary fw-bold" th:for="'na_'+${item.id}">NA</label>
+                                    </div>
+                                </td>
+                                
+                                <td style="max-width: 250px; vertical-align: middle;">
+                                    <div class="d-flex justify-content-between align-items-center bg-white bg-opacity-50 rounded p-1 border shadow-sm"
+                                         style="cursor: pointer; transition: 0.2s;" onmouseover="this.style.borderColor='#80bdff'" onmouseout="this.style.borderColor='#dee2e6'" th:onclick="abrirEditorComentarios([[${item.id}]], [[${item.codigo}]])">
+                                        <div class="text-truncate small ms-2 w-100" th:id="'preview-comentario-' + ${item.id}"
+                                             th:classappend="${item.comentario == null or item.comentario.isEmpty() ? 'text-muted fst-italic' : 'text-dark fw-bold'}"
+                                             th:text="${item.comentario == null or item.comentario.isEmpty() ? '' : item.comentario}">
+                                        </div>
+                                        <button type="button" th:id="'btn-comentario-' + ${item.id}" 
+                                                class="btn btn-sm border-0 rounded-circle ms-1 flex-shrink-0 shadow-sm"
+                                                th:classappend="${item.comentario == null or item.comentario.isEmpty() ? 'btn-light text-secondary' : 'btn-primary text-white'}"
+                                                th:attr="onclick=|abrirEditorComentarios('${item.id}', '${item.codigo}')|">
+                                            <i th:id="'btn-icon-comentario-' + ${item.id}" 
+                                               th:class="${item.comentario == null or item.comentario.isEmpty() ? 'bi bi-pencil' : 'bi bi-chat-text-fill'}"></i>
+                                        </button>
+                                    </div>
+                                    <textarea class="d-none" th:name="'comentario-' + ${item.id}" th:id="'real-comentario-' + ${item.id}" th:text="${item.comentario}"></textarea>
+                                </td>
+
+                                <td class="text-center fw-bold">
+                                    <span class="badge w-100 shadow-sm" 
+                                          th:with="normChamp=${@checklistServicio.normalizarChampion(item.champion)}"
+                                          th:classappend="'champ-' + ${#strings.toLowerCase(normChamp).replace('/', '-')}" 
+                                          th:text="${normChamp}"
+                                          th:title="${@checklistServicio.obtenerNombreCompletoChampion(normChamp)}"></span>
+                                </td>
+                                <td class="text-center"><input type="date" class="form-control form-control-sm border-0 text-center p-0 fw-bold text-dark bg-transparent" th:name="'fechaReal-' + ${item.id}" th:value="${item.fechaReal}"></td>
+                                
+                                <td class="text-center">
+                                    <button type="button" class="btn btn-sm border shadow-sm rounded-circle" 
+                                            th:id="'btn-evidencia-' + ${item.id}"
+                                            th:classappend="${item.adjuntos != null and !item.adjuntos.isEmpty()} ? 'btn-primary' : 'btn-light'"
+                                            data-bs-toggle="modal" 
+                                            th:data-bs-target="'#modalEvidencia_' + ${item.id}"
+                                            title="Upload/View Evidence">
+                                        <i th:id="'btn-icon-evidencia-' + ${item.id}" class="bi bi-cloud-arrow-up-fill" th:classappend="${item.adjuntos != null and !item.adjuntos.isEmpty()} ? 'text-white' : 'text-primary'"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                        </th:block>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
