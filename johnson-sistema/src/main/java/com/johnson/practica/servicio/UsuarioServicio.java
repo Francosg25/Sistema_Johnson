@@ -66,6 +66,9 @@ public class UsuarioServicio {
         if (buscarPorUsername(username).isPresent()) {
             throw new Exception("The username '" + username + "' is already in use.");
         }
+        if (usuarioRepositorio.findByCorreo(correo).isPresent()) {
+            throw new Exception("The email '" + correo + "' is already registered.");
+        }
 
         String tempPass = generarPasswordAleatoria();
         
@@ -103,6 +106,57 @@ public class UsuarioServicio {
         );
         
         emailServicio.enviarAlertaUrgente(correo, "Welcome to the APQP System", mensaje);
+    }
+
+    @Transactional
+    public void editarUsuario(Long id, String nombreCompleto, String correo, String nombreRol, String departamento) throws Exception {
+        Usuario usuario = usuarioRepositorio.findById(id)
+                .orElseThrow(() -> new Exception("User not found"));
+
+        // Verificar si el correo ya existe en otro usuario
+        Optional<Usuario> userWithEmail = usuarioRepositorio.findByCorreo(correo);
+        if (userWithEmail.isPresent() && !userWithEmail.get().getId().equals(id)) {
+            throw new Exception("The email '" + correo + "' is already in use by another user.");
+        }
+
+        usuario.setNombreCompleto(nombreCompleto);
+        usuario.setCorreo(correo);
+        usuario.setDepartamento(departamento);
+
+        Rol rolSeleccionado = rolRepositorio.findByNombre(nombreRol)
+                .orElseThrow(() -> new Exception("Role not found: " + nombreRol));
+
+        Set<Rol> roles = new HashSet<>();
+        roles.add(rolSeleccionado);
+        usuario.setRoles(roles);
+
+        usuarioRepositorio.save(usuario);
+    }
+
+    @Transactional
+    public void toggleEstado(Long id) throws Exception {
+        Usuario usuario = usuarioRepositorio.findById(id)
+                .orElseThrow(() -> new Exception("User not found"));
+        
+        // No permitir desactivar al último administrador
+        if (usuario.isEnabled()) {
+            boolean esAdmin = usuario.getRoles().stream().anyMatch(r -> r.getNombre().equals("ROLE_ADMIN"));
+            if (esAdmin) {
+                long countAdmins = usuarioRepositorio.findAll().stream()
+                        .filter(u -> u.isEnabled() && u.getRoles().stream().anyMatch(r -> r.getNombre().equals("ROLE_ADMIN")))
+                        .count();
+                if (countAdmins <= 1) {
+                    throw new Exception("Cannot disable the last active administrator.");
+                }
+            }
+        }
+        
+        usuario.setEnabled(!usuario.isEnabled());
+        usuarioRepositorio.save(usuario);
+    }
+
+    public Optional<Usuario> obtenerPorId(Long id) {
+        return usuarioRepositorio.findById(id);
     }
 
     @Transactional

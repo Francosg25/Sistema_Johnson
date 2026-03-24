@@ -37,11 +37,55 @@ public class AdminControlador {
                                RedirectAttributes redirectAttributes) {
         try {
             usuarioServicio.crearUsuarioConRol(username, correo, nombre, rol, departamento);
-            redirectAttributes.addFlashAttribute("mensaje", "User created successfully. An email has been sent.");
+            redirectAttributes.addFlashAttribute("mensaje", "User created successfully. An invitation email has been sent.");
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("error", "Error creating user: " + e.getMessage());
         }
         return "redirect:/admin/usuarios";
+    }
+
+    @PostMapping("/usuarios/editar")
+    public String editarUsuario(@RequestParam Long id,
+                                @RequestParam String nombre,
+                                @RequestParam String correo,
+                                @RequestParam String rol,
+                                @RequestParam String departamento,
+                                RedirectAttributes redirectAttributes) {
+        try {
+            usuarioServicio.editarUsuario(id, nombre, correo, rol, departamento);
+            redirectAttributes.addFlashAttribute("mensaje", "User updated successfully.");
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("error", "Error updating user: " + e.getMessage());
+        }
+        return "redirect:/admin/usuarios";
+    }
+
+    @PostMapping("/usuarios/toggle-estado")
+    public String toggleEstado(@RequestParam Long id, RedirectAttributes redirectAttributes) {
+        try {
+            usuarioServicio.toggleEstado(id);
+            redirectAttributes.addFlashAttribute("mensaje", "User status updated successfully.");
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("error", "Error updating status: " + e.getMessage());
+        }
+        return "redirect:/admin/usuarios";
+    }
+
+    @GetMapping("/usuarios/datos")
+    @org.springframework.web.bind.annotation.ResponseBody
+    public org.springframework.http.ResponseEntity<?> obtenerDatosUsuario(@RequestParam Long id) {
+        return usuarioServicio.obtenerPorId(id)
+                .map(u -> {
+                    java.util.Map<String, Object> data = new java.util.HashMap<>();
+                    data.put("id", u.getId());
+                    data.put("nombre", u.getNombreCompleto());
+                    data.put("username", u.getUsername());
+                    data.put("correo", u.getCorreo());
+                    data.put("departamento", u.getDepartamento());
+                    data.put("rol", u.getRoles().iterator().next().getNombre());
+                    return org.springframework.http.ResponseEntity.ok(data);
+                })
+                .orElse(org.springframework.http.ResponseEntity.notFound().build());
     }
 
     @PostMapping("/usuarios/eliminar")

@@ -143,7 +143,6 @@
 
             list.innerHTML = data.ultimas.map(n => {
                 const f = formatoFecha(n.fechaCreacion);
-                // Extra: Le agregamos un pequeño borde azul a las que son realmente "nuevas"
                 const esNueva = n.id > lastSeenId ? 'bg-white border-start border-primary border-4' : '';
 
                 return `
