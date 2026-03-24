@@ -107,13 +107,13 @@
                                     </td>
                                     <td class="pe-4 text-end">
                                         <button type="button" class="btn btn-sm btn-outline-danger border-0 rounded-circle" 
-                                                th:if="${user.username != null}"
-                                                th:disabled="${user.username == #authentication.name}"
-                                                th:data-id="${user.id}"
-                                                th:data-nombre="${user.nombreCompleto != null ? user.nombreCompleto : user.username}"
-                                                onclick="prepararEliminacion(this.getAttribute('data-id'), this.getAttribute('data-nombre'))">
+                                            th:if="${user.username != null}"
+                                            th:disabled="${user.username == #authentication.name}"
+                                            th:data-id="${user.id}"
+                                            th:data-nombre="${user.nombreCompleto != null ? user.nombreCompleto : user.username}"
+                                            onclick="confirmarEliminar(this.getAttribute('data-id'), this.getAttribute('data-nombre'))">
                                             <i class="bi bi-trash-fill"></i>
-                                        </button>
+                                    </button>
                                     </td>
                                 </tr>
                             </tbody>
@@ -125,7 +125,6 @@
         </div>
     </div>
 
-    <!-- MODAL CREAR USUARIO -->
     <div class="modal fade" id="modalCrearUsuario" tabindex="-1" aria-hidden="true" data-bs-backdrop="static">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content border-0 shadow-lg rounded-4">
@@ -187,7 +186,6 @@
         </div>
     </div>
 
-    <!-- MODAL EDITAR USUARIO -->
     <div class="modal fade" id="modalEditarUsuario" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content border-0 shadow-lg rounded-4">
@@ -249,7 +247,6 @@
         </div>
     </div>
 
-    <!-- FORMULARIOS OCULTOS -->
     <form id="formToggleStatus" th:action="@{/admin/usuarios/toggle-estado}" method="post" style="display: none;">
         <input type="hidden" name="id" id="toggleStatusId">
     </form>
@@ -350,7 +347,6 @@
                 });
             }
 
-            // Logic for depto/role in both forms
             document.querySelectorAll('.rol-selector').forEach(selector => {
                 const form = selector.closest('form');
                 const deptoSelect = form.querySelector('.depto-selector');
@@ -364,20 +360,17 @@
                         return;
                     }
 
-                    // Pre-submit adjustments
                     deptoSelect.disabled = false;
                     btnSubmit.classList.add('processing');
                     btnSubmit.disabled = true;
                     btnSubmit.innerHTML = `<span class="spinner-border spinner-border-sm me-2"></span> Processing...`;
 
-                    // CERRAR MODAL ANTES DE ENVIAR (Elimina el fondo gris)
                     const modalEl = form.closest('.modal');
                     const modalInst = bootstrap.Modal.getInstance(modalEl);
                     if (modalInst) {
                         modalInst.hide();
                     }
 
-                    // Pequeño retardo para dejar que Bootstrap limpie el DOM antes de que la página recargue
                     e.preventDefault();
                     setTimeout(() => {
                         form.submit();

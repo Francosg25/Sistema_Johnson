@@ -191,6 +191,16 @@
                         <div th:replace="~{fragments/checklist/modals :: modalFinalizarProyecto(${proyecto})}"></div>
                         <div th:replace="~{fragments/checklist/modals :: modalFirmas}"></div>
 
+                        <div id="checklist-config" style="display: none;"
+                        th:data-es-historico="${proyecto.esHistorico or proyecto.archivado}"
+                        th:data-es-visitante="${#authorization.expression('hasRole(''ROLE_VIEWER'')')}">
+                    </div>
+
+                    </div>
+                </div>
+
+            </main>
+        </div>
 
     <link rel="stylesheet" href="https://unpkg.com/tributejs/dist/tribute.css">
     <script src="https://unpkg.com/tributejs/dist/tribute.min.js"></script>
