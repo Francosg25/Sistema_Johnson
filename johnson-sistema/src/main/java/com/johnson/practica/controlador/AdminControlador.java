@@ -16,9 +16,11 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 public class AdminControlador {
 
     private final UsuarioServicio usuarioServicio;
+    private final com.johnson.practica.servicio.BitacoraServicio bitacoraServicio;
 
-    public AdminControlador(UsuarioServicio usuarioServicio) {
+    public AdminControlador(UsuarioServicio usuarioServicio, com.johnson.practica.servicio.BitacoraServicio bitacoraServicio) {
         this.usuarioServicio = usuarioServicio;
+        this.bitacoraServicio = bitacoraServicio;
     }
 
     @GetMapping("/usuarios")
@@ -34,9 +36,15 @@ public class AdminControlador {
                                @RequestParam String nombre,
                                @RequestParam String rol, 
                                @RequestParam String departamento, 
-                               RedirectAttributes redirectAttributes) {
+                               RedirectAttributes redirectAttributes,
+                               java.security.Principal principal) {
         try {
             usuarioServicio.crearUsuarioConRol(username, correo, nombre, rol, departamento);
+            
+            String admin = (principal != null) ? principal.getName() : "System";
+            bitacoraServicio.registrarAccion(admin, "CREATE USER", 
+                "New user created: " + username + " (" + nombre + ") with role " + rol);
+
             redirectAttributes.addFlashAttribute("mensaje", "User created successfully. An invitation email has been sent.");
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("error", "Error creating user: " + e.getMessage());
@@ -50,9 +58,15 @@ public class AdminControlador {
                                 @RequestParam String correo,
                                 @RequestParam String rol,
                                 @RequestParam String departamento,
-                                RedirectAttributes redirectAttributes) {
+                                RedirectAttributes redirectAttributes,
+                                java.security.Principal principal) {
         try {
             usuarioServicio.editarUsuario(id, nombre, correo, rol, departamento);
+
+            String admin = (principal != null) ? principal.getName() : "System";
+            bitacoraServicio.registrarAccion(admin, "UPDATE USER", 
+                "User updated: ID " + id + " (" + nombre + ")");
+
             redirectAttributes.addFlashAttribute("mensaje", "User updated successfully.");
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("error", "Error updating user: " + e.getMessage());
@@ -61,9 +75,13 @@ public class AdminControlador {
     }
 
     @PostMapping("/usuarios/toggle-estado")
-    public String toggleEstado(@RequestParam Long id, RedirectAttributes redirectAttributes) {
+    public String toggleEstado(@RequestParam Long id, RedirectAttributes redirectAttributes, java.security.Principal principal) {
         try {
             usuarioServicio.toggleEstado(id);
+            
+            String admin = (principal != null) ? principal.getName() : "System";
+            bitacoraServicio.registrarAccion(admin, "TOGGLE USER STATUS", "Status changed for user ID: " + id);
+
             redirectAttributes.addFlashAttribute("mensaje", "User status updated successfully.");
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("error", "Error updating status: " + e.getMessage());
@@ -89,8 +107,11 @@ public class AdminControlador {
     }
 
     @PostMapping("/usuarios/eliminar")
-    public String eliminarUsuario(@RequestParam Long id, RedirectAttributes redirectAttributes) {
+    public String eliminarUsuario(@RequestParam Long id, RedirectAttributes redirectAttributes, java.security.Principal principal) {
         try {
+            String admin = (principal != null) ? principal.getName() : "System";
+            bitacoraServicio.registrarAccion(admin, "DELETE USER", "User deleted permanently, ID: " + id);
+
             usuarioServicio.eliminarUsuario(id);
             redirectAttributes.addFlashAttribute("mensaje", "User deleted successfully.");
         } catch (Exception e) {

@@ -169,16 +169,35 @@ public class ProyectoControlador {
     @PreAuthorize("hasRole('ADMIN')") 
     @CacheEvict(value = "reportes", allEntries = true)
     public String guardarProyecto(@ModelAttribute Proyecto proyecto, java.security.Principal principal) {
+        String usuario = (principal != null) ? principal.getName() : "System";
         boolean esNuevo = (proyecto.getId() == null);
+        
+        if (!esNuevo) {
+            Proyecto anterior = proyectoServicio.buscarPorId(proyecto.getId());
+            if (anterior != null) {
+                StringBuilder cambios = new StringBuilder();
+                if (!anterior.getNombre().equals(proyecto.getNombre())) 
+                    cambios.append("Name (").append(anterior.getNombre()).append(" -> ").append(proyecto.getNombre()).append("). ");
+                if (!anterior.getNumeroParte().equals(proyecto.getNumeroParte()))
+                    cambios.append("P/N (").append(anterior.getNumeroParte()).append(" -> ").append(proyecto.getNumeroParte()).append("). ");
+                if (!anterior.getCliente().equals(proyecto.getCliente()))
+                    cambios.append("Customer (").append(anterior.getCliente()).append(" -> ").append(proyecto.getCliente()).append("). ");
+                
+                if (cambios.length() > 0) {
+                    bitacoraServicio.registrarAccion(usuario, "UPDATE PROJECT", 
+                        "Project modified: " + anterior.getNombre() + ". Changes: " + cambios.toString());
+                }
+            }
+        }
+
         Proyecto proyectoGuardado = proyectoServicio.guardarProyecto(proyecto);
         
         if (esNuevo) {
             String titulo = "New Project APQP";
             String msj = "The portfolio has been initialized for the project: " + proyectoGuardado.getNombre();
             String url = "/proyectos/checklist/" + proyectoGuardado.getId();
-            String autor = (principal != null) ? principal.getName() : "Sistema";
             
-            notificacionServicio.alertarATodos(titulo, msj, "SUCCESS", url, autor);
+            notificacionServicio.alertarATodos(titulo, msj, "SUCCESS", url, usuario);
         }
         
         return "redirect:/";
@@ -196,13 +215,15 @@ public class ProyectoControlador {
     @PostMapping("/archivar/{id}")
     @PreAuthorize("hasRole('ADMIN')")
     @CacheEvict(value = "reportes", allEntries = true) 
-    public String archivarProyecto(@PathVariable Long id, org.springframework.web.servlet.mvc.support.RedirectAttributes redirectAttributes) {
+    public String archivarProyecto(@PathVariable Long id, org.springframework.web.servlet.mvc.support.RedirectAttributes redirectAttributes, Principal principal) {
         Proyecto proyecto = proyectoServicio.buscarPorId(id);
         if (proyecto != null) {
-            
+            String usuario = (principal != null) ? principal.getName() : "System";
             proyecto.setEsHistorico(true); 
             proyectoRepositorio.save(proyecto);
             
+            bitacoraServicio.registrarAccion(usuario, "ARCHIVE PROJECT", "Project moved to historical vault: " + proyecto.getNombre());
+
             notificacionServicio.alertarATodos("Project Archived", 
                 "The project " + proyecto.getNombre() + " has been successfully archived.", 
                 "SUCCESS", "/proyectos/vault", "System");
