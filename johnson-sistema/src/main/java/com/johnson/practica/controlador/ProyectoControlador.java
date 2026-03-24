@@ -236,13 +236,24 @@ public class ProyectoControlador {
 
 
     @GetMapping("/vault")
-    public String verHistoricalVault(Model model, HttpServletRequest request) {
-        List<Proyecto> proyectosHistoricos = proyectoRepositorio.findByEsHistoricoTrue();
-        model.addAttribute("proyectos", proyectosHistoricos);
-        model.addAttribute("currentUri", request.getRequestURI()); 
-        
-        return "vault"; 
-    }
+public String verHistoricalVault(Model model, HttpServletRequest request) {
+    List<Proyecto> historicos = proyectoRepositorio.findByEsHistoricoTrue();
+    
+    Map<Integer, Map<String, List<Proyecto>>> agrupados = historicos.stream()
+        .collect(java.util.stream.Collectors.groupingBy(
+            p -> p.getFechaSop() != null ? p.getFechaSop().getYear() : LocalDate.now().getYear(),
+            java.util.stream.Collectors.groupingBy(
+                p -> {
+                    LocalDate fecha = p.getFechaSop() != null ? p.getFechaSop() : LocalDate.now();
+                    return fecha.getMonth().getDisplayName(java.time.format.TextStyle.FULL, java.util.Locale.ENGLISH);
+                }
+            )
+        ));
+
+    model.addAttribute("agrupados", agrupados);
+    model.addAttribute("currentUri", request.getRequestURI());
+    return "vault";
+}
 
  
     
