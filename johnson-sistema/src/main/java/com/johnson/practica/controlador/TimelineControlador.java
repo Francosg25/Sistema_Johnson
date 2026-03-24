@@ -1,6 +1,6 @@
 package com.johnson.practica.controlador;
 
-import com.johnson.practica.servicio.ChecklistServicio;
+import com.johnson.practica.servicio.ChecklistReporteServicio; // <-- NUEVO
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -13,22 +13,21 @@ import java.util.Map;
 public class TimelineControlador {
 
     @Autowired
-    private ChecklistServicio checklistServicio;
+    private ChecklistReporteServicio checklistReporteServicio; 
 
     @Autowired
     private com.johnson.practica.repositorio.ProyectoRepositorio proyectoRepo;
 
     @GetMapping
     public String verTimeline(Model model) {
-        Map<String, Object> datos = checklistServicio.obtenerDatosTimeline();
+        Map<String, Object> datos = checklistReporteServicio.obtenerDatosTimeline(); 
         
         model.addAttribute("timelineGroups", datos.get("groups"));
         model.addAttribute("timelineItems", datos.get("items"));
         
-      
         model.addAttribute("proyectos", proyectoRepo.findByEsHistoricoFalse()); 
         
-        model.addAttribute("statusGlobal", checklistServicio.generarReporteEstadoGlobal());
+        model.addAttribute("statusGlobal", checklistReporteServicio.generarReporteEstadoGlobal()); 
         
         return "timeline";
     }

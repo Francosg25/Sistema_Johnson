@@ -34,7 +34,6 @@ public class NotificacionServicio {
     public void alertarATodos(String titulo, String mensaje, String tipo, String link, String autor) {
         List<Usuario> todosLosUsuarios = usuarioRepositorio.findAll();
         
-        // Buscamos departamento del autor si es champion
         String departamento = null;
         if (autor != null && !"System".equalsIgnoreCase(autor)) {
             Optional<Usuario> uOpt = usuarioRepositorio.findByUsername(autor);

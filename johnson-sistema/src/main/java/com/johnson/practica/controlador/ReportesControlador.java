@@ -1,7 +1,7 @@
 package com.johnson.practica.controlador;
 
-import com.johnson.practica.dto.ReporteEstadoGlobal; // Importar el nuevo DTO
-import com.johnson.practica.servicio.ChecklistServicio;
+import com.johnson.practica.dto.ReporteEstadoGlobal; 
+import com.johnson.practica.servicio.ChecklistReporteServicio; 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -13,20 +13,20 @@ import org.springframework.web.bind.annotation.RequestMapping;
 public class ReportesControlador {
 
     @Autowired
-    private ChecklistServicio checklistServicio;
+    private ChecklistReporteServicio checklistReporteServicio; 
 
     @Autowired
     private com.johnson.practica.servicio.ReporteServicio reporteServicio;
 
     @GetMapping
     public String verReportes(Model model) {
-        var datos = checklistServicio.generarReporteGlobal();
+        var datos = checklistReporteServicio.generarReporteGlobal();
         model.addAttribute("datosGrafica", datos);
         
-        ReporteEstadoGlobal datosEstadoGlobal = checklistServicio.generarReporteEstadoGlobal();
+        ReporteEstadoGlobal datosEstadoGlobal = checklistReporteServicio.generarReporteEstadoGlobal(); // <-- ACTUALIZADO
         model.addAttribute("datosEstadoGlobal", datosEstadoGlobal);
 
-        var datosCascada = checklistServicio.generarReporteCascada();
+        var datosCascada = checklistReporteServicio.generarReporteCascada();
         model.addAttribute("datosCascada", datosCascada);
         
         return "reportes/reportes";
@@ -41,4 +41,3 @@ public class ReportesControlador {
         return "reportes/proyecto_pdf";
     }
 }
-    

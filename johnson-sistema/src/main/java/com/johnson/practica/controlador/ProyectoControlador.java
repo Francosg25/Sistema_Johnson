@@ -3,6 +3,7 @@ package com.johnson.practica.controlador;
 import com.johnson.practica.modelo.ElementoChecklist;
 import com.johnson.practica.modelo.Proyecto;
 import com.johnson.practica.repositorio.ProyectoRepositorio;
+import com.johnson.practica.servicio.ChecklistReporteServicio;
 import com.johnson.practica.servicio.ChecklistServicio;
 import com.johnson.practica.servicio.ExcelServicio;
 import com.johnson.practica.servicio.ProyectoServicio;
@@ -46,6 +47,7 @@ public class ProyectoControlador {
     @Autowired private ReporteServicio reporteServicio;
     @Autowired private ExcelServicio excelServicio;
     @Autowired private com.johnson.practica.servicio.BitacoraServicio bitacoraServicio;
+    @Autowired private ChecklistReporteServicio checklistReporteServicio;
 
 
     @Data @AllArgsConstructor
@@ -59,16 +61,13 @@ public class ProyectoControlador {
     
     @GetMapping("/")
     public String index(Model model, HttpServletRequest request) {
-        // Esto trae SOLO los proyectos que NO están en la bóveda
         List<Proyecto> lista = proyectoRepositorio.findByEsHistoricoFalse(); 
         
         model.addAttribute("proyectos", lista);
         model.addAttribute("currentUri", request.getRequestURI());
 
-        Map<String, Integer> tendencia = checklistServicio.obtenerTendenciaAprobacionesOK();
+        Map<String, Integer> tendencia = checklistReporteServicio.obtenerTendenciaAprobacionesOK();
         model.addAttribute("tendencia", tendencia);
-
-        
 
         return "index";
     }

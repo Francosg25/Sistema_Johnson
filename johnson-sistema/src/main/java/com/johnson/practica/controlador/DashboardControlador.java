@@ -7,15 +7,16 @@ import org.springframework.web.bind.annotation.GetMapping;
 
 import com.johnson.practica.repositorio.ProyectoRepositorio;
 import com.johnson.practica.servicio.ChecklistServicio;
+import com.johnson.practica.servicio.ChecklistReporteServicio; 
 import com.johnson.practica.servicio.NotificacionServicio; 
 import com.johnson.practica.repositorio.UsuarioRepositorio; 
 import com.johnson.practica.dto.ReporteProgreso;
 import com.johnson.practica.dto.ReporteEstadoGlobal;
 import com.johnson.practica.modelo.Notificacion; 
 import com.johnson.practica.modelo.Usuario; 
-
 import com.johnson.practica.modelo.ElementoChecklist; 
 import com.johnson.practica.modelo.Proyecto; 
+
 import java.security.Principal; 
 import java.util.ArrayList;
 import java.util.HashMap; 
@@ -33,6 +34,9 @@ public class DashboardControlador {
     private ChecklistServicio checklistServicio;
 
     @Autowired
+    private ChecklistReporteServicio checklistReporteServicio; // <-- NUEVO
+
+    @Autowired
     private NotificacionServicio notificacionServicio;
 
     @Autowired
@@ -44,18 +48,15 @@ public class DashboardControlador {
     @GetMapping("/")
     public String index(Model model, jakarta.servlet.http.HttpServletRequest request, Principal principal) {
         
-        // OBTENEMOS SOLO LOS PROYECTOS ACTIVOS (Oculta los del Vault)
         List<Proyecto> proyectos = proyectoRepositorio.findByEsHistoricoFalse();
         
-        // Filtramos el reporte global para que solo evalúe proyectos activos
-        List<ReporteProgreso> reporteGlobal = checklistServicio.generarReporteGlobal().stream()
+        List<ReporteProgreso> reporteGlobal = checklistReporteServicio.generarReporteGlobal().stream() // <-- ACTUALIZADO
             .filter(r -> {
                 Proyecto p = proyectoRepositorio.findById(r.getId()).orElse(null);
-                // Usamos isEsHistorico() o getEsHistorico() dependiendo de cómo lo generó Lombok
                 return p != null && !p.getEsHistorico(); 
             }).toList();
             
-        ReporteEstadoGlobal estadoGlobal = checklistServicio.generarReporteEstadoGlobal();
+        ReporteEstadoGlobal estadoGlobal = checklistReporteServicio.generarReporteEstadoGlobal(); // <-- ACTUALIZADO
         
         double avancePromedio = 0;
         if (!reporteGlobal.isEmpty()) {
@@ -74,17 +75,16 @@ public class DashboardControlador {
         model.addAttribute("proyectos", proyectos);
         model.addAttribute("reporteProgreso", reporteGlobal);
         model.addAttribute("estadoGlobal", estadoGlobal);
-        model.addAttribute("alertas", checklistServicio.obtenerAlertasGlobales().stream()
+        model.addAttribute("alertas", checklistReporteServicio.obtenerAlertasGlobales().stream() // <-- ACTUALIZADO
             .filter(a -> proyectos.stream().anyMatch(p -> a.getNombre().contains(p.getNombre())))
             .toList());
-        model.addAttribute("tendencia", checklistServicio.obtenerDatosTendencia());
-        model.addAttribute("proximosLanzamientos", checklistServicio.obtenerLanzamientosProximos());
+        model.addAttribute("tendencia", checklistReporteServicio.obtenerDatosTendencia()); // <-- ACTUALIZADO
+        model.addAttribute("proximosLanzamientos", checklistReporteServicio.obtenerLanzamientosProximos()); // <-- ACTUALIZADO
         model.addAttribute("avancePromedio", avancePromedio);
         
         model.addAttribute("notificaciones", notificaciones); 
         model.addAttribute("ultimosMovimientos", bitacoraServicio.obtenerUltimosMovimientos().stream().limit(5).toList());
         
-        // Filtramos las tareas pendientes para que no salgan las de proyectos archivados
         List<ElementoChecklist> todasPendientes = checklistServicio.obtenerTodasTareasPendientes().stream()
             .filter(t -> !t.getProyecto().getEsHistorico())
             .toList();
