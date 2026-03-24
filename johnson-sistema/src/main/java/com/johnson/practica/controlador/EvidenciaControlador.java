@@ -222,7 +222,7 @@ public class EvidenciaControlador {
         model.addAttribute("proyectosConEvidencias", activos);
         model.addAttribute("currentUri", "/evidencias");
         
-        return "evidencias";
+        return "proyectos/evidencias";
     }
 
     @GetMapping("/proyecto/{proyectoId}")

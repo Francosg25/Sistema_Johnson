@@ -109,7 +109,7 @@ public class ProyectoControlador {
         model.addAttribute("firmasGate5", firmaEtapaServicio.obtenerFirmasPorEtapa(id, 5));
 
        
-        return "checklist";
+        return "proyectos/checklist";
     }
 
    
@@ -235,7 +235,7 @@ public class ProyectoControlador {
 
 
     @GetMapping("/vault")
-public String verHistoricalVault(Model model, HttpServletRequest request) {
+    public String verHistoricalVault(Model model, HttpServletRequest request) {
     List<Proyecto> historicos = proyectoRepositorio.findByEsHistoricoTrue();
     
     Map<Integer, Map<String, List<Proyecto>>> agrupados = historicos.stream()
@@ -251,7 +251,7 @@ public String verHistoricalVault(Model model, HttpServletRequest request) {
 
     model.addAttribute("agrupados", agrupados);
     model.addAttribute("currentUri", request.getRequestURI());
-    return "vault";
+    return "proyectos/vault";
 }
 
  

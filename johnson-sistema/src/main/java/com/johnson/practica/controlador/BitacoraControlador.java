@@ -17,6 +17,6 @@ public class BitacoraControlador {
     @GetMapping
     public String verBitacora(Model model) {
         model.addAttribute("movimientos", bitacoraServicio.obtenerUltimosMovimientos());
-        return "bitacora";
+        return "proyectos/bitacora";
     }
 }

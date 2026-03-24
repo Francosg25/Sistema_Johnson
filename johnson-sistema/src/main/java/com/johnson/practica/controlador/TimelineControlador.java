@@ -1,6 +1,6 @@
 package com.johnson.practica.controlador;
 
-import com.johnson.practica.servicio.ChecklistReporteServicio; // <-- NUEVO
+import com.johnson.practica.servicio.ChecklistReporteServicio; 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -29,6 +29,6 @@ public class TimelineControlador {
         
         model.addAttribute("statusGlobal", checklistReporteServicio.generarReporteEstadoGlobal()); 
         
-        return "timeline";
+        return "proyectos/timeline";
     }
 }
