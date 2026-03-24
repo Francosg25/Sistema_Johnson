@@ -1,0 +1,248 @@
+:root { 
+    --je-orange: #F5821F; 
+    --je-blue: #3b82f6; 
+    --glass-bg: rgba(255, 255, 255, 0.95); 
+}
+
+body { 
+    font-family: 'Inter', sans-serif; 
+    background-color: #f1f5f9; 
+    color: #1e293b; 
+    min-height: 100vh; 
+    overflow-x: hidden; 
+    font-size: 0.95rem; 
+}
+
+.glass-card { 
+    background: var(--glass-bg) !important; 
+    backdrop-filter: blur(10px); 
+    border: 1px solid rgba(255, 255, 255, 0.6) !important; 
+    border-radius: 16px !important; 
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05) !important; 
+    height: 100%; 
+}
+
+.card-header.glass-header { 
+    background: rgba(255, 255, 255, 0.3) !important; 
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05) !important; 
+    padding: 1.25rem 1.5rem; 
+}
+
+.card-header.glass-header h6 { 
+    font-size: 1.1rem; 
+    font-weight: 800; 
+    letter-spacing: 0.5px; 
+    margin: 0; 
+    color: #0f172a; 
+}
+
+.kpi-mini-card { 
+    padding: 1.5rem; 
+    border-radius: 16px; 
+    display: flex; 
+    align-items: center; 
+    background: white; 
+    border: 1px solid rgba(0, 0, 0, 0.05); 
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.02); 
+}
+
+.kpi-mini-icon { 
+    width: 52px; 
+    height: 52px; 
+    border-radius: 14px; 
+    display: flex; 
+    align-items: center; 
+    justify-content: center; 
+    font-size: 1.6rem; 
+    margin-right: 18px; 
+}
+
+.kpi-mini-data h3 { 
+    font-size: 1.7rem; 
+    font-weight: 900; 
+    color: #0f172a; 
+    margin: 0; 
+    line-height: 1; 
+}
+
+.kpi-mini-data p { 
+    font-size: 0.8rem; 
+    font-weight: 700; 
+    color: #64748b; 
+    margin: 4px 0 0 0; 
+    text-transform: uppercase; 
+}
+
+.icon-blue { background: #eff6ff; color: #3b82f6; } 
+.icon-orange { background: #fff7ed; color: #f97316; } 
+.icon-red { background: #fef2f2; color: #ef4444; } 
+.icon-green { background: #f0fdf4; color: #22c55e; }
+
+.table thead th { 
+    font-size: 0.85rem; 
+    font-weight: 800; 
+    color: #475569; 
+    background-color: #f8fafc !important; 
+    padding: 1.1rem; 
+    text-transform: uppercase; 
+}
+
+.table td { 
+    padding: 1.2rem 1.1rem; 
+    font-size: 0.95rem; 
+    vertical-align: middle; 
+    border-bottom: 1px solid #f1f5f9; 
+}
+
+.progress-mini { 
+    height: 10px; 
+    border-radius: 10px; 
+    background-color: #e2e8f0; 
+    width: 100%; 
+}
+
+.alert-item { 
+    padding: 15px; 
+    border-radius: 12px; 
+    border-left: 5px solid #ef4444; 
+    background: #fff; 
+    margin-bottom: 12px; 
+    border: 1px solid #fee2e2; 
+    border-left-width: 5px; 
+}
+
+.champion-pill {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: #ffffff;
+    border: 1px solid #cbd5e1;
+    color: #475569;
+    font-weight: 700;
+    font-size: 0.85rem;
+    padding: 0.4rem 1.2rem;
+    border-radius: 50px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+}
+
+.champion-pill:hover {
+    border-color: #94a3b8;
+    background: #f8fafc;
+}
+
+.champion-pill.active {
+    background: var(--je-orange);
+    border-color: var(--je-orange);
+    color: white;
+    box-shadow: 0 4px 12px rgba(245, 130, 31, 0.3);
+}
+
+.champion-pill .badge {
+    background-color: #f1f5f9;
+    color: #475569;
+    font-size: 0.75rem;
+    padding: 4px 8px;
+    border-radius: 12px;
+    border: 1px solid #e2e8f0;
+}
+
+.champion-pill.active .badge {
+    background-color: rgba(255, 255, 255, 0.25);
+    color: #ffffff;
+    border-color: transparent;
+}
+
+.text-dark-bold {
+    font-weight: 800;
+    color: #0f172a;
+    font-size: 1.1rem;
+}
+
+.custom-scrollbar::-webkit-scrollbar {
+    height: 6px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+    background-color: #cbd5e1;
+    border-radius: 10px;
+}
+
+.fc { 
+    --fc-border-color: #e2e8f0; 
+    font-family: inherit; 
+    height: 600px !important; 
+}
+
+.btn-je-primary { 
+    background: var(--je-orange) !important; 
+    border: none !important; 
+    color: white !important; 
+    font-size: 1rem; 
+    font-weight: 700; 
+    padding: 0.8rem 2rem; 
+    border-radius: 12px; 
+    transition: all 0.2s; 
+}
+
+.btn-je-primary:hover { 
+    transform: translateY(-1px); 
+    box-shadow: 0 6px 20px rgba(245, 130, 31, 0.35); 
+}
+
+.badge-customer { 
+    background-color: var(--je-blue) !important; 
+    color: #ffffff !important; 
+    font-weight: 800 !important; 
+    padding: 0.6rem 1.2rem !important; 
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1); 
+}
+
+.status-pending { 
+    background-color: #64748b !important; 
+    color: #ffffff !important; 
+    border: none !important; 
+    font-weight: 700 !important; 
+    padding: 0.5rem 1rem !important; 
+}
+
+.status-action { 
+    background-color: var(--je-orange) !important; 
+    color: #ffffff !important; 
+    border: none !important; 
+    font-weight: 800 !important; 
+    padding: 0.5rem 1rem !important; 
+    animation: pulse-status 2s infinite; 
+}
+
+@keyframes pulse-status { 
+    0% { box-shadow: 0 0 0 0 rgba(245, 130, 31, 0.4); } 
+    70% { box-shadow: 0 0 0 10px rgba(245, 130, 31, 0); } 
+    100% { box-shadow: 0 0 0 0 rgba(245, 130, 31, 0); } 
+}
+
+.clickable-chart { 
+    cursor: pointer; 
+    transition: transform 0.2s; 
+}
+
+.clickable-chart:hover { 
+    transform: scale(1.01); 
+}
+
+.champ-qe { background-color: #dcfce7; color: #166534; } 
+.champ-de { background-color: #dbeafe; color: #1e40af; } 
+.champ-pe { background-color: #fef9c3; color: #854d0e; } 
+.champ-proj { background-color: #f1f5f9; color: #475569; } 
+.champ-scs { background-color: #f3e8ff; color: #6b21a8; } 
+.champ-fin { background-color: #e0f2fe; color: #075985; } 
+.champ-ops { background-color: #fce7f3; color: #9d174d; } 
+.champ-hr { background-color: #fee2e2; color: #991b1b; } 
+.champ-mat { background-color: #fff7ed; color: #9a3412; } 
+.champ-cust { background-color: #e0f7fa; color: #006064; } 
+.champ-supp { background-color: #f3e5f5; color: #4a148c; } 
+.champ-qe-pe { background-color: #e0f2f1; color: #004d40; } 
+.champ-all { background-color: #f8f9fa; color: #64748b; } 
+.champ-generic { background-color: #ffffff; color: #475569; border: 1px solid #e2e8f0 !important; }
