@@ -218,6 +218,7 @@ public class ChecklistReporteServicio {
         
         List<TimelineGrupo> groups = new ArrayList<>();
         List<TimelineItem> items = new ArrayList<>();
+        LocalDate hoy = LocalDate.now();
 
         for (Proyecto p : proyectos) {
             groups.add(new TimelineGrupo(p.getId(), p.getNombre()));
@@ -230,7 +231,7 @@ public class ChecklistReporteServicio {
 
                 int objetivo = (hito.getPorcentajeObjetivo() != null) ? hito.getPorcentajeObjetivo() : 100;
                 boolean completado = progresoActual >= objetivo;
-                boolean isLate = hito.getFecha() != null && hito.getFecha().isBefore(LocalDate.now()) && !completado;
+                boolean isLate = hito.getFecha() != null && hito.getFecha().isBefore(hoy) && !completado;
                 
                 String colorTexto = completado ? "#28a745" : (isLate ? "#dc3545" : "#3f6ad8");
                 String claseCSS = completado ? "hito-completado" : (isLate ? "hito-atrasado" : "hito-pendiente");
@@ -241,19 +242,47 @@ public class ChecklistReporteServicio {
                 items.add(new TimelineItem(hito.getId() * -1, p.getId(), htmlContent, hito.getFecha().toString(), "point", claseCSS));
             }
 
-            int contadorMainEvent = 1; 
+           int contadorMainEvent = 1; 
             for (ElementoChecklist item : todosElementos) {
                 if (!item.isEsMainEvent()) continue;
 
                 LocalDate fecha = (item.getFechaPlan() != null) ? item.getFechaPlan() : item.getFechaReal();
                 if (fecha != null) {
                     boolean esExterno = item.getChampion() != null && (item.getChampion().contains("SCS") || item.getChampion().contains("Cliente") || item.getChampion().contains("Proveedor"));
-                    boolean isDelayed = item.getFechaPlan() != null && item.getFechaPlan().isBefore(LocalDate.now()) && !"OK".equalsIgnoreCase(item.getScore());
                     
-                    String claseCSS = esExterno ? "vis-event-external" : "vis-event-internal"; 
-                    if (isDelayed) claseCSS += " event-delayed"; 
+                    String claseCSS = esExterno ? "vis-event vis-event-external " : "vis-event vis-event-internal "; 
                     
-                    String alertIcon = isDelayed ? "<i class='bi bi-exclamation-triangle-fill text-white me-1'></i>" : "";
+                   
+                  
+                    String scoreActual = item.getScore() != null ? item.getScore().trim().toUpperCase() : "";
+                    String controlActual = item.getControlEntregable() != null ? item.getControlEntregable().trim().toUpperCase() : "";
+
+                    boolean estaCompletado = scoreActual.equals("OK") || scoreActual.equals("NA") || scoreActual.equals("N/A");
+
+                    boolean estaRetrasado = false;
+                    
+                    if (item.getFechaPlan() != null && item.getFechaPlan().isBefore(hoy)) {
+                        estaRetrasado = true;
+                    }
+                    
+                    if (item.getFechaReal() != null && item.getFechaPlan() != null && item.getFechaReal().isAfter(item.getFechaPlan())) {
+                        estaRetrasado = true;
+                    }
+                    
+                    if (controlActual.contains("LATE") || controlActual.contains("ACTION")) {
+                        estaRetrasado = true;
+                    }
+
+                    if (estaCompletado) {
+                        claseCSS += "event-completed"; // Verde (Prioridad 1: Ya tiene el OK oficial)
+                    } else if (estaRetrasado) {
+                        claseCSS += "event-delayed";   // Rojo (Prioridad 2: Vencido matemáticamente o por HOY)
+                    } else {
+                        claseCSS += "event-pending";   // Azul (Prioridad 3: Pendiente pero a tiempo)
+                    }
+                    // --------------------------------------------
+                    
+                    String alertIcon = claseCSS.contains("event-delayed") ? "<i class='bi bi-exclamation-triangle-fill text-white me-1'></i>" : "";
                     String htmlBox = "<div class='event-content' data-realname='" + item.getNombre() + "' title='" + item.getNombre() + "'>" + 
                                      alertIcon + "Main event " + contadorMainEvent + "</div>";
 

@@ -151,10 +151,47 @@ body {
 }
 
 .event-content { font-size: 7px !important; font-weight: 700 !important; } 
+/* =========================================================
+   ESTADOS DE LA LÍNEA DE TIEMPO (Reglas Definitivas)
+   ========================================================= */
 
+/* Colores Base (Por si no caen en los 3 estados) */
 .vis-event-internal { background-color: #3b82f6 !important; color: white !important; } 
 .vis-event-external { background-color: #f59e0b !important; color: white !important; } 
-.event-delayed { background-color: #ef4444 !important; color: white !important; animation: palpitar 2s infinite; }
+
+.vis-item.event-delayed { 
+    background-color: #ef4444 !important; 
+    color: white !important; 
+    border-color: #dc2626 !important;
+    box-shadow: none !important; 
+
+}
+
+.vis-item.event-completed { 
+    background-color: #10b981 !important; 
+    color: white !important; 
+    border-color: #059669 !important;
+    box-shadow: none !important; 
+}
+
+.vis-item.event-pending { 
+    background-color: #3b82f6 !important; 
+    color: white !important; 
+    border-color: #2563eb !important;
+    box-shadow: none !important; 
+}
+
+@keyframes palpitar {
+    0% { transform: rotate(45deg) scale(1); }
+    50% { transform: rotate(45deg) scale(1.2); }
+    100% { transform: rotate(45deg) scale(1); }
+}
+
+@keyframes palpitar-caja {
+    0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.8) !important; }
+    70% { box-shadow: 0 0 0 8px rgba(239, 68, 68, 0) !important; }
+    100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0) !important; }
+}
 
 .status-key-box { 
     background: rgba(255, 255, 255, 0.6); 

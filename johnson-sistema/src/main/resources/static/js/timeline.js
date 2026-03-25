@@ -153,3 +153,31 @@ window.eliminarHito = function(id) {
             });
     }
 };
+
+window.toggleMainEvent = function(id, btn) {
+                const icono = btn.querySelector('i');
+                const esMainEvent = btn.classList.contains('btn-warning');
+
+                if (esMainEvent) {
+                    btn.classList.remove('btn-warning');
+                    btn.classList.add('btn-outline-secondary');
+                    icono.classList.remove('bi-star-fill', 'text-warning');
+                    icono.classList.add('bi-star');
+                } else {
+                    btn.classList.remove('btn-outline-secondary');
+                    btn.classList.add('btn-warning');
+                    icono.classList.remove('bi-star');
+                    icono.classList.add('bi-star-fill', 'text-warning');
+                }
+
+                fetch(`/api/hitos/toggle-main-event/${id}`, { method: 'POST' })
+                .then(r => { 
+                    if(!r.ok) {
+                        cargarElementosParaMain(); 
+                    }
+                })
+                .catch(err => {
+                    console.error("Error guardando el main event", err);
+                    cargarElementosParaMain();
+                });
+            };

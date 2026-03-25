@@ -35,7 +35,6 @@
                     </button>
                 </div>
 
-                <!-- KPIs -->
                 <div class="row g-4 mb-4">
                     <div class="col-md-3"><div class="kpi-mini-card"><div class="kpi-mini-icon icon-blue"><i class="bi bi-folder2-open"></i></div><div class="kpi-mini-data"><h3 th:text="${proyectos != null ? proyectos.size() : '0'}">0</h3><p>Active Projects</p></div></div></div>
                     <div class="col-md-3"><div class="kpi-mini-card"><div class="kpi-mini-icon icon-orange"><i class="bi bi-calendar3"></i></div><div class="kpi-mini-data"><h3 th:text="${proximosLanzamientos}">0</h3><p>SOP < 6M</p></div></div></div>
@@ -73,7 +72,6 @@
                         </div>
                     </div>
 
-                    <!-- Row 2: Tasks & Trend -->
                     <div class="row g-4 mb-4">
                         <div class="col-lg-7">
                             <div class="card glass-card">
@@ -84,9 +82,58 @@
                                         <div th:each="champ : ${listaChampions}" class="champion-pill" th:data-champion="${champ}" th:title="${@checklistServicio.obtenerNombreCompletoChampion(champ)}"><span th:text="${champ}"></span> <span class="badge" th:text="${conteoPorChampion.get(champ) ?: 0}">0</span></div>
                                     </div>
                                 </div>
-                                <div class="card-body p-0"><div class="table-responsive" style="max-height: 400px;"><table class="table table-hover align-middle mb-0" id="tasksTable"><thead><tr><th class="ps-4">Deliverable Name</th><th class="text-center" id="col-champion-header">Responsible</th><th class="text-center">Status</th><th class="text-center pe-4">Action</th></tr></thead><tbody>
-                                    <tr th:each="t : ${todasTareasPendientes}" class="task-row" th:data-champion="${@checklistServicio.normalizarChampion(t.champion)}"><td class="ps-4"><div class="text-dark-bold" th:text="${t.proyecto.nombre}"></div><div class="text-primary fw-medium" th:text="${t.nombre}"></div></td><td class="text-center champ-col"><span class="badge px-3 py-2 fw-bold shadow-sm" th:with="normChamp=${@checklistServicio.normalizarChampion(t.champion)}" th:classappend="'champ-' + ${#strings.toLowerCase(normChamp)}" th:text="${normChamp}" th:title="${@checklistServicio.obtenerNombreCompletoChampion(normChamp)}"></span></td><td class="text-center"><span class="badge rounded-pill border px-3 py-2 shadow-sm" th:classappend="${t.controlEntregable == 'NEEDS ACTION' ? 'status-action' : 'status-pending'}" th:text="${t.controlEntregable ?: 'PENDING'}"></span></td><td class="text-center pe-4"><a th:href="@{/proyectos/checklist/{id}(id=${t.proyecto.id})}" class="btn btn-sm btn-link text-primary fw-bold text-decoration-none">VIEW CHECKLIST</a></td></tr>
-                                </tbody></table></div></div>
+                                <div class="card-body p-0">
+                                    <div class="accordion accordion-flush custom-scrollbar" id="accordionTareas" style="max-height: 400px; overflow-y: auto;">
+                                        <div class="accordion-item border-bottom" th:each="entry, stat : ${tareasAgrupadas}">
+                                            <h2 class="accordion-header" th:id="'heading-' + ${stat.index}">
+                                                <button class="accordion-button collapsed fw-bold text-dark bg-light" type="button" data-bs-toggle="collapse" th:data-bs-target="'#collapse-' + ${stat.index}">
+                                                        <i class="bi bi-folder2-open text-primary me-2 flex-shrink-0"></i>
+                                                        <span th:text="${entry.key}" class="flex-grow-1 text-truncate text-start me-3">Project Name</span>
+                                                        <span class="badge bg-danger rounded-pill shadow-sm project-task-count me-2 flex-shrink-0" th:text="${entry.value.size()}">0</span>
+                                                </button>
+                                            </h2>
+                                            <div th:id="'collapse-' + ${stat.index}" class="accordion-collapse collapse" data-bs-parent="#accordionTareas">
+                                                <div class="accordion-body p-0">
+                                                    <table class="table table-hover align-middle mb-0">
+                                                        <thead class="table-light">
+                                                            <tr>
+                                                                <th class="ps-4">Deliverable</th>
+                                                                <th class="text-center">Responsible</th>
+                                                                <th class="text-center">Status</th>
+                                                                <th class="text-center pe-4">Action</th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                            <tr th:each="t : ${entry.value}" class="task-row" th:data-champion="${@checklistServicio.normalizarChampion(t.champion)}">
+                                                                <td class="ps-4 text-dark fw-medium" th:text="${t.nombre}"></td>
+                                                                <td class="text-center champ-col">
+                                                                    <span class="badge px-3 py-2 fw-bold shadow-sm" 
+                                                                          th:with="normChamp=${@checklistServicio.normalizarChampion(t.champion)}" 
+                                                                          th:classappend="'champ-' + ${#strings.toLowerCase(normChamp)}" 
+                                                                          th:text="${normChamp}" 
+                                                                          th:title="${@checklistServicio.obtenerNombreCompletoChampion(normChamp)}">
+                                                                    </span>
+                                                                </td>
+                                                                <td class="text-center">
+                                                                    <span class="badge rounded-pill border px-3 py-2 shadow-sm" 
+                                                                          th:classappend="${t.controlEntregable == 'NEEDS ACTION' ? 'status-action' : 'status-pending'}" 
+                                                                          th:text="${t.controlEntregable ?: 'PENDING'}">
+                                                                    </span>
+                                                                </td>
+                                                                <td class="text-center pe-4">
+                                                                    <a th:href="@{/proyectos/checklist/{id}(id=${t.proyecto.id})}" class="btn btn-sm btn-link text-primary fw-bold text-decoration-none">OPEN</a>
+                                                                </td>
+                                                            </tr>
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div th:if="${tareasAgrupadas == null or tareasAgrupadas.isEmpty()}" class="p-4 text-center text-muted fst-italic">
+                                            No pending deliverables at this moment.
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                         <div class="col-lg-5">
@@ -102,7 +149,6 @@
                         </div>
                     </div>
 
-                    <!-- Row 3: Calendar -->
                     <div class="row g-4">
                         <div class="col-12"><div class="card glass-card"><div class="card-header glass-header d-flex justify-content-between align-items-center"><h6 class="m-0 fw-bold">SOP MASTER SCHEDULE</h6><div class="badge bg-je-blue text-white px-4 py-2 rounded-pill">PLANNING CALENDAR</div></div><div class="card-body p-4"><div class="row g-4"><div class="col-md-9 border-end"><div id='calendar'></div></div><div class="col-md-3 ps-md-4"><h6 class="fw-bold text-slate-800 mb-3 border-bottom pb-2">UPCOMING SOPs</h6><div id="calendar-event-list" style="max-height: 500px; overflow-y: auto;" class="custom-scrollbar"><div th:each="event : ${eventosCalendario}" class="mb-3 p-3 rounded-4 bg-white border shadow-sm transition-hover"><div class="d-flex align-items-center mb-2"><div class="rounded-circle me-2" style="width: 12px; height: 12px;" th:classappend="${event.className}"></div><span class="fw-bold text-dark" th:text="${event.title}"></span></div><div class="text-muted small mb-2"><i class="bi bi-calendar-event me-1"></i> <span th:text="${event.start}"></span></div><a th:href="${event.url}" class="btn btn-sm btn-outline-primary w-100 py-2 fw-bold rounded-pill">OPEN PROJECT</a></div></div></div></div></div></div></div>
                     </div>
@@ -111,7 +157,6 @@
         </div>
     </div>
 
-    <!-- MODAL: FULL YEAR TREND -->
     <div class="modal fade" id="modalFullTrend" tabindex="-1">
         <div class="modal-dialog modal-xl modal-dialog-centered">
             <div class="modal-content shadow-lg border-0" style="border-radius: 20px;">
@@ -137,7 +182,6 @@
         </div>
     </div>
 
-    <!-- MODAL: EDIT PROJECT -->
     <div class="modal fade" id="modalEditarProyecto" tabindex="-1">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content shadow-lg border-0" style="border-radius: 24px;">
@@ -186,9 +230,7 @@
             const eventosCalendario = /*[[${eventosCalendario}]]*/ [];
             initDashboard(tendenciaData, eventosCalendario);
         });
-    </script>
-</body>
-</html>
-    </script>
+
+      </script>
 </body>
 </html>

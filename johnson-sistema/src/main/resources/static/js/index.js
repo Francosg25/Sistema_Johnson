@@ -214,6 +214,39 @@ function initializeCharts(data) {
     }
 }
 
+        document.addEventListener('DOMContentLoaded', function() {
+            const pills = document.querySelectorAll('.champion-pill');
+            
+            pills.forEach(pill => {
+                pill.addEventListener('click', function() {
+                    pills.forEach(p => p.classList.remove('active'));
+                    this.classList.add('active');
+                    
+                    const selectedChamp = this.getAttribute('data-champion');
+                    
+                    document.querySelectorAll('.accordion-item').forEach(accordion => {
+                        let visibleRows = 0;
+                        
+                        accordion.querySelectorAll('.task-row').forEach(row => {
+                            const rowChamp = row.getAttribute('data-champion');
+                            if (selectedChamp === 'ALL' || rowChamp === selectedChamp) {
+                                row.style.display = '';
+                                visibleRows++;
+                            } else {
+                                row.style.display = 'none';
+                            }
+                        });
+                        
+                        const badge = accordion.querySelector('.project-task-count');
+                        if (badge) badge.textContent = visibleRows;
+                        
+                        accordion.style.display = visibleRows > 0 ? '' : 'none';
+                    });
+                });
+            });
+        });
+
+
 function initializeCalendar(events) {
     const el = document.getElementById('calendar');
     if (!el) return;

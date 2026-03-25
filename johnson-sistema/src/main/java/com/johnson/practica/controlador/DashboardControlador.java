@@ -50,13 +50,13 @@ public class DashboardControlador {
         
         List<Proyecto> proyectos = proyectoRepositorio.findByEsHistoricoFalse();
         
-        List<ReporteProgreso> reporteGlobal = checklistReporteServicio.generarReporteGlobal().stream() // <-- ACTUALIZADO
+        List<ReporteProgreso> reporteGlobal = checklistReporteServicio.generarReporteGlobal().stream() 
             .filter(r -> {
                 Proyecto p = proyectoRepositorio.findById(r.getId()).orElse(null);
                 return p != null && !p.getEsHistorico(); 
             }).toList();
             
-        ReporteEstadoGlobal estadoGlobal = checklistReporteServicio.generarReporteEstadoGlobal(); // <-- ACTUALIZADO
+        ReporteEstadoGlobal estadoGlobal = checklistReporteServicio.generarReporteEstadoGlobal(); 
         
         double avancePromedio = 0;
         if (!reporteGlobal.isEmpty()) {
@@ -75,11 +75,11 @@ public class DashboardControlador {
         model.addAttribute("proyectos", proyectos);
         model.addAttribute("reporteProgreso", reporteGlobal);
         model.addAttribute("estadoGlobal", estadoGlobal);
-        model.addAttribute("alertas", checklistReporteServicio.obtenerAlertasGlobales().stream() // <-- ACTUALIZADO
+        model.addAttribute("alertas", checklistReporteServicio.obtenerAlertasGlobales().stream() 
             .filter(a -> proyectos.stream().anyMatch(p -> a.getNombre().contains(p.getNombre())))
             .toList());
-        model.addAttribute("tendencia", checklistReporteServicio.obtenerDatosTendencia()); // <-- ACTUALIZADO
-        model.addAttribute("proximosLanzamientos", checklistReporteServicio.obtenerLanzamientosProximos()); // <-- ACTUALIZADO
+        model.addAttribute("tendencia", checklistReporteServicio.obtenerDatosTendencia()); 
+        model.addAttribute("proximosLanzamientos", checklistReporteServicio.obtenerLanzamientosProximos()); 
         model.addAttribute("avancePromedio", avancePromedio);
         
         model.addAttribute("notificaciones", notificaciones); 
@@ -87,9 +87,32 @@ public class DashboardControlador {
         
         List<ElementoChecklist> todasPendientes = checklistServicio.obtenerTodasTareasPendientes().stream()
             .filter(t -> !t.getProyecto().getEsHistorico())
+            .filter(t -> {
+                String fase = t.getFase() != null ? t.getFase() : "";
+                String codigo = t.getCodigo() != null ? t.getCodigo().toUpperCase() : "";
+                
+                // Excluimos si la Fase se llama explícitamente "2", "3", "4", o "5"
+                if (fase.contains("2") || fase.contains("3") || fase.contains("4") || fase.contains("5")) {
+                    return false; 
+                }
+                
+                // Por máxima seguridad, excluimos por el Código del entregable 
+                if (codigo.startsWith("S2") || codigo.startsWith("S3") || codigo.startsWith("G3") || 
+                    codigo.startsWith("S4") || codigo.startsWith("G4") || 
+                    codigo.startsWith("S5") || codigo.startsWith("G5")) {
+                    return false;
+                }
+                
+                return true; 
+            })
             .toList();
 
         model.addAttribute("todasTareasPendientes", todasPendientes);
+        
+        Map<String, List<ElementoChecklist>> tareasAgrupadas = todasPendientes.stream()
+            .collect(Collectors.groupingBy(t -> t.getProyecto().getNombre()));
+        model.addAttribute("tareasAgrupadas", tareasAgrupadas);
+
         model.addAttribute("listaChampions", checklistServicio.obtenerTodosLosChampions());
         
         Map<String, Long> conteoPorChampion = todasPendientes.stream()
