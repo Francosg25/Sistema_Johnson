@@ -24,7 +24,11 @@ public class ChecklistEventListener {
     @Autowired
     private BitacoraServicio bitacoraServicio;
 
- 
+    @Autowired
+    private EmailServicio emailServicio;
+
+    @Autowired
+    private UsuarioRepositorio usuarioRepositorio;
 
     @Async 
     @EventListener
@@ -64,7 +68,21 @@ public class ChecklistEventListener {
                 String usernameMencionado = matcher.group(1);
                 String msj = autor + " mentioned you in: " + elemento.getNombre();
                 
+                // Notificación en pantalla 
                 notificacionServicio.alertarAUsuario(usernameMencionado, "You were mentioned", msj, "INFO", urlProyecto, autor);
+                
+                // Buscar al usuario y enviarle el correo
+                usuarioRepositorio.findByUsername(usernameMencionado).ifPresent(user -> {
+                    if (user.isEnabled() && user.getCorreo() != null) {
+                        emailServicio.enviarCorreoMencion(
+                            user, 
+                            autor, 
+                            elemento.getNombre(), 
+                            proyecto.getNombre(), 
+                            proyecto.getId()
+                        );
+                    }
+                });
             }
         }
     }

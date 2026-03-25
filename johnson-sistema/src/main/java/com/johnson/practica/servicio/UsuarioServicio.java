@@ -85,14 +85,11 @@ public class UsuarioServicio {
         usuario.setUsername(username);
         usuario.setCorreo(correo);
         usuario.setNombreCompleto(nombreCompleto);
-        
         usuario.setDepartamento(departamento); 
-        
         usuario.setPassword(passwordEncoder.encode(tempPass));
         usuario.setPasswordChanged(false); 
         usuario.setEnabled(true);
 
-        // Asignamos el Rol dinámicamente (CHAMPION o VIEWER)
         Rol rolSeleccionado = rolRepositorio.findByNombre(nombreRol)
                 .orElseThrow(() -> new Exception("Error: El rol " + nombreRol + " no existe en la base de datos."));
 
@@ -100,21 +97,9 @@ public class UsuarioServicio {
         roles.add(rolSeleccionado);
         usuario.setRoles(roles);
 
-        // Guardamos en Base de Datos
         usuarioRepositorio.save(usuario);
         
-        // Enviamos el correo dinámico 
-        String nombreRolLimpio = nombreRol.replace("ROLE_", ""); 
-        String mensaje = String.format(
-            "Hello %s,\n\nYou have been registered as a %s for the %s department in the Johnson System.\n" +
-            "Your access credentials are:\n\n" +
-            "Username: %s\n" +
-            "Temporary Password: %s\n\n" +
-            "For security reasons, the system will ask you to change your password upon your first login.",
-            nombreCompleto, nombreRolLimpio, departamento, username, tempPass
-        );
-        
-        emailServicio.enviarAlertaUrgente(correo, "Welcome to the APQP System", mensaje);
+        emailServicio.enviarCorreoBienvenida(usuario, tempPass);
     }
 
     @Transactional
@@ -187,15 +172,7 @@ public class UsuarioServicio {
 
         Usuario guardado = usuarioRepositorio.save(usuario);
         
-        String mensaje = String.format(
-            "Hello %s,\n\nYou have been registered as a CHAMPION in the Johnson System.\n" +
-            "Your access credentials are:\n\n" +
-            "Username: %s\n" +
-            "Temporary Password: %s\n\n" +
-            "For security reasons, the system will ask you to change your password upon your first login.",
-            nombreCompleto, username, tempPass
-        );
-        emailServicio.enviarAlertaUrgente(correo, "Welcome to the APQP System", mensaje);
+        emailServicio.enviarCorreoBienvenida(guardado, tempPass);
         
         return guardado;
     }

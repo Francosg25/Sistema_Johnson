@@ -198,7 +198,6 @@ public class ProyectoControlador {
             String url = "/proyectos/checklist/" + proyectoGuardado.getId();
             
             notificacionServicio.alertarATodos(titulo, msj, "SUCCESS", url, usuario);
-            eventPublisher.publishEvent(new com.johnson.practica.eventos.ProyectoCreadoEvent(proyectoGuardado, usuario));
         }
         
         return "redirect:/";

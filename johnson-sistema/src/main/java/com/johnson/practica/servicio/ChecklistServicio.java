@@ -49,7 +49,7 @@ public class ChecklistServicio {
         return repositorio.findAll();
     }
 
-    @Transactional
+   @Transactional
     @CacheEvict(value = "reportes", allEntries = true) 
     public void guardarChecklistCompleto(Map<String, String> allParams) {
         if (allParams == null || allParams.isEmpty()) return;
@@ -80,7 +80,38 @@ public class ChecklistServicio {
             Map<String, String> cambios = updatesById.get(elemento.getId());
             final boolean[] huboCambioReal = {false}; 
             
+            // --- 1. EL PARCHE DE FECHAS (¡No lo borres! 🛡️) ---
+            if (cambios.containsKey("fechaPlan")) {
+                String fp = cambios.get("fechaPlan");
+                if (fp != null && !fp.trim().isEmpty()) {
+                    try {
+                        LocalDate nuevaFecha = LocalDate.parse(fp.trim());
+                        if (elemento.getFechaPlan() == null || !elemento.getFechaPlan().equals(nuevaFecha)) {
+                            elemento.setFechaPlan(nuevaFecha);
+                            huboCambioReal[0] = true;
+                            eventPublisher.publishEvent(new EntregableActualizadoEvent(elemento, nombreUsuarioLogueado, "fechaPlan", fp.trim()));
+                        }
+                    } catch (Exception e) {} 
+                }
+            }
+
+            if (cambios.containsKey("fechaReal")) {
+                String fr = cambios.get("fechaReal");
+                if (fr != null && !fr.trim().isEmpty()) {
+                    try {
+                        LocalDate nuevaFecha = LocalDate.parse(fr.trim());
+                        if (elemento.getFechaReal() == null || !elemento.getFechaReal().equals(nuevaFecha)) {
+                            elemento.setFechaReal(nuevaFecha);
+                            huboCambioReal[0] = true;
+                            eventPublisher.publishEvent(new EntregableActualizadoEvent(elemento, nombreUsuarioLogueado, "fechaReal", fr.trim()));
+                        }
+                    } catch (Exception e) {}
+                }
+            }
+
             cambios.forEach((fieldName, fieldValue) -> {
+                if (fieldName.equals("fechaPlan") || fieldName.equals("fechaReal")) return;
+
                 String valorNuevo = (fieldValue == null) ? "" : fieldValue.trim();
 
                 for (ChecklistCampoEstrategia estrategia : estrategias) {
@@ -105,7 +136,6 @@ public class ChecklistServicio {
             repositorio.saveAll(elementosRealmenteModificados);
         }
     }
-
     private void reEvaluarStatusFechas(ElementoChecklist elemento, boolean[] huboCambioReal) {
         if (elemento.getFechaPlan() != null) {
             String currentCtrl = (elemento.getControlEntregable() == null) ? "" : elemento.getControlEntregable();

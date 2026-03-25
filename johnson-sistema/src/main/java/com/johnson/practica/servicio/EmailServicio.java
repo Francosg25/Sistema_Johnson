@@ -33,6 +33,7 @@ public class EmailServicio {
     @Value("${app.base-url:http://localhost:8081}")
     private String appBaseUrl;
 
+
     @Async
     public void enviarCorreoNuevoProyecto(Usuario destinatario, Proyecto proyecto, String autor) {
         try {
@@ -135,30 +136,54 @@ public class EmailServicio {
     }
 
     @Async
-    public void enviarCorreoMencion(Usuario destinatario, String autorMencion, String nombreTarea, String nombreProyecto, Long proyectoId) {
+    public void enviarCorreoMencion(Usuario destinatario, String autor, String tarea, String proyecto, Long id) {
         try {
             Context context = new Context();
             context.setVariable("usuario", destinatario);
-            context.setVariable("autor", autorMencion);
-            context.setVariable("tarea", nombreTarea);
-            context.setVariable("proyecto", nombreProyecto);
+            context.setVariable("autor", autor);
+            context.setVariable("tarea", tarea);
+            context.setVariable("proyecto", proyecto);
+            context.setVariable("appUrl", appBaseUrl + "/proyectos/checklist/" + id);
             
-            // Enlace directo a la tarea en el proyecto
-            context.setVariable("appUrl", appBaseUrl + "/proyectos/checklist/" + proyectoId);
-
             String html = templateEngine.process("email/mencion", context);
-
-            jakarta.mail.internet.MimeMessage message = mailSender.createMimeMessage();
-            org.springframework.mail.javamail.MimeMessageHelper helper = new org.springframework.mail.javamail.MimeMessageHelper(message, true, "UTF-8");
-
+            
+            MimeMessage message = mailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
+            
             helper.setFrom(mailFrom, displayName);
             helper.setTo(destinatario.getCorreo());
-            helper.setSubject("💬 Mención en APQP: " + nombreTarea);
+            helper.setSubject("💬 Mention in APQP: " + tarea);
             helper.setText(html, true);
+            
+            mailSender.send(message);
+        } catch (Exception e) { 
+            System.err.println("Error enviando correo de mención: " + e.getMessage()); 
+        }
+    }
 
+    private void enviarHtml(String to, String subject, String template, Context context) {
+        try {
+            MimeMessage message = mailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
+            
+            helper.setFrom(mailFrom, displayName);
+            helper.setTo(to);
+            helper.setSubject(subject);
+            helper.setText(templateEngine.process(template, context), true);
+            
             mailSender.send(message);
         } catch (Exception e) {
-            System.err.println("Error enviando correo de mención a: " + destinatario.getCorreo());
+            System.err.println("Error enviando correo HTML a " + to + ": " + e.getMessage());
         }
+    }
+
+    @Async
+    public void enviarCorreoBienvenida(Usuario destinatario, String passwordTemporal) {
+        Context context = new Context();
+        context.setVariable("usuario", destinatario);
+        context.setVariable("password", passwordTemporal); 
+        context.setVariable("appUrl", appBaseUrl);
+        
+        enviarHtml(destinatario.getCorreo(), "Welcome to the APQP System", "email/nuevo-usuario", context);
     }
 }

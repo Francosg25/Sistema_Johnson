@@ -4,31 +4,37 @@
     <div style="max-width: 600px; margin: 0 auto; background-color: #ffffff; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 6px rgba(0,0,0,0.05);">
         
         <div style="background-color: #212529; color: white; padding: 25px; text-align: center; border-bottom: 4px solid #F5821F;">
-            <h2 style="margin: 0; font-size: 24px;">💬 Mention in APQP System</h2>
+            <h2 style="margin: 0; font-size: 24px;">Welcome to APQP System</h2>
         </div>
         
         <div style="padding: 30px;">
             <p style="font-size: 16px;">Hello <strong th:text="${usuario.nombreCompleto}">Team Member</strong>,</p>
             
             <p style="font-size: 16px;">
-                <strong th:text="${autor}" style="color: #F5821F;">User</strong> has mentioned you in a deliverable comment.
+                An account has been created for you in the <strong>Johnson Electric APQP System</strong>. 
+                Below are your temporary login credentials. For security reasons, you will be required to change your password upon your first login.
             </p>
             
             <div style="background-color: #f8f9fa; padding: 20px; border-left: 4px solid #F5821F; border-radius: 4px; margin: 25px 0;">
+                <p style="margin: 0 0 15px 0; font-size: 14px; color: #6c757d; text-transform: uppercase; font-weight: bold;">Account Details</p>
                 <table style="width: 100%; border-collapse: collapse;">
                     <tr>
-                        <td style="padding: 8px 0; color: #6c757d; font-weight: bold; width: 30%;">Project:</td>
-                        <td style="padding: 8px 0; font-weight: bold;" th:text="${proyecto}">N/A</td>
+                        <td style="padding: 8px 0; color: #6c757d; font-weight: bold; width: 35%;">Username:</td>
+                        <td style="padding: 8px 0; font-weight: bold; color: #0d6efd;" th:text="${usuario.username}">username</td>
                     </tr>
                     <tr>
-                        <td style="padding: 8px 0; color: #6c757d; font-weight: bold;">Deliverable:</td>
-                        <td style="padding: 8px 0; font-weight: bold;" th:text="${tarea}">N/A</td>
+                        <td style="padding: 8px 0; color: #6c757d; font-weight: bold;">Temporary Password:</td>
+                        <td style="padding: 8px 0; font-family: monospace; font-size: 16px; font-weight: bold; background-color: #e9ecef; display: inline-block; padding-left: 10px; padding-right: 10px; border-radius: 4px;" th:text="${password}">TempPass123!</td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 8px 0; color: #6c757d; font-weight: bold;">Department:</td>
+                        <td style="padding: 8px 0;" th:text="${usuario.departamento}">Department</td>
                     </tr>
                 </table>
             </div>
             
             <div style="text-align: center; margin-top: 35px; margin-bottom: 10px;">
-                <a th:href="${appUrl}" style="background-color: #F5821F; color: white; padding: 12px 25px; text-decoration: none; border-radius: 6px; font-weight: bold; font-size: 16px; display: inline-block;">Reply to Comment</a>
+                <a th:href="${appUrl}" style="background-color: #F5821F; color: white; padding: 12px 25px; text-decoration: none; border-radius: 6px; font-weight: bold; font-size: 16px; display: inline-block;">Access APQP System</a>
             </div>
         </div>
         

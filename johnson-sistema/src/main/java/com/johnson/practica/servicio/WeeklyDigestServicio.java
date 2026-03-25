@@ -30,7 +30,7 @@ public class WeeklyDigestServicio {
     private ChecklistServicio checklistServicio;
 
     // (Cambia a "0 * * * * ?" para probarlo cada minuto)
-    @Scheduled(cron = "0 * * * * ?")
+    @Scheduled(cron = "0 0 7 * * MON")
     @Transactional(readOnly = true)
     public void generarYEnviarResumenSemanal() {
         LocalDate hoy = LocalDate.now();
