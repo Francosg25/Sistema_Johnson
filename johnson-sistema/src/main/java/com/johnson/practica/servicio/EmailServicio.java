@@ -6,6 +6,11 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
+import org.thymeleaf.context.Context;
+import org.thymeleaf.spring6.SpringTemplateEngine;
+
+import com.johnson.practica.modelo.Proyecto;
+import com.johnson.practica.modelo.Usuario;
 
 import jakarta.mail.internet.MimeMessage;
 
@@ -15,11 +20,45 @@ public class EmailServicio {
     @Autowired
     private JavaMailSender mailSender;
 
-    @Value("${app.mail.from:noreply@johnson.com}")
+    @Autowired
+    private SpringTemplateEngine templateEngine;
+
+    // Variables de configuración de correo
+    @Value("${app.mail.from:noreply@johnsonelectric.com}")
     private String mailFrom;
 
     @Value("${app.mail.display-name:Johnson APQP System}")
     private String displayName;
+
+    @Value("${app.base-url:http://localhost:8081}")
+    private String appBaseUrl;
+
+    @Async
+    public void enviarCorreoNuevoProyecto(Usuario destinatario, Proyecto proyecto, String autor) {
+        try {
+            Context context = new Context();
+            context.setVariable("usuario", destinatario);
+            context.setVariable("proyecto", proyecto);
+            context.setVariable("autor", autor);
+            
+            // Usando appBaseUrl en lugar de localhost
+            context.setVariable("appUrl", appBaseUrl + "/proyectos/checklist/" + proyecto.getId());
+
+            String htmlContent = templateEngine.process("email/nuevo-proyecto", context);
+
+            MimeMessage message = mailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
+
+            helper.setFrom(mailFrom, displayName);
+            helper.setTo(destinatario.getCorreo());
+            helper.setSubject("[NEW PROJECT] " + proyecto.getNombre());
+            helper.setText(htmlContent, true);
+
+            mailSender.send(message);
+        } catch (Exception e) {
+            System.err.println("Error sending project notification email: " + e.getMessage());
+        }
+    }
 
     @Async 
     public void enviarAlertaUrgente(String destinatario, String asunto, String mensaje) {
@@ -42,7 +81,8 @@ public class EmailServicio {
 
     @Async
     public void enviarEnlaceRecuperacion(String destinatario, String token, String nombreUsuario) {
-        String enlace = "http://localhost:8081/recuperar-password?token=" + token;
+        String enlace = appBaseUrl + "/recuperar-password?token=" + token;
+        
         String cuerpo = String.format(
             "Hello %s,\n\nYou have requested to reset your password in the Johnson APQP System.\n" +
             "Click on the following link to create a new password (expires in 1 hour):\n\n" +
@@ -64,6 +104,61 @@ public class EmailServicio {
             System.out.println("Recovery email sent to: " + destinatario);
         } catch (Exception e) {
             System.err.println("Error sending recovery email: " + e.getMessage());
+        }
+    }
+
+    @Async
+    public void enviarWeeklyDigest(Usuario destinatario, java.util.List<com.johnson.practica.modelo.ElementoChecklist> tareas) {
+        try {
+            Context context = new Context();
+            context.setVariable("usuario", destinatario);
+            context.setVariable("tareas", tareas);
+            
+            // Usando appBaseUrl en lugar de localhost
+            context.setVariable("appUrl", appBaseUrl);
+            
+            String html = templateEngine.process("email/weekly-digest", context);
+            
+            jakarta.mail.internet.MimeMessage message = mailSender.createMimeMessage();
+            org.springframework.mail.javamail.MimeMessageHelper helper = new org.springframework.mail.javamail.MimeMessageHelper(message, true, "UTF-8");
+            
+            helper.setFrom(mailFrom, displayName);
+            helper.setTo(destinatario.getCorreo());
+            helper.setSubject("📅 APQP Weekly Digest - Tareas Pendientes");
+            helper.setText(html, true);
+            
+            mailSender.send(message);
+            System.out.println("Weekly Digest enviado a: " + destinatario.getCorreo() + " con " + tareas.size() + " tareas.");
+        } catch (Exception e) {
+            System.err.println("Error enviando Weekly Digest a: " + destinatario.getCorreo());
+        }
+    }
+
+    @Async
+    public void enviarCorreoMencion(Usuario destinatario, String autorMencion, String nombreTarea, String nombreProyecto, Long proyectoId) {
+        try {
+            Context context = new Context();
+            context.setVariable("usuario", destinatario);
+            context.setVariable("autor", autorMencion);
+            context.setVariable("tarea", nombreTarea);
+            context.setVariable("proyecto", nombreProyecto);
+            
+            // Enlace directo a la tarea en el proyecto
+            context.setVariable("appUrl", appBaseUrl + "/proyectos/checklist/" + proyectoId);
+
+            String html = templateEngine.process("email/mencion", context);
+
+            jakarta.mail.internet.MimeMessage message = mailSender.createMimeMessage();
+            org.springframework.mail.javamail.MimeMessageHelper helper = new org.springframework.mail.javamail.MimeMessageHelper(message, true, "UTF-8");
+
+            helper.setFrom(mailFrom, displayName);
+            helper.setTo(destinatario.getCorreo());
+            helper.setSubject("💬 Mención en APQP: " + nombreTarea);
+            helper.setText(html, true);
+
+            mailSender.send(message);
+        } catch (Exception e) {
+            System.err.println("Error enviando correo de mención a: " + destinatario.getCorreo());
         }
     }
 }

@@ -2,8 +2,11 @@ package com.johnson.practica.eventos;
 
 import com.johnson.practica.servicio.NotificacionServicio;
 import com.johnson.practica.servicio.BitacoraServicio;
+import com.johnson.practica.servicio.EmailServicio;
 import com.johnson.practica.modelo.ElementoChecklist;
 import com.johnson.practica.modelo.Proyecto;
+import com.johnson.practica.repositorio.UsuarioRepositorio;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.annotation.Async;
@@ -20,6 +23,8 @@ public class ChecklistEventListener {
 
     @Autowired
     private BitacoraServicio bitacoraServicio;
+
+ 
 
     @Async 
     @EventListener

@@ -42,14 +42,18 @@ public class CargadorDatos implements CommandLineRunner {
         if (adminOpt.isEmpty()) {
             logger.info("Creando usuario 'admin' de sistema...");
             Usuario admin = new Usuario();
+            
+            //Sus credenciales de acceso
             admin.setUsername("admin");
-            
             admin.setPassword(defaultAdminPassword); 
-            admin.setCorreo("admin@johnsonelectric.com");
-            admin.setEnabled(true);
             
-            admin.setPasswordChanged(false);
-
+            //Sus datos reales 
+            admin.setCorreo("Eduardo.Tejeida@johnsonelectric.com"); 
+            admin.setNombreCompleto("Eduardo Tejeida"); 
+            admin.setDepartamento("Management"); 
+            
+            admin.setEnabled(true);
+            admin.setPasswordChanged(false); 
             Set<Rol> roles = new HashSet<>();
             roles.add(rolRepositorio.findByNombre("ROLE_ADMIN").get());
             roles.add(rolRepositorio.findByNombre("ROLE_CHAMPION").get());
@@ -60,27 +64,6 @@ public class CargadorDatos implements CommandLineRunner {
             logger.info("Usuario 'admin' creado exitosamente.");
         } else {
             logger.info("Usuario 'admin' ya existe. Respetando su contraseña actual.");
-        }
-
-        Optional<Usuario> visitanteOpt = usuarioServicio.buscarPorUsername("visitante");
-        if (visitanteOpt.isEmpty()) {
-            logger.info("Creando usuario 'visitante'...");
-            Usuario visitante = new Usuario();
-            visitante.setUsername("visitante");
-            visitante.setPassword("visitantepass"); 
-            visitante.setCorreo("visitante@johnsonelectric.com");
-            visitante.setEnabled(true);
-            
-            visitante.setPasswordChanged(false);
-
-            Set<Rol> rolesVis = new HashSet<>();
-            rolesVis.add(rolRepositorio.findByNombre("ROLE_VIEWER").get());
-            visitante.setRoles(rolesVis);
-
-            usuarioServicio.guardarUsuario(visitante);
-            logger.info("Usuario 'visitante' creado exitosamente.");
-        } else {
-            logger.info("Usuario 'visitante' ya existe. Respetando su contraseña actual.");
         }
     }
 }

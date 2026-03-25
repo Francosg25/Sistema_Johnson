@@ -3,6 +3,8 @@ package com.johnson.practica.servicio;
 import com.johnson.practica.modelo.*;
 import com.johnson.practica.repositorio.*;
 
+import com.johnson.practica.eventos.ProyectoCreadoEvent;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -14,6 +16,9 @@ public class ProyectoServicio {
 
     @Autowired
     private ProyectoRepositorio proyectoRepositorio;
+
+    @Autowired
+    private ApplicationEventPublisher eventPublisher;
 
     @Autowired
     private CatalogoElementoRepositorio catalogoRepositorio;
@@ -69,6 +74,9 @@ public class ProyectoServicio {
         }
         
         elementoRepositorio.saveAll(nuevosItems);
+        
+        // PUBLICAR EVENTO PARA NOTIFICACIONES (Internas y Email)
+        eventPublisher.publishEvent(new ProyectoCreadoEvent(proyectoGuardado, usuario));
         
         return proyectoGuardado;
     }

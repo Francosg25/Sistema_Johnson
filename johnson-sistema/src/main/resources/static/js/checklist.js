@@ -577,11 +577,11 @@
         });
     });
 
-    // Trigger to open the signing modal
     document.querySelectorAll('.btn-firmar-trigger').forEach(box => {
         box.addEventListener('click', function() {
-            const esVisitante = /*[[${#authorization.expression('hasRole(''VIEWER'')')}]]*/ false;
-            if(esVisitante) return; 
+            const configDiv = document.getElementById('checklist-config');
+            const puedeEditar = configDiv ? configDiv.getAttribute('data-puede-editar') === 'true' : false;
+            if(!puedeEditar) return; 
 
             firmaData = {
                 proyectoId: this.getAttribute('data-proyecto'),

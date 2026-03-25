@@ -35,6 +35,7 @@ import java.time.LocalDate;
 import java.util.HashMap;
 import org.springframework.security.access.prepost.PreAuthorize;
 
+
 @Controller
 @RequestMapping("/proyectos")
 public class ProyectoControlador {
@@ -48,7 +49,7 @@ public class ProyectoControlador {
     @Autowired private ExcelServicio excelServicio;
     @Autowired private com.johnson.practica.servicio.BitacoraServicio bitacoraServicio;
     @Autowired private ChecklistReporteServicio checklistReporteServicio;
-
+    @Autowired private org.springframework.context.ApplicationEventPublisher eventPublisher;
 
     @Data @AllArgsConstructor
     public static class FaseVista {
@@ -197,6 +198,7 @@ public class ProyectoControlador {
             String url = "/proyectos/checklist/" + proyectoGuardado.getId();
             
             notificacionServicio.alertarATodos(titulo, msj, "SUCCESS", url, usuario);
+            eventPublisher.publishEvent(new com.johnson.practica.eventos.ProyectoCreadoEvent(proyectoGuardado, usuario));
         }
         
         return "redirect:/";
