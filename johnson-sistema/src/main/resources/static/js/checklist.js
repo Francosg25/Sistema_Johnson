@@ -508,12 +508,13 @@
         }, 200);
     });
 
-    document.addEventListener("DOMContentLoaded", function() {
-       const configDiv = document.getElementById('checklist-config');
-       const esHistorico = configDiv ? configDiv.getAttribute('data-es-historico') === 'true' : false;
-       const esVisitante = configDiv ? configDiv.getAttribute('data-es-visitante') === 'true' : false;
+   document.addEventListener("DOMContentLoaded", function() {
+        const configDiv = document.getElementById('checklist-config');
         
-        if (esHistorico || esVisitante) {
+        const esHistorico = configDiv ? configDiv.getAttribute('data-es-historico') === 'true' : false;
+        const puedeEditar = configDiv ? configDiv.getAttribute('data-puede-editar') === 'true' : false;
+        
+        if (esHistorico || !puedeEditar) {
             console.log("Modo Lectura Activado: Bloqueando edición.");
             
             const formElements = document.querySelectorAll('input, select, textarea');

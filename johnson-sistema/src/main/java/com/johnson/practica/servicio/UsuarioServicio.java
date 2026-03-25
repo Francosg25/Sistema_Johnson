@@ -21,12 +21,18 @@ public class UsuarioServicio {
     private final RolRepositorio rolRepositorio;
     private final PasswordEncoder passwordEncoder;
     private final EmailServicio emailServicio;
+    private final com.johnson.practica.repositorio.NotificacionRepositorio notificacionRepositorio;
 
-    public UsuarioServicio(UsuarioRepositorio usuarioRepositorio, RolRepositorio rolRepositorio, PasswordEncoder passwordEncoder, EmailServicio emailServicio) {
+    public UsuarioServicio(UsuarioRepositorio usuarioRepositorio, 
+                          RolRepositorio rolRepositorio, 
+                          PasswordEncoder passwordEncoder, 
+                          EmailServicio emailServicio,
+                          com.johnson.practica.repositorio.NotificacionRepositorio notificacionRepositorio) {
         this.usuarioRepositorio = usuarioRepositorio;
         this.rolRepositorio = rolRepositorio;
         this.passwordEncoder = passwordEncoder;
         this.emailServicio = emailServicio;
+        this.notificacionRepositorio = notificacionRepositorio;
     }
 
     @Transactional(readOnly = true)
@@ -49,6 +55,9 @@ public class UsuarioServicio {
                 throw new Exception("Cannot delete the last administrator in the system.");
             }
         }
+        
+        // LIMPIEZA DE NOTIFICACIONES ASOCIADAS (Evita FK Violation)
+        notificacionRepositorio.deleteAll(notificacionRepositorio.findByDestinatario(usuario));
         
         usuarioRepositorio.delete(usuario);
     }

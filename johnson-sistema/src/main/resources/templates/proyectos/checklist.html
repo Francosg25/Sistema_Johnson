@@ -191,9 +191,10 @@
                         <div th:replace="~{fragments/checklist/modals :: modalFinalizarProyecto(${proyecto})}"></div>
                         <div th:replace="~{fragments/checklist/modals :: modalFirmas}"></div>
 
-                        <div id="checklist-config" style="display: none;"
-                        th:data-es-historico="${proyecto.esHistorico or proyecto.archivado}"
-                        th:data-es-visitante="${#authorization.expression('hasRole(''ROLE_VIEWER'')')}">
+                        <div id="checklist-config" class="d-none"
+                            th:data-es-historico="${proyecto.esHistorico}"
+                            th:data-puede-editar="${#authorization.expression('hasAnyRole(''ADMIN'', ''CHAMPION'')')}">
+                        </div>
                     </div>
 
                     </div>

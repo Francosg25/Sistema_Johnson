@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.List;
 
 public interface NotificacionRepositorio extends JpaRepository<Notificacion, Long> {
+    List<Notificacion> findByDestinatario(Usuario destinatario);
     List<Notificacion> findByDestinatarioAndLeidaOrderByFechaCreacionDesc(Usuario destinatario, boolean leida);
     long countByDestinatarioAndLeida(Usuario destinatario, boolean leida);
 }

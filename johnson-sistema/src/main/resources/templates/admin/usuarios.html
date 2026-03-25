@@ -105,15 +105,29 @@
                                                   th:text="${#strings.replace(rol.nombre, 'ROLE_', '')}">ROL</span>
                                         </th:block>
                                     </td>
+                                    <td>
+                                        <div class="form-check form-switch">
+                                            <input class="form-check-input status-toggle" type="checkbox" 
+                                                   th:checked="${user.enabled}" 
+                                                   th:disabled="${user.username == #authentication.name}"
+                                                   th:onchange="'toggleStatus(' + ${user.id} + ')'">
+                                        </div>
+                                    </td>
                                     <td class="pe-4 text-end">
-                                        <button type="button" class="btn btn-sm btn-outline-danger border-0 rounded-circle" 
-                                            th:if="${user.username != null}"
-                                            th:disabled="${user.username == #authentication.name}"
-                                            th:data-id="${user.id}"
-                                            th:data-nombre="${user.nombreCompleto != null ? user.nombreCompleto : user.username}"
-                                            onclick="confirmarEliminar(this.getAttribute('data-id'), this.getAttribute('data-nombre'))">
-                                            <i class="bi bi-trash-fill"></i>
-                                    </button>
+                                        <div class="d-flex justify-content-end gap-2">
+                                            <button type="button" class="btn btn-sm btn-outline-primary border-0 rounded-circle" 
+                                                    th:onclick="'abrirModalEditar(' + ${user.id} + ')'">
+                                                <i class="bi bi-pencil-fill"></i>
+                                            </button>
+                                            <button type="button" class="btn btn-sm btn-outline-danger border-0 rounded-circle" 
+                                                    th:if="${user.username != null}"
+                                                    th:disabled="${user.username == #authentication.name}"
+                                                    th:data-id="${user.id}"
+                                                    th:data-nombre="${user.nombreCompleto != null ? user.nombreCompleto : user.username}"
+                                                    onclick="confirmarEliminar(this.getAttribute('data-id'), this.getAttribute('data-nombre'))">
+                                                <i class="bi bi-trash-fill"></i>
+                                            </button>
+                                        </div>
                                     </td>
                                 </tr>
                             </tbody>
