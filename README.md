@@ -20,6 +20,16 @@ Contenerización: Docker & Docker Compose
 --------Comandos de Operación (Makefile)
 El proyecto incluye un Makefile para simplificar las tareas de administración. Ejecutar estos comandos desde la terminal en la carpeta raíz:
 
+
+ESTO SOLO SI NO TIENES MAKE INSTALADO
+
+1. Abra PowerShell como administrador. 
+2. Instale Chocolatey ejecutando:
+Set-ExecutionPolicy Bypass -Scope Process -Force; iex ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))
+
+3. Una vez instalado, ejecute el siguiente comando para instalar Make:
+choco install make
+
 Comando	Acción
 make up	Despliegue Total: Compila, construye y levanta todo el sistema en segundo plano.
 make down	Apagado: Detiene y remueve los contenedores de forma segura.

@@ -4,48 +4,56 @@
     <div th:fragment="tablaProgram(fase)" th:if="${fase.nombre.contains('Program')}" class="card glass-card">
         <div class="card-body p-0">
             <div class="table-responsive">
-                <table class="table table-hover table-bordered mb-0 align-middle" style="font-size: 0.85rem;">
+                <table class="table table-hover table-bordered mb-0 align-middle" style="font-size: 0.85rem; white-space: nowrap;">
                     <thead class="bg-light small text-uppercase text-muted fw-bold">
                         <tr>
-                            <th rowspan="2" style="width: 5%;" class="text-center align-middle">Champion</th>
-                            <th rowspan="2" style="width: 20%;" class="align-middle">Deliverables</th>
-                            <th colspan="2" style="width: 15%;" class="text-center">Dates</th>
-                            <th rowspan="2" style="width: 25%;" class="text-center align-middle">Status</th>
-                            <th rowspan="2" style="width: 10%;" class="text-center align-middle">Score</th>
-                            <th rowspan="2" style="width: 15%;" class="align-middle">Remarks</th>
-                            <th rowspan="2" class="text-center align-middle" style="width: 50px;" title="Evidence">
+                            <th class="text-center align-middle" style="width: 5%;">Champion</th>
+                            <th class="align-middle" style="width: 25%; white-space: normal;">Deliverables</th>
+                            <th class="text-center align-middle" style="width: 14%;">Dates</th>
+                            <th class="text-center align-middle" style="width: 29%;">Status</th>
+                            <th class="text-center align-middle" style="width: 12%;">Score</th>
+                            <th class="align-middle" style="width: 10%; white-space: normal;">Remarks</th>
+                            <th class="text-center align-middle" style="width: 5%;" title="Evidence">
                                 <i class="bi bi-paperclip fs-5 text-secondary"></i>
                             </th>
-                        </tr>
-                        <tr class="text-center">
-                            <th style="width: 7.5%;">Plan</th>
-                            <th style="width: 7.5%;">Control</th>
                         </tr>
                     </thead>                                        
                     <tbody>
                         <th:block th:each="item, iterStat : ${fase.items}">
                             <tr th:if="${iterStat.index == 0 or !fase.items[iterStat.index - 1].etapaVisual.equals(item.etapaVisual)}" class="table-group-header">
-                                <td colspan="8" class="fw-bold text-uppercase py-2 px-3 text-dark">
+                                <td colspan="7" class="fw-bold text-uppercase py-2 px-3 text-dark">
                                     <i class="bi bi-collection me-2 text-primary"></i><span th:text="${item.etapaVisual}"></span>
                                 </td>
                             </tr>
                             
                             <tr>
-                                <td class="text-center fw-bold" rowspan="2" style="vertical-align: middle;">
+                                <td class="text-center fw-bold align-middle">
                                     <span class="badge w-100 shadow-sm" 
                                           th:with="normChamp=${@checklistServicio.normalizarChampion(item.champion)}"
                                           th:classappend="'champ-' + ${#strings.toLowerCase(normChamp).replace('/', '-')}" 
                                           th:text="${normChamp}"
                                           th:title="${@checklistServicio.obtenerNombreCompletoChampion(normChamp)}"></span>
                                 </td>
-                                <td rowspan="2" style="vertical-align: middle; background-color: rgba(255, 250, 205, 0.4) !important;">
+                                <td class="align-middle" style="background-color: rgba(255, 250, 205, 0.4) !important; white-space: normal;">
                                     <span class="d-block fw-bold text-dark" th:text="${item.nombre}"></span>
                                 </td>
-                                <td class="fw-bold small ps-2 text-muted">Plan</td>
-                                <td class="text-center">
-                                    <input type="date" class="form-control form-control-sm border-0 bg-transparent text-center p-0 fw-bold text-secondary" th:name="'fechaPlan-' + ${item.id}" th:value="${item.fechaPlan}">
+                                
+                                <td class="align-middle px-2">
+                                    <div class="d-flex align-items-center mb-1 pb-1 border-bottom border-light">
+                                        <span class="badge bg-light text-muted border me-2 shadow-sm px-1" 
+                                            style="min-width: 65px;">PLAN</span>
+                                        <input type="date" class="form-control form-control-sm border-0 bg-transparent text-center p-0 fw-bold text-secondary flex-grow-1" 
+                                                th:name="'fechaPlan-' + ${item.id}" th:value="${item.fechaPlan}">
+                                    </div>
+    
+                                    <div class="d-flex align-items-center mt-1">
+                                        <span class="badge bg-light text-dark border border-secondary border-opacity-25 me-2 shadow-sm px-1" 
+                                            style="min-width: 65px;">ACTUAL</span>
+                                        <input type="date" class="form-control form-control-sm border-0 bg-transparent text-center p-0 fw-bold flex-grow-1" 
+                                                th:name="'fechaReal-' + ${item.id}" th:value="${item.fechaReal}">
+                                    </div>
                                 </td>
-                                <td class="text-center" rowspan="2" style="vertical-align: middle;">
+                                <td class="text-center align-middle">
                                     <select class="form-select form-select-sm border-0 fw-bold text-center" th:name="'controlEntregable-' + ${item.id}"
                                             th:classappend="${
                                                 item.controlEntregable == 'Closed on time' ? 'status-on-time' :
@@ -59,7 +67,7 @@
                                         <option th:selected="${item.controlEntregable == 'NEEDS ACTION'}" value="NEEDS ACTION">NEEDS ACTION</option>
                                     </select>
                                 </td>
-                                <td class="text-center" rowspan="2" style="vertical-align: middle;">
+                                <td class="text-center align-middle">
                                     <select class="form-select form-select-sm border-0 fw-bold text-center" th:name="'score-' + ${item.id}"
                                             th:classappend="${item.score == 'OK' ? 'status-on-time' : (item.score == 'N/A' ? 'status-default' : 'status-default')}">
                                         <option value="" th:selected="${item.score == '' || item.score == null}"></option> 
@@ -68,7 +76,7 @@
                                     </select>
                                 </td>
                                 
-                                <td rowspan="2" style="max-width: 125px; vertical-align: middle;">
+                                <td class="align-middle" style="white-space: normal;">
                                     <div class="d-flex justify-content-between align-items-center bg-white bg-opacity-50 rounded p-1 border shadow-sm"
                                          style="cursor: pointer; transition: 0.2s;" onmouseover="this.style.borderColor='#80bdff'" onmouseout="this.style.borderColor='#dee2e6'" th:onclick="abrirEditorComentarios([[${item.id}]], [[${item.codigo}]])">
                                         <div class="text-truncate small ms-2 w-100" th:id="'preview-comentario-' + ${item.id}"
@@ -88,20 +96,15 @@
                                     <textarea class="d-none" th:name="'comentario-' + ${item.id}" th:id="'real-comentario-' + ${item.id}" th:text="${item.comentario}"></textarea>
                                 </td>
                                 
-                                <td class="text-center" rowspan="2" style="vertical-align: middle;">
+                                <td class="text-center align-middle">
                                     <button type="button" class="btn btn-sm border shadow-sm rounded-circle" 
                                             th:id="'btn-evidencia-' + ${item.id}"
                                             th:classappend="${item.adjuntos != null and !item.adjuntos.isEmpty()} ? 'btn-primary' : 'btn-light'"
                                             data-bs-toggle="modal" 
                                             th:data-bs-target="'#modalEvidencia_' + ${item.id}"
-                                            title="Upload/View Evidence">                                                            <i th:id="'btn-icon-evidencia-' + ${item.id}" class="bi bi-cloud-arrow-up-fill" th:classappend="${item.adjuntos != null and !item.adjuntos.isEmpty()} ? 'text-white' : 'text-primary'"></i>
+                                            title="Upload/View Evidence">                                                            
+                                            <i th:id="'btn-icon-evidencia-' + ${item.id}" class="bi bi-cloud-arrow-up-fill" th:classappend="${item.adjuntos != null and !item.adjuntos.isEmpty()} ? 'text-white' : 'text-primary'"></i>
                                     </button>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td class="fw-bold small ps-2 text-muted">Actual</td>
-                                <td class="text-center">
-                                    <input type="date" class="form-control form-control-sm border-0 bg-transparent text-center p-0 fw-bold" th:name="'fechaReal-' + ${item.id}" th:value="${item.fechaReal}">
                                 </td>
                             </tr>
                         </th:block>
