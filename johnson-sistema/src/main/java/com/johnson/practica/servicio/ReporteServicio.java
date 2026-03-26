@@ -108,7 +108,7 @@ public class ReporteServicio {
         agregarHito(roadmapHitos, "SOP", "🏁", proyecto.getFechaSop(), yearActual);
 
         
-        // 1. GENERAL APQP STATUS (Leyenda mucho más grande)
+        // 1. GENERAL APQP STATUS (Texto incrustado nativamente)
         String gEstatus = descargarGraficaBase64("{"
             + "type:'doughnut',"
             + "data:{"
@@ -116,23 +116,25 @@ public class ReporteServicio {
                 + "datasets:[{"
                     + "data:["+okCount+","+actionCount+","+pendingCount+"],"
                     + "backgroundColor:['#10b981','#ef4444','#cbd5e1'],"
-                    + "borderWidth: 2,"
-                    + "borderColor: '#ffffff'"
+                    + "borderWidth:0"
                 + "}]"
             + "},"
             + "options:{"
-                + "layout:{padding: {top: 20, bottom: 20, left: 30, right: 30} },"
-                + "cutoutPercentage: 65,"
-                + "legend:{"
-                    + "position:'top',"
-                    + "labels:{boxWidth:30, fontSize:22, padding:15, fontStyle:'bold'}"
-                + "},"
+                + "cutoutPercentage: 75,"
+                + "legend:{position:'bottom', labels:{boxWidth:10, fontSize:11}},"
                 + "plugins:{"
-                    + "datalabels:{display:false}"
+                    + "datalabels:{display:false},"
+                    + "doughnutlabel:{"
+                        + "labels:["
+                            + "{text:'"+Math.round(progreso)+"%', font:{size:35, weight:'bold'}, color:'#0d6efd'},"
+                            + "{text:'COMPLETION', font:{size:10, weight:'bold'}, color:'#64748b'}"
+                        + "]"
+                    + "}"
                 + "}"
             + "}"
-        + "}", 500, 400);       
-        // PROGRESO POR ETAPA
+        + "}", 400, 250);       
+
+        // 2. PROGRESO POR ETAPA (CASCADA)
         String labelsEtapas = "['STAGE 1','STAGE 2','STAGE 3','STAGE 4','STAGE 5']";
         String dataEtapas = progresoEtapas.values().toString();
         String gEtapas = descargarGraficaBase64("{"
@@ -140,33 +142,28 @@ public class ReporteServicio {
             + "data:{"
                 + "labels:" + labelsEtapas + ","
                 + "datasets:[{"
-                    + "label:'% Completed',"
                     + "data:" + dataEtapas + ","
                     + "backgroundColor:['#3b82f6','#0ea5e9','#10b981','#f59e0b','#8b5cf6'],"
-                    + "borderWidth:1"
+                    + "borderWidth:0"
                 + "}]"
             + "},"
             + "options:{"
-                + "layout:{padding: {top: 10, bottom: 10, left: 10, right: 35} },"
                 + "legend:{display:false},"
                 + "scales:{"
-                    + "xAxes:[{ticks:{min:0, max:100, fontSize:14}}],"
-                    + "yAxes:[{ticks:{fontSize:15, fontStyle:'bold', fontColor:'#475569'}}]"
+                    + "xAxes:[{display:false, ticks:{min:0, max:100}}],"
+                    + "yAxes:[{gridLines:{display:false}, ticks:{fontSize:11, fontStyle:'bold', fontColor:'#475569'}}]"
                 + "},"
                 + "plugins:{"
                     + "datalabels:{"
-                        + "display:true,"
                         + "color:'#fff',"
-                        + "font:{weight:'bold', size:16}," 
-                        + "anchor:'center',"
-                        + "align:'center',"
+                        + "font:{weight:'bold', size:12}," 
                         + "formatter: function(val) { return val + '%'; }"
                     + "}"
                 + "}"
             + "}"
-        + "}", 1000, 600); 
+        + "}", 400, 250); 
                
-       // HEALTH TASK DISTRIBUTION 
+        // 3. HEALTH TASK DISTRIBUTION 
         String gHealth = descargarGraficaBase64("{"
             + "type:'doughnut',"
             + "data:{"
@@ -174,36 +171,25 @@ public class ReporteServicio {
                 + "datasets:[{"
                     + "data:["+onTimeCount+","+lateCount+","+needsActionCount+","+decisionCount+","+unassignedCount+"],"
                     + "backgroundColor:['#10b981','#ef4444','#f59e0b','#3b82f6','#cbd5e1'],"
-                    + "borderWidth: 2,"
-                    + "borderColor: '#ffffff'"
+                    + "borderWidth:0"
                 + "}]"
             + "},"
             + "options:{"
-                + "layout:{padding: {top: 55, bottom: 15, left: 35, right: 35} },"
-                + "cutoutPercentage: 55,"
-                + "legend:{"                
-                    + "position:'bottom',"
-                    + "labels:{boxWidth:25,fontSize:18,padding:10}"
-                + "},"
+                + "cutoutPercentage: 70,"
+                + "legend:{position:'right', labels:{boxWidth:10, fontSize:10}},"
                 + "plugins:{"
-                    + "datalabels:{"
-                        + "display: function(ctx) { return ctx.dataset.data[ctx.dataIndex] > 0; },"
-                        + "align: function(ctx) { return ctx.dataset.data[ctx.dataIndex] <= 5 ? 'end' : 'center'; },"
-                        + "anchor: function(ctx) { return ctx.dataset.data[ctx.dataIndex] <= 5 ? 'end' : 'center'; },"
-                        + "color: function(ctx) { "
-                            + "const val = ctx.dataset.data[ctx.dataIndex];"
-                            + "return (ctx.dataIndex === 4 || val <= 5) ? '#000000' : '#ffffff';"
-                        + "},"
-                        + "font:{weight:'bold',size:16},"
-                        + "offset: 4" 
+                    + "datalabels:{display:false},"
+                    + "doughnutlabel:{"
+                        + "labels:[{"
+                            + "text:'" + entregablesPrograma.size() + "', font:{size:30, weight:'bold'}, color:'#64748b'"
+                        + "}]"
                     + "}"
                 + "}"
             + "}"
-        + "}", 500, 400);
+        + "}", 400, 250);
 
-        String riskColor = roundedRisk > 66 ? "#ef4444" : (roundedRisk > 33 ? "#f59e0b" : "#10b981");
-
-        // RISK METER 
+        // 4. RISK METER (Media luna perfecta)
+        String riskColor = roundedRisk >= 50 ? "#ef4444" : (roundedRisk >= 20 ? "#f59e0b" : "#10b981");
         String gRisk = descargarGraficaBase64("{"
             + "type:'doughnut',"
             + "data:{"
@@ -216,13 +202,20 @@ public class ReporteServicio {
             + "options:{"
                 + "circumference: Math.PI,"
                 + "rotation: Math.PI,"
-                + "cutoutPercentage:80,"
+                + "cutoutPercentage: 80,"
+                + "legend:{display:false},"
                 + "plugins:{"
-                    + "datalabels:{display:false}"
+                    + "datalabels:{display:false},"
+                    + "doughnutlabel:{"
+                        + "labels:["
+                            + "{text:'"+roundedRisk+"%', font:{size:40, weight:'bold'}, color:'"+riskColor+"'},"
+                            + "{text:'RISK', font:{size:12, weight:'bold'}, color:'#64748b'}"
+                        + "]"
+                    + "}"
                 + "}"
             + "}"
-        + "}");
-        
+        + "}", 400, 250);
+
         Map<String, Object> variables = new HashMap<>();
         variables.put("proyecto", proyecto);
         variables.put("entregables", entregablesPrograma);

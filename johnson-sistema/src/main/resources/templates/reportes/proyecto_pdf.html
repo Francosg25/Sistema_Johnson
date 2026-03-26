@@ -241,41 +241,32 @@
     </div>
 
     <div class="section-title">Dashboards</div>
-    <table class="dashboard-table">
+    <table class="dashboard-table" style="table-layout: fixed; width: 100%;">
         <tr>
-            <td>
+            <td align="center" style="width: 50%;">
                 <div class="chart-container">
                     <div class="chart-title">Health Task Distribution</div>
-                    <img th:src="${gHealth}" class="chart-img-donut" />
+                    <img th:src="${gHealth}" style="width: 250px;" />
                 </div>
             </td>
-            <td>
+            <td align="center" style="width: 50%;">
                 <div class="chart-container">
                     <div class="chart-title">Risk Level Meter</div>
-                    <img th:src="${gRisk}" class="chart-img-donut" />
-                    <div class="chart-overlay">
-                        <span class="overlay-val" th:text="${riesgoScore} + '%'" 
-                              th:style="'color: ' + (${riesgoScore} >= 50 ? '#dc3545' : (${riesgoScore} >= 20 ? '#fd7e14' : '#198754'))"></span>
-                        <span class="overlay-lbl">RISK</span>
-                    </div>
+                    <img th:src="${gRisk}" style="width: 250px;" />
                 </div>
             </td>
         </tr>
         <tr>
-            <td>
+            <td align="center" style="width: 50%;">
                 <div class="chart-container">
                     <div class="chart-title">General APQP Status</div>
-                    <img th:src="${gEstatus}" class="chart-img-donut" />
-                    <div class="chart-overlay" style="top: 52%;">
-                        <span class="overlay-val" th:text="${progreso} + '%'" style="color: #0d6efd;"></span>
-                        <span class="overlay-lbl">COMPLETION</span>
-                    </div>
+                    <img th:src="${gEstatus}" style="width: 250px;" />
                 </div>
             </td>
-            <td>
+            <td align="center" style="width: 50%;">
                 <div class="chart-container">
                     <div class="chart-title">Completion per Stage</div>
-                    <img th:src="${gEtapas}" class="chart-img" />
+                    <img th:src="${gEtapas}" style="width: 280px;" />
                 </div>
             </td>
         </tr>

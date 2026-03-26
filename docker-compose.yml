@@ -16,6 +16,7 @@ services:
       interval: 5s
       timeout: 5s
       retries: 5
+      start_period: 40s 
 
   app:
     build:
@@ -29,6 +30,9 @@ services:
       DB_URL: jdbc:postgresql://db:5432/johnsondb
       DB_USER: admin
       DB_PASSWORD: johnsonbase2026
+      SPRING_MAIL_USERNAME: "johnsonelectricapqp@gmail.com"
+      SPRING_MAIL_PASSWORD: "diogegrbfewqacfw"
+      APP_ADMIN_DEFAULT_PASSWORD: "TempJohnson2026" 
     volumes:
       - ./backups:/app/backups
       - ./evidencias:/app/evidencias
