@@ -42,9 +42,6 @@ down:
 logs:
 	docker compose logs -f app
 
-# Limpieza total: Borra la DB (para empezar de cero) y archivos temporales de Java
-clean:
-	# Busca la sección clean:
 clean:
 	docker compose down
 	rd /s /q postgres_data # Eliminar el bind mount de forma explícita

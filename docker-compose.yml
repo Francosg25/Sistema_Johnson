@@ -4,15 +4,15 @@ services:
     container_name: johnson_db
     restart: always
     environment:
-      - POSTGRES_DB=johnsondb
-      - POSTGRES_USER=admin
-      - POSTGRES_PASSWORD=johnsonbase2026
+      - POSTGRES_DB=${DB_NAME}
+      - POSTGRES_USER=${DB_USER}
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
     ports:
-      - "5444:5432" # Solo para tu desarrollo local
+      - "5444:5432"
     volumes:
       - ./postgres_data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U admin -d johnsondb"]
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER} -d ${DB_NAME}"]
       interval: 5s
       timeout: 5s
       retries: 5
@@ -27,12 +27,13 @@ services:
       db:
         condition: service_healthy
     environment:
-      DB_URL: jdbc:postgresql://db:5432/johnsondb
-      DB_USER: admin
-      DB_PASSWORD: johnsonbase2026
-      SPRING_MAIL_USERNAME: "johnsonelectricapqp@gmail.com"
-      SPRING_MAIL_PASSWORD: "diogegrbfewqacfw"
-      APP_ADMIN_DEFAULT_PASSWORD: "TempJohnson2026" 
+      DB_URL: jdbc:postgresql://db:5432/${DB_NAME}
+      DB_USER: ${DB_USER}
+      DB_PASSWORD: ${DB_PASSWORD}
+      SPRING_MAIL_USERNAME: ${MAIL_USERNAME}
+      SPRING_MAIL_PASSWORD: ${MAIL_PASSWORD}
+      APP_ADMIN_DEFAULT_PASSWORD: ${ADMIN_DEFAULT_PASSWORD}
+      APP_BASE_URL: ${APP_BASE_URL}
     volumes:
       - ./backups:/app/backups
       - ./evidencias:/app/evidencias

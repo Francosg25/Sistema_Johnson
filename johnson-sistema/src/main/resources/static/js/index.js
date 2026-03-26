@@ -1,26 +1,7 @@
 function initDashboard(tendenciaData, eventosCalendario) {
     initializeCharts(tendenciaData);
     initializeCalendar(eventosCalendario);
-    
-    const pills = document.querySelectorAll('.champion-pill');
-    const rows = document.querySelectorAll('.task-row');
-    const header = document.getElementById('col-champion-header');
-    const cols = document.querySelectorAll('.champ-col');
-
-    pills.forEach(pill => {
-        pill.addEventListener('click', function() {
-            const champ = this.dataset.champion;
-            pills.forEach(p => p.classList.remove('active'));
-            this.classList.add('active');
-            
-            if(header) header.style.display = (champ === 'ALL' ? '' : 'none');
-            cols.forEach(c => c.style.display = (champ === 'ALL' ? '' : 'none'));
-            
-            rows.forEach(r => {
-                r.style.display = (champ === 'ALL' || r.dataset.champion === champ ? '' : 'none');
-            });
-        });
-    });
+        
 
     const trendCard = document.getElementById('trendCard');
     if (trendCard) {
@@ -229,7 +210,7 @@ function initializeCharts(data) {
                         
                         accordion.querySelectorAll('.task-row').forEach(row => {
                             const rowChamp = row.getAttribute('data-champion');
-                            if (selectedChamp === 'ALL' || rowChamp === selectedChamp) {
+                            if (selectedChamp === 'SHOW_ALL' || rowChamp === selectedChamp) {
                                 row.style.display = '';
                                 visibleRows++;
                             } else {

@@ -1,14 +1,10 @@
-Gemini ha dicho
-¡Claro que sí, Franco! Este es el momento de ponerle la "cereza al pastel". Un buen README no solo ayuda a los demás ingenieros, sino que demuestra que tu trabajo tiene calidad de nivel senior.
 
-Aquí tienes un README.md profesional, estructurado y listo para que lo copies y pegues en la raíz de tu proyecto.
+-------Sistema de Gestión APQP - Johnson Electric
 
-📊 Sistema de Gestión APQP - Johnson Electric
-Este sistema ha sido desarrollado como proyecto de tesis por Franco Sanchez para la automatización y seguimiento de los procesos de APQP (Advanced Product Quality Planning) y PPAP dentro de la planta.
 
 La aplicación utiliza una arquitectura moderna basada en microservicios contenerizados para garantizar estabilidad, seguridad y facilidad de despliegue.
 
-🚀 Tecnologías Principales
+-------Tecnologías Principales
 Backend: Java 17 / Spring Boot 3.5.10
 
 Base de Datos: PostgreSQL 15
@@ -19,7 +15,9 @@ Proxy Inverso: Nginx (Servidor de entrada y seguridad)
 
 Contenerización: Docker & Docker Compose
 
-🛠️ Comandos de Operación (Makefile)
+
+
+--------Comandos de Operación (Makefile)
 El proyecto incluye un Makefile para simplificar las tareas de administración. Ejecutar estos comandos desde la terminal en la carpeta raíz:
 
 Comando	Acción
@@ -31,7 +29,9 @@ make clean	Mantenimiento: Borra imágenes, volúmenes y archivos temporales de c
 Nota: Si el servidor no tiene make, usar: docker compose up --build -d.
 
 
-📂 Estructura y Persistencia
+
+
+--------Estructura y Persistencia
 Para evitar la pérdida de información ante fallas eléctricas o reinicios, el sistema utiliza volúmenes persistentes en el servidor:
 
 /postgres_data: Almacena físicamente la base de datos PostgreSQL. No borrar.
@@ -40,7 +40,9 @@ Para evitar la pérdida de información ante fallas eléctricas o reinicios, el 
 
 /backups: Carpeta de destino para los respaldos automáticos del sistema.
 
-🔒 Seguridad e Infraestructura
+
+
+----------Seguridad e Infraestructura
 Nginx como Escudo: La aplicación Java no está expuesta directamente a la red. Todo el tráfico entra por el puerto 80, donde Nginx actúa como filtro y Reverse Proxy.
 
 Rate Limiting: El sistema protege la API contra ataques de fuerza bruta o saturación, limitando a 20 peticiones por minuto por IP en rutas críticas.
@@ -49,7 +51,8 @@ Flyway: La base de datos se versiona sola. Al iniciar, el sistema revisa la tabl
 
 Políticas de Reinicio: Todos los servicios tienen restart: always. Si el servidor se apaga, el sistema APQP se iniciará automáticamente al recuperar la energía.
 
-📝 Notas para el Departamento de IT
+
+----------Notas para el Departamento de IT
 Puerto de Entrada: 80 (HTTP).
 
 Puerto Interno App: 8081 (No requiere apertura en firewall externo).

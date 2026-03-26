@@ -78,8 +78,14 @@
                                 <div class="card-header glass-header d-flex justify-content-between align-items-center">
                                     <h6 class="m-0 fw-bold">PENDING DELIVERABLES</h6>
                                     <div class="d-flex gap-2 overflow-x-auto custom-scrollbar pb-1" style="max-width: 60%;">
-                                        <div class="champion-pill active" data-champion="ALL">ALL <span class="badge" th:text="${todasTareasPendientes.size()}">0</span></div>
-                                        <div th:each="champ : ${listaChampions}" class="champion-pill" th:data-champion="${champ}" th:title="${@checklistServicio.obtenerNombreCompletoChampion(champ)}"><span th:text="${champ}"></span> <span class="badge" th:text="${conteoPorChampion.get(champ) ?: 0}">0</span></div>
+                                        <div class="champion-pill active" data-champion="SHOW_ALL">ALL TASKS <span class="badge" th:text="${todasTareasPendientes.size()}">0</span></div>                                        <div th:each="champ : ${listaChampions}" 
+                                                th:if="${champ != 'FIN' and champ != 'SCS'}"
+                                                class="champion-pill" 
+                                                th:data-champion="${champ}" 
+                                                th:title="${@checklistServicio.obtenerNombreCompletoChampion(champ)}">
+                                                <span th:text="${champ}"></span> 
+                                                <span class="badge" th:text="${conteoPorChampion.get(champ) ?: 0}">0</span>
+                                        </div>
                                     </div>
                                 </div>
                                 <div class="card-body p-0">
@@ -107,13 +113,13 @@
                                                             <tr th:each="t : ${entry.value}" class="task-row" th:data-champion="${@checklistServicio.normalizarChampion(t.champion)}">
                                                                 <td class="ps-4 text-dark fw-medium" th:text="${t.nombre}"></td>
                                                                 <td class="text-center champ-col">
-                                                                    <span class="badge px-3 py-2 fw-bold shadow-sm" 
-                                                                          th:with="normChamp=${@checklistServicio.normalizarChampion(t.champion)}" 
-                                                                          th:classappend="'champ-' + ${#strings.toLowerCase(normChamp)}" 
-                                                                          th:text="${normChamp}" 
-                                                                          th:title="${@checklistServicio.obtenerNombreCompletoChampion(normChamp)}">
-                                                                    </span>
-                                                                </td>
+    <span class="badge bg-secondary px-3 py-2 fw-bold shadow-sm" 
+          th:with="normChamp=${@checklistServicio.normalizarChampion(t.champion)}" 
+          th:classappend="'champ-' + ${#strings.replace(#strings.toLowerCase(normChamp), '/', '-')}" 
+          th:text="${normChamp}" 
+          th:title="${@checklistServicio.obtenerNombreCompletoChampion(normChamp)}">
+    </span>
+</td>
                                                                 <td class="text-center">
                                                                     <span class="badge rounded-pill border px-3 py-2 shadow-sm" 
                                                                           th:classappend="${t.controlEntregable == 'NEEDS ACTION' ? 'status-action' : 'status-pending'}" 
