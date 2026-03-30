@@ -6,9 +6,14 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
     <link rel="stylesheet" th:href="@{/css/checklist.css}" />
+    
+    <style>
+        /* Ajuste sutil para el popover de la leyenda (Signo de interrogación) */
+        .leyenda-popover { cursor: pointer; color: #6c757d; transition: color 0.2s; }
+        .leyenda-popover:hover { color: #0b6ded; }
+    </style>
 </head>
 
 <body class="bg-light">
@@ -74,90 +79,79 @@
                             
                             <a href="/" class="btn btn-outline-secondary btn-sm me-3 shadow-sm fw-bold">Back</a>
                             
-                            <div sec:authorize="hasRole('ADMIN')" class="me-3">
-                                <button type="button" class="btn btn-sm btn-dark fw-bold shadow-sm px-3" data-bs-toggle="modal" data-bs-target="#modalFinalizarProyecto" th:if="${!proyecto.esHistorico and !proyecto.archivado}">
-                                    <i class="bi bi-check-circle-fill me-1"></i> FINISH PROJECT
+                            <div class="dropdown me-3 shadow-sm">
+                                <button class="btn btn-sm btn-outline-primary dropdown-toggle fw-bold" type="button" id="dropdownReportes" data-bs-toggle="dropdown" aria-expanded="false">
+                                    <i class="bi bi-file-earmark-bar-graph me-1"></i> Reports
                                 </button>
+                                <ul class="dropdown-menu dropdown-menu-end shadow border-0" aria-labelledby="dropdownReportes">
+                                    <li><a class="dropdown-item py-2" th:href="@{/reportes/proyecto/ver/{id}(id=${proyecto.id})}" target="_blank">
+                                        <i class="bi bi-eye-fill text-primary me-2"></i> View Online Report
+                                    </a></li>
+                                    <li><a class="dropdown-item py-2" th:href="@{/proyectos/exportar-pdf/{id}(id=${proyecto.id})}" target="_blank">
+                                        <i class="bi bi-file-earmark-pdf-fill text-danger me-2"></i> Download PDF Report
+                                    </a></li>
+                                    <li><hr class="dropdown-divider"></li>
+                                    <li><a class="dropdown-item py-2" th:href="@{/proyectos/exportar-master-timeline}" target="_blank">
+                                        <i class="bi bi-file-earmark-spreadsheet-fill text-success me-2"></i> Download Global Excel
+                                    </a></li>
+                                </ul>
                             </div>
+                            
+                            <button type="submit" id="btnGuardarTodo" form="formChecklist" class="btn btn-sm btn-je-primary fw-bold shadow-sm me-2 d-inline-flex align-items-center justify-content-center text-nowrap" style="width: 160px; height: 36px;" th:if="${!proyecto.esHistorico and !proyecto.archivado}" sec:authorize="hasAnyRole('ADMIN', 'CHAMPION')">
+                                <i class="bi bi-save2-fill me-2"></i> Save Changes
+                            </button>
 
-                            <div class="btn-group shadow-sm">
-                                <button type="submit" id="btnGuardarTodo" form="formChecklist" class="btn btn-je-primary btn-sm px-3 d-flex align-items-center" th:if="${!proyecto.esHistorico and !proyecto.archivado}" sec:authorize="hasAnyRole('ADMIN', 'CHAMPION')" title="Save all changes">
-                                    <i class="bi bi-save2-fill me-2"></i> Save
+                            <button type="button" class="btn btn-sm btn-dark fw-bold shadow-sm d-inline-flex align-items-center justify-content-center text-nowrap" style="width: 160px; height: 36px;" data-bs-toggle="modal" data-bs-target="#modalFinalizarProyecto" th:if="${!proyecto.esHistorico and !proyecto.archivado}" sec:authorize="hasRole('ADMIN')">
+                                <i class="bi bi-check-circle-fill me-2"></i> Finish Project
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="accordion mb-4 shadow-sm" id="accordionHitos">
+                        <div class="accordion-item border-0 glass-card">
+                            <h2 class="accordion-header" id="headingHitos">
+                                <button class="accordion-button collapsed fw-bold py-3 px-4 bg-transparent" type="button" data-bs-toggle="collapse" data-bs-target="#collapseHitos" aria-expanded="false" aria-controls="collapseHitos">
+                                    <i class="bi bi-calendar-event me-2 text-primary"></i> Project Executive Milestones (Launch Overview)
                                 </button>
-                                <a th:href="@{/reportes/proyecto/ver/{id}(id=${proyecto.id})}" target="_blank"
-                                        style="background-color: #0b6ded; border: none; color: white;"
-                                        class="btn btn-sm px-3 d-flex align-items-center"
-                                        title="View Executive Report Online">
-                                        <i class="bi bi-eye-fill"></i>
-                                     </a>
-                                     
-                                    <a th:href="@{/proyectos/exportar-pdf/{id}(id=${proyecto.id})}" target="_blank"
-                                        style="background-color: #d84040; border: none; color: white;"
-                                        class="btn btn-sm px-3 d-flex align-items-center" 
-                                        title="Download PDF Report">
-                                        <i class="bi bi-file-earmark-pdf-fill"></i>
-                                    </a>
-                                    <a th:href="@{/proyectos/exportar-master-timeline}" target="_blank"
-                                        style="background-color: #10b981; border: none; color: white;"
-                                        class="btn btn-sm px-3 d-flex align-items-center" 
-                                        title="Download Global Excel Report">
-                                    <i class="bi bi-file-earmark-spreadsheet-fill"></i>
-                                </a>
+                            </h2>
+                            <div id="collapseHitos" class="accordion-collapse collapse" aria-labelledby="headingHitos" data-bs-parent="#accordionHitos">
+                                <div class="accordion-body border-top border-light py-3 px-4">
+                                    <form th:action="@{/proyectos/guardar-hitos/{id}(id=${proyecto.id})}" method="post" id="formHitosProyecto">
+                                        <div class="row g-3">
+                                            <div class="col-md-4">
+                                                <label class="form-label small fw-bold text-muted mb-1">💰 CAR Approval</label>
+                                                <input type="date" class="form-control form-control-sm border-0 bg-light update-hito" name="fechaCar" th:value="${proyecto.fechaCar}" th:disabled="${!#authorization.expression('hasRole(''ADMIN'')')}">
+                                            </div>
+                                            <div class="col-md-4">
+                                                <label class="form-label small fw-bold text-muted mb-1">👥 Line Buy-off</label>
+                                                <input type="date" class="form-control form-control-sm border-0 bg-light update-hito" name="fechaBuyoff" th:value="${proyecto.fechaBuyoff}" th:disabled="${!#authorization.expression('hasRole(''ADMIN'')')}">
+                                            </div>
+                                            <div class="col-md-4">
+                                                <label class="form-label small fw-bold text-muted mb-1">🚢 Equipment Ship</label>
+                                                <input type="date" class="form-control form-control-sm border-0 bg-light update-hito" name="fechaTransit" th:value="${proyecto.fechaTransit}" th:disabled="${!#authorization.expression('hasRole(''ADMIN'')')}">
+                                            </div>
+                                        </div>
+                                    </form>
                                 </div>
                             </div>
                         </div>
+                    </div>
 
-                        <div class="card glass-card border-0 shadow-sm mb-4 border-start border-4 border-warning">
-                            <div class="card-body py-3 px-4">
-                                <h6 class="fw-bold text-dark mb-3"></i>Project Executive Milestones (Launch Overview)</h6>
-                                <form th:action="@{/proyectos/guardar-hitos/{id}(id=${proyecto.id})}" method="post" id="formHitosProyecto">
-                                    <div class="row g-3">
-                                        <div class="col-md-3">
-                                            <label class="form-label small fw-bold text-muted mb-1">💰 CAR Approval</label>
-                                            <input type="date" class="form-control form-control-sm border-0 bg-light update-hito" name="fechaCar" th:value="${proyecto.fechaCar}" th:disabled="${!#authorization.expression('hasRole(''ADMIN'')')}">
-                                        </div>
-                                        <div class="col-md-3">
-                                            <label class="form-label small fw-bold text-muted mb-1">👥 Line Buy-off</label>
-                                            <input type="date" class="form-control form-control-sm border-0 bg-light update-hito" name="fechaBuyoff" th:value="${proyecto.fechaBuyoff}" th:disabled="${!#authorization.expression('hasRole(''ADMIN'')')}">
-                                        </div>
-                                        <div class="col-md-3">
-                                            <label class="form-label small fw-bold text-muted mb-1">🚢 Equipment Ship</label>
-                                            <input type="date" class="form-control form-control-sm border-0 bg-light update-hito" name="fechaTransit" th:value="${proyecto.fechaTransit}" th:disabled="${!#authorization.expression('hasRole(''ADMIN'')')}">
-                                        </div>
-                                    </div>
-                                </form>
-                            </div>
+                    <div id="leyendaRolesHTML" class="d-none">
+                        <div class="d-flex flex-column gap-2 small">
+                            <div><span class="badge champ-qe me-1">QE</span> Quality Engineer</div>
+                            <div><span class="badge champ-pe me-1">PE</span> Process Engineer</div>
+                            <div><span class="badge champ-de me-1">DE</span> Design Engineer</div>
+                            <div><span class="badge champ-proj me-1">PROJ</span> Project Manager</div>
+                            <div><span class="badge champ-qe-pe me-1">QE/PE</span> Quality & Process</div>
+                            <div><span class="badge champ-all me-1">ALL</span> Cross-Functional Team</div>
                         </div>
+                    </div>
 
-                        <div class="card glass-card border-0 shadow-sm mb-4">
-                            <div class="card-body py-3 px-4">
-                                <div class="d-flex align-items-center justify-content-between flex-wrap gap-2">
-                                    <div class="d-flex flex-wrap gap-3 small fw-medium text-muted">
-                                        <div class="d-flex align-items-center" title="Quality Engineer">
-                                            <span class="badge champ-qe me-2 shadow-sm">QE</span> Quality
-                                        </div>
-                                        <div class="d-flex align-items-center" title="Process/Manufacturing Engineer">
-                                            <span class="badge champ-pe me-2 shadow-sm">PE</span> Process
-                                        </div>
-                                        <div class="d-flex align-items-center" title="Design/Product Engineer">
-                                            <span class="badge champ-de me-2 shadow-sm">DE</span> Design
-                                        </div>
-                                        <div class="d-flex align-items-center" title="Project Leader">
-                                            <span class="badge champ-proj me-2 shadow-sm">PROJ</span> Project Manager
-                                        </div>
-                                        <div class="d-flex align-items-center" title="Quality & Process (Responsabilidad Compartida)">
-                                            <span class="badge champ-qe-pe me-2 shadow-sm">QE/PE</span> Quality and Process
-                                        </div>
-                                        <div class="d-flex align-items-center" title="Cross-Functional Team">
-                                            <span class="badge champ-all me-2 shadow-sm">ALL</span> All Team (CFT)
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <form th:action="@{/proyectos/checklist/guardar-ajax/{id}(id=${proyecto.id})}" method="post" id="formChecklist">
-                            <ul class="nav nav-tabs nav-fill mb-4 border-bottom-0" id="apqpTabs" role="tablist">
+                    <form th:action="@{/proyectos/checklist/guardar-ajax/{id}(id=${proyecto.id})}" method="post" id="formChecklist" novalidate>
+                        
+                        <div class="d-flex align-items-center mb-4">
+                            <ul class="nav nav-tabs nav-fill border-bottom-0 flex-grow-1" id="apqpTabs" role="tablist">
                                 <li class="nav-item" role="presentation" th:each="fase : ${fases}">
                                     <button class="nav-link border-0 shadow-sm me-2" 
                                             th:classappend="'bg-light text-muted'"
@@ -170,47 +164,64 @@
                                     </button>
                                 </li>
                             </ul>
-
-                            <div class="tab-content" id="apqpTabsContent">
-                                <div th:each="fase, faseIter : ${fases}" 
-                                     class="tab-pane fade" 
-                                     th:classappend="${faseIter.index == 0} ? 'show active'" 
-                                     th:id="'content-' + ${fase.id}" 
-                                     role="tabpanel">
-
-                                    <div th:replace="~{fragments/checklist/table_program :: tablaProgram(${fase})}"></div>
-                                    <div th:replace="~{fragments/checklist/table_stage2 :: tablaStage2(${fase})}"></div>
-                                    <div th:replace="~{fragments/checklist/table_gates :: tablaGates(${fase}, ${proyecto}, ${firmasGate3}, ${firmasGate4}, ${firmasGate5})}"></div>
-
-                                </div>
+                            <div class="ms-3 leyenda-popover" data-bs-toggle="popover" data-bs-trigger="hover focus" data-bs-html="true" data-bs-placement="left" title="<i class='bi bi-info-circle me-1'></i> Roles Legend">
+                                <i class="bi bi-question-circle fs-5"></i>
                             </div>
-                        </form>
-
-                        <th:block th:each="fase : ${fases}">
-                            <th:block th:each="item : ${fase.items}">
-                                <div th:replace="~{fragments/checklist/modals :: modalEvidencia(${item})}"></div>
-                            </th:block>
-                        </th:block>
-
-                        <div th:replace="~{fragments/checklist/modals :: modalComentarios}"></div>
-                        <div th:replace="~{fragments/checklist/modals :: modalEliminarEvidencia}"></div>
-                        <div th:replace="~{fragments/checklist/modals :: modalFinalizarProyecto(${proyecto})}"></div>
-                        <div th:replace="~{fragments/checklist/modals :: modalFirmas}"></div>
-
-                        <div id="checklist-config" class="d-none"
-                            th:data-es-historico="${proyecto.esHistorico}"
-                            th:data-puede-editar="${#authorization.expression('hasAnyRole(''ADMIN'', ''CHAMPION'')')}">
                         </div>
-                    </div>
 
+                        <div class="tab-content" id="apqpTabsContent">
+                            <div th:each="fase, faseIter : ${fases}" 
+                                 class="tab-pane fade" 
+                                 th:classappend="${faseIter.index == 0} ? 'show active'" 
+                                 th:id="'content-' + ${fase.id}" 
+                                 role="tabpanel">
+
+                                <div th:replace="~{fragments/checklist/table_program :: tablaProgram(${fase})}"></div>
+                                <div th:replace="~{fragments/checklist/table_stage2 :: tablaStage2(${fase})}"></div>
+                                <div th:replace="~{fragments/checklist/table_gates :: tablaGates(${fase}, ${proyecto}, ${firmasGate3}, ${firmasGate4}, ${firmasGate5})}"></div>
+
+                            </div>
+                        </div>
+                    </form>
+
+                    <th:block th:each="fase : ${fases}">
+                        <th:block th:each="item : ${fase.items}">
+                            <div th:replace="~{fragments/checklist/modals :: modalEvidencia(${item})}"></div>
+                        </th:block>
+                    </th:block>
+                    <div th:replace="~{fragments/checklist/modals :: modalComentarios}"></div>
+                    <div th:replace="~{fragments/checklist/modals :: modalEliminarEvidencia}"></div>
+                    <div th:replace="~{fragments/checklist/modals :: modalFinalizarProyecto(${proyecto})}"></div>
+                    <div th:replace="~{fragments/checklist/modals :: modalFirmas}"></div>
+
+                    <div id="checklist-config" class="d-none"
+                        th:data-es-historico="${proyecto.esHistorico}"
+                        th:data-puede-editar="${#authorization.expression('hasAnyRole(''ADMIN'', ''CHAMPION'')')}">
                     </div>
+                    
                 </div>
-
             </main>
         </div>
+    </div>
 
     <link rel="stylesheet" href="https://unpkg.com/tributejs/dist/tribute.css">
     <script src="https://unpkg.com/tributejs/dist/tribute.min.js"></script>
     <script th:src="@{/js/checklist.js}"></script>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            // Extraer el contenido HTML de la leyenda
+            const leyendaContent = document.getElementById('leyendaRolesHTML').innerHTML;
+            
+            // Inicializar Popovers de Bootstrap
+            const popoverTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="popover"]'))
+            const popoverList = popoverTriggerList.map(function (popoverTriggerEl) {
+                return new bootstrap.Popover(popoverTriggerEl, {
+                    content: leyendaContent,
+                    html: true
+                })
+            });
+        });
+    </script>
 </body>
 </html>
