@@ -586,11 +586,18 @@
             firmaData = {
                 proyectoId: this.getAttribute('data-proyecto'),
                 etapa: this.getAttribute('data-etapa'),
-                rol: this.getAttribute('data-rol')
+                rol: this.getAttribute('data-rol'),
+                nombreAsignado: this.getAttribute('data-nombre-asignado')
             };
 
             document.getElementById('modalGateText').textContent = firmaData.etapa;
             document.getElementById('modalRolText').textContent = firmaData.rol;
+            
+            // Limpiar password y errores al abrir
+            const passInput = document.getElementById('passwordValidacion');
+            if(passInput) passInput.value = '';
+            const errorDiv = document.getElementById('passwordError');
+            if(errorDiv) errorDiv.classList.add('d-none');
             
             modalFirma.show();
         });
@@ -599,6 +606,18 @@
     const btnConfirmar = document.getElementById('btnConfirmarFirmaAjax');
     if(btnConfirmar) {
         btnConfirmar.addEventListener('click', function() {
+            const passInput = document.getElementById('passwordValidacion');
+            const password = passInput ? passInput.value : '';
+            const errorDiv = document.getElementById('passwordError');
+
+            if(!password || password.trim() === '') {
+                if(errorDiv) {
+                    errorDiv.textContent = 'Password is required to sign.';
+                    errorDiv.classList.remove('d-none');
+                }
+                return;
+            }
+
             const originalHtml = this.innerHTML;
             this.innerHTML = '<span class="spinner-border spinner-border-sm"></span> Sealing...';
             this.disabled = true;
@@ -606,6 +625,8 @@
             const params = new URLSearchParams();
             params.append('etapa', firmaData.etapa);
             params.append('rol', firmaData.rol);
+            params.append('password', password);
+            params.append('nombreAsignado', firmaData.nombreAsignado);
 
             fetch(`/proyectos/checklist/firmar-ajax/${firmaData.proyectoId}`, {
                 method: 'POST',
@@ -636,15 +657,21 @@
                     
                     setTimeout(() => { window.location.reload(); }, 1800);
                 } else {
-                    alert("Attention: " + data.mensaje);
+                    if(data.tipo === 'PASSWORD_ERROR' && errorDiv) {
+                        errorDiv.textContent = data.mensaje;
+                        errorDiv.classList.remove('d-none');
+                    } else {
+                        // Error de autorización o negocio: mostrar notificación profesional
+                        mostrarNotificacionError(data.mensaje);
+                        modalFirma.hide();
+                    }
                     this.innerHTML = originalHtml; 
                     this.disabled = false;
-                    modalFirma.hide();
                 }
             })
             .catch(error => {
                 console.error("Error:", error);
-                alert("Connection error. The signing process was cancelled.");
+                mostrarNotificacionError("Error de conexión. El proceso de firma ha sido cancelado.");
                 this.innerHTML = originalHtml; 
                 this.disabled = false;
                 modalFirma.hide();
@@ -652,3 +679,25 @@
         });
     }
 });
+
+function mostrarNotificacionError(mensaje) {
+    const vieja = document.getElementById('notificacionSello');
+    if(vieja) vieja.remove();
+
+    const toast = document.createElement('div');
+    toast.id = 'notificacionSello';
+    toast.className = 'animate__animated animate__shakeX shadow-lg';
+    toast.style.cssText = 'position: fixed; bottom: 30px; right: 30px; background: white; border-left: 5px solid #ef4444; border-radius: 8px; padding: 15px 20px; z-index: 9999; display: flex; align-items: center; gap: 15px; color: #1e293b; font-weight: 500; min-width: 350px; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);';
+    
+    toast.innerHTML = `
+        <i class="bi bi-x-circle-fill text-danger" style="font-size: 1.5rem;"></i>
+        <span>${mensaje}</span>
+    `;
+    
+    document.body.appendChild(toast);
+    
+    setTimeout(() => {
+        toast.classList.replace('animate__shakeX', 'animate__fadeOutDown');
+        setTimeout(() => toast.remove(), 1000);
+    }, 5000);
+}

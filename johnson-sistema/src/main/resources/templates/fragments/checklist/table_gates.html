@@ -79,10 +79,9 @@
                             <div class="card-body p-0">
                                 <table class="table table-hover table-sm mb-0 small border-0">
                                     <tbody>
-                                        <th:block th:each="info : ${ {'Project Engineer:Eduardo Tejeida', 'Quality Engineer:Gabriel Romero', 'Process Engineer:Jesus Urena', 'Project Leader:Eduardo Tejeida'} }">
-                                            <tr th:with="rol=${info.split(':')[0]}, nombre=${info.split(':')[1]}, firma=${mapaFirmas != null ? mapaFirmas.get(rol) : null}">
-                                                <td class="fw-bold text-muted ps-3 w-50 border-0 align-middle" th:text="${rol}"></td>
-                                                <td class="fw-bold border-0 align-middle" th:text="${nombre}"></td>
+                                        <th:block th:each="rol : ${ {'Project Engineer', 'Quality Engineer', 'Process Engineer', 'Project Leader'} }">
+                                            <tr th:with="firma=${mapaFirmas != null ? mapaFirmas.get(rol) : null}">
+                                                <td class="fw-bold text-muted ps-3 w-75 border-0 align-middle" th:text="${rol}"></td>
                                                 
                                                 <td class="border-0 text-end pe-3 align-middle" style="width: 120px;">
                                                     <div th:if="${firma != null}" 
@@ -116,10 +115,9 @@
                             <div class="card-body p-0">
                                 <table class="table table-hover table-sm mb-0 small border-0">
                                     <tbody>
-                                        <th:block th:each="info : ${ {'Operations Manager:Fermin Flores', 'Quality Manager:Rodrigo Rabelo', 'Materials Manager:Juan Carlos Arizpe', 'SCS Manager:Kevin Swisher', 'Finance Manager:Bernardo Marines', 'HR Manager:Claudia Castañeda'} }">
-                                            <tr th:with="rol=${info.split(':')[0]}, nombre=${info.split(':')[1]}, firma=${mapaFirmas != null ? mapaFirmas.get(rol) : null}">
-                                                <td class="fw-bold text-muted ps-3 w-50 border-0 align-middle" th:text="${rol}"></td>
-                                                <td class="fw-bold border-0 align-middle" th:text="${nombre}"></td>
+                                        <th:block th:each="rol : ${ {'Operations Manager', 'Quality Manager', 'Materials Manager', 'SCS Manager', 'Finance Manager', 'HR Manager'} }">
+                                            <tr th:with="firma=${mapaFirmas != null ? mapaFirmas.get(rol) : null}">
+                                                <td class="fw-bold text-muted ps-3 w-75 border-0 align-middle" th:text="${rol}"></td>
                                                 
                                                 <td class="border-0 text-end pe-3 align-middle" style="width: 120px;">
                                                     <div th:if="${firma != null}" 

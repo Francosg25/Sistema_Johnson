@@ -122,7 +122,15 @@
                 <div class="modal-body text-center p-4">
                     <i class="bi bi-shield-lock-fill text-warning" style="font-size: 3.5rem;"></i>
                     <h4 class="fw-bold mt-3 text-dark">Are you completely sure?</h4>
-                    <p class="text-muted mb-0">You are about to officially sign and approve <b>Gate <span id="modalGateText" class="text-primary"></span></b> as <b><span id="modalRolText" class="text-primary"></span></b>.</p>
+                    <p class="text-muted mb-3">You are about to officially sign and approve <b>Gate <span id="modalGateText" class="text-primary"></span></b> as <b><span id="modalRolText" class="text-primary"></span></b>.</p>
+                    
+                    <div class="mt-3 text-start mx-auto" style="max-width: 300px;">
+                        <label for="passwordValidacion" class="form-label small fw-bold text-muted">Confirm your password:</label>
+                        <input type="password" id="passwordValidacion" class="form-control rounded-pill border-2 shadow-sm" placeholder="Your password">
+                        <div id="passwordError" class="text-danger small mt-1 d-none">
+                            <i class="bi bi-exclamation-circle me-1"></i> Incorrect password.
+                        </div>
+                    </div>
                 </div>
                 <div class="modal-footer bg-light border-0 d-flex justify-content-center" style="border-radius: 0 0 20px 20px;">
                     <button type="button" class="btn btn-outline-secondary fw-bold rounded-pill px-4" data-bs-dismiss="modal">Cancel</button>

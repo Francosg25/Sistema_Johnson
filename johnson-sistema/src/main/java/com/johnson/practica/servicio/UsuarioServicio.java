@@ -90,8 +90,7 @@ public class UsuarioServicio {
         usuario.setPasswordChanged(false); 
         usuario.setEnabled(true);
 
-        Rol rolSeleccionado = rolRepositorio.findByNombre(nombreRol)
-                .orElseThrow(() -> new Exception("Error: El rol " + nombreRol + " no existe en la base de datos."));
+        Rol rolSeleccionado = obtenerOCrearRol(nombreRol);
 
         Set<Rol> roles = new HashSet<>();
         roles.add(rolSeleccionado);
@@ -117,14 +116,31 @@ public class UsuarioServicio {
         usuario.setCorreo(correo);
         usuario.setDepartamento(departamento);
 
-        Rol rolSeleccionado = rolRepositorio.findByNombre(nombreRol)
-                .orElseThrow(() -> new Exception("Role not found: " + nombreRol));
+        Rol rolSeleccionado = obtenerOCrearRol(nombreRol);
 
         Set<Rol> roles = new HashSet<>();
         roles.add(rolSeleccionado);
         usuario.setRoles(roles);
 
         usuarioRepositorio.save(usuario);
+    }
+
+    @Transactional
+    public Rol obtenerOCrearRol(String nombreRaw) {
+        String nombreLimpio = nombreRaw.trim();
+        if (!nombreLimpio.startsWith("ROLE_")) {
+            nombreLimpio = "ROLE_" + nombreLimpio.replace(" ", "_").toUpperCase();
+        } else {
+            nombreLimpio = nombreLimpio.replace(" ", "_").toUpperCase();
+        }
+
+        final String nombreFinal = nombreLimpio;
+        return rolRepositorio.findByNombre(nombreFinal)
+                .orElseGet(() -> {
+                    Rol nuevo = new Rol();
+                    nuevo.setNombre(nombreFinal);
+                    return rolRepositorio.save(nuevo);
+                });
     }
 
     @Transactional

@@ -39,15 +39,14 @@ public class CargadorDatos implements CommandLineRunner {
         usuarioServicio.inicializarRoles();
 
         Optional<Usuario> adminOpt = usuarioServicio.buscarPorUsername("admin");
+        
         if (adminOpt.isEmpty()) {
             logger.info("Creando usuario 'admin' de sistema...");
             Usuario admin = new Usuario();
             
-            //Sus credenciales de acceso
             admin.setUsername("admin");
             admin.setPassword(defaultAdminPassword); 
             
-            //Sus datos reales 
             admin.setCorreo("Eduardo.Tejeida@johnsonelectric.com"); 
             admin.setNombreCompleto("Eduardo Tejeida"); 
             admin.setDepartamento("Management"); 
@@ -61,9 +60,16 @@ public class CargadorDatos implements CommandLineRunner {
             admin.setRoles(roles);
 
             usuarioServicio.guardarUsuario(admin);
-            logger.info("Usuario 'admin' creado exitosamente.");
         } else {
-            logger.info("Usuario 'admin' ya existe. Respetando su contraseña actual.");
+            Usuario admin = adminOpt.get();
+            admin.setPassword(defaultAdminPassword);
+            usuarioServicio.guardarUsuario(admin);
         }
+
+        System.out.println("\n=========================================================");
+        System.out.println("CREDENCIALES MAESTRAS DEL SISTEMA APQP");
+        System.out.println(" USUARIO: admin");
+        System.out.println(" CONTRASEÑA: " + defaultAdminPassword);
+        System.out.println("=========================================================\n");
     }
 }

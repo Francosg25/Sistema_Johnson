@@ -36,3 +36,4 @@ uploads/
 .env
 *.log 
 *.sql
+src/main/resources/application.properties

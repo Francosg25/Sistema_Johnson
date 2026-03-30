@@ -30,6 +30,9 @@ import java.util.Map;
 
 import com.johnson.practica.servicio.FirmaEtapaServicio;
 import com.johnson.practica.modelo.FirmaEtapa;
+import com.johnson.practica.modelo.Usuario;
+import com.johnson.practica.repositorio.UsuarioRepositorio;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import java.security.Principal;
 import java.time.LocalDate;
 import java.util.HashMap;
@@ -50,8 +53,11 @@ public class ProyectoControlador {
     @Autowired private com.johnson.practica.servicio.BitacoraServicio bitacoraServicio;
     @Autowired private ChecklistReporteServicio checklistReporteServicio;
     @Autowired private org.springframework.context.ApplicationEventPublisher eventPublisher;
+    @Autowired private UsuarioRepositorio usuarioRepositorio;
+    @Autowired private PasswordEncoder passwordEncoder;
 
-    @Data @AllArgsConstructor
+    @Data
+    @AllArgsConstructor
     public static class FaseVista {
         private String id;
         private String nombre;
@@ -59,21 +65,16 @@ public class ProyectoControlador {
         private Map<String, FirmaEtapa> firmas;
     }
 
-    
     @GetMapping("/")
     public String index(Model model, HttpServletRequest request) {
         List<Proyecto> lista = proyectoRepositorio.findByEsHistoricoFalse(); 
-        
         model.addAttribute("proyectos", lista);
         model.addAttribute("currentUri", request.getRequestURI());
-
         Map<String, Integer> tendencia = checklistReporteServicio.obtenerTendenciaAprobacionesOK();
         model.addAttribute("tendencia", tendencia);
-
         return "index";
     }
 
-    
     @GetMapping("/checklist/{id}")
     @Transactional(readOnly = true)
     public String verChecklist(@PathVariable Long id, Model model, HttpServletRequest request) {
@@ -109,33 +110,72 @@ public class ProyectoControlador {
         model.addAttribute("firmasGate4", firmaEtapaServicio.obtenerFirmasPorEtapa(id, 4));
         model.addAttribute("firmasGate5", firmaEtapaServicio.obtenerFirmasPorEtapa(id, 5));
 
-       
         return "proyectos/checklist";
-    }
-
-   
-    @PostMapping("/checklist/firmar/{id}")
-    @PreAuthorize("hasAnyRole('ADMIN', 'CHAMPION')")
-    public String firmarEtapa(@PathVariable Long id, @RequestParam Integer etapa, @RequestParam String rol, Principal principal) {
-        firmaEtapaServicio.firmar(id, etapa, rol, principal.getName());
-        return "redirect:/proyectos/checklist/" + id;
     }
 
     @PostMapping("/checklist/firmar-ajax/{id}")
     @PreAuthorize("hasAnyRole('ADMIN', 'CHAMPION')")
     @ResponseBody
-    public Map<String, Object> firmarEtapaAjax(@PathVariable Long id, @RequestParam Integer etapa, @RequestParam String rol, Principal principal) {
+    public Map<String, Object> firmarEtapaAjax(@PathVariable Long id, 
+                                             @RequestParam Integer etapa, 
+                                             @RequestParam String rol, 
+                                             @RequestParam String password,
+                                             @RequestParam(required = false) String nombreAsignado,
+                                             Principal principal) {
         Map<String, Object> response = new HashMap<>();
         try {
+            Usuario usuario = usuarioRepositorio.findByUsername(principal.getName())
+                    .orElseThrow(() -> new RuntimeException("User not found"));
+
+            // 1. Validar Contraseña
+            if (!passwordEncoder.matches(password, usuario.getPassword())) {
+                response.put("exito", false);
+                response.put("tipo", "PASSWORD_ERROR");
+                response.put("mensaje", "Contraseña incorrecta. Tu identidad no ha podido ser validada.");
+                return response;
+            }
+
+            // 2. Validar Identidad (Admin bypass)
+            boolean esAdmin = usuario.getRoles().stream()
+                    .anyMatch(r -> r.getNombre().equals("ROLE_ADMIN"));
+
+            if (!esAdmin) {
+                // Mapeo simple de Puesto -> Departamento
+                String deptoRequerido = "";
+                String r = rol.toUpperCase();
+                
+                if (r.contains("QUALITY")) deptoRequerido = "QE";
+                else if (r.contains("PROCESS")) deptoRequerido = "PE";
+                else if (r.contains("PROJECT")) deptoRequerido = "PROJ";
+                else if (r.contains("OPERATIONS")) deptoRequerido = "OPS";
+                else if (r.contains("FINANCE")) deptoRequerido = "FIN";
+                else if (r.contains("HR") || r.contains("HUMAN")) deptoRequerido = "HR";
+                else if (r.contains("MATERIALS")) deptoRequerido = "MAT";
+                else if (r.contains("SCS") || r.contains("SUPPLY")) deptoRequerido = "SCS";
+                else if (r.contains("DESIGN")) deptoRequerido = "DE";
+
+                // Validar si el departamento del usuario coincide
+                String deptoUsuario = (usuario.getDepartamento() != null) ? usuario.getDepartamento().toUpperCase() : "";
+                
+                if (!deptoUsuario.equals(deptoRequerido) && !deptoUsuario.equals("ALL")) {
+                    response.put("exito", false);
+                    response.put("mensaje", "❌ No perteneces al departamento de " + deptoRequerido + ". Solo personal de esta área puede firmar como " + rol + ".");
+                    return response;
+                }
+            }
+
+            // 3. Proceder con la firma
             firmaEtapaServicio.firmar(id, etapa, rol, principal.getName());
             response.put("exito", true);
             response.put("mensaje", "Signature applied successfully.");
+
         } catch (Exception e) {
             response.put("exito", false);
             response.put("mensaje", e.getMessage());
         }
         return response;
     }
+
     @PostMapping("/checklist/guardar-todo/{proyectoId}")
     @PreAuthorize("hasAnyRole('ADMIN', 'CHAMPION')") 
     public String guardarChecklistCompleto(@PathVariable Long proyectoId, @RequestParam Map<String, String> allParams) {
@@ -164,7 +204,6 @@ public class ProyectoControlador {
         }
     }
 
-   
     @PostMapping("/guardar")
     @PreAuthorize("hasRole('ADMIN')") 
     @CacheEvict(value = "reportes", allEntries = true)
@@ -196,7 +235,6 @@ public class ProyectoControlador {
             String titulo = "New Project APQP";
             String msj = "The portfolio has been initialized for the project: " + proyectoGuardado.getNombre();
             String url = "/proyectos/checklist/" + proyectoGuardado.getId();
-            
             notificacionServicio.alertarATodos(titulo, msj, "SUCCESS", url, usuario);
         }
         
@@ -211,7 +249,6 @@ public class ProyectoControlador {
         return "redirect:/"; 
     }
 
-    
     @PostMapping("/archivar/{id}")
     @PreAuthorize("hasRole('ADMIN')")
     @CacheEvict(value = "reportes", allEntries = true) 
@@ -221,55 +258,42 @@ public class ProyectoControlador {
             String usuario = (principal != null) ? principal.getName() : "System";
             proyecto.setEsHistorico(true); 
             proyectoRepositorio.save(proyecto);
-            
             bitacoraServicio.registrarAccion(usuario, "ARCHIVE PROJECT", "Project moved to historical vault: " + proyecto.getNombre());
-
             notificacionServicio.alertarATodos("Project Archived", 
                 "The project " + proyecto.getNombre() + " has been successfully archived.", 
                 "SUCCESS", "/proyectos/vault", "System");
-                
             redirectAttributes.addFlashAttribute("mensajeExito", "Project moved to Historical Vault.");
         }
-        
         return "redirect:/proyectos/vault";
     }
 
-
     @GetMapping("/vault")
     public String verHistoricalVault(Model model, HttpServletRequest request) {
-    List<Proyecto> historicos = proyectoRepositorio.findByEsHistoricoTrue();
-    
-    Map<Integer, Map<String, List<Proyecto>>> agrupados = historicos.stream()
-        .collect(java.util.stream.Collectors.groupingBy(
-            p -> p.getFechaSop() != null ? p.getFechaSop().getYear() : LocalDate.now().getYear(),
-            java.util.stream.Collectors.groupingBy(
-                p -> {
-                    LocalDate fecha = p.getFechaSop() != null ? p.getFechaSop() : LocalDate.now();
-                    return fecha.getMonth().getDisplayName(java.time.format.TextStyle.FULL, java.util.Locale.ENGLISH);
-                }
-            )
-        ));
-
-    model.addAttribute("agrupados", agrupados);
-    model.addAttribute("currentUri", request.getRequestURI());
-    return "proyectos/vault";
-}
-
- 
-    
+        List<Proyecto> historicos = proyectoRepositorio.findByEsHistoricoTrue();
+        Map<Integer, Map<String, List<Proyecto>>> agrupados = historicos.stream()
+            .collect(java.util.stream.Collectors.groupingBy(
+                p -> p.getFechaSop() != null ? p.getFechaSop().getYear() : LocalDate.now().getYear(),
+                java.util.stream.Collectors.groupingBy(
+                    p -> {
+                        LocalDate fecha = p.getFechaSop() != null ? p.getFechaSop() : LocalDate.now();
+                        return fecha.getMonth().getDisplayName(java.time.format.TextStyle.FULL, java.util.Locale.ENGLISH);
+                    }
+                )
+            ));
+        model.addAttribute("agrupados", agrupados);
+        model.addAttribute("currentUri", request.getRequestURI());
+        return "proyectos/vault";
+    }
 
     @GetMapping("/exportar-master-timeline")
     public ResponseEntity<byte[]> descargarMasterTimeline() {
         try {
             List<Proyecto> proyectos = proyectoRepositorio.findByEsHistoricoFalse();
             List<ElementoChecklist> todosLosElementos = checklistServicio.obtenerTodos(); 
-
             byte[] data = excelServicio.generarMasterTimelineExcel(proyectos, todosLosElementos);
-
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
             headers.setContentDispositionFormData("attachment", "Master_Timeline_Overview.xlsx");
-
             return new ResponseEntity<>(data, headers, HttpStatus.OK);
         } catch (Exception e) {
             e.printStackTrace();
@@ -310,36 +334,30 @@ public class ProyectoControlador {
 
         if (cambios.length() > 0) {
             proyectoRepositorio.save(proyecto);
-
-            String msg = "Project Executive Milestones updated for " + proyecto.getNombre() + ": " + cambios.toString();
-            bitacoraServicio.registrarAccion(usuario, "UPDATE MILESTONES", msg);
-
+            bitacoraServicio.registrarAccion(usuario, "UPDATE MILESTONES", "Project Executive Milestones updated: " + cambios.toString());
             notificacionServicio.alertarATodos("Executive Milestones Updated", 
-                "Milestones for " + proyecto.getNombre() + " were modified by " + usuario + ": " + cambios.toString(), 
+                "Milestones for " + proyecto.getNombre() + " were modified.", 
                 "INFO", "/proyectos/checklist/" + id, usuario);
         }
 
         Map<String, Object> response = new HashMap<>();
         response.put("exito", true);
-        response.put("nombre", proyecto.getNombre());
-        response.put("numeroParte", proyecto.getNumeroParte());
         return response;
-        }
+    }
 
     private boolean esDiferenteFecha(LocalDate actual, LocalDate nueva) {
         if (actual == null && nueva == null) return false;
         if (actual == null || nueva == null) return true;
         return !actual.equals(nueva);
     }
+
     @GetMapping("/exportar-pdf/{id}")
     public ResponseEntity<byte[]> descargarReportePdf(@PathVariable Long id) {
         try {
             byte[] pdf = reporteServicio.generarPdfProyecto(id);
-        
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_PDF);
             headers.setContentDispositionFormData("attachment", "Reporte_APQP_Proyecto_" + id + ".pdf");
-        
             return new ResponseEntity<>(pdf, headers, HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
