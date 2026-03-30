@@ -34,7 +34,10 @@ public class ElementoChecklist {
     private String etapaVisual;
 
     private String estado;     
+    
+    @Column(columnDefinition = "TEXT")
     private String comentario;
+    
     private String score;       
     private String controlEntregable; 
     

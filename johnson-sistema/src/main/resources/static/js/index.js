@@ -237,11 +237,53 @@ function initializeCalendar(events) {
         headerToolbar: { 
             left: 'prev,next today', 
             center: 'title', 
-            right: 'dayGridMonth,listMonth' 
+            right: '' // Handled by our custom dropdown
         }, 
         events: events, 
         height: 'auto', 
-        dayMaxEvents: true 
+        dayMaxEvents: true,
+        eventDisplay: 'block',
+        displayEventTime: false,
+        themeSystem: 'bootstrap5',
+        eventClick: function(info) {
+            if (info.event.url) {
+                window.location.href = info.event.url;
+                info.jsEvent.preventDefault();
+            }
+        },
+        eventDidMount: function(info) {
+            // Personalizar el estilo del evento si es necesario
+            if (info.el) {
+                info.el.style.borderRadius = '6px';
+                info.el.style.border = 'none';
+                info.el.style.padding = '2px 5px';
+                info.el.style.fontSize = '0.75rem';
+                info.el.style.fontWeight = '700';
+                
+                // Add tooltip if needed
+                info.el.title = info.event.title;
+            }
+        }
     });
     calendar.render();
+
+    // Handle View Switching from our custom dropdown
+    const filterLinks = document.querySelectorAll('#calendarFilter + .dropdown-menu .dropdown-item');
+    filterLinks.forEach(link => {
+        link.addEventListener('click', function(e) {
+            e.preventDefault();
+            const view = this.getAttribute('data-view');
+            
+            // Update active state in UI
+            filterLinks.forEach(l => l.classList.remove('active'));
+            this.classList.add('active');
+            
+            // Switch FullCalendar View
+            calendar.changeView(view);
+            
+            // Update dropdown text
+            const btn = document.getElementById('calendarFilter');
+            btn.innerHTML = `<i class="bi bi-funnel me-1"></i> ${this.textContent}`;
+        });
+    });
 }

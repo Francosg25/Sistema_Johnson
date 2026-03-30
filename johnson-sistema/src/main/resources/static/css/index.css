@@ -200,6 +200,10 @@ body {
     box-shadow: 0 2px 4px rgba(0,0,0,0.1); 
 }
 
+.bg-je-blue {
+    background-color: var(--je-blue) !important;
+}
+
 .status-pending { 
     background-color: #64748b !important; 
     color: #ffffff !important; 
@@ -246,3 +250,151 @@ body {
 .champ-all { background-color: #f8f9fa !important; color: #64748b !important; } 
 .champ-generic { background-color: #ffffff !important; color: #475569 !important; border: 1px solid #e2e8f0 !important; }
 .champ-qe-pe { background-color: #ffedd5 !important; color: #c2410c !important; border: 1px solid #fdba74 !important; }
+
+/* --- PREMIUM STYLES --- */
+.premium-header {
+    background: rgba(255, 255, 255, 0.4) !important;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05) !important;
+    padding: 1.25rem 1.5rem;
+}
+
+.premium-title {
+    font-size: 1.1rem;
+    font-weight: 800;
+    color: #0f172a;
+    display: flex;
+    align-items: center;
+}
+
+.premium-icon {
+    padding: 8px 10px;
+    border-radius: 10px;
+    margin-right: 12px;
+}
+
+/* --- CALENDAR STYLES --- */
+.premium-calendar {
+    font-family: 'Inter', sans-serif;
+    border: none;
+}
+
+.fc-toolbar-title {
+    font-weight: 800 !important;
+    font-size: 1.25rem !important;
+    color: #1e293b;
+}
+
+.fc-button-primary {
+    background-color: #ffffff !important;
+    border: 1px solid #e2e8f0 !important;
+    color: #64748b !important;
+    font-weight: 700 !important;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.02) !important;
+    text-transform: capitalize !important;
+}
+
+.fc-button-primary:hover {
+    background-color: #f8fafc !important;
+    color: #1e293b !important;
+}
+
+.fc-button-active {
+    background-color: #f1f5f9 !important;
+    color: #1e293b !important;
+    border-color: #cbd5e1 !important;
+}
+
+.fc-col-header-cell {
+    background-color: #f8fafc;
+    padding: 10px 0 !important;
+}
+
+.fc-col-header-cell-cushion {
+    font-weight: 800;
+    font-size: 0.8rem;
+    color: #64748b;
+    text-transform: uppercase;
+    text-decoration: none !important;
+}
+
+.fc-daygrid-day-number {
+    font-weight: 600;
+    color: #94a3b8;
+    font-size: 0.85rem;
+    padding: 8px !important;
+    text-decoration: none !important;
+}
+
+.fc-day-today {
+    background-color: rgba(59, 130, 246, 0.03) !important;
+}
+
+.fc-day-today .fc-daygrid-day-number {
+    color: #3b82f6;
+    font-weight: 800;
+}
+
+/* --- EVENT CARD STYLES --- */
+.premium-event-card {
+    border-radius: 16px !important;
+    border: 1px solid #f1f5f9 !important;
+    transition: all 0.2s ease;
+}
+
+.premium-event-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 15px rgba(0,0,0,0.05) !important;
+    border-color: #e2e8f0 !important;
+}
+
+.pulse-dot {
+    position: relative;
+}
+
+.pulse-dot::after {
+    content: '';
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    background: inherit;
+    border-radius: 50%;
+    animation: dot-pulse 2s infinite;
+    opacity: 0.4;
+}
+
+@keyframes dot-pulse {
+    0% { transform: scale(1); opacity: 0.4; }
+    100% { transform: scale(2.5); opacity: 0; }
+}
+
+.btn-je-primary-outline {
+    background: transparent;
+    border: 1.5px solid var(--je-orange);
+    color: var(--je-orange);
+    transition: all 0.2s;
+}
+
+.btn-je-primary-outline:hover {
+    background: var(--je-orange);
+    color: white;
+}
+
+.btn-xs {
+    padding: 0.25rem 0.5rem;
+}
+
+.dropdown-item.active {
+    background-color: var(--je-orange);
+}
+
+/* Custom scrollbar for list */
+.custom-scrollbar::-webkit-scrollbar {
+    width: 4px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+    background-color: #e2e8f0;
+    border-radius: 10px;
+}

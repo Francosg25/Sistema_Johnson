@@ -176,13 +176,15 @@
                 <div class="row mb-4">
                     <div class="col-12">
                         <div class="card glass-card">
-                            <div class="card-header premium-header">
+                            <div class="card-header premium-header d-flex justify-content-between align-items-center">
                                 <h6 class="m-0 premium-title">
                                     <i class="bi bi-water premium-icon"></i>
-                                    Progress by Stage and Project                                
+                                    Progress by Stage and Project
                                 </h6>
-                            </div>
-                            <div class="card-body waterfall-container" style="max-height: 600px;">
+                                <select id="selectCascadaProyecto" class="form-select form-select-sm border-0 bg-light fw-bold text-secondary shadow-none" style="width: auto; max-width: 600px; cursor: pointer;">
+                                    <option value="GLOBAL">Global</option>
+                                </select>
+                            </div>                            <div class="card-body waterfall-container" style="max-height: 600px;">
                                 <div id="cascadaInnerContainer" style="position: relative; width: 100%;">
                                     <canvas id="chartCascada"></canvas>
                                 </div>
@@ -359,20 +361,21 @@
 
         //2. GRAFICA CASCADA 
         const ctxCascada = document.getElementById('chartCascada');
-        if (ctxCascada && datosCascada.length > 0) {
-            
+        const selectCascada = document.getElementById('selectCascadaProyecto');
+
+        function updateChartCascada(dataToShow, reportesToShow) {
             const alturaMinimaPorBarra = 120; 
-            const alturaCalculada = Math.max(datosCascada.length * alturaMinimaPorBarra, 350);
+            const alturaCalculada = Math.max(dataToShow.length * alturaMinimaPorBarra, 350);
             document.getElementById('cascadaInnerContainer').style.height = alturaCalculada + 'px';
 
-            const projectNamesCascada = datosCascada.map(d => {
+            const projectNamesCascada = dataToShow.map(d => {
                 let n = d.nombreProyecto;
                 return n.length > 25 ? n.substring(0, 25) + '...' : n;
             });
-            const sopsCascada = datosCascada.map(d => d.sop); 
+            const sopsCascada = dataToShow.map(d => d.sop); 
             const s1Data = [], s2Data = [], s3Data = [], s4Data = [], s5Data = [], totalData = [];
 
-            datosCascada.forEach(d => {
+            dataToShow.forEach(d => {
                 const capped = d.porcentajesPorFase.map(pct => Math.min(pct, 100));
                 let p1 = Math.min((capped[0] || 0) / 5, 20); let p2 = Math.min((capped[1] || 0) / 5, 20);
                 let p3 = Math.min((capped[2] || 0) / 5, 20); let p4 = Math.min((capped[3] || 0) / 5, 20);
@@ -384,86 +387,120 @@
                 s5Data.push(p5 > 0 ? [end4, end5] : null); totalData.push([0, end5]); 
             });
 
-            chartCascadaInstance = new Chart(ctxCascada, {
-                type: 'bar',
-                data: {
-                    labels: projectNamesCascada,
-                    datasets: [
-                        { label: 'STAGE 1', data: s1Data, backgroundColor: paletteWaterfall[0], borderRadius: 4, barPercentage: 0.8, realPct: datosCascada.map(d => d.porcentajesPorFase[0]) }, 
-                        { label: 'STAGE 2', data: s2Data, backgroundColor: paletteWaterfall[1], borderRadius: 4, barPercentage: 0.8, realPct: datosCascada.map(d => d.porcentajesPorFase[1]) },
-                        { label: 'STAGE 3', data: s3Data, backgroundColor: paletteWaterfall[2], borderRadius: 4, barPercentage: 0.8, realPct: datosCascada.map(d => d.porcentajesPorFase[2]) },
-                        { label: 'STAGE 4', data: s4Data, backgroundColor: paletteWaterfall[3], borderRadius: 4, barPercentage: 0.8, realPct: datosCascada.map(d => d.porcentajesPorFase[3]) },
-                        { label: 'STAGE 5', data: s5Data, backgroundColor: paletteWaterfall[4], borderRadius: 4, barPercentage: 0.8, realPct: datosCascada.map(d => d.porcentajesPorFase[4]) },
-                        { label: 'TOTAL',   data: totalData, backgroundColor: '#cbd5e1', borderRadius: 4, barPercentage: 0.8, realPct: reportes.map(r => r.porcentaje) }
-                    ]
-                },
-                plugins: [{
-                    id: 'sopLabels',
-                    afterDatasetsDraw(chart) {
-                        const { ctx, data } = chart;
-                        const totalDatasetIndex = data.datasets.findIndex(ds => ds.label === 'TOTAL');
-                        if (totalDatasetIndex === -1) return;
-                        const meta = chart.getDatasetMeta(totalDatasetIndex);
-                        ctx.save(); ctx.textBaseline = 'middle';
-                        meta.data.forEach((bar, index) => {
-                            if(!sopsCascada[index]) return; 
-                            const textoSOP = "SOP: " + sopsCascada[index];
-                            ctx.font = 'bold 11px Inter, sans-serif'; 
-                            const textWidth = ctx.measureText(textoSOP).width;
-                            ctx.fillStyle = 'rgba(239, 68, 68, 0.1)';
-                            ctx.beginPath(); ctx.roundRect(bar.x + 12, bar.y - 12, textWidth + 12, 24, 6); ctx.fill();
-                            ctx.fillStyle = '#ef4444'; ctx.fillText(textoSOP, bar.x + 18, bar.y);
-                        });
-                        ctx.restore();
-                    }
-                }, {
-                    id: 'barLabels',
-                    afterDatasetsDraw(chart) {
-                        const { ctx, data } = chart;
-                        ctx.save();
-                        ctx.textAlign = 'center';
-                        ctx.textBaseline = 'middle';
-                        ctx.font = 'bold 10px Inter, sans-serif';
+            const chartData = {
+                labels: projectNamesCascada,
+                datasets: [
+                    { label: 'STAGE 1', data: s1Data, backgroundColor: paletteWaterfall[0], borderRadius: 4, barPercentage: 0.8, realPct: dataToShow.map(d => d.porcentajesPorFase[0]) }, 
+                    { label: 'STAGE 2', data: s2Data, backgroundColor: paletteWaterfall[1], borderRadius: 4, barPercentage: 0.8, realPct: dataToShow.map(d => d.porcentajesPorFase[1]) },
+                    { label: 'STAGE 3', data: s3Data, backgroundColor: paletteWaterfall[2], borderRadius: 4, barPercentage: 0.8, realPct: dataToShow.map(d => d.porcentajesPorFase[2]) },
+                    { label: 'STAGE 4', data: s4Data, backgroundColor: paletteWaterfall[3], borderRadius: 4, barPercentage: 0.8, realPct: dataToShow.map(d => d.porcentajesPorFase[3]) },
+                    { label: 'STAGE 5', data: s5Data, backgroundColor: paletteWaterfall[4], borderRadius: 4, barPercentage: 0.8, realPct: dataToShow.map(d => d.porcentajesPorFase[4]) },
+                    { label: 'TOTAL',   data: totalData, backgroundColor: '#cbd5e1', borderRadius: 4, barPercentage: 0.8, realPct: reportesToShow.map(r => r.porcentaje) }
+                ]
+            };
 
-                        chart.data.datasets.forEach((dataset, i) => {
-                            if (dataset.label === 'TOTAL') return;
-                            const meta = chart.getDatasetMeta(i);
+            if (chartCascadaInstance) {
+                chartCascadaInstance.data = chartData;
+                chartCascadaInstance.update();
+            } else {
+                chartCascadaInstance = new Chart(ctxCascada, {
+                    type: 'bar',
+                    data: chartData,
+                    plugins: [{
+                        id: 'sopLabels',
+                        afterDatasetsDraw(chart) {
+                            const { ctx, data } = chart;
+                            const totalDatasetIndex = data.datasets.findIndex(ds => ds.label === 'TOTAL');
+                            if (totalDatasetIndex === -1) return;
+                            const meta = chart.getDatasetMeta(totalDatasetIndex);
+                            ctx.save(); ctx.textBaseline = 'middle';
                             meta.data.forEach((bar, index) => {
-                                const val = dataset.realPct && dataset.realPct[index];
-                                if (val > 0 && bar.width > 10) { 
-                                    ctx.fillStyle = '#ffffff';
-                                    // Use bar.x as the end and width/2 to center
-                                    ctx.fillText(Math.round(val) + '%', bar.x - (bar.width / 2), bar.y);
-                                }
+                                // Important: sopsCascada must be accessible here or passed via data
+                                const currentSops = chart.config._config.customSops || sopsCascada;
+                                if(!currentSops[index]) return; 
+                                const textoSOP = "SOP: " + currentSops[index];
+                                ctx.font = 'bold 11px Inter, sans-serif'; 
+                                const textWidth = ctx.measureText(textoSOP).width;
+                                ctx.fillStyle = 'rgba(239, 68, 68, 0.1)';
+                                ctx.beginPath(); ctx.roundRect(bar.x + 12, bar.y - 12, textWidth + 12, 24, 6); ctx.fill();
+                                ctx.fillStyle = '#ef4444'; ctx.fillText(textoSOP, bar.x + 18, bar.y);
                             });
-                        });
-                        ctx.restore();
-                    }
-                }],
-                options: { 
-                    indexAxis: 'y', 
-                    responsive: true, 
-                    maintainAspectRatio: false, 
-                    layout: { padding: { right: 130 } }, 
-                    plugins: {
-                        tooltip: {
-                            callbacks: {
-                                label: function(context) {
-                                    const dataset = context.dataset;
-                                    const index = context.dataIndex;
-                                    const val = dataset.realPct[index];
-                                    return dataset.label + ': ' + (val ? val.toFixed(1) : '0') + '%';
+                            ctx.restore();
+                        }
+                    }, {
+                        id: 'barLabels',
+                        afterDatasetsDraw(chart) {
+                            const { ctx, data } = chart;
+                            ctx.save();
+                            ctx.textAlign = 'center';
+                            ctx.textBaseline = 'middle';
+                            ctx.font = 'bold 10px Inter, sans-serif';
+
+                            chart.data.datasets.forEach((dataset, i) => {
+                                if (dataset.label === 'TOTAL') return;
+                                const meta = chart.getDatasetMeta(i);
+                                meta.data.forEach((bar, index) => {
+                                    const val = dataset.realPct && dataset.realPct[index];
+                                    if (val > 0 && bar.width > 10) { 
+                                        ctx.fillStyle = '#ffffff';
+                                        ctx.fillText(Math.round(val) + '%', bar.x - (bar.width / 2), bar.y);
+                                    }
+                                });
+                            });
+                            ctx.restore();
+                        }
+                    }],
+                    options: { 
+                        indexAxis: 'y', 
+                        responsive: true, 
+                        maintainAspectRatio: false, 
+                        layout: { padding: { right: 130 } }, 
+                        plugins: {
+                            tooltip: {
+                                callbacks: {
+                                    label: function(context) {
+                                        const dataset = context.dataset;
+                                        const index = context.dataIndex;
+                                        const val = dataset.realPct[index];
+                                        return dataset.label + ': ' + (val ? val.toFixed(1) : '0') + '%';
+                                    }
                                 }
                             }
-                        }
-                    },
-                    scales: { 
-                        x: { max: 100, border: { display: false }, ticks: { callback: v => v + '%' } }, 
-                        y: { grid: { display: false }, border: { display: false }, ticks: { font: { weight: 'bold', color: '#334155', size: 12 } } } 
-                    },
-                    interaction: { mode: 'y' } 
-                }
-            });
+                        },
+                        scales: { 
+                            x: { max: 100, border: { display: false }, ticks: { callback: v => v + '%' } }, 
+                            y: { grid: { display: false }, border: { display: false }, ticks: { font: { weight: 'bold', color: '#334155', size: 12 } } } 
+                        },
+                        interaction: { mode: 'y' } 
+                    }
+                });
+            }
+            // Store current sops for the plugin
+            chartCascadaInstance.config._config.customSops = sopsCascada;
+        }
+
+        if (ctxCascada && datosCascada.length > 0) {
+            updateChartCascada(datosCascada, reportes);
+
+            if (selectCascada) {
+                selectCascada.innerHTML = '<option value="GLOBAL">Global</option>';
+                datosCascada.forEach((d, index) => {
+                    let opt = document.createElement('option');
+                    opt.value = index;
+                    let n = d.nombreProyecto;
+                    opt.textContent = n.length > 40 ? n.substring(0, 40) + '...' : n;
+                    selectCascada.appendChild(opt);
+                });
+
+                selectCascada.addEventListener('change', function() {
+                    const val = this.value;
+                    if (val === 'GLOBAL') {
+                        updateChartCascada(datosCascada, reportes);
+                    } else {
+                        updateChartCascada([datosCascada[val]], [reportes[val]]);
+                    }
+                });
+            }
         }
    
         //3. GRAFICA DONA (HEALTH TASK)

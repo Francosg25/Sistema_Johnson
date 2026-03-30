@@ -8,11 +8,11 @@
                     <thead class="bg-light small text-uppercase text-muted fw-bold">
                         <tr>
                             <th class="text-center align-middle" style="width: 5%;">Champion</th>
-                            <th class="align-middle" style="width: 25%; white-space: normal;">Deliverables</th>
+                            <th class="align-middle" style="width: 20%; white-space: normal;">Deliverables</th>
                             <th class="text-center align-middle" style="width: 14%;">Dates</th>
-                            <th class="text-center align-middle" style="width: 29%;">Status</th>
-                            <th class="text-center align-middle" style="width: 12%;">Score</th>
-                            <th class="align-middle" style="width: 10%; white-space: normal;">Remarks</th>
+                            <th class="text-center align-middle" style="width: 30%;">Status</th>
+                            <th class="text-center align-middle" style="width: 15%;">Score</th>
+                            <th class="align-middle" style="width: 8%; white-space: normal;">Remarks</th>
                             <th class="text-center align-middle" style="width: 5%;" title="Evidence">
                                 <i class="bi bi-paperclip fs-5 text-secondary"></i>
                             </th>
@@ -76,21 +76,20 @@
                                     </select>
                                 </td>
                                 
-                                <td class="align-middle" style="white-space: normal;">
-                                    <div class="d-flex justify-content-between align-items-center bg-white bg-opacity-50 rounded p-1 border shadow-sm"
-                                         style="cursor: pointer; transition: 0.2s;" onmouseover="this.style.borderColor='#80bdff'" onmouseout="this.style.borderColor='#dee2e6'" th:onclick="abrirEditorComentarios([[${item.id}]], [[${item.codigo}]])">
-                                        <div class="text-truncate small ms-2 w-100" th:id="'preview-comentario-' + ${item.id}"
+                                <td class="remarks-cell">
+                                    <div class="remarks-preview-container" th:onclick="abrirEditorComentarios([[${item.id}]], [[${item.codigo}]])">
+                                        <div class="remarks-text" th:id="'preview-comentario-' + ${item.id}"
                                              th:classappend="${item.comentario == null or item.comentario.isEmpty() ? 'text-muted fst-italic' : 'text-dark fw-bold'}"
                                              th:text="${item.comentario == null or item.comentario.isEmpty() ? '' : item.comentario}">
                                         </div>
                                         <button type="button" 
                                                 th:id="'btn-comentario-' + ${item.id}"
                                                 th:class="${item.comentario != null and !item.comentario.empty} ? 
-                                                          'btn btn-sm btn-primary border-0 rounded-circle ms-1 shadow-sm flex-shrink-0' : 
-                                                          'btn btn-sm btn-light text-secondary border-0 rounded-circle ms-1 shadow-sm flex-shrink-0'"
-                                                th:attr="onclick=|abrirEditorComentarios('${item.id}', '${item.codigo}')|">
+                                                          'btn btn-sm btn-primary border-0 rounded-circle shadow-sm flex-shrink-0' : 
+                                                          'btn btn-sm btn-light text-secondary border-0 rounded-circle shadow-sm flex-shrink-0'"
+                                                style="width: 24px; height: 24px; padding: 0; display: flex; align-items: center; justify-content: center;">
                                             <i th:id="'btn-icon-comentario-' + ${item.id}" 
-                                               th:class="${item.comentario != null and !item.comentario.empty} ? 'bi bi-chat-text-fill' : 'bi bi-pencil'"></i>
+                                               th:class="${item.comentario != null and !item.comentario.empty} ? 'bi bi-chat-text-fill' : 'bi bi-pencil'" style="font-size: 0.75rem;"></i>
                                         </button>
                                     </div>
                                     <textarea class="d-none" th:name="'comentario-' + ${item.id}" th:id="'real-comentario-' + ${item.id}" th:text="${item.comentario}"></textarea>
