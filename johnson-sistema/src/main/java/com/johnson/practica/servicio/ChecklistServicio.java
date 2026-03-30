@@ -57,11 +57,16 @@ public class ChecklistServicio {
         Map<Long, Map<String, String>> updatesById = new HashMap<>();
         for (Map.Entry<String, String> entry : allParams.entrySet()) {
             String key = entry.getKey();
-            if (key.contains("-")) {
+            // Soporta tanto 'campo-ID' como 'campo_ID'
+            String separator = key.contains("-") ? "-" : (key.contains("_") ? "_" : null);
+            
+            if (separator != null) {
                 try {
-                    String[] parts = key.split("-");
-                    Long itemId = Long.parseLong(parts[1]);
-                    updatesById.computeIfAbsent(itemId, k -> new HashMap<>()).put(parts[0], entry.getValue());
+                    int lastSep = key.lastIndexOf(separator);
+                    String fieldName = key.substring(0, lastSep);
+                    String idStr = key.substring(lastSep + 1);
+                    Long itemId = Long.parseLong(idStr);
+                    updatesById.computeIfAbsent(itemId, k -> new HashMap<>()).put(fieldName, entry.getValue());
                 } catch (NumberFormatException ignored) {}
             }
         }
@@ -79,39 +84,8 @@ public class ChecklistServicio {
         for (ElementoChecklist elemento : elementosDesdeBD) {
             Map<String, String> cambios = updatesById.get(elemento.getId());
             final boolean[] huboCambioReal = {false}; 
-            
-            // --- 1. EL PARCHE DE FECHAS (¡No lo borres! 🛡️) ---
-            if (cambios.containsKey("fechaPlan")) {
-                String fp = cambios.get("fechaPlan");
-                if (fp != null && !fp.trim().isEmpty()) {
-                    try {
-                        LocalDate nuevaFecha = LocalDate.parse(fp.trim());
-                        if (elemento.getFechaPlan() == null || !elemento.getFechaPlan().equals(nuevaFecha)) {
-                            elemento.setFechaPlan(nuevaFecha);
-                            huboCambioReal[0] = true;
-                            eventPublisher.publishEvent(new EntregableActualizadoEvent(elemento, nombreUsuarioLogueado, "fechaPlan", fp.trim()));
-                        }
-                    } catch (Exception e) {} 
-                }
-            }
-
-            if (cambios.containsKey("fechaReal")) {
-                String fr = cambios.get("fechaReal");
-                if (fr != null && !fr.trim().isEmpty()) {
-                    try {
-                        LocalDate nuevaFecha = LocalDate.parse(fr.trim());
-                        if (elemento.getFechaReal() == null || !elemento.getFechaReal().equals(nuevaFecha)) {
-                            elemento.setFechaReal(nuevaFecha);
-                            huboCambioReal[0] = true;
-                            eventPublisher.publishEvent(new EntregableActualizadoEvent(elemento, nombreUsuarioLogueado, "fechaReal", fr.trim()));
-                        }
-                    } catch (Exception e) {}
-                }
-            }
 
             cambios.forEach((fieldName, fieldValue) -> {
-                if (fieldName.equals("fechaPlan") || fieldName.equals("fechaReal")) return;
-
                 String valorNuevo = (fieldValue == null) ? "" : fieldValue.trim();
 
                 for (ChecklistCampoEstrategia estrategia : estrategias) {

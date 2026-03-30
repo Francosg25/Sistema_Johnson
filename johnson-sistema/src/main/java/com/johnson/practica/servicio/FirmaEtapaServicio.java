@@ -31,6 +31,11 @@ public class FirmaEtapaServicio {
     }
 
     @Transactional
+    public void eliminarFirma(Long proyectoId, Integer etapa, String rol) {
+        firmaEtapaRepositorio.deleteByProyecto_IdAndEtapaAndRol(proyectoId, etapa, rol);
+    }
+
+    @Transactional
     public void firmar(Long proyectoId, Integer etapa, String rol, String username) {
         Proyecto proyecto = proyectoRepositorio.findById(proyectoId)
                 .orElseThrow(() -> new RuntimeException("Project not found"));

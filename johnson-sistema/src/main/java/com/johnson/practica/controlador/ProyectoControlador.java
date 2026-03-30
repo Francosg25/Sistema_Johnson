@@ -176,6 +176,30 @@ public class ProyectoControlador {
         return response;
     }
 
+    @PostMapping("/checklist/eliminar-firma-ajax/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
+    @ResponseBody
+    public Map<String, Object> eliminarFirmaAjax(@PathVariable Long id, 
+                                               @RequestParam Integer etapa, 
+                                               @RequestParam String rol, 
+                                               Principal principal) {
+        Map<String, Object> response = new HashMap<>();
+        try {
+            firmaEtapaServicio.eliminarFirma(id, etapa, rol);
+            
+            String admin = (principal != null) ? principal.getName() : "System";
+            bitacoraServicio.registrarAccion(admin, "DELETE_SIGNATURE", 
+                "Signature removed from Gate " + etapa + " for role: " + rol + " in project ID: " + id);
+            
+            response.put("exito", true);
+            response.put("mensaje", "Firma eliminada correctamente.");
+        } catch (Exception e) {
+            response.put("exito", false);
+            response.put("mensaje", "Error al eliminar firma: " + e.getMessage());
+        }
+        return response;
+    }
+
     @PostMapping("/checklist/guardar-todo/{proyectoId}")
     @PreAuthorize("hasAnyRole('ADMIN', 'CHAMPION')") 
     public String guardarChecklistCompleto(@PathVariable Long proyectoId, @RequestParam Map<String, String> allParams) {

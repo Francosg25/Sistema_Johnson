@@ -86,6 +86,7 @@
                                                 <td class="border-0 text-end pe-3 align-middle" style="width: 120px;">
                                                     <div th:if="${firma != null}" 
                                                          class="mini-signature-box signed shadow-sm border-success bg-success bg-opacity-10 btn-firmado-trigger" 
+                                                         th:data-proyecto="${proyecto.id}" th:data-etapa="${etapaNum}" th:data-rol="${rol}"
                                                          th:data-firmante="${firma.nombreCompleto != null ? firma.nombreCompleto : (firma.username != null ? firma.username : rol)}"
                                                          th:data-fecha="${#temporals.format(firma.fechaFirma, 'dd/MM/yyyy')}"
                                                          style="border-style: solid !important; border-width: 2px !important; min-width: 100px;">
@@ -122,6 +123,7 @@
                                                 <td class="border-0 text-end pe-3 align-middle" style="width: 120px;">
                                                     <div th:if="${firma != null}" 
                                                          class="mini-signature-box signed shadow-sm border-success bg-success bg-opacity-10 btn-firmado-trigger" 
+                                                         th:data-proyecto="${proyecto.id}" th:data-etapa="${etapaNum}" th:data-rol="${rol}"
                                                          th:data-firmante="${firma.nombreCompleto != null ? firma.nombreCompleto : (firma.username != null ? firma.username : rol)}"
                                                          th:data-fecha="${#temporals.format(firma.fechaFirma, 'dd/MM/yyyy')}"
                                                          style="border-style: solid !important; border-width: 2px !important; min-width: 100px;">

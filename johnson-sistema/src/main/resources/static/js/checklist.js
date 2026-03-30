@@ -562,121 +562,187 @@
 
         document.addEventListener('DOMContentLoaded', function() {
     let firmaData = {}; 
-    const modalElement = document.getElementById('modalConfirmarFirma');
-    if(!modalElement) return; 
     
-    const modalFirma = new bootstrap.Modal(modalElement);
-    
-    // Trigger for already signed boxes
+    // Función para manejar la visualización de firmas ya realizadas
     document.querySelectorAll('.btn-firmado-trigger').forEach(box => {
         box.addEventListener('click', function() {
             const firmante = this.getAttribute('data-firmante');
             const fecha = this.getAttribute('data-fecha');
-            // Translation: "Gate sealed by [Name] on [Date]"
-            mostrarNotificacion(`Gate sealed by <b>${firmante}</b> on ${fecha}.`);
-        });
-    });
-
-    document.querySelectorAll('.btn-firmar-trigger').forEach(box => {
-        box.addEventListener('click', function() {
-            const configDiv = document.getElementById('checklist-config');
-            const puedeEditar = configDiv ? configDiv.getAttribute('data-puede-editar') === 'true' : false;
-            if(!puedeEditar) return; 
-
-            firmaData = {
-                proyectoId: this.getAttribute('data-proyecto'),
-                etapa: this.getAttribute('data-etapa'),
-                rol: this.getAttribute('data-rol'),
-                nombreAsignado: this.getAttribute('data-nombre-asignado')
-            };
-
-            document.getElementById('modalGateText').textContent = firmaData.etapa;
-            document.getElementById('modalRolText').textContent = firmaData.rol;
+            const proyectoId = this.getAttribute('data-proyecto');
+            const etapa = this.getAttribute('data-etapa');
+            const rol = this.getAttribute('data-rol');
             
-            // Limpiar password y errores al abrir
-            const passInput = document.getElementById('passwordValidacion');
-            if(passInput) passInput.value = '';
-            const errorDiv = document.getElementById('passwordError');
-            if(errorDiv) errorDiv.classList.add('d-none');
-            
-            modalFirma.show();
-        });
-    });
+            // Detectar si el usuario tiene perfil de ADMIN viendo si existe el botón de usuarios en el menú
+            const isAdmin = document.querySelector('a[href="/admin/usuarios"]') !== null;
 
-    const btnConfirmar = document.getElementById('btnConfirmarFirmaAjax');
-    if(btnConfirmar) {
-        btnConfirmar.addEventListener('click', function() {
-            const passInput = document.getElementById('passwordValidacion');
-            const password = passInput ? passInput.value : '';
-            const errorDiv = document.getElementById('passwordError');
+            Swal.fire({
+                title: '<span class="text-success">Official Seal Applied</span>',
+                html: `
+                    <div class="mt-3 text-center">
+                        <i class="bi bi-patch-check-fill text-success" style="font-size: 4rem;"></i>
+                        <p class="mt-3 mb-1 text-muted">This requirement has been approved by:</p>
+                        <h4 class="fw-bold text-dark">${firmante}</h4>
+                        <div class="badge bg-light text-success border border-success mt-2 px-3 py-2 rounded-pill">
+                            <i class="bi bi-calendar-check me-2"></i>Approved on: ${fecha}
+                        </div>
+                        ${isAdmin ? `
+                        <div class="mt-4 pt-3 border-top">
+                            <button id="btnEliminarFirma" class="btn btn-sm btn-outline-danger rounded-pill px-3">
+                                <i class="bi bi-trash3 me-1"></i> Remove Signature (Admin Only)
+                            </button>
+                        </div>` : ''}
+                    </div>
+                `,
+                showConfirmButton: true,
+                confirmButtonText: 'Understood',
+                confirmButtonColor: '#198754',
+                didOpen: () => {
+                    const btnDel = document.getElementById('btnEliminarFirma');
+                    if(btnDel) {
+                        btnDel.onclick = () => {
+                            Swal.fire({
+                                title: 'Are you sure?',
+                                text: "You are about to remove this official approval seal. This action will be logged in the audit trail.",
+                                icon: 'warning',
+                                showCancelButton: true,
+                                confirmButtonColor: '#dc3545',
+                                cancelButtonColor: '#6c757d',
+                                confirmButtonText: 'Yes, remove it',
+                                reverseButtons: true
+                            }).then((result) => {
+                                if (result.isConfirmed) {
+                                    const params = new URLSearchParams();
+                                    params.append('etapa', etapa);
+                                    params.append('rol', rol);
 
-            if(!password || password.trim() === '') {
-                if(errorDiv) {
-                    errorDiv.textContent = 'Password is required to sign.';
-                    errorDiv.classList.remove('d-none');
-                }
-                return;
-            }
-
-            const originalHtml = this.innerHTML;
-            this.innerHTML = '<span class="spinner-border spinner-border-sm"></span> Sealing...';
-            this.disabled = true;
-
-            const params = new URLSearchParams();
-            params.append('etapa', firmaData.etapa);
-            params.append('rol', firmaData.rol);
-            params.append('password', password);
-            params.append('nombreAsignado', firmaData.nombreAsignado);
-
-            fetch(`/proyectos/checklist/firmar-ajax/${firmaData.proyectoId}`, {
-                method: 'POST',
-                body: params,
-                headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
-            })
-            .then(response => {
-                if(!response.ok) throw new Error("Server error");
-                return response.json();
-            })
-            .then(data => {
-                if(data.exito) {
-                    const modalBody = document.querySelector('#modalConfirmarFirma .modal-body');
-                    const modalFooter = document.querySelector('#modalConfirmarFirma .modal-footer');
-                    
-                    if(modalBody) {
-                        modalBody.innerHTML = `
-                            <div class="animate__animated animate__zoomIn text-center">
-                                <div class="mb-3">
-                                    <i class="bi bi-patch-check-fill text-success" style="font-size: 5.5rem; filter: drop-shadow(0 4px 10px rgba(25,135,84,0.3));"></i>
-                                </div>
-                                <h2 class="fw-bold text-dark mb-2">Gate Sealed!</h2>
-                                <p class="text-muted fs-5 mb-0">The approval from <br><b class="text-primary">${firmaData.rol}</b><br> has been successfully recorded.</p>
-                            </div>
-                        `;
+                                    fetch(`/proyectos/checklist/eliminar-firma-ajax/${proyectoId}`, {
+                                        method: 'POST',
+                                        body: params,
+                                        headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
+                                    })
+                                    .then(res => res.json())
+                                    .then(data => {
+                                        if(data.exito) {
+                                            Swal.fire('Removed!', data.mensaje, 'success')
+                                                .then(() => window.location.reload());
+                                        } else {
+                                            Swal.fire('Error', data.mensaje, 'error');
+                                        }
+                                    });
+                                }
+                            });
+                        };
                     }
-                    if(modalFooter) modalFooter.style.display = 'none';
-                    
-                    setTimeout(() => { window.location.reload(); }, 1800);
-                } else {
-                    if(data.tipo === 'PASSWORD_ERROR' && errorDiv) {
-                        errorDiv.textContent = data.mensaje;
-                        errorDiv.classList.remove('d-none');
-                    } else {
-                        // Error de autorización o negocio: mostrar notificación profesional
-                        mostrarNotificacionError(data.mensaje);
-                        modalFirma.hide();
-                    }
-                    this.innerHTML = originalHtml; 
-                    this.disabled = false;
                 }
-            })
-            .catch(error => {
-                console.error("Error:", error);
-                mostrarNotificacionError("Error de conexión. El proceso de firma ha sido cancelado.");
-                this.innerHTML = originalHtml; 
-                this.disabled = false;
-                modalFirma.hide();
             });
         });
+    });
+
+    // Función para manejar la firma de nuevos cuadros
+    const modalElement = document.getElementById('modalConfirmarFirma');
+    if(modalElement) {
+        const modalFirma = new bootstrap.Modal(modalElement);
+
+        document.querySelectorAll('.btn-firmar-trigger').forEach(box => {
+            box.addEventListener('click', function() {
+                const configDiv = document.getElementById('checklist-config');
+                const puedeEditar = configDiv ? configDiv.getAttribute('data-puede-editar') === 'true' : false;
+                if(!puedeEditar) return; 
+
+                firmaData = {
+                    proyectoId: this.getAttribute('data-proyecto'),
+                    etapa: this.getAttribute('data-etapa'),
+                    rol: this.getAttribute('data-rol'),
+                    nombreAsignado: this.getAttribute('data-nombre-asignado')
+                };
+
+                document.getElementById('modalGateText').textContent = firmaData.etapa;
+                document.getElementById('modalRolText').textContent = firmaData.rol;
+                
+                // Limpiar password y errores al abrir
+                const passInput = document.getElementById('passwordValidacion');
+                if(passInput) passInput.value = '';
+                const errorDiv = document.getElementById('passwordError');
+                if(errorDiv) errorDiv.classList.add('d-none');
+                
+                modalFirma.show();
+            });
+        });
+
+        const btnConfirmar = document.getElementById('btnConfirmarFirmaAjax');
+        if(btnConfirmar) {
+            btnConfirmar.addEventListener('click', function() {
+                const passInput = document.getElementById('passwordValidacion');
+                const password = passInput ? passInput.value : '';
+                const errorDiv = document.getElementById('passwordError');
+
+                if(!password || password.trim() === '') {
+                    if(errorDiv) {
+                        errorDiv.textContent = 'Password is required to sign.';
+                        errorDiv.classList.remove('d-none');
+                    }
+                    return;
+                }
+
+                const originalHtml = this.innerHTML;
+                this.innerHTML = '<span class="spinner-border spinner-border-sm"></span> Sealing...';
+                this.disabled = true;
+
+                const params = new URLSearchParams();
+                params.append('etapa', firmaData.etapa);
+                params.append('rol', firmaData.rol);
+                params.append('password', password);
+                params.append('nombreAsignado', firmaData.nombreAsignado);
+
+                fetch(`/proyectos/checklist/firmar-ajax/${firmaData.proyectoId}`, {
+                    method: 'POST',
+                    body: params,
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
+                })
+                .then(response => {
+                    if(!response.ok) throw new Error("Server error");
+                    return response.json();
+                })
+                .then(data => {
+                    if(data.exito) {
+                        const modalBody = document.querySelector('#modalConfirmarFirma .modal-body');
+                        const modalFooter = document.querySelector('#modalConfirmarFirma .modal-footer');
+                        
+                        if(modalBody) {
+                            modalBody.innerHTML = `
+                                <div class="animate__animated animate__zoomIn text-center">
+                                    <div class="mb-3">
+                                        <i class="bi bi-patch-check-fill text-success" style="font-size: 5.5rem; filter: drop-shadow(0 4px 10px rgba(25,135,84,0.3));"></i>
+                                    </div>
+                                    <h2 class="fw-bold text-dark mb-2">Gate Sealed!</h2>
+                                    <p class="text-muted fs-5 mb-0">The approval from <br><b class="text-primary">${firmaData.rol}</b><br> has been successfully recorded.</p>
+                                </div>
+                            `;
+                        }
+                        if(modalFooter) modalFooter.style.display = 'none';
+                        
+                        setTimeout(() => { window.location.reload(); }, 1800);
+                    } else {
+                        if(data.tipo === 'PASSWORD_ERROR' && errorDiv) {
+                            errorDiv.textContent = data.mensaje;
+                            errorDiv.classList.remove('d-none');
+                        } else {
+                            mostrarNotificacionError(data.mensaje);
+                            modalFirma.hide();
+                        }
+                        this.innerHTML = originalHtml; 
+                        this.disabled = false;
+                    }
+                })
+                .catch(error => {
+                    console.error("Error:", error);
+                    mostrarNotificacionError("Error de conexión. El proceso de firma ha sido cancelado.");
+                    this.innerHTML = originalHtml; 
+                    this.disabled = false;
+                    modalFirma.hide();
+                });
+            });
+        }
     }
 });
 
