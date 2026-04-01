@@ -23,3 +23,28 @@ document.addEventListener('DOMContentLoaded', function() {
     }
   }
 });
+
+// Ayudante Global para CSRF en peticiones Fetch/AJAX
+const CSRF = {
+    getToken: () => document.querySelector('meta[name="_csrf"]')?.content,
+    getHeader: () => document.querySelector('meta[name="_csrf_header"]')?.content,
+    getHeaders: (baseHeaders = {}) => {
+        const headers = { ...baseHeaders };
+        const token = CSRF.getToken();
+        const header = CSRF.getHeader();
+        if (token && header) {
+            headers[header] = token;
+        }
+        return headers;
+    }
+};
+
+// Reemplazo global de fetch para incluir CSRF automáticamente en peticiones POST/PUT/DELETE
+const originalFetch = window.fetch;
+window.fetch = function() {
+    let [resource, config] = arguments;
+    if (config && ['POST', 'PUT', 'DELETE', 'PATCH'].includes(config.method?.toUpperCase())) {
+        config.headers = CSRF.getHeaders(config.headers || {});
+    }
+    return originalFetch(resource, config);
+};

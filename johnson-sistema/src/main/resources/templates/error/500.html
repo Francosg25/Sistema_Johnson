@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/head :: head}"></head>
+<body class="bg-light">
+    <div class="container vh-100 d-flex align-items-center justify-content-center">
+        <div class="text-center p-5 bg-white shadow rounded-4 animate__animated animate__fadeIn" style="max-width: 500px;">
+            <div class="display-1 fw-bold text-warning mb-3">500</div>
+            <h2 class="fw-bold text-dark mb-3">Internal Server Error</h2>
+            <p class="text-muted mb-4">Something went wrong on our end. We've been notified and are working to fix it.</p>
+            <div class="alert alert-light border small text-start mb-4" th:if="${error}">
+                <strong>Details:</strong> <span th:text="${error}">Error details here</span>
+            </div>
+            <a th:href="@{/}" class="btn btn-warning px-4 py-2 rounded-pill fw-bold text-white">
+                <i class="bi bi-arrow-clockwise me-2"></i>Try Refreshing
+            </a>
+        </div>
+    </div>
+</body>
+</html>

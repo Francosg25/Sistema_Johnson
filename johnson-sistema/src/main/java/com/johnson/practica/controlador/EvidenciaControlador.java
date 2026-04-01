@@ -203,8 +203,9 @@ public class EvidenciaControlador {
         Map<String, List<Map<String, Object>>> activos = new java.util.LinkedHashMap<>();
         
         for (Adjunto a : adjuntos) {
-            boolean isArchivado = (a.getProyecto() != null) && a.getProyecto().isArchivado();
-            if (isArchivado) continue; // Ignorar archivados en esta vista
+            // FILTRO ESTRICTO: Si el proyecto es histórico o está archivado, NO se muestra en Evidence Vault
+            boolean isArchivado = (a.getProyecto() != null) && (a.getProyecto().getEsHistorico() || a.getProyecto().isArchivado());
+            if (isArchivado) continue; 
 
             String proyectoNombre = (a.getProyecto() != null) ? a.getProyecto().getNombre() : "Otros / Sin Proyecto";
             

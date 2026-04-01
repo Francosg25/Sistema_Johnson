@@ -3,6 +3,7 @@ package com.johnson.practica.controlador;
 import com.johnson.practica.modelo.ElementoChecklist;
 import com.johnson.practica.modelo.Proyecto;
 import com.johnson.practica.repositorio.ProyectoRepositorio;
+import com.johnson.practica.repositorio.AdjuntoRepositorio;
 import com.johnson.practica.servicio.ChecklistReporteServicio;
 import com.johnson.practica.servicio.ChecklistServicio;
 import com.johnson.practica.servicio.ExcelServicio;
@@ -273,20 +274,28 @@ public class ProyectoControlador {
         return "redirect:/"; 
     }
 
+    @Autowired private AdjuntoRepositorio adjuntoRepositorio;
+
     @PostMapping("/archivar/{id}")
     @PreAuthorize("hasRole('ADMIN')")
     @CacheEvict(value = "reportes", allEntries = true) 
+    @Transactional
     public String archivarProyecto(@PathVariable Long id, org.springframework.web.servlet.mvc.support.RedirectAttributes redirectAttributes, Principal principal) {
         Proyecto proyecto = proyectoServicio.buscarPorId(id);
         if (proyecto != null) {
             String usuario = (principal != null) ? principal.getName() : "System";
+            
             proyecto.setEsHistorico(true); 
             proyectoRepositorio.save(proyecto);
-            bitacoraServicio.registrarAccion(usuario, "ARCHIVE PROJECT", "Project moved to historical vault: " + proyecto.getNombre());
+            
+            bitacoraServicio.registrarAccion(usuario, "ARCHIVE PROJECT", 
+                "Project moved to historical vault: " + proyecto.getNombre());
+            
             notificacionServicio.alertarATodos("Project Archived", 
-                "The project " + proyecto.getNombre() + " has been successfully archived.", 
+                "The project " + proyecto.getNombre() + " has been moved to the historical vault.", 
                 "SUCCESS", "/proyectos/vault", "System");
-            redirectAttributes.addFlashAttribute("mensajeExito", "Project moved to Historical Vault.");
+                
+            redirectAttributes.addFlashAttribute("mensajeExito", "Project moved to Historical Vault. Evidence remains accessible there.");
         }
         return "redirect:/proyectos/vault";
     }

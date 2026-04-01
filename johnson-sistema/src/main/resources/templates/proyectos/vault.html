@@ -35,6 +35,17 @@
             <div th:replace="~{fragments/header :: header}"></div>
             
             <main class="container-fluid p-4">
+                <div th:if="${mensajeExito}" class="alert alert-success alert-dismissible fade show border-0 shadow-sm rounded-4 mb-4" role="alert">
+                    <div class="d-flex align-items-center">
+                        <i class="bi bi-check-circle-fill fs-4 me-3 text-success"></i>
+                        <div>
+                            <strong class="d-block">Success!</strong>
+                            <span th:text="${mensajeExito}">Message here</span>
+                        </div>
+                    </div>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+
                 <div class="d-flex justify-content-between align-items-center mb-4">
                     <div>
                         <h2 class="fw-bold text-dark m-0"><i class="bi bi-archive-fill me-2 text-primary"></i>Historical Vault</h2>
@@ -87,11 +98,11 @@
                                                         
                                                         <div class="d-grid gap-2">
                                                             <a th:href="@{/proyectos/checklist/{id}(id=${p.id})}" class="btn btn-outline-dark btn-sm rounded-pill fw-bold">
-                                                                <i></i> Review
+                                                                <i class="bi bi-eye-fill me-1"></i> Review
                                                             </a>
                                                             <button th:attr="onclick=|abrirModalEvidencias('${p.id}', '${p.nombre}')|" 
                                                                     class="btn btn-primary btn-sm rounded-pill fw-bold">
-                                                                <i></i> Open Evidence
+                                                                <i class="bi bi-folder2-open-fill me-1"></i> Open Evidence
                                                             </button>
                                                         </div>
                                                     </div>

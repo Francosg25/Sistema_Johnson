@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/head :: head}"></head>
+<body class="bg-light">
+    <div class="container vh-100 d-flex align-items-center justify-content-center">
+        <div class="text-center p-5 bg-white shadow rounded-4 animate__animated animate__shakeX" style="max-width: 500px;">
+            <div class="display-1 fw-bold text-danger mb-3"><i class="bi bi-shield-lock"></i></div>
+            <h2 class="fw-bold text-dark mb-3">Access Denied</h2>
+            <p class="text-muted mb-4">You do not have permission to access this resource. Please contact your administrator if you believe this is an error.</p>
+            <a th:href="@{/}" class="btn btn-outline-danger px-4 py-2 rounded-pill fw-bold">
+                <i class="bi bi-arrow-left me-2"></i>Go Back
+            </a>
+        </div>
+    </div>
+</body>
+</html>
