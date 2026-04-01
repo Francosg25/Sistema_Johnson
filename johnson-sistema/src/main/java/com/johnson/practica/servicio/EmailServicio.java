@@ -186,4 +186,37 @@ public class EmailServicio {
         
         enviarHtml(destinatario.getCorreo(), "Welcome to the APQP System", "email/nuevo-usuario", context);
     }
+
+    @Async
+    public void enviarAlertaEstadoProyecto(Usuario destinatario, Proyecto proyecto, 
+                                           java.util.List<com.johnson.practica.modelo.ElementoChecklist> retrasadas, 
+                                           java.util.List<com.johnson.practica.modelo.ElementoChecklist> proximas) {
+        
+        if (retrasadas.isEmpty() && proximas.isEmpty()) {
+            return; 
+        }
+
+        try {
+            Context context = new Context();
+            context.setVariable("usuario", destinatario);
+            context.setVariable("proyecto", proyecto);
+            context.setVariable("retrasadas", retrasadas);
+            context.setVariable("proximas", proximas);
+            
+            // Enlace directo al checklist de este proyecto específico
+            context.setVariable("appUrl", appBaseUrl + "/proyectos/checklist/" + proyecto.getId());
+            
+            String subject = "APQP Action Required: " + proyecto.getNombre() + " (" + proyecto.getNumeroParte() + ")";
+            
+            // Usamos tu método existente para enviar la plantilla Thymeleaf
+            enviarHtml(destinatario.getCorreo(), subject, "email/alerta-proyecto", context);
+            
+            System.out.println("✅ Alerta de proyecto enviada a: " + destinatario.getCorreo() + " para el proyecto: " + proyecto.getNumeroParte());
+            
+        } catch (Exception e) {
+            System.err.println("❌ Error enviando alerta de proyecto a: " + destinatario.getCorreo() + ". Detalle: " + e.getMessage());
+        }
+    }
+
+
 }

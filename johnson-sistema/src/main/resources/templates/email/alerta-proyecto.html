@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f4f6f9; padding: 20px; color: #333;">
+    <div style="max-width: 650px; margin: 0 auto; background-color: #ffffff; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 6px rgba(0,0,0,0.05);">
+        
+        <div style="background-color: #212529; color: white; padding: 25px; text-align: center; border-bottom: 4px solid #F5821F;">
+            <h2 style="margin: 0; font-size: 24px;">APQP Project Status Alert</h2>
+            <p style="margin: 5px 0 0 0; color: #adb5bd;" th:text="${proyecto.nombre} + ' (' + ${proyecto.numeroParte} + ')'"></p>
+        </div>
+        
+        <div style="padding: 30px;">
+            <p style="font-size: 16px;">Hello <strong th:text="${usuario.nombreCompleto}">Team Member</strong>,</p>
+            <p style="font-size: 16px;">This is the automated monthly status report for the project <strong><span th:text="${proyecto.nombre}"></span></strong>.</p>
+            
+            <div th:if="${!retrasadas.isEmpty()}" style="margin-top: 25px;">
+                <h3 style="color: #dc3545; border-bottom: 2px solid #dc3545; padding-bottom: 5px;">⚠️ Overdue Deliverables</h3>
+                <table style="width: 100%; border-collapse: collapse; font-size: 14px;">
+                    <thead>
+                        <tr style="background-color: #f8f9fa;">
+                            <th style="padding: 10px; text-align: left;">Deliverable</th>
+                            <th style="padding: 10px; text-align: center;">Target Date</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="tarea : ${retrasadas}" style="border-bottom: 1px solid #e9ecef;">
+                            <td style="padding: 10px;" th:text="${tarea.nombre}"></td>
+                            <td style="padding: 10px; text-align: center; font-weight: bold; color: #dc3545;" th:text="${tarea.fechaPlan}"></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div th:if="${!proximas.isEmpty()}" style="margin-top: 25px;">
+                <h3 style="color: #fd7e14; border-bottom: 2px solid #fd7e14; padding-bottom: 5px;">📅 Closing Next Month</h3>
+                <table style="width: 100%; border-collapse: collapse; font-size: 14px;">
+                    <thead>
+                        <tr style="background-color: #f8f9fa;">
+                            <th style="padding: 10px; text-align: left;">Deliverable</th>
+                            <th style="padding: 10px; text-align: center;">Target Date</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="tarea : ${proximas}" style="border-bottom: 1px solid #e9ecef;">
+                            <td style="padding: 10px;" th:text="${tarea.nombre}"></td>
+                            <td style="padding: 10px; text-align: center; font-weight: bold; color: #fd7e14;" th:text="${tarea.fechaPlan}"></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            
+            <div style="text-align: center; margin-top: 35px; margin-bottom: 10px;">
+                <a th:href="${appUrl}" style="background-color: #F5821F; color: white; padding: 12px 25px; text-decoration: none; border-radius: 6px; font-weight: bold; font-size: 16px; display: inline-block;">Go to Project Checklist</a>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

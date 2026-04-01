@@ -54,7 +54,7 @@ public class DashboardControlador {
             .filter(r -> {
                 Proyecto p = proyectoRepositorio.findById(r.getId()).orElse(null);
                 return p != null && !p.getEsHistorico(); 
-            }).toList();
+            }).collect(Collectors.toList());
             
         ReporteEstadoGlobal estadoGlobal = checklistReporteServicio.generarReporteEstadoGlobal(); 
         
@@ -77,13 +77,13 @@ public class DashboardControlador {
         model.addAttribute("estadoGlobal", estadoGlobal);
         model.addAttribute("alertas", checklistReporteServicio.obtenerAlertasGlobales().stream() 
             .filter(a -> proyectos.stream().anyMatch(p -> a.getNombre().contains(p.getNombre())))
-            .toList());
+            .collect(Collectors.toList()));
         model.addAttribute("tendencia", checklistReporteServicio.obtenerDatosTendencia()); 
         model.addAttribute("proximosLanzamientos", checklistReporteServicio.obtenerLanzamientosProximos()); 
         model.addAttribute("avancePromedio", avancePromedio);
         
         model.addAttribute("notificaciones", notificaciones); 
-        model.addAttribute("ultimosMovimientos", bitacoraServicio.obtenerUltimosMovimientos().stream().limit(5).toList());
+        model.addAttribute("ultimosMovimientos", bitacoraServicio.obtenerUltimosMovimientos().stream().limit(5).collect(Collectors.toList()));
         
         List<ElementoChecklist> todasPendientes = checklistServicio.obtenerTodasTareasPendientes().stream()
             .filter(t -> !t.getProyecto().getEsHistorico())
@@ -105,7 +105,7 @@ public class DashboardControlador {
                 
                 return true; 
             })
-            .toList();
+            .collect(Collectors.toList());
 
         model.addAttribute("todasTareasPendientes", todasPendientes);
         

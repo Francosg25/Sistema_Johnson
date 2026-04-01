@@ -17,6 +17,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 public class ChecklistServicio {
@@ -144,7 +145,7 @@ public class ChecklistServicio {
                 .filter(e -> e.getProyecto() != null && !e.getProyecto().getEsHistorico())
                 .filter(e -> e.getChampion() != null && e.getChampion().equalsIgnoreCase(username) && 
                             (e.getScore() == null || !"OK".equalsIgnoreCase(e.getScore().trim())))
-                .toList();
+                .collect(Collectors.toList());
     }
 
     @Transactional(readOnly = true)
@@ -153,7 +154,7 @@ public class ChecklistServicio {
                 .filter(e -> e.getProyecto() != null && !e.getProyecto().getEsHistorico())
                 .filter(e -> e.getScore() == null || !e.getScore().equalsIgnoreCase("OK"))
                 .filter(e -> e.getFase() != null && (e.getFase().equals("0. Program") || e.getFase().equals("2. Stage 2")))
-                .toList();
+                .collect(Collectors.toList());
     }
 
     @Transactional(readOnly = true)
@@ -163,7 +164,7 @@ public class ChecklistServicio {
                 .map(this::normalizarChampion)
                 .distinct()
                 .sorted()
-                .toList();
+                .collect(Collectors.toList());
     }
 
     public String normalizarChampion(String champ) {

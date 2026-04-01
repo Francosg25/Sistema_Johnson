@@ -41,12 +41,12 @@ public class ChecklistSemilla {
     private void cargarProgramaAPQP(CatalogoElementoRepositorio repo) {
         List<CatalogoElemento> programa = Arrays.asList(
             // --- STAGE 1 --
-            crearE("1.1", "QE",    "STAGE 1", "CFT Planning and Definition"),
-            crearE("1.2", "DE", "STAGE 1", "Project Scope Definition"),
-            crearE("1.3", "DE", "STAGE 1", "Establish 'Team to Team' meetings"),
-            crearE("1.4", "ALL",   "STAGE 1", "Training (Identify training needs)"),
-            crearE("1.5", "DE",                       "STAGE 1", "Concerns/Issues Resolution"),
-            crearE("1.6", "DE", "STAGE 1", "Timeline / Gantt"),
+            crearE("1.1", "PROJ",    "STAGE 1", "CFT Planning and Definition"),
+            crearE("1.2", "PROJ", "STAGE 1", "Project Scope Definition"),
+            crearE("1.3", "PROJ", "STAGE 1", "Establish 'Team to Team' meetings"),
+            crearE("1.4", "PROJ",   "STAGE 1", "Training (Identify training needs)"),
+            crearE("1.5", "ALL",                       "STAGE 1", "Concerns/Issues Resolution"),
+            crearE("1.6", "PROJ", "STAGE 1", "Timeline / Gantt"),
 
             // --- STAGE 2 ---
             crearE("P-01", "PROJ",   "STAGE 2", "Cross-Functional Team / CFT (JE Global and internal):"),
@@ -67,10 +67,10 @@ public class ChecklistSemilla {
             crearE("P-14", "PE",     "STAGE 3", "03.- Process Flow Chart"),
             crearE("P-15", "PE",     "STAGE 3", "04.- Floor plan layout"),
             crearE("P-16", "QE/PE",  "STAGE 3", "05.- Characteristic Matrix"),
-            crearE("P-17", "PE",     "STAGE 3", "0.6- PFMEA"),
-            crearE("P-18", "QE",     "STAGE 3", "0.7- Control Plan Pre-launch"),
-            crearE("P-19", "PE",     "STAGE 3", "0.8- WI"),
-            crearE("P-20", "QE",     "STAGE 3", "0.9- MSA Plan"),
+            crearE("P-17", "PE",     "STAGE 3", "06- PFMEA"),
+            crearE("P-18", "QE",     "STAGE 3", "07- Control Plan Pre-launch"),
+            crearE("P-19", "PE",     "STAGE 3", "08- WI"),
+            crearE("P-20", "QE",     "STAGE 3", "09- MSA Plan"),
             crearE("P-21", "QE/PE",  "STAGE 3", "10.- SPC Plan"),
             crearE("P-22", "PROJ",   "STAGE 3", "11.- Meeting Minutes"),
             crearE("P-23", "QE",     "STAGE 3", "11.- Meeting Minutes"), 

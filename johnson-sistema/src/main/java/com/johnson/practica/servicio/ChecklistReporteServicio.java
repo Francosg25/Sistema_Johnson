@@ -14,6 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class ChecklistReporteServicio {
@@ -50,7 +51,7 @@ public class ChecklistReporteServicio {
     public List<ReporteProgreso> generarReporteGlobal() {
         List<Proyecto> proyectos = proyectoRepositorio.findAllByOrderByIdAsc().stream()
             .filter(p -> !p.getEsHistorico()) 
-            .toList();
+            .collect(Collectors.toList());
         List<ReporteProgreso> reporte = new ArrayList<>();
 
         for (Proyecto p : proyectos) {
@@ -105,7 +106,7 @@ public class ChecklistReporteServicio {
     public ReporteEstadoGlobal generarReporteEstadoGlobal() {
         List<Proyecto> proyectos = proyectoRepositorio.findAllByOrderByIdAsc().stream()
             .filter(p -> !p.getEsHistorico())
-            .toList();
+            .collect(Collectors.toList());
         
         int total = 0, onTime = 0, late = 0, needsAction = 0, decision = 0, fulfilled = 0;
 
@@ -147,7 +148,7 @@ public class ChecklistReporteServicio {
     @Transactional(readOnly = true)
     public List<ReporteCascada> generarReporteCascada() {
         List<Proyecto> proyectos = proyectoRepositorio.findAllByOrderByIdAsc().stream()
-            .filter(p -> !p.getEsHistorico()).toList();
+            .filter(p -> !p.getEsHistorico()).collect(Collectors.toList());
         List<ReporteCascada> reporte = new ArrayList<>();
         List<String> etapas = Arrays.asList("STAGE 1", "STAGE 2", "STAGE 3", "STAGE 4", "STAGE 5");
 
@@ -168,7 +169,7 @@ public class ChecklistReporteServicio {
         return repositorio.findAll().stream()
                 .filter(e -> e.getProyecto() != null && !e.getProyecto().getEsHistorico()) 
                 .filter(e -> e.getControlEntregable() != null && e.getControlEntregable().equalsIgnoreCase("NEEDS ACTION"))
-                .toList();
+                .collect(Collectors.toList());
     }
 
     @Transactional(readOnly = true)
@@ -214,7 +215,7 @@ public class ChecklistReporteServicio {
     @Transactional(readOnly = true)
     public Map<String, Object> obtenerDatosTimeline() {
         List<Proyecto> proyectos = proyectoRepositorio.findAllByOrderByIdAsc().stream()
-            .filter(p -> !p.getEsHistorico()).toList();
+            .filter(p -> !p.getEsHistorico()).collect(Collectors.toList());
         
         List<TimelineGrupo> groups = new ArrayList<>();
         List<TimelineItem> items = new ArrayList<>();
@@ -303,7 +304,7 @@ public class ChecklistReporteServicio {
 
         List<ElementoChecklist> preSop = elementos.stream()
                 .filter(e -> e.getEtapaVisual() != null && !e.getEtapaVisual().toUpperCase().contains("STAGE 5"))
-                .toList();
+                .collect(Collectors.toList());
 
         long totalTareas = preSop.size();
         if (totalTareas == 0) return 0.0;
