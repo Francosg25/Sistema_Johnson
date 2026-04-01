@@ -74,96 +74,87 @@ Memoria: El contenedor de Java está optimizado para ejecutarse en entornos con 
 ----------------------------------------------------------------------------------------------------
 ----------------------------------------------------------------------------------------------------
 ----------------------------------------------------------------------------------------------------
-Antes de tocar cualquier código, el equipo de TI debe provisionar el siguiente entorno en el clúster local (ej. VMware/Hyper-V):
+Se requiere el aprovisionamiento de una Máquina Virtual (VM) dentro del clúster de la planta 
 
-Máquina Virtual (VM):
+Red y Accesos: * Asignar una Dirección IP Estática interna.
 
-OS: Ubuntu Server 22.04 LTS o superior.
+Crear un registro DNS en la intranet (Ejemplo: apqp-system.johnsonelectric.local apuntando a la IP estática).
 
-Recursos: 2 a 4 vCPUs, 8 GB de RAM, 50 GB de almacenamiento SSD.
+Reglas de Firewall (Puertos):
 
-Red: Dirección IP Estática en la red de servidores (VLAN correspondiente).
+TCP/22 (SSH) - Abierto solo para el equipo de desarrollo/administradores.
 
-Configuración de Red (Firewall y Ruteo):
+TCP/80 (HTTP) y TCP/443 (HTTPS) - Abiertos para tráfico de la Intranet corporativa.
 
-Puertos de Entrada: * TCP/22 (SSH) - Acceso restringido solo a las IPs del equipo de desarrollo/administradores.
+FASE 2: Preparación del Entorno (Administrador Linux / DevOps)
+Una vez entregada la VM, acceder por SSH e instalar las herramientas base.
 
-TCP/80 (HTTP) y TCP/443 (HTTPS) - Abiertos para el tráfico de la intranet corporativa.
+1. Actualización del sistema operativo:
 
-Ruteo Inter-Site: Asegurar que las subredes de las plantas de México y EE. UU. tengan alcance (routing) hacia la IP estática de este servidor a través de la VPN Site-to-Site corporativa.
-
-DNS Interno (Active Directory / Windows Server DNS):
-
-Crear un Registro A que apunte la IP estática del servidor a un dominio interno amigable.
-
-Ejemplo: apqp-system.johnsonelectric.local -> 10.X.X.X
-
-Fase 2: Preparación del Servidor (Para el Administrador Linux / DevOps)
-Una vez entregada la máquina con acceso SSH, se deben instalar las dependencias base.
-
-1. Actualizar el sistema:
 Bash
 sudo apt update && sudo apt upgrade -y
-2. Instalar Docker y Docker Compose:
+2. Instalación del motor de Docker y Docker Compose:
+
 Bash
-# Descargar el script oficial de instalación de Docker
+# Descarga e instalación automatizada de Docker
 curl -fsSL https://get.docker.com -o get-docker.sh
 sudo sh get-docker.sh
 
-# Agregar el usuario actual al grupo de docker para no usar 'sudo' en cada comando
+# Agregar al usuario actual al grupo Docker para evitar uso excesivo de 'sudo'
 sudo usermod -aG docker $USER
 newgrp docker
+3. Instalación de Git:
 
-3. Instalar Git:
 Bash
 sudo apt install git -y
-Fase 3: Despliegue de la Aplicación
-Con el servidor listo, se procede a transferir y ejecutar el código del sistema.
+FASE 3: Despliegue de la Aplicación
+El código fuente está centralizado y listo para su descarga y ejecución.
 
-
-
-1. Clonar el repositorio del proyecto:
-Navegar al directorio de aplicaciones (usualmente /opt) y descargar el código fuente.
+1. Obtener el código fuente:
+Navegar al directorio de instalación (recomendado /opt) y clonar el repositorio.
 
 Bash
 cd /opt
-sudo git clone <URL_DE_REPOSITORIO> sistema-apqp
+sudo git clone https://github.com/Francosg25/Sistema_Johnson.git sistema-apqp
 sudo chown -R $USER:$USER /opt/sistema-apqp
 cd sistema-apqp
-
-
-2. Configurar Variables de Entorno:
-Sefinir las contraseñas reales de producción. Crear un archivo .env en la raíz del proyecto para que Docker Compose lo consuma.
+2. Configuración de Variables de Entorno (Credenciales de Producción):
+Crear el archivo de configuración .env en la raíz del proyecto. Este archivo no está en el repositorio por seguridad y debe ser creado manualmente en el servidor.
 
 Bash
 nano .env
-Contenido del .env:
+Pegar la siguiente plantilla y llenar con los datos definitivos de producción:
 
 Fragmento de código
-DB_NAME=
-DB_USER=
-DB_PASSWORD=
+# Configuración de Base de Datos
+DB_NAME=johnsondb
+DB_USER=admin
+DB_PASSWORD=johnsonbase2026
 
+# Configuración de Servidor de Correos (Alertas y Notificaciones)
+MAIL_USERNAME=johnsonelectricapqp@gmail.com
+MAIL_PASSWORD=diogegrbfewqacfw
 
-3. Levantar los Contenedores:
-Ejecutar Docker Compose en modo "detached" (en segundo plano).
+# Credenciales de Administrador del Sistema
+ADMIN_DEFAULT_PASSWORD=adminpass
+
+# URL Base para enlaces en los correos (Usar el dominio DNS asignado por TI)
+APP_BASE_URL=http://apqp-system.johnsonelectric.local
+(Guardar y salir del editor nano con Ctrl+O, Enter, Ctrl+X).
+
+3. Inicialización de los Servicios:
+Ejecutar Docker Compose para descargar las imágenes, compilar el código Java y levantar los servicios en segundo plano.
 
 Bash
 docker compose up -d --build
-Docker descargará las imágenes, compilará el .jar de Java, levantará PostgreSQL y configurará Nginx automáticamente.
 
-4. Verificar el estado de los servicios:
+4. Verificación de Estado:
+Comprobar que los tres contenedores (PostgreSQL, Spring Boot y Nginx) estén en estado "Up".
 
 Bash
 docker ps
-(Debe mostrar los contenedores de base de datos, backend y proxy corriendo con el status "Up").
+FASE 4: Mantenimiento y Respaldo (Crítico)
+Persistencia de Datos:
+La base de datos PostgreSQL utiliza un "Volumen Nombrado" en Docker para proteger la información contra reinicios o caídas.
 
-Fase 4: Validaciones Post-Despliegue
-Prueba Local: Dentro del servidor, ejecutar curl http://localhost para confirmar que Nginx responde con el HTML del sistema.
-
-Prueba de Red: Desde una computadora de un ingeniero en la planta de México, abrir el navegador e ingresar al dominio interno: http://apqp-system.johnsonelectric.local.
-
-Prueba Inter-Site: Repetir el paso anterior desde una computadora conectada a la red de la planta de Estados Unidos. Ambos usuarios deben ver la pantalla de Login y tu lógica de roles en Spring Boot aislará los datos automáticamente al iniciar sesión.
-
-
-
+ADVERTENCIA: Nunca ejecutar docker compose down -v en este servidor, ya que la bandera -v eliminará los volúmenes físicos de la base de datos de Johnson Electric. Para reiniciar el sistema de forma segura, utilizar únicamente: docker compose restart.

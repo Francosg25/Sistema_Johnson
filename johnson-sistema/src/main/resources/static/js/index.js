@@ -94,11 +94,15 @@ function initializeCharts(data) {
     };
 
     const now = new Date();
-    const prevMesDate = new Date(now.getFullYear(), now.getMonth() - 1, 1);
-    const nextMesDate = new Date(now.getFullYear(), now.getMonth() + 1, 1);
-    
-    const miniLabels = [formatMonthYear(prevMesDate), formatMonthYear(now), formatMonthYear(nextMesDate)];
-    const miniValues = [getChartValue(prevMesDate), getChartValue(now), getChartValue(nextMesDate)];
+    const currentYear = now.getFullYear();
+    const miniLabels = [];
+    const miniValues = [];
+
+    for (let month = 0; month < 12; month++) {
+        const monthDate = new Date(currentYear, month, 1);
+        miniLabels.push(formatMonthYear(monthDate));
+        miniValues.push(getChartValue(monthDate));
+    }
 
     const ctxMini = miniChartEl.getContext('2d');
     const gradientMini = ctxMini.createLinearGradient(0, 0, 0, 250);
