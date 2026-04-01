@@ -5,9 +5,9 @@ import com.johnson.practica.repositorio.UsuarioRepositorio;
 
 import jakarta.transaction.Transactional;
 
+import com.johnson.practica.seguridad.CustomUserDetails;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -30,7 +30,7 @@ public class DetallesUsuarioServicio implements UserDetailsService {
     }
 
     @Override
-    @Transactional 
+    @Transactional
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         logger.info("Intentando cargar usuario por nombre de usuario: {}", username);
         Usuario usuario = usuarioRepositorio.findByUsername(username)
@@ -48,6 +48,16 @@ public class DetallesUsuarioServicio implements UserDetailsService {
                 .collect(Collectors.toSet());
         logger.debug("Roles del usuario {}: {}", usuario.getUsername(), authorities);
 
-        return new User(usuario.getUsername(), usuario.getPassword(), usuario.isEnabled(), true, true, true, authorities);
+        return new CustomUserDetails(
+                usuario.getUsername(), 
+                usuario.getPassword(), 
+                usuario.isEnabled(), 
+                true, 
+                true, 
+                true, 
+                authorities,
+                usuario.getDepartamento(),
+                usuario.getNombreCompleto()
+        );
     }
 }

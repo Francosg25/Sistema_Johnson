@@ -39,7 +39,7 @@
                     </div>
                     <div class="text-start d-none d-sm-block">
                         <div class="fw-bold text-dark lh-1" style="font-size: 0.85rem;" th:text="${#authentication.name}">Username</div>
-                        <div class="text-muted" style="font-size: 0.7rem;">Active User</div>
+                        <div class="text-muted" style="font-size: 0.7rem;" th:text="${#authentication.principal.nombreCompletoDepartamento}">Department</div>
                     </div>
                     <i class="bi bi-chevron-down ms-2 text-muted" style="font-size: 0.7rem;"></i>
                 </button>
@@ -47,7 +47,8 @@
                     <li>
                         <div class="px-3 py-2 border-bottom mb-2">
                             <span class="d-block fw-bold text-dark" style="font-size: 0.85rem;" th:text="${#authentication.name}">Username</span>
-                            <span class="text-muted" style="font-size: 0.7rem;">Account Settings</span>
+                            <span class="d-block text-muted" style="font-size: 0.7rem;" th:text="${#authentication.principal.nombreCompletoDepartamento}">Department</span>
+                            <span class="text-muted" style="font-size: 0.65rem;">Account Settings</span>
                         </div>
                     </li>
                     <li><hr class="dropdown-divider opacity-50"></li>
