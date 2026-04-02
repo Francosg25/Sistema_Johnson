@@ -24,6 +24,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional; 
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -38,6 +39,7 @@ import java.security.Principal;
 import java.time.LocalDate;
 import java.util.HashMap;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
 
 
 @Controller
@@ -66,15 +68,6 @@ public class ProyectoControlador {
         private Map<String, FirmaEtapa> firmas;
     }
 
-    @GetMapping("/")
-    public String index(Model model, HttpServletRequest request) {
-        List<Proyecto> lista = proyectoRepositorio.findByEsHistoricoFalse(); 
-        model.addAttribute("proyectos", lista);
-        model.addAttribute("currentUri", request.getRequestURI());
-        Map<String, Integer> tendencia = checklistReporteServicio.obtenerTendenciaAprobacionesOK();
-        model.addAttribute("tendencia", tendencia);
-        return "index";
-    }
 
     @GetMapping("/checklist/{id}")
     @Transactional(readOnly = true)
@@ -229,42 +222,79 @@ public class ProyectoControlador {
         }
     }
 
+    @GetMapping("/nuevo")
+    public String mostrarFormularioNuevoProyecto(Model model) {
+        model.addAttribute("proyecto", new Proyecto());
+        model.addAttribute("currentUri", "/proyectos");
+        
+        return "proyectos/formulario"; 
+    }
+
+    
+
     @PostMapping("/guardar")
     @PreAuthorize("hasRole('ADMIN')") 
     @CacheEvict(value = "reportes", allEntries = true)
-    public String guardarProyecto(@ModelAttribute Proyecto proyecto, java.security.Principal principal) {
-        String usuario = (principal != null) ? principal.getName() : "System";
-        boolean esNuevo = (proyecto.getId() == null);
-        
-        if (!esNuevo) {
-            Proyecto anterior = proyectoServicio.buscarPorId(proyecto.getId());
-            if (anterior != null) {
-                StringBuilder cambios = new StringBuilder();
-                if (!anterior.getNombre().equals(proyecto.getNombre())) 
-                    cambios.append("Name (").append(anterior.getNombre()).append(" -> ").append(proyecto.getNombre()).append("). ");
-                if (!anterior.getNumeroParte().equals(proyecto.getNumeroParte()))
-                    cambios.append("P/N (").append(anterior.getNumeroParte()).append(" -> ").append(proyecto.getNumeroParte()).append("). ");
-                if (!anterior.getCliente().equals(proyecto.getCliente()))
-                    cambios.append("Customer (").append(anterior.getCliente()).append(" -> ").append(proyecto.getCliente()).append("). ");
-                
-                if (cambios.length() > 0) {
-                    bitacoraServicio.registrarAccion(usuario, "UPDATE PROJECT", 
-                        "Project modified: " + anterior.getNombre() + ". Changes: " + cambios.toString());
+    @Transactional
+    public String guardarProyecto(@ModelAttribute Proyecto proyecto, Authentication auth, RedirectAttributes redirectAttributes) {
+        try {
+            String usuarioLogueado = (auth != null) ? auth.getName() : "System";
+            boolean esNuevo = (proyecto.getId() == null);
+            
+            if (!esNuevo) {
+                Proyecto anterior = proyectoServicio.buscarPorId(proyecto.getId());
+                if (anterior != null) {
+                    StringBuilder cambios = new StringBuilder();
+                    if (anterior.getNombre() != null && !anterior.getNombre().equals(proyecto.getNombre())) 
+                        cambios.append("Name (").append(anterior.getNombre()).append(" -> ").append(proyecto.getNombre()).append("). ");
+                    if (anterior.getNumeroParte() != null && !anterior.getNumeroParte().equals(proyecto.getNumeroParte()))
+                        cambios.append("P/N (").append(anterior.getNumeroParte()).append(" -> ").append(proyecto.getNumeroParte()).append("). ");
+                    if (anterior.getCliente() != null && !anterior.getCliente().equals(proyecto.getCliente()))
+                        cambios.append("Customer (").append(anterior.getCliente()).append(" -> ").append(proyecto.getCliente()).append("). ");
+                    
+                    if (cambios.length() > 0) {
+                        bitacoraServicio.registrarAccion(usuarioLogueado, "UPDATE PROJECT", 
+                            "Project modified: " + anterior.getNombre() + ". Changes: " + cambios.toString());
+                    }
                 }
             }
+
+            Proyecto proyectoGuardado = proyectoServicio.guardarProyecto(proyecto);
+            
+            if (esNuevo) {
+                String titulo = "New Project APQP";
+                String msj = "The portfolio has been initialized for the project: " + proyectoGuardado.getNombre();
+                String url = "/proyectos/checklist/" + proyectoGuardado.getId();
+                notificacionServicio.alertarATodos(titulo, msj, "SUCCESS", url, usuarioLogueado);
+                redirectAttributes.addFlashAttribute("mensaje", "Project created successfully.");
+            } else {
+                redirectAttributes.addFlashAttribute("mensaje", "Project updated successfully.");
+            }
+            
+            return "redirect:/";
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("error", "Error saving project: " + e.getMessage());
+            return "redirect:/";
+        }
+    }
+
+    @GetMapping("/editar/{id}")
+    public String mostrarFormularioEditar(@PathVariable Long id, Model model) {
+        // Buscamos el proyecto real en la base de datos
+        Proyecto proyecto = proyectoServicio.buscarPorId(id);
+    
+        if (proyecto == null) {
+            return "redirect:/"; // Si no existe, regresamos al Dashboard
         }
 
-        Proyecto proyectoGuardado = proyectoServicio.guardarProyecto(proyecto);
-        
-        if (esNuevo) {
-            String titulo = "New Project APQP";
-            String msj = "The portfolio has been initialized for the project: " + proyectoGuardado.getNombre();
-            String url = "/proyectos/checklist/" + proyectoGuardado.getId();
-            notificacionServicio.alertarATodos(titulo, msj, "SUCCESS", url, usuario);
-        }
-        
-        return "redirect:/";
-    }
+        // Pasamos el proyecto encontrado al modelo
+        model.addAttribute("proyecto", proyecto);
+    
+        // Pasamos la URI para que el sidebar no explote
+        model.addAttribute("currentUri", "/proyectos");
+    
+        return "proyectos/formulario";
+}
 
     @GetMapping("/eliminar/{id}")
     @PreAuthorize("hasRole('ADMIN')")
@@ -280,7 +310,7 @@ public class ProyectoControlador {
     @PreAuthorize("hasRole('ADMIN')")
     @CacheEvict(value = "reportes", allEntries = true) 
     @Transactional
-    public String archivarProyecto(@PathVariable Long id, org.springframework.web.servlet.mvc.support.RedirectAttributes redirectAttributes, Principal principal) {
+    public String archivarProyecto(@PathVariable Long id, RedirectAttributes redirectAttributes, Principal principal) {
         Proyecto proyecto = proyectoServicio.buscarPorId(id);
         if (proyecto != null) {
             String usuario = (principal != null) ? principal.getName() : "System";
@@ -293,9 +323,9 @@ public class ProyectoControlador {
             
             notificacionServicio.alertarATodos("Project Archived", 
                 "The project " + proyecto.getNombre() + " has been moved to the historical vault.", 
-                "SUCCESS", "/proyectos/vault", "System");
+                "SUCCESS", "/proyectos/vault", usuario);
                 
-            redirectAttributes.addFlashAttribute("mensajeExito", "Project moved to Historical Vault. Evidence remains accessible there.");
+            redirectAttributes.addFlashAttribute("mensaje", "Project moved to Historical Vault. Evidence remains accessible there.");
         }
         return "redirect:/proyectos/vault";
     }

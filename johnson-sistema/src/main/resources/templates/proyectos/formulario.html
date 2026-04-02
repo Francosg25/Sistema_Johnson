@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <div th:replace="~{fragments/head :: head}"></div>
+    <title>Project Form | Johnson Electric</title>
+    
+    <style>
+        .form-card {
+            border: none;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            transition: all 0.3s ease;
+        }
+        .form-card:hover {
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+        .card-header-je {
+            background-color: var(--je-dark, #1e293b);
+            color: white;
+            border-radius: 12px 12px 0 0 !important;
+            padding: 1rem 1.5rem;
+        }
+    </style>
+</head>
+
+<body class="bg-light">
+    <div class="bg-blob blob-1"></div>
+    <div class="bg-blob blob-2"></div>
+
+    <div class="d-flex" id="wrapper">
+        
+        <div id="sidebar-wrapper">
+            <div th:replace="~{fragments/sidebar :: sidebar(currentUri=${currentUri})}"></div>
+        </div>
+
+        <div id="page-content-wrapper" class="w-100">
+            
+            <div th:replace="~{fragments/header :: header}"></div>
+
+            <main class="container-fluid px-4 py-4">
+                
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h4 class="fw-bold text-dark mb-0">
+                        <span th:text="${proyecto.id == null ? 'New APQP Project' : 'Edit APQP Project'}">Project</span>
+                    </h4>
+                    <a th:href="@{/}" class="btn btn-outline-secondary rounded-pill px-4 fw-bold shadow-sm">
+                        <i class="bi bi-arrow-left me-2"></i>Back to Dashboard
+                    </a>
+                </div>
+
+                <form th:action="@{/proyectos/guardar}" th:object="${proyecto}" method="post">
+                    <input type="hidden" th:field="*{id}">
+
+                    <div class="row">
+                        <div class="col-xl-6 mb-4">
+                            <div class="card form-card h-100">
+                                <div class="card-header card-header-je">
+                                    <h5 class="mb-0 fw-bold"><i class="bi bi-info-circle me-2 text-warning"></i>Product Identification</h5>
+                                </div>
+                                <div class="card-body p-4">
+                                    <div class="mb-3">
+                                        <label class="form-label fw-bold text-secondary">Project Name</label>
+                                        <input type="text" th:field="*{nombre}" class="form-control" placeholder="Ej. Dahlia Valve Stellantis" required>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-6 mb-3">
+                                            <label class="form-label text-secondary">Part Number</label>
+                                            <input type="text" th:field="*{numeroParte}" class="form-control" placeholder="Ej. 1722-EJB0033">
+                                        </div>
+                                        <div class="col-md-6 mb-3">
+                                            <label class="form-label text-secondary">Customer</label>
+                                            <input type="text" th:field="*{cliente}" class="form-control" placeholder="Ej. Stellantis">
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-6 mb-3">
+                                            <label class="form-label fw-bold" style="color: var(--je-orange, #F5821F);">Application</label>
+                                            <input type="text" th:field="*{aplicacion}" class="form-control" placeholder="Ej. AS">
+                                        </div>
+                                        <div class="col-md-6 mb-3">
+                                            <label class="form-label fw-bold" style="color: var(--je-orange, #F5821F);">Line</label>
+                                            <input type="text" th:field="*{linea}" class="form-control" placeholder="Ej. Dahlia Valve">
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-6 mb-3">
+                                            <label class="form-label text-secondary">Product</label>
+                                            <input type="text" th:field="*{producto}" class="form-control">
+                                        </div>
+                                        <div class="col-md-6 mb-3">
+                                            <label class="form-label text-secondary">Revision Reason</label>
+                                            <input type="text" th:field="*{razonRevision}" class="form-control" placeholder="Ej. Nuevo proyecto">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-xl-6 mb-4">
+                            <div class="card form-card h-100">
+                                <div class="card-header card-header-je">
+                                    <h5 class="mb-0 fw-bold"><i class="bi bi-calendar-event me-2 text-warning"></i>Critical Milestones & Team</h5>
+                                </div>
+                                <div class="card-body p-4">
+                                    <div class="row">
+                                        <div class="col-md-6 mb-3">
+                                            <label class="form-label text-secondary">Start Date</label>
+                                            <input type="date" th:field="*{fechaInicio}" class="form-control">
+                                        </div>
+                                        <div class="col-md-6 mb-3">
+                                            <label class="form-label fw-bold" style="color: var(--je-orange, #F5821F);">PPAP Date</label>
+                                            <input type="date" th:field="*{fechaPpap}" class="form-control">
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-6 mb-3">
+                                            <label class="form-label text-secondary">SOP Date</label>
+                                            <input type="date" th:field="*{sop}" class="form-control">
+                                        </div>
+                                        <div class="col-md-6 mb-3">
+                                            <label class="form-label fw-bold" style="color: var(--je-orange, #F5821F);">Safe Launch Finish Date</label>
+                                            <input type="date" th:field="*{fechaTerminoSafeLaunch}" class="form-control">
+                                        </div>
+                                    </div>
+                                    
+                                    <hr class="my-4 text-muted">
+                                    
+                                    <div class="mb-3">
+                                        <label class="form-label fw-bold text-secondary">Program Manager <span class="badge bg-light text-dark ms-2 fw-normal border">F7100 Standard</span></label>
+                                        <input type="text" th:field="*{programManager}" class="form-control" placeholder="Nombre del PM">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card form-card mb-4" style="border-top: 4px solid var(--je-orange, #F5821F);">
+                        <div class="card-body p-4">
+                            <label class="form-label fw-bold text-dark"><i class="bi bi-card-text me-2"></i>Remarks / Observaciones</label>
+                            <textarea th:field="*{observaciones}" class="form-control bg-light" rows="3" placeholder="Escribe aquí cualquier observación relevante para el proyecto..."></textarea>
+                        </div>
+                    </div>
+
+                    <div class="d-flex justify-content-end mb-5">
+                        <a th:href="@{/proyectos}" class="btn btn-light px-4 py-2 me-3 fw-bold border shadow-sm">Cancel</a>
+                        <button type="submit" class="btn btn-primary px-5 py-2 fw-bold shadow" style="background-color: var(--je-orange, #F5821F); border-color: var(--je-orange, #F5821F);">
+                            <i class="bi bi-save me-2"></i> Save Project
+                        </button>
+                    </div>
+                </form>
+                
+            </main>
+        </div>
+    </div>
+</body>
+</html>

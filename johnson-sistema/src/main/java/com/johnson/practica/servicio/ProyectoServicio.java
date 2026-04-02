@@ -8,6 +8,10 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import java.util.Map;
+import java.util.HashMap;
+import java.util.ArrayList;
+import java.util.List;
 
 import java.util.List;
 
@@ -122,4 +126,40 @@ public class ProyectoServicio {
         // Borramos el proyecto
         proyectoRepositorio.deleteById(id);
     }
+
+    public Map<String, Object> obtenerTendenciaProyectos() {
+        Map<String, Object> data = new HashMap<>();
+        data.put("meses", List.of("Ene", "Feb", "Mar", "Abr", "May", "Jun"));
+        data.put("nuevos", List.of(2, 4, 3, 5, 2, 4)); 
+        data.put("completados", List.of(0, 1, 2, 1, 3, 2)); 
+        return data;
+    }
+
+    public List<Map<String, Object>> obtenerEventosCalendario() {
+        List<Map<String, Object>> eventos = new ArrayList<>();
+        List<Proyecto> proyectos = proyectoRepositorio.findAll();
+
+        for (Proyecto p : proyectos) {
+            if (p.getFechaInicio() != null) {
+                Map<String, Object> eventoInicio = new HashMap<>();
+                eventoInicio.put("title", "Start: " + p.getNombre());
+                eventoInicio.put("start", p.getFechaInicio().toString());
+                eventoInicio.put("color", "#1e293b"); 
+                eventoInicio.put("url", "/proyectos/editar/" + p.getId());
+                eventos.add(eventoInicio);
+            }
+            
+            if (p.getSop() != null) {
+                Map<String, Object> eventoSop = new HashMap<>();
+                eventoSop.put("title", "SOP: " + p.getNombre());
+                eventoSop.put("start", p.getSop().toString());
+                eventoSop.put("color", "#F5821F"); 
+                eventoSop.put("url", "/proyectos/editar/" + p.getId());
+                eventos.add(eventoSop);
+            }
+        }
+        return eventos;
+    }
+
+
 }

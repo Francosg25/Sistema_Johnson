@@ -43,6 +43,22 @@ public class Proyecto {
     private String financeManager;
     private String hrManager;
 
+  
+    private String aplicacion;
+    private String linea;
+    private String producto;
+    private String razonRevision;
+    private String programManager;
+
+    @Column(columnDefinition = "TEXT")
+    private String observaciones;
+
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
+    private LocalDate fechaPpap;
+
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
+    private LocalDate fechaTerminoSafeLaunch;
+
     private LocalDate fechaCar;
     private LocalDate fechaBuyoff;
     private LocalDate fechaTransit;
@@ -51,6 +67,7 @@ public class Proyecto {
     @Column(name = "es_historico")
     private boolean esHistorico = false; 
 
+    // ... (Mantén tus getters y setters manuales que ya tenías abajo)
     public boolean getEsHistorico() { return esHistorico; }
     public void setEsHistorico(boolean esHistorico) { this.esHistorico = esHistorico; }
 
@@ -65,8 +82,6 @@ public class Proyecto {
 
     public LocalDate getFechaSop() { return fechaSop; }
     public void setFechaSop(LocalDate fechaSop) { this.fechaSop = fechaSop; }
-
-
 
     @OneToMany(mappedBy = "proyecto", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonIgnore
