@@ -37,3 +37,8 @@ uploads/
 *.log 
 *.sql
 src/main/resources/application.properties
+postgres_data
+evidencias
+backups
+.git
+certs
