@@ -41,7 +41,7 @@ app:
       - ./evidencias:/app/evidencias
     restart: always
 
-  nginx:
+nginx:
     image: nginx:alpine
     container_name: johnson_nginx
     depends_on:
