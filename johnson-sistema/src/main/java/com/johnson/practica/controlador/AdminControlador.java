@@ -17,10 +17,14 @@ public class AdminControlador {
 
     private final UsuarioServicio usuarioServicio;
     private final com.johnson.practica.servicio.BitacoraServicio bitacoraServicio;
+    private final com.johnson.practica.servicio.EmailServicio emailServicio;
 
-    public AdminControlador(UsuarioServicio usuarioServicio, com.johnson.practica.servicio.BitacoraServicio bitacoraServicio) {
+    public AdminControlador(UsuarioServicio usuarioServicio, 
+                            com.johnson.practica.servicio.BitacoraServicio bitacoraServicio,
+                            com.johnson.practica.servicio.EmailServicio emailServicio) {
         this.usuarioServicio = usuarioServicio;
         this.bitacoraServicio = bitacoraServicio;
+        this.emailServicio = emailServicio;
     }
 
     @GetMapping("/usuarios")
@@ -35,15 +39,16 @@ public class AdminControlador {
                                @RequestParam String correo, 
                                @RequestParam String nombre,
                                @RequestParam String rol, 
-                               @RequestParam String departamento, 
+                               @RequestParam String departamento,
+                               @RequestParam(defaultValue = "false") boolean esManager,
                                RedirectAttributes redirectAttributes,
                                java.security.Principal principal) {
         try {
-            usuarioServicio.crearUsuarioConRol(username, correo, nombre, rol, departamento);
+            usuarioServicio.crearUsuarioConRol(username, correo, nombre, rol, departamento, esManager);
             
             String admin = (principal != null) ? principal.getName() : "System";
             bitacoraServicio.registrarAccion(admin, "CREATE USER", 
-                "New user created: " + username + " (" + nombre + ") with role " + rol);
+                "New user created: " + username + " (" + nombre + ") with role " + rol + (esManager ? " [MANAGER]" : ""));
 
             redirectAttributes.addFlashAttribute("mensaje", "User created successfully. An invitation email has been sent.");
         } catch (Exception e) {
@@ -58,14 +63,15 @@ public class AdminControlador {
                                 @RequestParam String correo,
                                 @RequestParam String rol,
                                 @RequestParam String departamento,
+                                @RequestParam(defaultValue = "false") boolean esManager,
                                 RedirectAttributes redirectAttributes,
                                 java.security.Principal principal) {
         try {
-            usuarioServicio.editarUsuario(id, nombre, correo, rol, departamento);
+            usuarioServicio.editarUsuario(id, nombre, correo, rol, departamento, esManager);
 
             String admin = (principal != null) ? principal.getName() : "System";
             bitacoraServicio.registrarAccion(admin, "UPDATE USER", 
-                "User updated: ID " + id + " (" + nombre + ")");
+                "User updated: ID " + id + " (" + nombre + ")" + (esManager ? " [MANAGER]" : ""));
 
             redirectAttributes.addFlashAttribute("mensaje", "User updated successfully.");
         } catch (Exception e) {
@@ -100,6 +106,7 @@ public class AdminControlador {
                     data.put("username", u.getUsername());
                     data.put("correo", u.getCorreo());
                     data.put("departamento", u.getDepartamento());
+                    data.put("esManager", u.isEsManager());
                     data.put("rol", u.getRoles().iterator().next().getNombre());
                     return org.springframework.http.ResponseEntity.ok(data);
                 })
@@ -118,5 +125,20 @@ public class AdminControlador {
             redirectAttributes.addFlashAttribute("error", "Error deleting user: " + e.getMessage());
         }
         return "redirect:/admin/usuarios";
+    }
+
+    @PostMapping("/usuarios/test-email")
+    @org.springframework.web.bind.annotation.ResponseBody
+    public org.springframework.http.ResponseEntity<?> probarEmail(@RequestParam String email, java.security.Principal principal) {
+        try {
+            String admin = (principal != null) ? principal.getName() : "System";
+            bitacoraServicio.registrarAccion(admin, "SMTP TEST", "Manual SMTP connection test triggered for: " + email);
+            
+            emailServicio.probarConexionSmtp(email);
+            
+            return org.springframework.http.ResponseEntity.ok(java.util.Map.of("exito", true, "mensaje", "Test email sent successfully to " + email));
+        } catch (Exception e) {
+            return org.springframework.http.ResponseEntity.badRequest().body(java.util.Map.of("exito", false, "mensaje", "SMTP Error: " + e.getMessage()));
+        }
     }
 }

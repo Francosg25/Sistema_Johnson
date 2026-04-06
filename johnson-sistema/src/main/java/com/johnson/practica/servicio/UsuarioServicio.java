@@ -71,7 +71,7 @@ public class UsuarioServicio {
     }
 
     @Transactional
-    public void crearUsuarioConRol(String username, String correo, String nombreCompleto, String nombreRol, String departamento) throws Exception {
+    public void crearUsuarioConRol(String username, String correo, String nombreCompleto, String nombreRol, String departamento, boolean esManager) throws Exception {
         if (buscarPorUsername(username).isPresent()) {
             throw new Exception("The username '" + username + "' is already in use.");
         }
@@ -86,6 +86,7 @@ public class UsuarioServicio {
         usuario.setCorreo(correo);
         usuario.setNombreCompleto(nombreCompleto);
         usuario.setDepartamento(departamento); 
+        usuario.setEsManager(esManager);
         usuario.setPassword(passwordEncoder.encode(tempPass));
         usuario.setPasswordChanged(false); 
         usuario.setEnabled(true);
@@ -102,7 +103,7 @@ public class UsuarioServicio {
     }
 
     @Transactional
-    public void editarUsuario(Long id, String nombreCompleto, String correo, String nombreRol, String departamento) throws Exception {
+    public void editarUsuario(Long id, String nombreCompleto, String correo, String nombreRol, String departamento, boolean esManager) throws Exception {
         Usuario usuario = usuarioRepositorio.findById(id)
                 .orElseThrow(() -> new Exception("User not found"));
 
@@ -115,6 +116,7 @@ public class UsuarioServicio {
         usuario.setNombreCompleto(nombreCompleto);
         usuario.setCorreo(correo);
         usuario.setDepartamento(departamento);
+        usuario.setEsManager(esManager);
 
         Rol rolSeleccionado = obtenerOCrearRol(nombreRol);
 

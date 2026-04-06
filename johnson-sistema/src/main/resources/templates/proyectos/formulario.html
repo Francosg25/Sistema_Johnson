@@ -60,36 +60,36 @@
                                 <div class="card-body p-4">
                                     <div class="mb-3">
                                         <label class="form-label fw-bold text-secondary">Project Name</label>
-                                        <input type="text" th:field="*{nombre}" class="form-control" placeholder="Ej. Dahlia Valve Stellantis" required>
+                                        <input type="text" th:field="*{nombre}" class="form-control" placeholder="e.g. Dahlia Valve Stellantis" required>
                                     </div>
                                     <div class="row">
                                         <div class="col-md-6 mb-3">
                                             <label class="form-label text-secondary">Part Number</label>
-                                            <input type="text" th:field="*{numeroParte}" class="form-control" placeholder="Ej. 1722-EJB0033">
+                                            <input type="text" th:field="*{numeroParte}" class="form-control" placeholder="e.g. 1722-EJB0033">
                                         </div>
                                         <div class="col-md-6 mb-3">
                                             <label class="form-label text-secondary">Customer</label>
-                                            <input type="text" th:field="*{cliente}" class="form-control" placeholder="Ej. Stellantis">
+                                            <input type="text" th:field="*{cliente}" class="form-control" placeholder="e.g. Stellantis">
                                         </div>
                                     </div>
                                     <div class="row">
                                         <div class="col-md-6 mb-3">
                                             <label class="form-label fw-bold" style="color: var(--je-orange, #F5821F);">Application</label>
-                                            <input type="text" th:field="*{aplicacion}" class="form-control" placeholder="Ej. AS">
+                                            <input type="text" th:field="*{aplicacion}" class="form-control" placeholder="e.g. AS">
                                         </div>
                                         <div class="col-md-6 mb-3">
                                             <label class="form-label fw-bold" style="color: var(--je-orange, #F5821F);">Line</label>
-                                            <input type="text" th:field="*{linea}" class="form-control" placeholder="Ej. Dahlia Valve">
+                                            <input type="text" th:field="*{linea}" class="form-control" placeholder="e.g. Dahlia Valve">
                                         </div>
                                     </div>
                                     <div class="row">
                                         <div class="col-md-6 mb-3">
                                             <label class="form-label text-secondary">Product</label>
-                                            <input type="text" th:field="*{producto}" class="form-control">
+                                            <input type="text" th:field="*{producto}" class="form-control" placeholder="e.g. Electric Motor">
                                         </div>
                                         <div class="col-md-6 mb-3">
                                             <label class="form-label text-secondary">Revision Reason</label>
-                                            <input type="text" th:field="*{razonRevision}" class="form-control" placeholder="Ej. Nuevo proyecto">
+                                            <input type="text" th:field="*{razonRevision}" class="form-control" placeholder="e.g. New Project">
                                         </div>
                                     </div>
                                 </div>
@@ -127,17 +127,10 @@
                                     
                                     <div class="mb-3">
                                         <label class="form-label fw-bold text-secondary">Program Manager <span class="badge bg-light text-dark ms-2 fw-normal border">F7100 Standard</span></label>
-                                        <input type="text" th:field="*{programManager}" class="form-control" placeholder="Nombre del PM">
+                                        <input type="text" th:field="*{programManager}" class="form-control" placeholder="PM Name">
                                     </div>
                                 </div>
                             </div>
-                        </div>
-                    </div>
-
-                    <div class="card form-card mb-4" style="border-top: 4px solid var(--je-orange, #F5821F);">
-                        <div class="card-body p-4">
-                            <label class="form-label fw-bold text-dark"><i class="bi bi-card-text me-2"></i>Remarks / Observaciones</label>
-                            <textarea th:field="*{observaciones}" class="form-control bg-light" rows="3" placeholder="Escribe aquí cualquier observación relevante para el proyecto..."></textarea>
                         </div>
                     </div>
 

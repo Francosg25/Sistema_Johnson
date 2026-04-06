@@ -134,24 +134,40 @@ public class ProyectoControlador {
                     .anyMatch(r -> r.getNombre().equals("ROLE_ADMIN"));
 
             if (!esAdmin) {
-                // Mapeo simple de Puesto -> Departamento
+                // 2a. Check if it's a manager-only gate (3, 4, 5)
+                if (etapa >= 3 && etapa <= 5) {
+                    if (!usuario.isEsManager()) {
+                        response.put("exito", false);
+                        response.put("mensaje", "❌ Only Managers can sign off on Gates 3, 4, and 5. Please contact your department manager.");
+                        return response;
+                    }
+                }
+
+                // 2b. Mapeo simple de Puesto -> Departamento
                 String deptoRequerido = "";
                 String r = rol.toUpperCase();
                 
                 if (r.contains("QUALITY")) deptoRequerido = "QE";
-                else if (r.contains("PROCESS")) deptoRequerido = "PE";
-                else if (r.contains("PROJECT")) deptoRequerido = "PROJ";
-                else if (r.contains("OPERATIONS")) deptoRequerido = "OPS";
-                else if (r.contains("FINANCE")) deptoRequerido = "FIN";
+                else if (r.contains("PROCESS") || r.contains("PE")) deptoRequerido = "PE";
+                else if (r.contains("PROGRAM") || r.contains("PM")) deptoRequerido = "PM";
+                else if (r.contains("PROJECT") || r.contains("PROJ")) deptoRequerido = "PROJ";
+                else if (r.contains("OPERATIONS") || r.contains("OPS")) deptoRequerido = "OPS";
+                else if (r.contains("FINANCE") || r.contains("FIN")) deptoRequerido = "FIN";
                 else if (r.contains("HR") || r.contains("HUMAN")) deptoRequerido = "HR";
-                else if (r.contains("MATERIALS")) deptoRequerido = "MAT";
+                else if (r.contains("MATERIALS") || r.contains("MAT")) deptoRequerido = "MAT";
                 else if (r.contains("SCS") || r.contains("SUPPLY")) deptoRequerido = "SCS";
-                else if (r.contains("DESIGN")) deptoRequerido = "DE";
+                else if (r.contains("DESIGN") || r.contains("DE")) deptoRequerido = "DE";
 
                 // Validar si el departamento del usuario coincide
                 String deptoUsuario = (usuario.getDepartamento() != null) ? usuario.getDepartamento().toUpperCase() : "";
                 
-                if (!deptoUsuario.equals(deptoRequerido) && !deptoUsuario.equals("ALL")) {
+                // Flexible project department check
+                boolean deptoValido = deptoUsuario.equals(deptoRequerido) || deptoUsuario.equals("ALL");
+                if (!deptoValido && deptoRequerido.equals("PROJ")) {
+                    deptoValido = deptoUsuario.equals("PROJ_LEAD") || deptoUsuario.equals("PM");
+                }
+                
+                if (!deptoValido) {
                     response.put("exito", false);
                     response.put("mensaje", "❌ No perteneces al departamento de " + deptoRequerido + ". Solo personal de esta área puede firmar como " + rol + ".");
                     return response;

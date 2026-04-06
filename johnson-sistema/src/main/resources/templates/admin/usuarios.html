@@ -43,9 +43,14 @@
                                 <h3 class="fw-bold text-dark mb-1">User Management</h3>
                                 <p class="text-muted small mb-0">Administer system access and user roles</p>
                             </div>
-                            <button type="button" class="btn btn-primary-johnson shadow-sm fw-bold px-4 rounded-pill" data-bs-toggle="modal" data-bs-target="#modalCrearUsuario">
-                                <i class="bi bi-person-plus-fill me-2"></i> Register New User
-                            </button>
+                            <div class="d-flex gap-2">
+                                <button type="button" class="btn btn-outline-secondary shadow-sm fw-bold px-4 rounded-pill" onclick="testEmailConnection()">
+                                    <i class="bi bi-envelope-at me-2"></i> Test SMTP
+                                </button>
+                                <button type="button" class="btn btn-primary-johnson shadow-sm fw-bold px-4 rounded-pill" data-bs-toggle="modal" data-bs-target="#modalCrearUsuario">
+                                    <i class="bi bi-person-plus-fill me-2"></i> Register New User
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -77,6 +82,7 @@
                                         <th>Username</th>
                                         <th>Department</th>
                                         <th>Role</th>
+                                        <th>Manager</th>
                                         <th>Status</th>
                                         <th class="pe-4 text-end">Actions</th>
                                     </tr>
@@ -88,7 +94,10 @@
                                             <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center fw-bold me-3" style="width: 35px; height: 35px; font-size: 0.8rem;">
                                                 <span th:text="${(user.nombreCompleto != null and !user.nombreCompleto.empty) ? #strings.substring(user.nombreCompleto, 0, 1).toUpperCase() : 'U'}">U</span>
                                             </div>
-                                            <span class="fw-bold text-dark" th:text="${user.nombreCompleto != null ? user.nombreCompleto : 'Administrador'}">Nombre</span>
+                                            <div>
+                                                <span class="fw-bold text-dark d-block" th:text="${user.nombreCompleto != null ? user.nombreCompleto : 'Administrador'}">Nombre</span>
+                                                <span th:if="${user.esManager}" class="badge bg-warning text-dark x-small py-0 px-1" style="font-size: 0.65rem;">MANAGER</span>
+                                            </div>
                                         </div>
                                     </td>
                                     <td>
@@ -104,6 +113,9 @@
                                                   th:classappend="${rol.nombre == 'ROLE_ADMIN' ? 'bg-danger' : (rol.nombre == 'ROLE_CHAMPION' ? 'bg-primary' : 'bg-secondary')}"
                                                   th:text="${#strings.replace(rol.nombre, 'ROLE_', '')}">ROL</span>
                                         </th:block>
+                                    </td>
+                                    <td>
+                                        <i th:class="${user.esManager ? 'bi bi-check-circle-fill text-success' : 'bi bi-dash-circle text-muted'}" style="font-size: 1.1rem;"></i>
                                     </td>
                                     <td>
                                         <div class="form-check form-switch">
@@ -176,13 +188,24 @@
                                     <option value="DE">DE (Design)</option>
                                     <option value="QE">QE (Quality)</option>
                                     <option value="PE">PE (Process)</option>
-                                    <option value="PROJ">PROJ (Project)</option>
+                                    <option value="PROJ">PROJ (Project Engineer)</option>
+                                    <option value="PROJ_LEAD">PROJ_LEAD (Project Leader)</option>
+                                    <option value="PM">PM (Program Manager)</option>
                                     <option value="SCS">SCS (Supply)</option>
                                     <option value="FIN">FIN (Finance)</option>
                                     <option value="OPS">OPS (Operations)</option>
                                     <option value="HR">HR (Human Res.)</option>
                                     <option value="MAT">MAT (Materials)</option>
                                 </select>
+                            </div>
+                            <div class="col-12">
+                                <div class="form-check form-switch p-3 bg-light rounded-3 border">
+                                    <input class="form-check-input ms-0 me-3" type="checkbox" name="esManager" id="crearEsManager">
+                                    <label class="form-check-label fw-bold text-dark" for="crearEsManager">
+                                        <i class="bi bi-shield-check me-1 text-primary"></i> Manager Privileges
+                                    </label>
+                                    <div class="small text-muted mt-1 ms-4">Allows signing off on project gates (3, 4, 5).</div>
+                                </div>
                             </div>
                         </div>
                         <div class="mt-4 p-3 bg-light rounded-3">
@@ -240,13 +263,24 @@
                                     <option value="DE">DE (Design)</option>
                                     <option value="QE">QE (Quality)</option>
                                     <option value="PE">PE (Process)</option>
-                                    <option value="PROJ">PROJ (Project)</option>
+                                    <option value="PROJ">PROJ (Project Engineer)</option>
+                                    <option value="PROJ_LEAD">PROJ_LEAD (Project Leader)</option>
+                                    <option value="PM">PM (Program Manager)</option>
                                     <option value="SCS">SCS (Supply)</option>
                                     <option value="FIN">FIN (Finance)</option>
                                     <option value="OPS">OPS (Operations)</option>
                                     <option value="HR">HR (Human Res.)</option>
                                     <option value="MAT">MAT (Materials)</option>
                                 </select>
+                            </div>
+                            <div class="col-12">
+                                <div class="form-check form-switch p-3 bg-light rounded-3 border">
+                                    <input class="form-check-input ms-0 me-3" type="checkbox" name="esManager" id="editEsManager">
+                                    <label class="form-check-label fw-bold text-dark" for="editEsManager">
+                                        <i class="bi bi-shield-check me-1 text-primary"></i> Manager Privileges
+                                    </label>
+                                    <div class="small text-muted mt-1 ms-4">Allows signing off on project gates (3, 4, 5).</div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -272,6 +306,59 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     <script>
+        async function testEmailConnection() {
+            const { value: email } = await Swal.fire({
+                title: 'SMTP Connection Test',
+                input: 'email',
+                inputLabel: 'Enter an email to receive the test message',
+                inputPlaceholder: 'your-email@johnsonelectric.com',
+                showCancelButton: true,
+                confirmButtonText: 'Send Test',
+                confirmButtonColor: '#F5821F'
+            });
+
+            if (email) {
+                Swal.fire({
+                    title: 'Sending...',
+                    text: 'Connecting to SMTP server, please wait.',
+                    allowOutsideClick: false,
+                    didOpen: () => {
+                        Swal.showLoading();
+                    }
+                });
+
+                try {
+                    const formData = new FormData();
+                    formData.append('email', email);
+
+                    const response = await fetch('/admin/usuarios/test-email', {
+                        method: 'POST',
+                        body: formData
+                    });
+
+                    const result = await response.json();
+
+                    if (result.exito) {
+                        Swal.fire({
+                            title: 'Success!',
+                            text: result.mensaje,
+                            icon: 'success',
+                            confirmButtonColor: '#198754'
+                        });
+                    } else {
+                        Swal.fire({
+                            title: 'SMTP Error',
+                            text: result.mensaje,
+                            icon: 'error',
+                            confirmButtonColor: '#dc3545'
+                        });
+                    }
+                } catch (error) {
+                    Swal.fire('Error', 'Communication error with the server: ' + error.message, 'error');
+                }
+            }
+        }
+
         function toggleStatus(id) {
             document.getElementById('toggleStatusId').value = id;
             document.getElementById('formToggleStatus').submit();
@@ -316,6 +403,9 @@
                 
                 const deptoSelect = document.getElementById('editUserDepto');
                 deptoSelect.value = data.departamento || 'ALL';
+
+                const esManagerCheckbox = document.getElementById('editEsManager');
+                esManagerCheckbox.checked = data.esManager || false;
                 
                 const modal = new bootstrap.Modal(document.getElementById('modalEditarUsuario'));
                 modal.show();

@@ -179,12 +179,18 @@ public class EmailServicio {
 
     @Async
     public void enviarCorreoBienvenida(Usuario destinatario, String passwordTemporal) {
-        Context context = new Context();
-        context.setVariable("usuario", destinatario);
-        context.setVariable("password", passwordTemporal); 
-        context.setVariable("appUrl", appBaseUrl);
-        
-        enviarHtml(destinatario.getCorreo(), "Welcome to the APQP System", "email/nuevo-usuario", context);
+        try {
+            Context context = new Context();
+            context.setVariable("usuario", destinatario);
+            context.setVariable("password", passwordTemporal); 
+            context.setVariable("appUrl", appBaseUrl);
+            
+            enviarHtml(destinatario.getCorreo(), "Welcome to the APQP System", "email/nuevo-usuario", context);
+            System.out.println("✅ Welcome email sent successfully to: " + destinatario.getCorreo());
+        } catch (Exception e) {
+            System.err.println("❌ FAILED to send welcome email to: " + destinatario.getCorreo() + ". Reason: " + e.getMessage());
+            e.printStackTrace();
+        }
     }
 
     @Async
@@ -216,6 +222,21 @@ public class EmailServicio {
         } catch (Exception e) {
             System.err.println("❌ Error enviando alerta de proyecto a: " + destinatario.getCorreo() + ". Detalle: " + e.getMessage());
         }
+    }
+
+    /**
+     * SINCRO: Para probar la conexión SMTP en tiempo real desde el panel de admin.
+     */
+    public void probarConexionSmtp(String destinatario) throws Exception {
+        MimeMessage message = mailSender.createMimeMessage();
+        MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
+        
+        helper.setFrom(mailFrom, displayName);
+        helper.setTo(destinatario);
+        helper.setSubject("SMTP Connection Test - APQP System");
+        helper.setText("If you are reading this, the SMTP connection for the Johnson APQP System is working correctly.\n\nSent at: " + java.time.LocalDateTime.now());
+        
+        mailSender.send(message);
     }
 
 

@@ -51,4 +51,7 @@ public class Usuario {
     @Column(name = "departamento")
     private String departamento;
 
+    @Column(name = "es_manager")
+    private boolean esManager = false;
+
 }
