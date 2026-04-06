@@ -236,6 +236,7 @@ body {
     transform: scale(1.01); 
 }
 
+.champ-pm { background-color: #fff3e0 !important; color: #ef6c00 !important; }
 .champ-qe { background-color: #dcfce7 !important; color: #166534 !important; } 
 .champ-de { background-color: #dbeafe !important; color: #1e40af !important; } 
 .champ-pe { background-color: #fef9c3 !important; color: #854d0e !important; } 

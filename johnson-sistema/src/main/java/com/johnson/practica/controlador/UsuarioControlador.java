@@ -53,7 +53,7 @@ public class UsuarioControlador {
         if (!newPassword.equals(confirmPassword)) {
             redirectAttributes.addFlashAttribute("error", "Passwords do not match.");
             return "redirect:/cambiar-password";
-        }
+        }                           
 
         if (newPassword.length() < 8) {
             redirectAttributes.addFlashAttribute("error", "The password must be at least 8 characters long.");

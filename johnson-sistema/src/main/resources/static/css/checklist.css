@@ -166,6 +166,7 @@
 
         .badge { padding: 0.4em 0.6em; border-radius: 6px; font-weight: 700; letter-spacing: 0.02em; }
         
+        .champ-pm { background-color: #fff3e0; color: #ef6c00; border: 1px solid #ffe0b2; }
         .champ-qe { background-color: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
         .champ-de { background-color: #cce5ff; color: #004085; border: 1px solid #b8daff; }
         .champ-pe { background-color: #fff3cd; color: #856404; border: 1px solid #ffeeba; }

@@ -98,7 +98,7 @@ public class WeeklyDigestServicio {
 
             System.out.println("▶️ Proyecto: " + proyecto.getNombre() + " | Retrasadas: " + retrasadas.size() + " | Próximas: " + proximas.size());
 
-            // Filtro 1: Si no hay tareas, se salta el proyecto
+            // Si no hay tareas, se salta el proyecto
             if (retrasadas.isEmpty() && proximas.isEmpty()) {
                 System.out.println("   -> Omitido: Todo al día.");
                 continue;
@@ -107,12 +107,12 @@ public class WeeklyDigestServicio {
             int correosEnviados = 0;
 
             for (Usuario usuario : todosLosUsuarios) {
-                // Filtro 2: Usuario deshabilitado o sin correo
+                // Usuario deshabilitado o sin correo
                 if (!usuario.isEnabled() || usuario.getCorreo() == null) {
                     continue;
                 }
 
-                // Filtro 3: Validación de Rol y Departamento (usamos trim() para quitar espacios accidentales)
+                // Validación de Rol y Departamento (usamos trim() para quitar espacios accidentales)
                 boolean esAdmin = usuario.getRoles().stream()
                         .anyMatch(r -> r.getNombre().toUpperCase().contains("ADMIN"));
 

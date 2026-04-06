@@ -168,7 +168,7 @@ public class ExcelServicio {
                         .filter(e -> e.getProyecto().getId().equals(proyecto.getId()))
                         .collect(Collectors.toList());
 
-                // 1. FILA DEL PROYECTO
+                // FILA DEL PROYECTO
                 Row projRow = sheet.createRow(rowIndex); projRow.setHeightInPoints(25);
                 Cell projCell = projRow.createCell(0);
                 projCell.setCellValue("📁 " + proyecto.getNombre() + " (" + proyecto.getNumeroParte() + ")");
@@ -196,7 +196,7 @@ public class ExcelServicio {
 
                 if (itemsProyecto.isEmpty()) continue;
 
-                // 2. FASES Y ENTREGABLES
+                // FASES Y ENTREGABLES
                 Map<String, List<ElementoChecklist>> itemsPorEtapa = itemsProyecto.stream()
                         .filter(e -> e.getEtapaVisual() != null)
                         .collect(Collectors.groupingBy(ElementoChecklist::getEtapaVisual));

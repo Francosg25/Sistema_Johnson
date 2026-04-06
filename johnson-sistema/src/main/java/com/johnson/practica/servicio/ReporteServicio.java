@@ -38,13 +38,13 @@ public class ReporteServicio {
                 .filter(e -> e.getFase() != null && e.getFase().startsWith("0"))
                 .collect(Collectors.toList());
         
-        // --- 1. DATOS PARA ESTATUS GLOBAL ---
+        // DATOS PARA ESTATUS GLOBAL 
         long okCount = entregablesPrograma.stream().filter(e -> "OK".equalsIgnoreCase(e.getScore())).count();
         long actionCount = entregablesPrograma.stream().filter(e -> "NEEDS ACTION".equalsIgnoreCase(e.getScore())).count();
         long pendingCount = entregablesPrograma.size() - okCount - actionCount;
         double progreso = entregablesPrograma.isEmpty() ? 0 : (okCount * 100.0) / entregablesPrograma.size();
 
-        // --- 2. DATOS PARA PROGRESO POR ETAPA (CASCADA) ---
+        //  DATOS PARA PROGRESO POR ETAPA 
         Map<String, Double> progresoEtapas = new java.util.LinkedHashMap<>();
         String[] etapas = {"STAGE 1", "STAGE 2", "STAGE 3", "STAGE 4", "STAGE 5"};
         for (String etapa : etapas) {
@@ -53,14 +53,14 @@ public class ReporteServicio {
             progresoEtapas.put(etapa, totalE == 0 ? 0 : Math.round((okE * 100.0) / totalE * 10.0) / 10.0);
         }
 
-        // DATOS PARA HEALTH TASK (DONA)
+        // DATOS PARA HEALTH TASK 
         long onTimeCount = entregablesPrograma.stream().filter(e -> "Closed on time".equalsIgnoreCase(e.getControlEntregable())).count();
         long lateCount = entregablesPrograma.stream().filter(e -> "Closed late".equalsIgnoreCase(e.getControlEntregable())).count();
         long needsActionCount = entregablesPrograma.stream().filter(e -> "NEEDS ACTION".equalsIgnoreCase(e.getControlEntregable())).count();
         long decisionCount = entregablesPrograma.stream().filter(e -> "DECISION".equalsIgnoreCase(e.getControlEntregable())).count();
         long unassignedCount = entregablesPrograma.size() - onTimeCount - lateCount - needsActionCount - decisionCount;
 
-        // --- 4. DATOS PARA RIESGO (LÓGICA ORIGINAL DE CHECKLIST SERVICIO) ---
+        // DATOS PARA RIESGO 
         double riesgoScore = 0.0;
         List<ElementoChecklist> preSop = todosLosEntregables.stream()
                 .filter(e -> e.getEtapaVisual() != null && !e.getEtapaVisual().toUpperCase().contains("STAGE 5"))
@@ -108,7 +108,7 @@ public class ReporteServicio {
         agregarHito(roadmapHitos, "SOP", "🏁", proyecto.getFechaSop(), yearActual);
 
         
-        // 1. GENERAL APQP STATUS (Texto incrustado nativamente)
+        // GENERAL APQP STATUS 
         String gEstatus = descargarGraficaBase64("{"
             + "type:'doughnut',"
             + "data:{"
@@ -134,7 +134,7 @@ public class ReporteServicio {
             + "}"
         + "}", 400, 250);       
 
-        // 2. PROGRESO POR ETAPA (CASCADA)
+        // PROGRESO POR ETAPA 
         String labelsEtapas = "['STAGE 1','STAGE 2','STAGE 3','STAGE 4','STAGE 5']";
         String dataEtapas = progresoEtapas.values().toString();
         String gEtapas = descargarGraficaBase64("{"
@@ -163,7 +163,7 @@ public class ReporteServicio {
             + "}"
         + "}", 400, 250); 
                
-        // 3. HEALTH TASK DISTRIBUTION 
+        // HEALTH TASK DISTRIBUTION 
         String gHealth = descargarGraficaBase64("{"
             + "type:'doughnut',"
             + "data:{"
@@ -188,7 +188,7 @@ public class ReporteServicio {
             + "}"
         + "}", 400, 250);
 
-        // 4. RISK METER (Media luna perfecta)
+        // RISK METER
         String riskColor = roundedRisk >= 50 ? "#ef4444" : (roundedRisk >= 20 ? "#f59e0b" : "#10b981");
         String gRisk = descargarGraficaBase64("{"
             + "type:'doughnut',"

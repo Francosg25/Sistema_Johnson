@@ -172,6 +172,7 @@ public class ChecklistServicio {
         String c = champ.trim().toUpperCase();
         
         if (c.equals("DE") || c.contains("DESIGN ENGINEER") || c.contains("PRODUCT ENGINEER")) return "DE";
+        if (c.equals("PM") || c.contains("PROGRAM MANAGER")) return "PM";
         if (c.equals("QE") || c.contains("QUALITY ENGINEER")) return "QE";
         if (c.equals("PE") || c.contains("PROCESS ENGINEER") || c.contains("MANUFACTURING")) return "PE";
         if (c.equals("PROJ") || c.contains("PROJECT ENGINEER") || c.contains("PROJECT MANAGER") || c.equals("PROJECT LEADER")) return "PROJ";
@@ -191,6 +192,7 @@ public class ChecklistServicio {
     public String obtenerNombreCompletoChampion(String sigla) {
         if (sigla == null) return "Unknown";
         return switch (sigla.toUpperCase()) {
+            case "PM" -> "Program Manager";
             case "DE" -> "Design / Product Engineer";
             case "QE" -> "Quality Engineer";
             case "PE" -> "Process / Manufacturing Engineer";

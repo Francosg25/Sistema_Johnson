@@ -224,9 +224,6 @@ public class EmailServicio {
         }
     }
 
-    /**
-     * SINCRO: Para probar la conexión SMTP en tiempo real desde el panel de admin.
-     */
     public void probarConexionSmtp(String destinatario) throws Exception {
         MimeMessage message = mailSender.createMimeMessage();
         MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");

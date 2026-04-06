@@ -27,7 +27,6 @@ public class ProyectoServicio {
     @Autowired
     private CatalogoElementoRepositorio catalogoRepositorio;
 
-    // Solo declaramos el repositorio UNA vez (borré la duplicada 'checklistRepositorio')
     @Autowired
     private ElementoChecklistRepositorio elementoRepositorio;
 

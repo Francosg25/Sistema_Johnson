@@ -66,6 +66,7 @@ html, body {
 
 .avatar-initial { width: 44px; height: 44px; display:inline-flex; align-items:center; justify-content:center; border-radius:8px; }
 
+.champ-pm       { background-color: #fff3e0; color: #ef6c00; }
 .champ-proj     { background-color: #cce5ff; color: #004085; } 
 .champ-de       { background-color: #e2e3e5; color: #383d41; } 
 .champ-qe       { background-color: #f8d7da; color: #721c24; } 

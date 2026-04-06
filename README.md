@@ -133,7 +133,7 @@ DB_PASSWORD=johnsonbase2026
 
 # Configuración de Servidor de Correos (Alertas y Notificaciones)
 MAIL_USERNAME=johnsonelectricapqp@gmail.com
-MAIL_PASSWORD=diogegrbfewqacfw
+MAIL_PASSWORD=jviahxfgodjajgnp
 
 # Credenciales de Administrador del Sistema
 ADMIN_DEFAULT_PASSWORD=adminpass

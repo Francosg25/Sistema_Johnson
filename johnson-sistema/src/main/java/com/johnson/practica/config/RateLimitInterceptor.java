@@ -16,10 +16,10 @@ import java.util.concurrent.ConcurrentHashMap;
 @Component
 public class RateLimitInterceptor implements HandlerInterceptor {
 
-    // Almacena un "bucket" por cada IP (ideal para entornos locales)
+    // Almacena un "bucket" por cada IP
     private final Map<String, Bucket> cache = new ConcurrentHashMap<>();
 
-    // Definimos el límite: 20 peticiones por minuto (puedes ajustarlo)
+    
     private Bucket createNewBucket() {
         Bandwidth limit = Bandwidth.classic(20, Refill.greedy(20, Duration.ofMinutes(1)));
         return Bucket.builder()

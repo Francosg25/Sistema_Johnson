@@ -40,15 +40,15 @@ public class ChecklistSemilla {
 
     private void cargarProgramaAPQP(CatalogoElementoRepositorio repo) {
         List<CatalogoElemento> programa = Arrays.asList(
-            // --- STAGE 1 --
-            crearE("1.1", "PROJ",    "STAGE 1", "CFT Planning and Definition"),
-            crearE("1.2", "PROJ", "STAGE 1", "Project Scope Definition"),
-            crearE("1.3", "PROJ", "STAGE 1", "Establish 'Team to Team' meetings"),
-            crearE("1.4", "PROJ",   "STAGE 1", "Training (Identify training needs)"),
+            //STAGE 1 
+            crearE("1.1", "PM",    "STAGE 1", "CFT Planning and Definition"),
+            crearE("1.2", "PM", "STAGE 1", "Project Scope Definition"),
+            crearE("1.3", "PM", "STAGE 1", "Establish 'Team to Team' meetings"),
+            crearE("1.4", "PM",   "STAGE 1", "Training (Identify training needs)"),
             crearE("1.5", "ALL",                       "STAGE 1", "Concerns/Issues Resolution"),
-            crearE("1.6", "PROJ", "STAGE 1", "Timeline / Gantt"),
+            crearE("1.6", "PM", "STAGE 1", "Timeline / Gantt"),
 
-            // --- STAGE 2 ---
+            // STAGE 2 
             crearE("P-01", "PROJ",   "STAGE 2", "Cross-Functional Team / CFT (JE Global and internal):"),
             crearE("P-02", "DE",     "STAGE 2", "DFMEA:"),
             crearE("P-03", "DE",     "STAGE 2", "Preliminary BOM:"),
@@ -60,7 +60,7 @@ public class ChecklistSemilla {
             crearE("P-09", "DE",     "STAGE 2", "Design Validation Report / DV Report"),
             crearE("P-10", "QE",     "STAGE 2", "Preliminary Customer Characteristics List:"),
 
-            // --- STAGE 3 ---
+            //STAGE 3 
             crearE("P-11", "QE",     "STAGE 3", "01.- Packaging Specifications"),
             crearE("P-12", "PE",     "STAGE 3", "01.- Packaging Specifications"), 
             crearE("P-13", "QE",     "STAGE 3", "02.- QMS Changes for product manufacturing"),
@@ -76,7 +76,7 @@ public class ChecklistSemilla {
             crearE("P-23", "QE",     "STAGE 3", "11.- Meeting Minutes"), 
             crearE("P-24", "PROJ",   "STAGE 3", "Stage Revision (line in Mexico):"),
 
-            // --- STAGE 4 ---
+            //  STAGE 4 
             crearE("P-25", "PROJ",   "STAGE 4", "12.- Pilot Run"),
             crearE("P-26", "QE",     "STAGE 4", "13.- MSA"),
             crearE("P-27", "QE/PE",  "STAGE 4", "14.- Preliminary SPC"),
@@ -87,7 +87,7 @@ public class ChecklistSemilla {
             crearE("P-32", "PE",     "STAGE 4", "04.- Floor plan layout"), 
             crearE("P-33", "PROJ",   "STAGE 4", "19.- Sign-OFF"),
 
-            // --- STAGE 5 ---
+            //  STAGE 5 
             crearE("P-34", "QE/PE",  "STAGE 5", "20.- Reduced Variation"),
             crearE("P-35", "QE",     "STAGE 5", "21.- Improve customer satisfaction"),
             crearE("P-36", "QE",     "STAGE 5", "22.- Improved delivery and service"),
@@ -97,7 +97,7 @@ public class ChecklistSemilla {
         repo.saveAll(programa);
     }
 
-    // --- STAGE 2
+    //  STAGE 2
     private void cargarStage2(CatalogoElementoRepositorio repo) {
         List<CatalogoElemento> stage2 = Arrays.asList(
             crearDetalle("S2-01", "Is a completed CFT available?", "2. Stage 2", "Preliminary information", "Project Engineer"),
@@ -145,7 +145,7 @@ public class ChecklistSemilla {
         repo.saveAll(gate);
     }
 
-    // --- HELPERS ---
+    //  HELPERS 
     private CatalogoElemento crearE(String cod, String champ, String etapa, String nom) {
         CatalogoElemento e = new CatalogoElemento();
         e.setCodigo(cod);

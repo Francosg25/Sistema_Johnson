@@ -83,6 +83,19 @@ public class Proyecto {
     public LocalDate getFechaSop() { return fechaSop; }
     public void setFechaSop(LocalDate fechaSop) { this.fechaSop = fechaSop; }
 
+    public String getAplicacion() {return aplicacion; }
+    public void setAplicacion (String aplicacion) {this.aplicacion = aplicacion;}
+
+    public String getLinea() {return linea; }
+    public void setLinea (String linea) {this.linea = linea;}
+
+     public String getProducto() {return producto; }
+    public void setProducto (String producto) {this.producto = producto;}
+    
+     public String getRazonRevision() {return razonRevision; }
+    public void setRazonRevision (String razonRevision) {this.razonRevision = razonRevision;}
+
+
     @OneToMany(mappedBy = "proyecto", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonIgnore
     private List<ElementoChecklist> checklist = new ArrayList<>();
