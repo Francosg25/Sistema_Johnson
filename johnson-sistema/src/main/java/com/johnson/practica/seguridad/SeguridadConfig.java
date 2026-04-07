@@ -12,6 +12,8 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 import org.springframework.security.web.SecurityFilterChain;
 
 import com.johnson.practica.servicio.DetallesUsuarioServicio;
+import com.johnson.practica.config.RateLimitingFilter;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 
 @Configuration
@@ -20,14 +22,17 @@ import com.johnson.practica.servicio.DetallesUsuarioServicio;
 public class SeguridadConfig {
 
     private final DetallesUsuarioServicio detallesUsuarioServicio;
+    private final RateLimitingFilter rateLimitingFilter;
 
-    public SeguridadConfig(DetallesUsuarioServicio detallesUsuarioServicio) {
+    public SeguridadConfig(DetallesUsuarioServicio detallesUsuarioServicio, RateLimitingFilter rateLimitingFilter) {
         this.detallesUsuarioServicio = detallesUsuarioServicio;
+        this.rateLimitingFilter = rateLimitingFilter;
     }
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
+            .addFilterBefore(rateLimitingFilter, UsernamePasswordAuthenticationFilter.class)
             .authorizeHttpRequests(authorize -> authorize
                 .requestMatchers("/css/**", "/js/**", "/images/**", "/login", "/cambiar-password", "/olvido-password", "/recuperar-password").permitAll()
                 .requestMatchers("/admin/**").hasRole("ADMIN")
@@ -43,6 +48,10 @@ public class SeguridadConfig {
                 .logoutUrl("/logout")
                 .logoutSuccessUrl("/login?logout")
                 .permitAll()
+            )
+            .sessionManagement(session -> session
+                .maximumSessions(1)
+                .expiredUrl("/login?expired")
             )
             .headers(headers -> headers
                 .frameOptions(frame -> frame.sameOrigin())

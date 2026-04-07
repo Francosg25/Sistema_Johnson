@@ -121,7 +121,7 @@ public class ReporteServicio {
             + "},"
             + "options:{"
                 + "cutoutPercentage: 75,"
-                + "legend:{position:'bottom', labels:{boxWidth:10, fontSize:11}},"
+                + "legend:{position:'bottom', labels:{boxWidth:20, fontSize:22}},"
                 + "plugins:{"
                     + "datalabels:{display:false},"
                     + "doughnutlabel:{"
@@ -132,7 +132,7 @@ public class ReporteServicio {
                     + "}"
                 + "}"
             + "}"
-        + "}", 400, 250);       
+        + "}", 600, 400);       
 
         // PROGRESO POR ETAPA 
         String labelsEtapas = "['STAGE 1','STAGE 2','STAGE 3','STAGE 4','STAGE 5']";
@@ -176,7 +176,7 @@ public class ReporteServicio {
             + "},"
             + "options:{"
                 + "cutoutPercentage: 70,"
-                + "legend:{position:'right', labels:{boxWidth:10, fontSize:10}},"
+                + "legend:{position:'right', labels:{boxWidth:10, fontSize:15}},"
                 + "plugins:{"
                     + "datalabels:{display:false},"
                     + "doughnutlabel:{"
