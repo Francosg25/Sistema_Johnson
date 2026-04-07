@@ -32,8 +32,8 @@ public class RateLimitingFilter implements Filter {
 
         String path = httpRequest.getRequestURI();
         
-        // Aplicamos rate limiting solo a rutas sensibles
-        if (path.startsWith("/login") || path.startsWith("/recuperar-password") || path.startsWith("/olvido-password")) {
+        // Aplicamos rate limiting solo a rutas de autenticación críticas
+        if (path.equals("/login") || path.equals("/recuperar-password") || path.equals("/olvido-password")) {
             String ip = getClientIP(httpRequest);
             Bucket bucket = buckets.computeIfAbsent(ip, this::createNewBucket);
 
@@ -42,7 +42,7 @@ public class RateLimitingFilter implements Filter {
             } else {
                 httpResponse.setStatus(429); // Too Many Requests
                 httpResponse.setContentType("text/plain");
-                httpResponse.getWriter().write("Too many requests. Please try again later.");
+                httpResponse.getWriter().write("Too many login attempts. Please wait a minute.");
             }
         } else {
             chain.doFilter(request, response);
@@ -50,9 +50,9 @@ public class RateLimitingFilter implements Filter {
     }
 
     private Bucket createNewBucket(String key) {
-        // Permitimos 5 peticiones cada 10 minutos para rutas sensibles
+        // Permitimos 15 peticiones cada 1 minuto (más razonable para evitar falsos positivos)
         return Bucket.builder()
-                .addLimit(Bandwidth.classic(5, Refill.greedy(5, Duration.ofMinutes(10))))
+                .addLimit(Bandwidth.classic(15, Refill.greedy(15, Duration.ofMinutes(1))))
                 .build();
     }
 

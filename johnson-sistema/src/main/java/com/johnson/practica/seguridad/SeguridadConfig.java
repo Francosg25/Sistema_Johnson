@@ -34,7 +34,7 @@ public class SeguridadConfig {
         http
             .addFilterBefore(rateLimitingFilter, UsernamePasswordAuthenticationFilter.class)
             .authorizeHttpRequests(authorize -> authorize
-                .requestMatchers("/css/**", "/js/**", "/images/**", "/login", "/cambiar-password", "/olvido-password", "/recuperar-password").permitAll()
+                .requestMatchers("/css/**", "/js/**", "/images/**", "/favicon.ico", "/login", "/cambiar-password", "/olvido-password", "/recuperar-password").permitAll()
                 .requestMatchers("/admin/**").hasRole("ADMIN")
                 .requestMatchers("/bitacora/eliminar/**", "/evidencias/eliminar/**").hasAnyRole("ADMIN", "CHAMPION")
                 .anyRequest().authenticated()

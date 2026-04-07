@@ -246,7 +246,7 @@
                     let url = this.getAttribute('action'); 
                     let itemId = this.getAttribute('data-item-id'); 
                     let formData = new FormData(this);     
-                    let btnSubmit = this.querySelector('.btn-subir');
+                    let btnSubmit = this.querySelector('button[type="submit"]');
                     let originalText = btnSubmit.innerHTML;
                     
                     let alertaDiv = document.getElementById('alerta-' + itemId);
@@ -767,3 +767,70 @@ function mostrarNotificacionError(mensaje) {
         setTimeout(() => toast.remove(), 1000);
     }, 5000);
 }
+
+document.addEventListener("DOMContentLoaded", function() {
+    
+    // Seleccionar todas las zonas de drop en los modales
+    const dropZones = document.querySelectorAll('.drop-zone');
+
+    dropZones.forEach(zone => {
+        const fileInput = zone.querySelector('.file-input');
+        const form = zone.closest('form');
+        const itemId = form.getAttribute('data-item-id');
+        const displayContainer = document.getElementById('file-name-display-' + itemId);
+        const nameText = displayContainer.querySelector('.file-name-text');
+
+        // Evitar comportamientos por defecto del navegador (abrir el archivo en otra pestaña)
+        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+            zone.addEventListener(eventName, preventDefaults, false);
+        });
+
+        function preventDefaults(e) {
+            e.preventDefault();
+            e.stopPropagation();
+        }
+
+        // Cambiar estilos visuales cuando el archivo sobrevuela la zona
+        ['dragenter', 'dragover'].forEach(eventName => {
+            zone.addEventListener(eventName, () => {
+                zone.classList.remove('bg-light', 'border-opacity-25');
+                zone.classList.add('bg-white', 'border-opacity-100', 'shadow-sm');
+                zone.style.transform = 'scale(1.02)';
+            }, false);
+        });
+
+        ['dragleave', 'drop'].forEach(eventName => {
+            zone.addEventListener(eventName, () => {
+                zone.classList.add('bg-light', 'border-opacity-25');
+                zone.classList.remove('bg-white', 'border-opacity-100', 'shadow-sm');
+                zone.style.transform = 'scale(1)';
+            }, false);
+        });
+
+        // Manejar el evento "Drop" (Soltar)
+        zone.addEventListener('drop', (e) => {
+            const dt = e.dataTransfer;
+            const files = dt.files;
+
+            if (files.length > 0) {
+                // Asignar los archivos soltados al input file original
+                fileInput.files = files;
+                actualizarNombreArchivo(files[0].name);
+            }
+        }, false);
+
+        // Manejar la selección normal por clic
+        fileInput.addEventListener('change', function() {
+            if (this.files.length > 0) {
+                actualizarNombreArchivo(this.files[0].name);
+            }
+        });
+
+        // Función auxiliar para mostrar el nombre en pantalla
+        function actualizarNombreArchivo(nombre) {
+            nameText.textContent = nombre;
+            displayContainer.classList.remove('d-none');
+            displayContainer.classList.add('animate__animated', 'animate__fadeIn');
+        }
+    });
+});

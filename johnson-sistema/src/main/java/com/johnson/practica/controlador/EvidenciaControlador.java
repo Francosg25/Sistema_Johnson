@@ -37,6 +37,9 @@ public class EvidenciaControlador {
     @Autowired
     private com.johnson.practica.servicio.NotificacionServicio notificacionServicio;
 
+    @Autowired
+    private com.johnson.practica.servicio.BitacoraServicio bitacoraServicio;
+
 
     @PostMapping("/subir/{itemId}")
     @PreAuthorize("hasAnyRole('ADMIN', 'CHAMPION')") 
@@ -67,6 +70,9 @@ public class EvidenciaControlador {
             adjuntoRepositorio.save(adjunto);
             
             String autor = (principal != null) ? principal.getName() : "Sistema";
+            bitacoraServicio.registrarAccion(autor, "UPLOAD EVIDENCE", 
+                "Uploaded: " + adjunto.getNombreArchivo() + " for '" + item.getNombre() + "' in " + item.getProyecto().getNombre());
+            
             notificacionServicio.alertarATodos(
                 "New Evidence Uploaded",
                 autor + " uploaded evidence for '" + item.getNombre() + "' in " + item.getProyecto().getNombre(),
@@ -115,6 +121,9 @@ public class EvidenciaControlador {
             adjuntoRepositorio.save(adjunto);
 
             String autor = (principal != null) ? principal.getName() : "Sistema";
+            bitacoraServicio.registrarAccion(autor, "UPLOAD EVIDENCE", 
+                "Uploaded: " + adjunto.getNombreArchivo() + " for '" + item.getNombre() + "' in " + item.getProyecto().getNombre());
+            
             notificacionServicio.alertarATodos(
                 "New Evidence Uploaded",
                 autor + " uploaded evidence for '" + item.getNombre() + "' in " + item.getProyecto().getNombre(),
@@ -174,11 +183,22 @@ public class EvidenciaControlador {
     @PostMapping("/eliminar-ajax/{adjuntoId}")
     @ResponseBody
     @PreAuthorize("hasAnyRole('ADMIN', 'CHAMPION')") 
-    public ResponseEntity<Map<String, Object>> eliminarEvidenciaAjax(@PathVariable Long adjuntoId) {
+    public ResponseEntity<Map<String, Object>> eliminarEvidenciaAjax(@PathVariable Long adjuntoId, java.security.Principal principal) {
         Map<String, Object> response = new HashMap<>();
         try {
             Adjunto adjunto = adjuntoRepositorio.findById(adjuntoId).orElse(null);
             if (adjunto != null) {
+                String autor = (principal != null) ? principal.getName() : "Sistema";
+                String detalle = "Deleted: " + adjunto.getNombreArchivo();
+                if (adjunto.getElementoChecklist() != null) {
+                    detalle += " from '" + adjunto.getElementoChecklist().getNombre() + "'";
+                }
+                if (adjunto.getProyecto() != null) {
+                    detalle += " in project " + adjunto.getProyecto().getNombre();
+                }
+                
+                bitacoraServicio.registrarAccion(autor, "DELETE EVIDENCE", detalle);
+                
                 adjuntoRepositorio.delete(adjunto); 
                 response.put("exito", true);
                 return ResponseEntity.ok(response);
