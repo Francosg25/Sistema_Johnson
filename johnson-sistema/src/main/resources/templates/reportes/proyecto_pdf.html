@@ -224,6 +224,40 @@
         </tr>
     </table>
 
+    <div class="section-title">Project Details</div>
+    <table class="data-table" style="margin-bottom: 15px;">
+        <tr>
+            <td style="width: 20%; background-color: #f8f9fa; font-weight: bold;">Customer:</td>
+            <td style="width: 30%;" th:text="${proyecto.cliente ?: '-'}"></td>
+            <td style="width: 20%; background-color: #f8f9fa; font-weight: bold;">Program Manager:</td>
+            <td style="width: 30%;" th:text="${proyecto.programManager ?: '-'}"></td>
+        </tr>
+        <tr>
+            <td style="background-color: #f8f9fa; font-weight: bold;">Application:</td>
+            <td th:text="${proyecto.aplicacion ?: '-'}"></td>
+            <td style="background-color: #f8f9fa; font-weight: bold;">Line:</td>
+            <td th:text="${proyecto.linea ?: '-'}"></td>
+        </tr>
+        <tr>
+            <td style="background-color: #f8f9fa; font-weight: bold;">Product:</td>
+            <td th:text="${proyecto.producto ?: '-'}"></td>
+            <td style="background-color: #f8f9fa; font-weight: bold;">Revision Reason:</td>
+            <td th:text="${proyecto.razonRevision ?: '-'}"></td>
+        </tr>
+        <tr>
+            <td style="background-color: #f8f9fa; font-weight: bold;">Start Date:</td>
+            <td th:text="${proyecto.fechaInicio != null ? #temporals.format(proyecto.fechaInicio, 'MMM dd, yyyy') : '-'}"></td>
+            <td style="background-color: #f8f9fa; font-weight: bold;">SOP Date:</td>
+            <td th:text="${proyecto.sop != null ? #temporals.format(proyecto.sop, 'MMM dd, yyyy') : '-'}"></td>
+        </tr>
+        <tr>
+            <td style="background-color: #f8f9fa; font-weight: bold;">PPAP Date:</td>
+            <td th:text="${proyecto.fechaPpap != null ? #temporals.format(proyecto.fechaPpap, 'MMM dd, yyyy') : '-'}"></td>
+            <td style="background-color: #f8f9fa; font-weight: bold;">Safe Launch End:</td>
+            <td th:text="${proyecto.fechaTerminoSafeLaunch != null ? #temporals.format(proyecto.fechaTerminoSafeLaunch, 'MMM dd, yyyy') : '-'}"></td>
+        </tr>
+    </table>
+
     <div class="section-title">Executive Roadmap 2026</div>
     <div class="roadmap-wrapper">
         <table class="month-table">
