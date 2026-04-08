@@ -1,322 +1,556 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout}">
 <head>
-    <div th:replace="~{fragments/head :: head}"></div>
+    <title>Master Timeline - Sistema Johnson</title>
     
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
-    
-    <link href="https://unpkg.com/vis-timeline@latest/styles/vis-timeline-graph2d.min.css" rel="stylesheet" type="text/css" />
-    <script src="https://unpkg.com/vis-timeline@latest/standalone/umd/vis-timeline-graph2d.min.js"></script>
+    <th:block layout:fragment="custom-css">
+        <link href="https://unpkg.com/vis-timeline@latest/styles/vis-timeline-graph2d.min.css" rel="stylesheet" type="text/css" />
+        <style>
+            :root {
+                --premium-blue: #1e293b;
+                --premium-orange: #F5821F;
+                --premium-bg: #f8fafc;
+                --premium-card-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.04), 0 8px 10px -6px rgba(0, 0, 0, 0.04);
+                --premium-hover-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+            }
 
-    <link rel="stylesheet" th:href="@{/css/timeline.css}" />
+            .kpi-mini-card {
+                border: none !important;
+                border-radius: 20px !important;
+                box-shadow: var(--premium-card-shadow);
+                transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+                background: white;
+                padding: 1.5rem !important;
+                height: 100%;
+            }
+            .kpi-mini-card:hover {
+                transform: translateY(-5px);
+                box-shadow: var(--premium-hover-shadow);
+            }
+            .kpi-mini-icon {
+                width: 48px !important;
+                height: 48px !important;
+                border-radius: 14px !important;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 1.25rem !important;
+            }
+            .icon-green { background: #ecfdf5; color: #10b981; }
+            .icon-blue { background: #eff6ff; color: #3b82f6; }
+            .icon-orange { background: #fff7ed; color: #f59e0b; }
+            .icon-red { background: #fef2f2; color: #ef4444; }
+
+            /* Status Badge Utilities */
+            .badge-soft-blue { background: #eff6ff !important; color: #3b82f6 !important; border: 1px solid #dbeafe !important; }
+            .badge-soft-red { background: #fef2f2 !important; color: #ef4444 !important; border: 1px solid #fee2e2 !important; }
+            .badge-soft-green { background: #ecfdf5 !important; color: #10b981 !important; border: 1px solid #d1fae5 !important; }
+
+            .glass-card {
+                background: white !important;
+                border: 1px solid rgba(226, 232, 240, 0.8) !important;
+                border-radius: 24px !important;
+                box-shadow: var(--premium-card-shadow) !important;
+                overflow: hidden;
+            }
+            .glass-header {
+                background: #fff !important;
+                border-bottom: 1px solid #f1f5f9 !important;
+                padding: 1.5rem 1.75rem !important;
+            }
+            .glass-header h6 {
+                color: var(--premium-blue) !important;
+                font-size: 1.15rem !important;
+                font-weight: 800 !important;
+                letter-spacing: -0.02em !important;
+            }
+
+            .btn-je-primary {
+                background: var(--premium-orange) !important;
+                border-radius: 12px !important;
+                padding: 0.6rem 1.5rem !important;
+                font-weight: 700 !important;
+                color: white !important;
+                border: none !important;
+                transition: all 0.3s ease !important;
+            }
+            .btn-je-primary:hover {
+                transform: translateY(-2px) !important;
+                box-shadow: 0 8px 20px rgba(245, 130, 31, 0.3) !important;
+                background: #e67616 !important;
+                color: white !important;
+            }
+
+            /* Vis Timeline Customization */
+            #visualization {
+                border: none;
+                background: #fff;
+            }
+            .vis-item {
+                border-radius: 6px !important;
+                font-family: 'Inter', sans-serif !important;
+                font-weight: 600 !important;
+                font-size: 11px !important;
+                border: none !important;
+                box-shadow: 0 2px 4px rgba(0,0,0,0.05) !important;
+            }
+            
+            /* Diamond styling for Milestones */
+            .vis-item.vis-point[class*="hito-"] {
+                background-color: transparent !important;
+                border: none !important;
+                box-shadow: none !important;
+            }
+            
+            .vis-item.vis-point[class*="hito-"] .vis-item-content {
+                margin-left: 20px !important;
+            }
+
+            .vis-item.vis-point[class*="hito-"] .vis-dot {
+                border: none !important;
+                background-color: transparent !important;
+                width: 12px !important;
+                height: 12px !important;
+                top: 0 !important;
+            }
+
+            .vis-item.vis-point[class*="hito-"] .vis-dot::before {
+                content: '';
+                position: absolute;
+                width: 12px;
+                height: 12px;
+                background-color: inherit;
+                transform: rotate(45deg);
+                border: 2px solid #fff;
+                box-shadow: 0 0 0 1px rgba(0,0,0,0.1);
+                left: -6px;
+                top: -6px;
+            }
+
+            .hito-completado .vis-dot::before { background-color: #10b981 !important; }
+            .hito-atrasado .vis-dot::before { background-color: #ef4444 !important; }
+            .hito-pendiente .vis-dot::before { background-color: #3b82f6 !important; }
+
+            .vis-item.vis-selected {
+                background-color: var(--premium-orange) !important;
+                color: white !important;
+            }
+            .vis-time-axis .vis-text {
+                font-size: 11px !important;
+                font-weight: 700 !important;
+                color: #64748b !important;
+                text-transform: uppercase !important;
+            }
+            .vis-group {
+                border-bottom: 1px solid #f1f5f9 !important;
+            }
+            .vis-label {
+                font-weight: 700 !important;
+                color: var(--premium-blue) !important;
+                font-size: 12px !important;
+            }
+
+            .status-key-box {
+                background: white;
+                padding: 0.75rem 1.25rem;
+                border-radius: 16px;
+                border: 1px solid #f1f5f9;
+                box-shadow: var(--premium-card-shadow);
+                display: flex;
+                align-items: center;
+                gap: 1.5rem;
+            }
+            
+            .filter-container {
+                background: white;
+                padding: 0.5rem 1rem;
+                border-radius: 16px;
+                border: 1px solid #f1f5f9;
+                box-shadow: var(--premium-card-shadow);
+                display: flex;
+                align-items: center;
+                gap: 1rem;
+            }
+
+            .premium-title-section {
+                margin-bottom: 2.5rem;
+            }
+            .premium-title-section h3 {
+                font-weight: 900;
+                letter-spacing: -0.04em;
+                color: var(--premium-blue);
+                margin: 0;
+            }
+        </style>
+    </th:block>
 </head>
-</head>
-<body class="bg-light">
-    <div class="bg-blob blob-1"></div>
-    <div class="bg-blob blob-2"></div>
+<body>
 
-    <div class="d-flex" id="wrapper">
-        <div id="sidebar-wrapper"><div th:replace="~{fragments/sidebar :: sidebar(currentUri='/timeline')}"></div></div>
-
-        <div id="page-content-wrapper" class="w-100">
-            <div th:replace="~{fragments/header :: header}"></div>
-
-            <main class="container-fluid p-4">
-                
-                <div class="d-flex justify-content-between align-items-center mb-4">
-                    <div>
-                        <h4 class="fw-bold text-dark mb-1"><i class="bi bi-calendar3-range text-primary me-2"></i>Master Timeline</h4>
-                    </div>
-                </div>
-
-                <div class="row g-4 mb-4" th:if="${statusGlobal != null}">
-                    <div class="col-md-3">
-                        <div class="kpi-card bg-ontime">
-                            <h6 class="text-white opacity-75 mb-1 text-uppercase fw-bold small">On Time</h6>
-                            <h2 class="fw-bold mb-0" th:text="${statusGlobal.onTimeCount}">0</h2>
-                            <div class="mt-2 small"><span class="badge bg-white bg-opacity-25" th:text="${statusGlobal.onTimePercentage + '%'}">0%</span></div>
-                        </div>
-                    </div>
-                    <div class="col-md-3">
-                        <div class="kpi-card bg-fulfilled">
-                            <h6 class="text-white opacity-75 mb-1 text-uppercase fw-bold small">Fulfilled</h6>
-                            <h2 class="fw-bold mb-0" th:text="${statusGlobal.fulfilledCount}">0</h2>
-                            <div class="mt-2 small"><span class="badge bg-white bg-opacity-25" th:text="${(statusGlobal.totalDeliverables > 0 ? (statusGlobal.fulfilledCount * 100 / statusGlobal.totalDeliverables) : 0) + '%'}">0%</span></div>
-                        </div>
-                    </div>
-                    <div class="col-md-3">
-                        <div class="kpi-card bg-delayed">
-                            <h6 class="text-white opacity-75 mb-1 text-uppercase fw-bold small">Delayed</h6>
-                            <h2 class="fw-bold mb-0" th:text="${statusGlobal.delayedCount}">0</h2>
-                            <div class="mt-2 small"><span class="badge bg-white bg-opacity-25" th:text="${statusGlobal.latePercentage + '%'}">0%</span></div>
-                        </div>
-                    </div>
-                    <div class="col-md-3">
-                        <div class="kpi-card bg-escalation">
-                            <h6 class="text-white opacity-75 mb-1 text-uppercase fw-bold small">Escalation</h6>
-                            <h2 class="fw-bold mb-0" th:text="${statusGlobal.escalationCount}">0</h2>
-                            <div class="mt-2 small"><span class="badge bg-white bg-opacity-25" th:text="${statusGlobal.needsActionPercentage + '%'}">0%</span></div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="d-flex flex-wrap justify-content-between align-items-center mb-4 gap-3">
-                    <div class="status-key-box">
-                        <div class="small fw-bold text-muted text-uppercase border-end pe-3 me-1">Legend</div>
-                        <div class="d-flex align-items-center gap-2 small fw-bold text-dark">
-                            <div style="width: 10px; height: 10px; background: #f58220; border: 1.5px solid #fff; box-shadow: 0 0 0 1px #ddd; transform: rotate(45deg);"></div> Milestones %
-                        </div>
-                        <div class="d-flex align-items-center gap-2 small fw-bold text-dark">
-                            <div style="width: 12px; height: 12px; background: #3b82f6; border-radius: 3px;"></div> APQP Events
-                        </div>
-                    </div>
-
-                    <div class="d-flex gap-3 align-items-center p-2 rounded-3 border-0 shadow-sm px-3" style="background: rgba(255,255,255,0.6) !important; backdrop-filter: blur(10px);">
-                        <div class="form-check m-0">
-                            <input class="form-check-input filter-checkbox shadow-none" type="checkbox" id="chkMilestones" checked>
-                            <label class="form-check-label fw-bold small text-secondary" for="chkMilestones">Milestones</label>
-                        </div>
-                        <div class="form-check m-0 border-start ps-3">
-                            <input class="form-check-input filter-checkbox shadow-none" type="checkbox" id="chkMainEvents" checked>
-                            <label class="form-check-label fw-bold small text-secondary" for="chkMainEvents">Events</label>
-                        </div>
-                        <button class="btn btn-je-primary btn-sm ms-2" data-bs-toggle="modal" data-bs-target="#modalConfigHitos">
-                           <i class="bi bi-flag-fill me-1"></i> Agregar milestones
-                        </button>
-                    </div>
-                </div>
-
-                <div class="card glass-card">
-                    <div class="card-header premium-header">
-                        <h6 class="m-0 premium-title">
-                            <i class="bi bi-graph-up premium-icon"></i>
-                            Timeline Visualization
-                        </h6>
-                    </div>
-                    <div class="card-body p-0">
-                        <div id="visualization"></div>
-                    </div>
-                </div>
-
-            </main>
+    <main layout:fragment="content">
+        <!-- Title Section -->
+        <div class="premium-title-section d-flex justify-content-between align-items-end">
+            <div>
+                <nav aria-label="breadcrumb" class="mb-2">
+                    <ol class="breadcrumb mb-0">
+                        <li class="breadcrumb-item small text-muted text-uppercase fw-bold letter-spacing-lg">Planning</li>
+                        <li class="breadcrumb-item small text-muted text-uppercase fw-bold active">Master Timeline</li>
+                    </ol>
+                </nav>
+                <h3 class="display-6">Master Timeline</h3>
+                <p class="text-muted small fw-medium mt-2 mb-0">Interactive multi-project visualization & milestones</p>
+            </div>
         </div>
-    </div>
 
-    <div class="modal fade" id="modalDetalleTimeline" tabindex="-1" aria-hidden="true" style="backdrop-filter: blur(4px);">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content border-0 shadow-lg" style="border-radius: 20px; overflow: hidden;">
-                <div class="modal-header bg-dark text-white p-4 border-0">
-                    <h6 class="modal-title fw-bold m-0"><i class="bi bi-info-circle-fill text-primary me-2"></i>Event Details</h6>
-                    <button type="button" class="btn-close btn-close-white shadow-none" data-bs-dismiss="modal"></button>
-                </div>
-                <div class="modal-body p-4 bg-light">
-                    <div class="bg-white p-4 rounded-4 shadow-sm border">
-                        <div class="mb-4">
-                            <label class="small text-muted fw-bold text-uppercase mb-2 d-block">Description</label>
-                            <h5 id="detalle-nombre" class="fw-bold text-dark m-0 lh-base"></h5>
-                        </div>
-                        <div class="pt-3 border-top">
-                            <label class="small text-muted fw-bold text-uppercase mb-2 d-block">Scheduled Date</label>
-                            <div class="d-flex align-items-center">
-                                <div class="bg-primary bg-opacity-10 p-2 rounded-3 me-3 text-primary">
-                                    <i class="bi bi-calendar-check fs-4"></i>
-                                </div>
-                                <h6 id="detalle-fecha" class="text-primary fw-bold mb-0 fs-5"></h6>
-                            </div>
+        <!-- KPI Cards -->
+        <div class="row g-4 mb-4" th:if="${statusGlobal != null}">
+            <!-- ... (cards remain the same) ... -->
+            <div class="col-md-6 col-xl-3">
+                <div class="kpi-mini-card">
+                    <div class="d-flex align-items-center">
+                        <div class="kpi-mini-icon icon-green shadow-sm me-3"><i class="bi bi-check-circle-fill"></i></div>
+                        <div class="kpi-mini-data">
+                            <p class="text-muted small fw-bold text-uppercase mb-1">On Time</p>
+                            <h3 class="m-0 fw-black" th:text="${statusGlobal.onTimeCount}">0</h3>
+                            <div class="small text-success fw-bold" th:text="${statusGlobal.onTimePercentage + '%'}">0%</div>
                         </div>
                     </div>
                 </div>
-                <div class="modal-footer bg-light border-0 pt-0 pb-4 px-4">
-                    <button type="button" class="btn btn-secondary fw-bold w-100 rounded-3 py-2" data-bs-dismiss="modal">Understood</button>
+            </div>
+            <div class="col-md-6 col-xl-3">
+                <div class="kpi-mini-card">
+                    <div class="d-flex align-items-center">
+                        <div class="kpi-mini-icon icon-blue shadow-sm me-3"><i class="bi bi-lightning-charge-fill"></i></div>
+                        <div class="kpi-mini-data">
+                            <p class="text-muted small fw-bold text-uppercase mb-1">Fulfilled</p>
+                            <h3 class="m-0 fw-black" th:text="${statusGlobal.fulfilledCount}">0</h3>
+                            <div class="small text-primary fw-bold" th:text="${(statusGlobal.totalDeliverables > 0 ? (statusGlobal.fulfilledCount * 100 / statusGlobal.totalDeliverables) : 0) + '%'}">0%</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6 col-xl-3">
+                <div class="kpi-mini-card">
+                    <div class="d-flex align-items-center">
+                        <div class="kpi-mini-icon icon-orange shadow-sm me-3"><i class="bi bi-clock-history"></i></div>
+                        <div class="kpi-mini-data">
+                            <p class="text-muted small fw-bold text-uppercase mb-1">Delayed</p>
+                            <h3 class="m-0 fw-black" th:text="${statusGlobal.delayedCount}">0</h3>
+                            <div class="small text-warning fw-bold" th:text="${statusGlobal.latePercentage + '%'}">0%</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6 col-xl-3">
+                <div class="kpi-mini-card">
+                    <div class="d-flex align-items-center">
+                        <div class="kpi-mini-icon icon-red shadow-sm me-3"><i class="bi bi-exclamation-triangle-fill"></i></div>
+                        <div class="kpi-mini-data">
+                            <p class="text-muted small fw-bold text-uppercase mb-1">Escalation</p>
+                            <h3 class="m-0 fw-black" th:text="${statusGlobal.escalationCount}">0</h3>
+                            <div class="small text-danger fw-bold" th:text="${statusGlobal.needsActionPercentage + '%'}">0%</div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
 
-    <div class="modal fade" id="modalConfigHitos" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog modal-xl">
-            <div class="modal-content shadow-lg border-0" style="border-radius: 16px; overflow: hidden;">
-                <div class="modal-header bg-dark text-white p-4">
-                    <div>
-                        <h5 class="modal-title fw-bold mb-0"><i class="bi bi-gear-fill text-primary me-2"></i>Timeline Configuration</h5>
-                        <p class="small text-light text-opacity-75 mb-0">Manage percentage milestones and highlighted events.</p>
-                    </div>
-                    <button type="button" class="btn-close btn-close-white shadow-none" data-bs-dismiss="modal"></button>
-                </div>
-                <div class="modal-body p-0 bg-light">
-                    <div class="p-4 bg-white border-bottom shadow-sm">
-                        <div class="row align-items-center">
-                            <div class="col-md-5 col-lg-4">
-                                <label class="form-label small fw-bold text-dark mb-1">
-                                    <i class="bi bi-folder-fill text-primary me-1"></i> Select Project
-                                </label>
-                                <select id="selProyecto" class="form-select form-select-sm shadow-none border-primary border-opacity-25 bg-light bg-opacity-50 fw-bold">
-                                    <option value="">Choose a project to configure...</option>
-                                    <option th:each="p : ${proyectos}" th:value="${p.id}" th:text="${p.nombre}"></option>
-                                </select>
+        <!-- Quick Guide Section -->
+        <div class="row g-4 mb-5">
+            <div class="col-lg-12">
+                <div class="glass-card border-0 p-4" style="background: linear-gradient(135deg, #fff 0%, #f0f7ff 100%) !important;">
+                    <div class="d-flex align-items-start">
+                        <div class="bg-primary text-white rounded-circle p-2 me-4 shadow-sm" style="width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                            <i class="bi bi-info-circle-fill fs-5"></i>
+                        </div>
+                        <div class="row w-100 g-3">
+                            <div class="col-md-4 border-end">
+                                <h6 class="fw-bold text-premium-blue mb-2"><i class="bi bi-star-fill text-warning me-2"></i>Main Events</h6>
+                                <p class="small text-muted mb-0">To see a deliverable here, mark it as "Main Event" in the checklist and ensure it has a <strong>Planned Date</strong> assigned.</p>
+                            </div>
+                            <div class="col-md-4 border-end">
+                                <h6 class="fw-bold text-premium-blue mb-2"><i class="bi bi-diamond-fill text-primary me-2"></i>Milestones</h6>
+                                <p class="small text-muted mb-0">Configure these </span> to track the progress % of a specific stage versus a deadline.</p>
+                            </div>
+                            <div class="col-md-4">
+                                <h6 class="fw-bold text-premium-blue mb-2"><i class="bi bi-palette-fill text-secondary me-2"></i>Status Colors</h6>
+                                <div class="d-flex flex-wrap gap-2">
+                                    <span class="badge badge-soft-blue px-2">Blue: Pending</span>
+                                    <span class="badge badge-soft-red px-2">Red: Delayed</span>
+                                    <span class="badge badge-soft-green px-2">Green: OK</span>
+                                </div>
                             </div>
                         </div>
                     </div>
+                </div>
+            </div>
+        </div>
 
-                    <ul class="nav nav-tabs nav-fill bg-white border-bottom-0" id="configTabs" role="tablist">
-                        <li class="nav-item"><button class="nav-link active fw-bold py-3 border-0 rounded-0" data-bs-toggle="tab" data-bs-target="#tabHitos"><i class="bi bi-diamond-half me-2"></i>Progress Milestones</button></li>
-                        <li class="nav-item"><button class="nav-link fw-bold py-3 border-0 rounded-0" data-bs-toggle="tab" data-bs-target="#tabMainEvents" id="btnTabMainEvents"><i class="bi bi-star-fill me-2 text-warning"></i>Main Events (APQP)</button></li>
-                    </ul>
-                    <div class="tab-content p-4">
-                        <div class="tab-pane fade show active" id="tabHitos">
-                            <div class="row g-3 mb-4 bg-white p-4 rounded-3 border shadow-sm align-items-end">
-                                <div class="col-md-5">
-                                    <label class="form-label small fw-bold text-dark">Stage to Reach</label>
-                                    <select id="hitoEtapa" class="form-select shadow-none">
-                                        <option value="STAGE 1">STAGE 1 - Planning</option>
-                                        <option value="STAGE 2">STAGE 2 - Product Design</option>
-                                        <option value="STAGE 3">STAGE 3 - Process Design</option>
-                                        <option value="STAGE 4">STAGE 4 - Product & Process Validation</option>
-                                        <option value="STAGE 5">STAGE 5 - Feedback & Launch</option>
+        <div class="d-flex flex-wrap justify-content-between align-items-center mb-4 gap-3">
+            <div class="status-key-box">
+                <div class="small fw-bold text-muted text-uppercase border-end pe-3">Legend</div>
+                <div class="d-flex align-items-center gap-2 small fw-bold text-premium-blue">
+                    <div style="width: 10px; height: 10px; background: #3b82f6; border: 1.5px solid #fff; box-shadow: 0 0 0 1px #ddd; transform: rotate(45deg);"></div> Milestones %
+                </div>
+                <div class="d-flex align-items-center gap-2 small fw-bold text-premium-blue">
+                    <div style="width: 12px; height: 12px; background: #3b82f6; border-radius: 3px;"></div> APQP Events
+                </div>
+            </div>
+
+            <div class="filter-container">
+                <div class="form-check m-0">
+                    <input class="form-check-input filter-checkbox shadow-none" type="checkbox" id="chkMilestones" checked>
+                    <label class="form-check-label fw-bold small text-muted" for="chkMilestones">Milestones</label>
+                </div>
+                <div class="form-check m-0 border-start ps-3">
+                    <input class="form-check-input filter-checkbox shadow-none" type="checkbox" id="chkMainEvents" checked>
+                    <label class="form-check-label fw-bold small text-muted" for="chkMainEvents">Events</label>
+                </div>
+                <button class="btn btn-je-primary btn-sm ms-2" data-bs-toggle="modal" data-bs-target="#modalConfigHitos">
+                   <i></i> ADD MILESTONE OR EVENT
+                </button>
+            </div>
+        </div>
+
+        <div class="card glass-card border-0 mb-5">
+            <div class="card-header glass-header d-flex justify-content-between align-items-center">
+                <h6 class="m-0">VISUAL TIMELINE MONITORING</h6>
+                <span class="badge bg-soft-primary text-primary px-3 py-2 rounded-pill small fw-bold" style="background: #eff6ff;">
+                    <i class="bi bi-broadcast me-1"></i> LIVE TRACKING
+                </span>
+            </div>
+            <div class="card-body p-0">
+                <div id="visualization"></div>
+            </div>
+        </div>
+    </main>
+
+    <th:block layout:fragment="modals">
+        <div class="modal fade" id="modalDetalleTimeline" tabindex="-1" aria-hidden="true" style="backdrop-filter: blur(4px);">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content glass-card border-0">
+                    <div class="modal-header glass-header border-0">
+                        <h6 class="modal-title fw-bold m-0"><i class="bi bi-info-circle-fill text-primary me-2"></i>Event Details</h6>
+                        <button type="button" class="btn-close shadow-none" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body p-4 bg-light bg-opacity-50">
+                        <div class="bg-white p-4 rounded-4 shadow-sm border">
+                            <div class="mb-4">
+                                <label class="small text-muted fw-bold text-uppercase mb-2 d-block">Description</label>
+                                <h5 id="detalle-nombre" class="fw-bold text-premium-blue m-0 lh-base"></h5>
+                            </div>
+                            <div class="pt-3 border-top">
+                                <label class="small text-muted fw-bold text-uppercase mb-2 d-block">Scheduled Date</label>
+                                <div class="d-flex align-items-center">
+                                    <div class="bg-primary bg-opacity-10 p-2 rounded-3 me-3 text-primary">
+                                        <i class="bi bi-calendar-check fs-4"></i>
+                                    </div>
+                                    <h6 id="detalle-fecha" class="text-primary fw-bold mb-0 fs-5"></h6>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer border-0 pt-0 pb-4 px-4 bg-light bg-opacity-50">
+                        <button type="button" class="btn btn-light fw-bold w-100 rounded-pill py-2 border" data-bs-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Configuration Modal -->
+        <div class="modal fade" id="modalConfigHitos" tabindex="-1" aria-hidden="true">
+            <div class="modal-dialog modal-xl">
+                <div class="modal-content glass-card border-0">
+                    <div class="modal-header bg-dark text-white p-4">
+                        <div>
+                            <h5 class="modal-title fw-bold mb-0"><i class="bi bi-gear-fill text-premium-orange me-2"></i>Timeline Configuration</h5>
+                            <p class="small text-light text-opacity-75 mb-0">Manage percentage milestones and highlighted events.</p>
+                        </div>
+                        <button type="button" class="btn-close btn-close-white shadow-none" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body p-0 bg-light bg-opacity-50">
+                        <div class="p-4 bg-white border-bottom shadow-sm">
+                            <div class="row align-items-center">
+                                <div class="col-md-5 col-lg-4">
+                                    <label class="form-label small fw-bold text-dark mb-1">
+                                        <i class="bi bi-folder-fill text-primary me-1"></i> Select Project
+                                    </label>
+                                    <select id="selProyecto" class="form-select form-select-sm shadow-none border-primary border-opacity-25 bg-light bg-opacity-50 fw-bold rounded-3">
+                                        <option value="">Choose a project to configure...</option>
+                                        <option th:each="p : ${proyectos}" th:value="${p.id}" th:text="${p.nombre}"></option>
                                     </select>
                                 </div>
-                                <div class="col-md-3">
-                                    <label class="form-label small fw-bold text-dark">Deadline</label>
-                                    <input type="date" id="hitoFecha" class="form-control shadow-none">
-                                </div>
-                                <div class="col-md-2">
-                                    <label class="form-label small fw-bold text-dark">Target %</label>
-                                    <input type="number" id="hitoPorcentaje" class="form-control shadow-none" value="100" min="0" max="100">
-                                </div>
-                                <div class="col-md-2">
-                                    <button class="btn btn-je-primary w-100 shadow-sm" onclick="guardarHito()">
-                                        <i class="bi bi-plus-lg me-1"></i> Add
-                                    </button>
-                                </div>
-                            </div>
-                            <div class="premium-card">
-                                <div class="table-responsive">
-                                    <table class="table table-hover align-middle mb-0">
-                                        <thead class="bg-light text-secondary small text-uppercase">
-                                            <tr><th class="ps-4">Configured Stage</th><th>Date</th><th>Target</th><th class="text-center pe-4">Actions</th></tr>
-                                        </thead>
-                                        <tbody id="listaHitos"></tbody>
-                                    </table>
-                                </div>
                             </div>
                         </div>
-                        <div class="tab-pane fade" id="tabMainEvents">
-                            <div class="row mb-3">
-                                <div class="col-md-12">
-                                    <div class="input-group input-group-lg shadow-sm rounded-3 overflow-hidden">
-                                        <span class="input-group-text bg-white border-0"><i class="bi bi-search text-muted"></i></span>
-                                        <input type="text" id="searchMainEvents" class="form-control border-0 shadow-none ps-0" placeholder="Search deliverable by name or code...">
+
+                        <ul class="nav nav-tabs nav-fill bg-white border-bottom-0" id="configTabs" role="tablist">
+                            <li class="nav-item"><button class="nav-link active fw-bold py-3 border-0 rounded-0" data-bs-toggle="tab" data-bs-target="#tabHitos"><i class="bi bi-diamond-half me-2"></i>Progress Milestones</button></li>
+                            <li class="nav-item"><button class="nav-link fw-bold py-3 border-0 rounded-0" data-bs-toggle="tab" data-bs-target="#tabMainEvents" id="btnTabMainEvents"><i class="bi bi-star-fill me-2 text-warning"></i>Main Events (APQP)</button></li>
+                        </ul>
+                        <div class="tab-content p-4">
+                            <div class="tab-pane fade show active" id="tabHitos">
+                                <div class="row g-3 mb-4 bg-white p-4 rounded-4 border shadow-sm align-items-end">
+                                    <div class="col-md-5">
+                                        <label class="form-label small fw-bold text-dark">Stage to Reach</label>
+                                        <select id="hitoEtapa" class="form-select shadow-none rounded-3">
+                                            <option value="STAGE 1">STAGE 1 - Planning</option>
+                                            <option value="STAGE 2">STAGE 2 - Product Design</option>
+                                            <option value="STAGE 3">STAGE 3 - Process Design</option>
+                                            <option value="STAGE 4">STAGE 4 - Product & Process Validation</option>
+                                            <option value="STAGE 5">STAGE 5 - Feedback & Launch</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <label class="form-label small fw-bold text-dark">Deadline</label>
+                                        <input type="date" id="hitoFecha" class="form-control shadow-none rounded-3">
+                                    </div>
+                                    <div class="col-md-2">
+                                        <label class="form-label small fw-bold text-dark">Target %</label>
+                                        <input type="number" id="hitoPorcentaje" class="form-control shadow-none rounded-3" value="100" min="0" max="100">
+                                    </div>
+                                    <div class="col-md-2">
+                                        <button class="btn btn-je-primary w-100 shadow-sm" onclick="guardarHito()">
+                                            <i class="bi bi-plus-lg me-1"></i> ADD
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="card glass-card border-0 overflow-hidden">
+                                    <div class="table-responsive">
+                                        <table class="table table-hover align-middle mb-0">
+                                            <thead class="bg-light text-secondary small text-uppercase fw-bold">
+                                                <tr><th class="ps-4">Configured Stage</th><th>Date</th><th>Target</th><th class="text-center pe-4">Actions</th></tr>
+                                            </thead>
+                                            <tbody id="listaHitos"></tbody>
+                                        </table>
                                     </div>
                                 </div>
                             </div>
-                            <div class="premium-card">
-                                <div class="table-responsive" style="max-height: 450px;">
-                                    <table class="table table-hover align-middle mb-0">
-                                        <thead class="bg-light text-secondary small text-uppercase sticky-top">
-                                            <tr>
-                                                <th>Deliverable</th>
-                                                <th>Stage</th>
-                                                <th class="text-center pe-4">Highlight</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody id="listaElementosMain">
-                                            <tr><td colspan="3" class="text-center py-5 text-muted fst-italic">Select a project to load the deliverables</td></tr>
-                                        </tbody>
-                                    </table>
+                            <div class="tab-pane fade" id="tabMainEvents">
+                                <div class="row mb-4">
+                                    <div class="col-md-12">
+                                        <div class="input-group shadow-sm rounded-4 overflow-hidden border">
+                                            <span class="input-group-text bg-white border-0"><i class="bi bi-search text-muted"></i></span>
+                                            <input type="text" id="searchMainEvents" class="form-control border-0 shadow-none ps-0" placeholder="Search deliverable by name or code...">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="card glass-card border-0 overflow-hidden">
+                                    <div class="table-responsive" style="max-height: 450px;">
+                                        <table class="table table-hover align-middle mb-0">
+                                            <thead class="bg-light text-secondary small text-uppercase fw-bold sticky-top">
+                                                <tr>
+                                                    <th class="ps-4">Deliverable</th>
+                                                    <th>Stage</th>
+                                                    <th class="text-center pe-4">Highlight</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody id="listaElementosMain">
+                                                <tr><td colspan="3" class="text-center py-5 text-muted fst-italic">Select a project to load the deliverables</td></tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                </div>
-                <div class="modal-footer bg-white border-top-0 p-4">
-                    <button type="button" class="btn btn-outline-secondary fw-bold px-4 rounded-3" data-bs-dismiss="modal">Close</button>
-                    <button type="button" class="btn btn-dark fw-bold px-4 rounded-3" onclick="location.reload()">Update Timeline</button>
+                    <div class="modal-footer bg-white border-top-0 p-4">
+                        <button type="button" class="btn btn-light fw-bold px-4 rounded-pill border" data-bs-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-dark fw-bold px-4 rounded-pill" onclick="location.reload()">UPDATE TIMELINE</button>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
+    </th:block>
 
+    <th:block layout:fragment="custom-scripts">
+        <script src="https://unpkg.com/vis-timeline@latest/standalone/umd/vis-timeline-graph2d.min.js"></script>
+        <script th:inline="javascript">
+            document.addEventListener('DOMContentLoaded', function() {
+                var container = document.getElementById('visualization');
+                var rawGroups = /*[[${timelineGroups}]]*/ [];
+                var rawItems = /*[[${timelineItems}]]*/ [];
+                var groups = new vis.DataSet(rawGroups || []);
+                var items = new vis.DataSet(rawItems || []);
 
-    <script th:inline="javascript">
-        document.addEventListener('DOMContentLoaded', function() {
-            var container = document.getElementById('visualization');
-            var rawGroups = /*[[${timelineGroups}]]*/ [];
-            var rawItems = /*[[${timelineItems}]]*/ [];
-            var groups = new vis.DataSet(rawGroups || []);
-            var items = new vis.DataSet(rawItems || []);
-
-            var view = new vis.DataView(items, {
-                filter: function (item) {
-                    var showMilestones = document.getElementById('chkMilestones').checked;
-                    var showMainEvents = document.getElementById('chkMainEvents').checked;
-                    return (item.className.includes('hito-') && showMilestones) || (item.className.includes('vis-event') && showMainEvents);
-                }
-            });
-
-            var timeline = new vis.Timeline(container, view, groups, {
-                groupOrder: 'id', margin: {item: {horizontal: 10, vertical: 20}, axis: 40}, orientation: 'top',
-                timeAxis: {scale: 'month', step: 1}, horizontalScroll: true, zoomKey: 'ctrlKey', stack: true, showCurrentTime: true
-            });
-
-            document.querySelectorAll('.filter-checkbox').forEach(cb => cb.addEventListener('change', () => view.refresh()));
-            
-            const selProyecto = document.getElementById('selProyecto');
-            selProyecto.addEventListener('change', () => { cargarHitos(); cargarElementosParaMain(); });
-
-            function cargarHitos() {
-                const pid = selProyecto.value;
-                if (!pid) return;
-                fetch(`/api/hitos/proyecto/${pid}`).then(r => r.json()).then(hitos => {
-                    const tbody = document.getElementById('listaHitos');
-                    tbody.innerHTML = hitos.map(h => `<tr><td class="ps-4 fw-bold">${h.etapaAsociada}</td><td class="text-primary fw-bold">${h.fecha}</td><td><span class="badge bg-primary">${h.porcentajeObjetivo}%</span></td><td class="text-center"><button class="btn btn-sm btn-outline-danger border-0" onclick="eliminarHito(${h.id})"><i class="bi bi-trash-fill"></i></button></td></tr>`).join('');
+                var view = new vis.DataView(items, {
+                    filter: function (item) {
+                        var showMilestones = document.getElementById('chkMilestones').checked;
+                        var showMainEvents = document.getElementById('chkMainEvents').checked;
+                        return (item.className.includes('hito-') && showMilestones) || (item.className.includes('vis-event') && showMainEvents);
+                    }
                 });
-            }
 
-            function cargarElementosParaMain() {
-                const pid = selProyecto.value;
-                if (!pid) return;
-                fetch(`/api/hitos/proyecto/${pid}/elementos`).then(r => r.json()).then(elementos => {
-                    window.allElementosData = elementos;
-                    renderizarTablaMainEvents(elementos);
+                var timeline = new vis.Timeline(container, view, groups, {
+                    groupOrder: 'id', 
+                    margin: {item: {horizontal: 10, vertical: 20}, axis: 40}, 
+                    orientation: 'top',
+                    timeAxis: {scale: 'month', step: 1}, 
+                    horizontalScroll: true, 
+                    zoomKey: 'ctrlKey', 
+                    stack: true, 
+                    showCurrentTime: true
                 });
-            }
 
-            function renderizarTablaMainEvents(elementos) {
-                const tbody = document.getElementById('listaElementosMain');
-                elementos = elementos.filter(el => el.fase.includes('Program'));
-                tbody.innerHTML = elementos.map(el => `<tr><td class="small fw-bold">${el.nombre}</td><td class="small text-muted">${el.etapa}</td><td class="text-center"><button class="btn btn-sm ${el.esMainEvent ? 'btn-warning' : 'btn-outline-secondary'} border-0" onclick="toggleMainEvent(${el.id}, this)"><i class="bi ${el.esMainEvent ? 'bi-star-fill text-warning' : 'bi-star'}"></i></button></td></tr>`).join('') || '<tr><td colspan="3" class="text-center py-5 text-muted fst-italic">No deliverables found for Program</td></tr>';
-            }
+                document.querySelectorAll('.filter-checkbox').forEach(cb => cb.addEventListener('change', () => view.refresh()));
+                
+                const selProyecto = document.getElementById('selProyecto');
+                selProyecto.addEventListener('change', () => { cargarHitos(); cargarElementosParaMain(); });
 
-            window.guardarHito = function() {
-                const pid = selProyecto.value;
-                const etapa = document.getElementById('hitoEtapa').value;
-                const fecha = document.getElementById('hitoFecha').value;
-                const porc = document.getElementById('hitoPorcentaje').value;
-                if (!pid || !fecha) return alert("Select project and date");
-                fetch('/api/hitos/guardar', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({proyectoId: pid, nombre: etapa, fecha: fecha, etapa: etapa, porcentaje: porc}) })
-                .then(r => { if(r.ok) { cargarHitos(); document.getElementById('hitoFecha').value=''; } });
-            };
-
-            window.toggleMainEvent = function(id, btn) {
-                fetch(`/api/hitos/toggle-main-event/${id}`, { method: 'POST' }).then(r => { if(r.ok) cargarElementosParaMain(); });
-            };
-
-            window.eliminarHito = function(id) {
-                if (confirm('Delete?')) fetch(`/api/hitos/${id}`, { method: 'DELETE' }).then(r => { if(r.ok) cargarHitos(); });
-            };
-
-            timeline.on('select', (p) => {
-                if (p.items.length > 0) {
-                    const item = items.get(p.items[0]);
-                    const temp = document.createElement('div'); temp.innerHTML = item.content;
-                    document.getElementById('detalle-nombre').innerText = (temp.querySelector('.event-content')?.getAttribute('data-realname') || temp.innerText).trim();
-                    document.getElementById('detalle-fecha').innerText = new Date(item.start).toLocaleDateString('en-US', {weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'});
-                    bootstrap.Modal.getOrCreateInstance(document.getElementById('modalDetalleTimeline')).show();
+                function cargarHitos() {
+                    const pid = selProyecto.value;
+                    if (!pid) return;
+                    fetch(`/api/hitos/proyecto/${pid}`).then(r => r.json()).then(hitos => {
+                        const tbody = document.getElementById('listaHitos');
+                        tbody.innerHTML = hitos.map(h => `<tr><td class="ps-4 fw-bold text-premium-blue">${h.etapaAsociada}</td><td class="text-primary fw-bold">${h.fecha}</td><td><span class="badge bg-soft-primary text-primary px-3 rounded-pill">${h.porcentajeObjetivo}%</span></td><td class="text-center"><button class="btn btn-sm btn-outline-danger border-0 rounded-circle" onclick="eliminarHito(${h.id})" style="width: 32px; height: 32px; padding: 0;"><i class="bi bi-trash-fill"></i></button></td></tr>`).join('');
+                    });
                 }
+
+                function cargarElementosParaMain() {
+                    const pid = selProyecto.value;
+                    if (!pid) return;
+                    fetch(`/api/hitos/proyecto/${pid}/elementos`).then(r => r.json()).then(elementos => {
+                        window.allElementosData = elementos;
+                        renderizarTablaMainEvents(elementos);
+                    });
+                }
+
+                function renderizarTablaMainEvents(elementos) {
+                    const tbody = document.getElementById('listaElementosMain');
+                    elementos = elementos.filter(el => el.fase.includes('Program'));
+                    tbody.innerHTML = elementos.map(el => `<tr><td class="ps-4 small fw-bold text-premium-blue">${el.nombre}</td><td class="small text-muted">${el.etapa}</td><td class="text-center"><button class="btn btn-sm ${el.esMainEvent ? 'btn-warning' : 'btn-outline-secondary'} border-0 rounded-circle" onclick="toggleMainEvent(${el.id}, this)" style="width: 32px; height: 32px; padding: 0;"><i class="bi ${el.esMainEvent ? 'bi-star-fill' : 'bi-star'}"></i></button></td></tr>`).join('') || '<tr><td colspan="3" class="text-center py-5 text-muted fst-italic">No deliverables found for Program</td></tr>';
+                }
+
+                window.guardarHito = function() {
+                    const pid = selProyecto.value;
+                    const etapa = document.getElementById('hitoEtapa').value;
+                    const fecha = document.getElementById('hitoFecha').value;
+                    const porc = document.getElementById('hitoPorcentaje').value;
+                    if (!pid || !fecha) return;
+                    fetch('/api/hitos/guardar', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({proyectoId: pid, nombre: etapa, fecha: fecha, etapa: etapa, porcentaje: porc}) })
+                    .then(r => { if(r.ok) { cargarHitos(); document.getElementById('hitoFecha').value=''; } });
+                };
+
+                window.toggleMainEvent = function(id, btn) {
+                    fetch(`/api/hitos/toggle-main-event/${id}`, { method: 'POST' }).then(r => { if(r.ok) cargarElementosParaMain(); });
+                };
+
+                window.eliminarHito = function(id) {
+                    if (confirm('Delete this milestone?')) fetch(`/api/hitos/${id}`, { method: 'DELETE' }).then(r => { if(r.ok) cargarHitos(); });
+                };
+
+                timeline.on('select', (p) => {
+                    if (p.items.length > 0) {
+                        const item = items.get(p.items[0]);
+                        const temp = document.createElement('div'); temp.innerHTML = item.content;
+                        document.getElementById('detalle-nombre').innerText = (temp.querySelector('.event-content')?.getAttribute('data-realname') || temp.innerText).trim();
+                        document.getElementById('detalle-fecha').innerText = new Date(item.start).toLocaleDateString('en-US', {weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'});
+                        bootstrap.Modal.getOrCreateInstance(document.getElementById('modalDetalleTimeline')).show();
+                    }
+                });
             });
-        });
-    </script>
+        </script>
+    </th:block>
 </body>
 </html>
