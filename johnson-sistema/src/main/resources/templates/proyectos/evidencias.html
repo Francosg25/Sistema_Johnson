@@ -1,355 +1,281 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<html xmlns:th="http://www.thymeleaf.org" 
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout}">
 <head>
-    <div th:replace="~{fragments/head :: head}"></div>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&display=swap" rel="stylesheet">
-    
-    <style>
-        body { 
-            font-family: 'Inter', sans-serif; 
-            background-color: #f4f6f9; 
-            min-height: 100vh;
-            position: relative;
-            overflow-x: hidden;
-        }
-
-        /* --- GLASSMORPHISM DECORATION --- */
-        .bg-blob {
-            position: fixed;
-            width: 400px;
-            height: 400px;
-            background: linear-gradient(135deg, rgba(245, 130, 31, 0.15) 0%, rgba(245, 130, 31, 0.05) 100%);
-            filter: blur(80px);
-            border-radius: 50%;
-            z-index: -1;
-            pointer-events: none;
-        }
-        .blob-1 { top: -100px; right: -100px; }
-        .blob-2 { bottom: -100px; left: -100px; background: linear-gradient(135deg, rgba(13, 110, 253, 0.12) 0%, rgba(13, 110, 253, 0.05) 100%); }
-
-        /* --- GLASS CARDS --- */
-        .glass-card {
-            background: rgba(255, 255, 255, 0.6) !important;
-            backdrop-filter: blur(12px) !important;
-            -webkit-backdrop-filter: blur(12px) !important;
-            border: 1px solid rgba(255, 255, 255, 0.4) !important;
-            border-radius: 20px !important;
-            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.07) !important;
-            overflow: hidden;
-        }
-        
-        .search-container {
-            position: relative;
-            max-width: 400px;
-        }
-        .search-container i {
-            position: absolute; left: 15px; top: 50%; transform: translateY(-50%);
-            color: #94a3b8;
-        }
-        .search-input {
-            padding-left: 40px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.5);
-            background-color: rgba(255, 255, 255, 0.5); 
-            backdrop-filter: blur(5px);
-            font-size: 0.95rem;
-            transition: all 0.2s ease;
-        }
-        .search-input:focus {
-            background-color: rgba(255, 255, 255, 0.8); border-color: #3b82f6;
-            box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1); outline: none;
-        }
-
-        /* Tabla Premium */
-        .table { margin-bottom: 0; background: transparent !important; }
-        .table th {
-            font-weight: 700; color: #64748b; font-size: 0.85rem;
-            text-transform: uppercase; letter-spacing: 0.5px;
-            border-bottom: 1px solid rgba(0,0,0,0.05) !important; padding: 1rem;
-            background-color: rgba(248, 249, 250, 0.5) !important;
-        }
-        .table td {
-            vertical-align: middle; padding: 1rem; border-color: rgba(0,0,0,0.03);
-            color: #334155; font-size: 0.95rem; font-weight: 500;
-        }
-        .table-hover tbody tr:hover { background-color: rgba(255, 255, 255, 0.4); transition: background-color 0.2s ease; }
-        
-        /* Íconos de Archivo */
-        .file-icon {
-            display: inline-flex; align-items: center; justify-content: center;
-            width: 40px; height: 40px; border-radius: 10px; margin-right: 15px;
-            font-size: 1.2rem;
-        }
-        .icon-pdf { background-color: rgba(239, 68, 68, 0.1); color: #ef4444; }
-        .icon-excel { background-color: rgba(16, 185, 129, 0.1); color: #10b981; }
-        .icon-word { background-color: rgba(59, 130, 246, 0.1); color: #3b82f6; }
-        .icon-default { background-color: rgba(100, 116, 139, 0.1); color: #64748b; }
-        
-        .btn-action {
-            width: 35px; height: 35px; border-radius: 8px;
-            display: inline-flex; align-items: center; justify-content: center;
-            transition: all 0.2s; border: none; background: transparent;
-        }
-        .btn-view { color: #6366f1; }
-        .btn-view:hover { background-color: rgba(99, 102, 241, 0.1); transform: translateY(-2px); }
-        .btn-download { color: #3b82f6; }
-        .btn-download:hover { background-color: rgba(59, 130, 246, 0.1); transform: translateY(-2px); }
-        .btn-delete { color: #ef4444; }
-        .btn-delete:hover { background-color: rgba(239, 68, 68, 0.1); transform: translateY(-2px); }
-    </style>
+    <title>Evidence Vault - Sistema Johnson</title>
+    <th:block layout:fragment="custom-css">
+        <style>
+            .search-container { position: relative; max-width: 450px; }
+            .search-container i { position: absolute; left: 18px; top: 50%; transform: translateY(-50%); color: #94a3b8; }
+            .search-input { padding-left: 45px; border-radius: 16px; border: 1px solid #e2e8f0; background-color: #fff; font-size: 0.95rem; font-weight: 500; transition: all 0.2s ease; padding-top: 0.75rem; padding-bottom: 0.75rem; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05); }
+            .search-input:focus { background-color: #fff; border-color: #3b82f6; box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1); outline: none; }
+            .file-icon { display: inline-flex; align-items: center; justify-content: center; width: 44px; height: 44px; border-radius: 12px; margin-right: 15px; font-size: 1.3rem; }
+            .icon-pdf { background-color: #fef2f2; color: #ef4444; }
+            .icon-excel { background-color: #ecfdf5; color: #10b981; }
+            .icon-word { background-color: #eff6ff; color: #3b82f6; }
+            .icon-default { background-color: #f8fafc; color: #64748b; }
+            .btn-action { width: 38px; height: 38px; border-radius: 10px; display: inline-flex; align-items: center; justify-content: center; transition: all 0.2s; border: none; background: transparent; }
+            .btn-view { color: #6366f1; background-color: rgba(99, 102, 241, 0.05); }
+            .btn-view:hover { background-color: #e0e7ff; transform: translateY(-2px); }
+            .btn-download { color: #3b82f6; background-color: rgba(59, 130, 246, 0.05); }
+            .btn-download:hover { background-color: #dbeafe; transform: translateY(-2px); }
+            .btn-delete { color: #ef4444; background-color: rgba(239, 68, 68, 0.05); }
+            .btn-delete:hover { background-color: #fee2e2; transform: translateY(-2px); }
+        </style>
+    </th:block>
 </head>
 <body>
-    <div class="bg-blob blob-1"></div>
-    <div class="bg-blob blob-2"></div>
 
-    <div class="d-flex" id="wrapper">
-        <div id="sidebar-wrapper">
-            <div th:replace="~{fragments/sidebar :: sidebar(currentUri=${currentUri})}"></div>
+    <main layout:fragment="content">
+        <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-end mb-5 gap-3">
+            <div>
+                <nav aria-label="breadcrumb" class="mb-2">
+                    <ol class="breadcrumb mb-0">
+                        <li class="breadcrumb-item small text-muted text-uppercase fw-bold letter-spacing-lg">Overview</li>
+                        <li class="breadcrumb-item small text-muted text-uppercase fw-bold active">Evidence Vault</li>
+                    </ol>
+                </nav>
+                <h3 class="fw-black text-premium-blue m-0 display-6" style="font-weight: 900; letter-spacing: -0.04em;">Evidence Vault</h3>
+                <p class="text-muted small fw-medium mt-2 mb-0">Global repository of all files uploaded in APQP projects.</p>
+            </div>
+            
+            <div class="search-container w-100">
+                <i class="bi bi-search"></i>
+                <input type="text" id="buscadorArchivos" class="form-control search-input" placeholder="Search by name, project or deliverable...">
+            </div>
         </div>
 
-        <div id="page-content-wrapper" class="w-100">
-            <div th:replace="~{fragments/header :: header}"></div>
-
-            <main class="container-fluid p-4">
-                
-                <div class="d-flex justify-content-between align-items-center mb-4">
-                    <div>
-                        <h4 class="fw-bold text-dark m-0"><i class="bi bi-folder-symlink text-primary me-2"></i>Evidence Vault</h4>
-                        <p class="text-muted small mt-1 mb-0">Global repository of all files uploaded in APQP projects.</p>
+        <div th:each="entry, iter : ${proyectosConEvidencias}" class="mb-5 animate-up" th:style="'animation-delay: ' + (${iter.index} * 0.1) + 's;'">
+            <div class="d-flex align-items-center mb-3 px-2">
+                <button class="btn btn-link p-0 text-decoration-none d-flex align-items-center" 
+                        type="button" data-bs-toggle="collapse" 
+                        th:data-bs-target="'#collapse-' + ${iter.index}" 
+                        aria-expanded="true">
+                    <div class="rounded-3 bg-soft-orange p-2 me-3" style="background: #fff7ed;">
+                        <i class="bi bi-folder-fill text-premium-orange fs-5"></i>
                     </div>
-                    
-                    <div class="search-container w-100">
-                        <i class="bi bi-search"></i>
-                        <input type="text" id="buscadorArchivos" class="form-control search-input" placeholder="Search by name, project or deliverable...">
+                    <h5 class="fw-black text-premium-blue m-0 proyecto-busqueda" th:text="${entry.key}">Project Name</h5>
+                    <span class="badge bg-soft-primary text-primary ms-3 rounded-pill px-3 py-2 fw-bold" style="background: #eff6ff;" th:text="${entry.value.size() + ' files'}">0 files</span>
+                    <i class="bi bi-chevron-down ms-3 text-muted small"></i>
+                </button>
+            </div>
+
+            <div class="collapse show" th:id="'collapse-' + ${iter.index}">
+                <div class="card glass-card border-0">
+                    <div class="card-body p-0">
+                        <div class="table-responsive">
+                            <table class="table align-middle mb-0">
+                                <thead class="bg-light">
+                                    <tr>
+                                        <th class="ps-4 text-uppercase small fw-bold text-muted letter-spacing-lg" style="width: 45%;">File</th>
+                                        <th class="text-uppercase small fw-bold text-muted letter-spacing-lg" style="width: 35%;">APQP Deliverable</th>
+                                        <th class="text-uppercase small fw-bold text-muted letter-spacing-lg" style="width: 15%;">Upload Date</th>
+                                        <th class="text-center text-uppercase small fw-bold text-muted letter-spacing-lg pe-4" style="width: 10%;">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr th:each="adj : ${entry.value}" class="fila-archivo transition-hover">
+                                        <td class="ps-4 py-3">
+                                            <div class="d-flex align-items-center">
+                                                <div class="file-icon shadow-sm" 
+                                                        th:classappend="${#strings.endsWith(#strings.toLowerCase(adj.nombreArchivo), '.pdf') ? 'icon-pdf' : 
+                                                                        (#strings.endsWith(#strings.toLowerCase(adj.nombreArchivo), '.xls') or #strings.endsWith(#strings.toLowerCase(adj.nombreArchivo), '.xlsx') ? 'icon-excel' : 
+                                                                        (#strings.endsWith(#strings.toLowerCase(adj.nombreArchivo), '.doc') or #strings.endsWith(#strings.toLowerCase(adj.nombreArchivo), '.docx') ? 'icon-word' : 'icon-default'))}">
+                                                    <i class="bi"
+                                                        th:classappend="${#strings.endsWith(#strings.toLowerCase(adj.nombreArchivo), '.pdf') ? 'bi-file-earmark-pdf-fill' : 
+                                                                        (#strings.endsWith(#strings.toLowerCase(adj.nombreArchivo), '.xls') or #strings.endsWith(#strings.toLowerCase(adj.nombreArchivo), '.xlsx') ? 'bi-file-earmark-excel-fill' : 
+                                                                        (#strings.endsWith(#strings.toLowerCase(adj.nombreArchivo), '.doc') or #strings.endsWith(#strings.toLowerCase(adj.nombreArchivo), '.docx') ? 'bi-file-earmark-word-fill' : 'bi-file-earmark-fill'))}">
+                                                    </i>
+                                                </div>
+                                                <div class="d-flex flex-column text-truncate" style="max-width: 400px;">
+                                                    <span class="text-premium-blue text-truncate nombre-busqueda fw-bold" th:text="${adj.nombreArchivo}">Document.pdf</span>
+                                                    <span class="text-muted small fw-medium">Project evidence</span> 
+                                                </div>
+                                            </div>
+                                        </td>
+                                        
+                                        <td>
+                                            <span class="badge bg-light text-dark border px-3 py-2 fw-medium entregable-busqueda" th:text="${adj.entregableInfo}">
+                                                Deliverable
+                                            </span>
+                                        </td>
+                                        
+                                        <td>
+                                            <span class="text-muted fw-bold small" 
+                                                    th:text="${adj.subidoEn != null ? #temporals.format(adj.subidoEn, 'dd MMM yyyy') : 'No date'}">01 Jan 2026</span>
+                                        </td>
+                                        
+                                        <td class="text-center pe-4">
+                                            <div class="d-flex justify-content-center gap-2">
+                                                <button type="button" class="btn-action btn-view" title="View Preview"
+                                                        th:attr="onclick=|abrirVisor('${adj.id}', '${adj.nombreArchivo}')|">
+                                                    <i class="bi bi-eye-fill"></i>
+                                                </button>
+                                                <a th:href="@{'/evidencias/descargar/' + ${adj.id}}" 
+                                                    class="btn-action btn-download" 
+                                                    title="Download File"
+                                                    sec:authorize="hasAnyRole('ADMIN', 'CHAMPION')">
+                                                    <i class="bi bi-cloud-arrow-down-fill"></i>
+                                                </a>
+                                                <button type="button" class="btn-action btn-delete" 
+                                                        title="Delete Permanently"
+                                                        th:data-id="${adj.id}" 
+                                                        th:data-nombre="${adj.nombreArchivo}"
+                                                        onclick="confirmarEliminacion(this.getAttribute('data-id'), this.getAttribute('data-nombre'))"
+                                                        sec:authorize="hasAnyRole('ADMIN', 'CHAMPION')">
+                                                    <i class="bi bi-trash3-fill"></i>
+                                                </button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
                 </div>
+            </div>
+        </div>
 
-                <div th:each="entry, iter : ${proyectosConEvidencias}" class="mb-4">
-                    <div class="d-flex align-items-center mb-3">
-                        <button class="btn btn-link p-0 text-decoration-none d-flex align-items-center" 
-                                type="button" data-bs-toggle="collapse" 
-                                th:data-bs-target="'#collapse-' + ${iter.index}" 
-                                aria-expanded="true">
-                            <i class="bi bi-folder-fill text-warning fs-3 me-2"></i>
-                            <h5 class="fw-bold text-dark m-0 proyecto-busqueda" th:text="${entry.key}">Project Name</h5>
-                            <span class="badge bg-primary bg-opacity-10 text-primary ms-3 rounded-pill" th:text="${entry.value.size() + ' files'}">0 files</span>
-                            <i class="bi bi-chevron-down ms-2 text-muted small"></i>
-                        </button>
+        <div th:if="${proyectosConEvidencias == null or proyectosConEvidencias.isEmpty()}" class="text-center py-5">
+            <div class="d-inline-flex align-items-center justify-content-center rounded-circle bg-light mb-4" style="width: 100px; height: 100px;">
+                <i class="bi bi-archive text-muted display-4 opacity-50"></i>
+            </div>
+            <h4 class="fw-black text-premium-blue">No evidence found</h4>
+            <p class="text-muted">No files have been uploaded to the system yet.</p>
+        </div>
+    </main>
+
+    <th:block layout:fragment="modals">
+        <div class="modal fade" id="modalVisor" tabindex="-1" aria-hidden="true">
+            <div class="modal-dialog modal-xl modal-dialog-centered" style="height: 90vh;">
+                <div class="modal-content h-100 border-0 shadow-premium" style="border-radius: 28px; overflow: hidden;">
+                    <div class="modal-header bg-white p-4 pb-0 border-0">
+                        <h5 class="modal-title fw-black text-premium-blue d-flex align-items-center">
+                            <div class="rounded-3 p-2 me-3" style="background: #eff6ff;">
+                                <i class="bi bi-file-earmark-text text-primary"></i>
+                            </div>
+                            <span id="visorFileName" class="text-truncate" style="max-width: 400px;"></span>
+                        </h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
+                    <div class="modal-body p-4 bg-light d-flex align-items-center justify-content-center m-4 rounded-4 border" id="visorContainer" style="overflow: hidden;">
+                    </div>
+                    <div class="modal-footer bg-white border-0 p-4 pt-0">
+                        <button type="button" class="btn btn-light rounded-pill px-4 fw-bold" data-bs-dismiss="modal">Close</button>
+                        <a id="btnDescargarVisor" href="#" class="btn btn-je-primary rounded-pill px-4 fw-bold" sec:authorize="hasAnyRole('ADMIN', 'CHAMPION')">
+                            <i class="bi bi-download me-2"></i>Download
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
 
-                    <div class="collapse show" th:id="'collapse-' + ${iter.index}">
-                        <div class="card glass-card border-0">
-                            <div class="table-responsive">
-                                <table class="table table-hover align-middle">
-                                    <thead>
-                                        <tr>
-                                            <th style="width: 45%;">File</th>
-                                            <th style="width: 35%;">APQP Deliverable</th>
-                                            <th style="width: 15%;">Upload Date</th>
-                                            <th style="width: 10%;" class="text-center">Actions</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr th:each="adj : ${entry.value}" class="fila-archivo">
-                                            <td>
-                                                <div class="d-flex align-items-center">
-                                                    <div class="file-icon" 
-                                                         th:classappend="${#strings.endsWith(#strings.toLowerCase(adj.nombreArchivo), '.pdf') ? 'icon-pdf' : 
-                                                                          (#strings.endsWith(#strings.toLowerCase(adj.nombreArchivo), '.xls') or #strings.endsWith(#strings.toLowerCase(adj.nombreArchivo), '.xlsx') ? 'icon-excel' : 
-                                                                          (#strings.endsWith(#strings.toLowerCase(adj.nombreArchivo), '.doc') or #strings.endsWith(#strings.toLowerCase(adj.nombreArchivo), '.docx') ? 'icon-word' : 'icon-default'))}">
-                                                        <i class="bi"
-                                                           th:classappend="${#strings.endsWith(#strings.toLowerCase(adj.nombreArchivo), '.pdf') ? 'bi-file-earmark-pdf-fill' : 
-                                                                           (#strings.endsWith(#strings.toLowerCase(adj.nombreArchivo), '.xls') or #strings.endsWith(#strings.toLowerCase(adj.nombreArchivo), '.xlsx') ? 'bi-file-earmark-excel-fill' : 
-                                                                           (#strings.endsWith(#strings.toLowerCase(adj.nombreArchivo), '.doc') or #strings.endsWith(#strings.toLowerCase(adj.nombreArchivo), '.docx') ? 'bi-file-earmark-word-fill' : 'bi-file-earmark-fill'))}">
-                                                        </i>
-                                                    </div>
-                                                    <div class="d-flex flex-column text-truncate" style="max-width: 400px;">
-                                                        <span class="text-dark text-truncate nombre-busqueda fw-bold" th:text="${adj.nombreArchivo}">Document.pdf</span>
-                                                        <span class="text-muted small fw-normal">Project evidence</span> 
-                                                    </div>
-                                                </div>
-                                            </td>
-                                            
-                                            <td>
-                                                <span class="text-muted fw-normal entregable-busqueda" style="font-size: 0.85rem;" th:text="${adj.entregableInfo}">
-                                                    Deliverable
-                                                </span>
-                                            </td>
-                                            
-                                            <td>
-                                                <span class="text-muted fw-normal" style="font-size: 0.85rem;" 
-                                                      th:text="${adj.subidoEn != null ? #temporals.format(adj.subidoEn, 'dd MMM yyyy') : 'No date'}">01 Jan 2026</span>
-                                            </td>
-                                            
-                                            <td class="text-center">
-                                                <div class="d-flex justify-content-center gap-1">
-                                                    <button type="button" class="btn-action btn-view" title="View Preview"
-                                                            th:attr="onclick=|abrirVisor('${adj.id}', '${adj.nombreArchivo}')|">
-                                                        <i class="bi bi-eye-fill fs-5"></i>
-                                                    </button>
-
-                                                    <a th:href="@{'/evidencias/descargar/' + ${adj.id}}" 
-                                                       class="btn-action btn-download" 
-                                                       title="Download File"
-                                                       sec:authorize="hasAnyRole('ADMIN', 'CHAMPION')">
-                                                        <i class="bi bi-cloud-arrow-down-fill fs-5"></i>
-                                                    </a>
-
-                                                    <button type="button" class="btn-action btn-delete" 
-                                                            title="Delete Permanently"
-                                                            th:data-id="${adj.id}" 
-                                                            th:data-nombre="${adj.nombreArchivo}"
-                                                            onclick="confirmarEliminacion(this.getAttribute('data-id'), this.getAttribute('data-nombre'))"
-                                                            sec:authorize="hasAnyRole('ADMIN', 'CHAMPION')">
-                                                        <i class="bi bi-trash3-fill fs-5"></i>
-                                                    </button>
-                                                </div>
-                                            </td>
-                                        </tr>
-                                    </tbody>
-                                </table>
+        <div class="modal fade" id="modalConfirmarDeleteVault" tabindex="-1">
+            <div class="modal-dialog modal-dialog-centered modal-sm" style="max-width: 400px;">
+                <div class="modal-content border-0 shadow-premium" style="border-radius: 28px;">
+                    <div class="modal-body p-5 text-center">
+                        <div class="mb-4">
+                            <div class="d-inline-flex align-items-center justify-content-center rounded-circle" style="width: 80px; height: 80px; background: #fef2f2;">
+                                <i class="bi bi-exclamation-triangle-fill text-danger fs-1"></i>
                             </div>
                         </div>
+                        <h4 class="fw-black text-premium-blue mb-3">Delete File?</h4>
+                        <p class="text-muted small mb-3">You are about to permanently delete:</p>
+                        <p id="vaultFileName" class="fw-bold text-danger text-truncate mb-4 px-3 py-2 bg-light rounded-3 small"></p>
+                        <div class="d-grid gap-2">
+                            <form id="formDeleteVault" method="post" style="display:inline;" class="d-grid">
+                                <button type="submit" class="btn btn-danger rounded-pill py-3 fw-bold shadow-sm">Yes, Delete</button>
+                            </form>
+                            <button type="button" class="btn btn-light rounded-pill py-3 fw-bold" data-bs-dismiss="modal">Cancel</button>
+                        </div>
                     </div>
-                </div>
-
-                <div th:if="${proyectosConEvidencias == null or proyectosConEvidencias.isEmpty()}" class="text-center py-5">
-                    <i class="bi bi-archive text-muted display-1 mb-3 opacity-25"></i>
-                    <h5 class="text-muted">No evidence has been uploaded yet.</h5>
-                </div>
-
-            </main>
-        </div>
-    </div>
-
-    <div class="modal fade" id="modalVisor" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog modal-xl modal-dialog-centered" style="height: 90vh;">
-            <div class="modal-content h-100 border-0 shadow-lg" style="border-radius: 20px; overflow: hidden;">
-                <div class="modal-header bg-dark text-white py-3">
-                    <h6 class="modal-title fw-bold">
-                        <i class="bi bi-file-earmark-text me-2"></i>Document Preview: <span id="visorFileName" class="text-info"></span>
-                    </h6>
-                    <button type="button" class="btn-close btn-close-white shadow-none" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body p-0 bg-light d-flex align-items-center justify-content-center" id="visorContainer">
-                    </div>
-                <div class="modal-footer bg-white py-2 border-top">
-                    <span class="small text-muted me-auto"><i class="bi bi-info-circle me-1"></i>Secure View</span>
-                    <button type="button" class="btn btn-secondary btn-sm fw-bold px-4 rounded-pill" data-bs-dismiss="modal">Close</button>
-                    
-                    <a id="btnDescargarVisor" href="#" 
-                       class="btn btn-primary btn-sm fw-bold px-4 rounded-pill"
-                       sec:authorize="hasAnyRole('ADMIN', 'CHAMPION')">
-                        <i class="bi bi-download me-1"></i>Download
-                    </a>
                 </div>
             </div>
         </div>
-    </div>
+    </th:block>
 
-    <div class="modal fade" id="modalConfirmarDeleteVault" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered modal-sm">
-            <div class="modal-content border-0 shadow-lg">
-                <div class="modal-header bg-danger text-white border-bottom-0 pb-3">
-                    <h6 class="modal-title fw-bold"><i class="bi bi-exclamation-triangle-fill me-2"></i>Confirm Delete</h6>
-                    <button type="button" class="btn-close btn-close-white shadow-none" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body p-4 bg-light text-center">
-                    <p class="mb-2 text-dark">Delete this file permanently?</p>
-                    <p id="vaultFileName" class="fw-bold text-danger text-truncate mb-0 small"></p>
-                </div>
-                <div class="modal-footer bg-light border-top-0 pt-0 pb-4 justify-content-center">
-                    <button type="button" class="btn btn-outline-secondary btn-sm fw-bold px-3 shadow-sm" data-bs-dismiss="modal">Cancel</button>
-                    <form id="formDeleteVault" method="post" style="display:inline;">
-                        <button type="submit" class="btn btn-danger btn-sm fw-bold px-4 shadow-sm">
-                            <i class="bi bi-trash me-1"></i>Delete
-                        </button>
-                    </form>
-                </div>
-            </div>
-        </div>
-    </div>
+    <th:block layout:fragment="custom-scripts">
+        <script th:inline="javascript">
+            function abrirVisor(id, nombre) {
+                const modal = new bootstrap.Modal(document.getElementById('modalVisor'));
+                document.getElementById('visorFileName').textContent = nombre;
+                const container = document.getElementById('visorContainer');
+                const btnDescargar = document.getElementById('btnDescargarVisor');
+                
+                if (btnDescargar) {
+                    btnDescargar.href = '/evidencias/descargar/' + id;
+                }
 
+                container.innerHTML = '<div class="spinner-border text-primary" style="width: 3rem; height: 3rem;"></div>';
+                
+                const urlVer = '/evidencias/visualizar/' + id;
+                const ext = nombre.split('.').pop().toLowerCase();
+                
+                modal.show();
 
-    
-    <script th:inline="javascript">
-        function abrirVisor(id, nombre) {
-            const modal = new bootstrap.Modal(document.getElementById('modalVisor'));
-            document.getElementById('visorFileName').textContent = nombre;
-            const container = document.getElementById('visorContainer');
-            const btnDescargar = document.getElementById('btnDescargarVisor');
-            
-            if (btnDescargar) {
-                btnDescargar.href = '/evidencias/descargar/' + id;
+                setTimeout(() => {
+                    if (['pdf', 'jpg', 'jpeg', 'png', 'gif', 'txt'].includes(ext)) {
+                        container.innerHTML = `<iframe src="${urlVer}" style="width:100%; height:100%; border:none; border-radius: 12px;"></iframe>`;
+                    } else {
+                        container.innerHTML = `
+                            <div class="text-center p-5">
+                                <i class="bi bi-file-earmark-zip display-1 text-muted opacity-25"></i>
+                                <h5 class="mt-3 fw-black text-premium-blue">Preview not available</h5>
+                                <p class="text-muted fw-medium">Viewing is not supported for <b>.${ext}</b> files directly in the browser.</p>
+                            </div>
+                        `;
+                    }
+                }, 300);
             }
 
-            container.innerHTML = '<div class="spinner-border text-primary"></div>';
-            
-            const urlVer = '/evidencias/visualizar/' + id;
-            const ext = nombre.split('.').pop().toLowerCase();
-            
-            modal.show();
-
-            setTimeout(() => {
-                if (['pdf', 'jpg', 'jpeg', 'png', 'gif', 'txt'].includes(ext)) {
-                    container.innerHTML = `<iframe src="${urlVer}" style="width:100%; height:100%; border:none;"></iframe>`;
-                } else {
-                    container.innerHTML = `
-                        <div class="text-center p-5">
-                            <i class="bi bi-file-earmark-zip display-1 text-muted opacity-25"></i>
-                            <h5 class="mt-3 fw-bold">Preview not available</h5>
-                            <p class="text-muted">Viewing is not supported for <b>.${ext}</b> files directly.</p>
-                        </div>
-                    `;
-                }
-            }, 300);
-        }
-
-        document.getElementById('buscadorArchivos').addEventListener('keyup', function() {
-            let filtro = this.value.toLowerCase();
-            let filas = document.querySelectorAll('.fila-archivo');
-            
-            filas.forEach(function(fila) {
-                let nombre = fila.querySelector('.nombre-busqueda').textContent.toLowerCase();
-                let entregable = fila.querySelector('.entregable-busqueda').textContent.toLowerCase();
+            document.getElementById('buscadorArchivos').addEventListener('keyup', function() {
+                let filtro = this.value.toLowerCase();
+                let filas = document.querySelectorAll('.fila-archivo');
                 
-                if (nombre.includes(filtro) || entregable.includes(filtro)) {
-                    fila.style.display = '';
-                } else {
-                    fila.style.display = 'none';
-                }
-            });
-        });
-
-        function confirmarEliminacion(id, nombreArchivo) {
-            document.getElementById('vaultFileName').textContent = nombreArchivo;
-            document.getElementById('formDeleteVault').action = '/evidencias/eliminar-ajax/' + id; 
-            
-            document.getElementById('formDeleteVault').onsubmit = function(e) {
-                e.preventDefault();
-                let btn = this.querySelector('button[type="submit"]');
-                let originalHtml = btn.innerHTML;
-                btn.innerHTML = '<span class="spinner-border spinner-border-sm"></span>';
-                btn.disabled = true;
-
-                fetch(this.action, { method: 'POST' })
-                .then(response => response.json())
-                .then(data => {
-                    if(data.exito) {
-                        window.location.reload(); 
+                filas.forEach(function(fila) {
+                    let nombre = fila.querySelector('.nombre-busqueda').textContent.toLowerCase();
+                    let entregable = fila.querySelector('.entregable-busqueda').textContent.toLowerCase();
+                    
+                    if (nombre.includes(filtro) || entregable.includes(filtro)) {
+                        fila.style.display = '';
                     } else {
-                        alert("Error: " + data.mensaje);
-                        btn.innerHTML = originalHtml; btn.disabled = false;
+                        fila.style.display = 'none';
                     }
-                }).catch(error => {
-                    alert("Error de red.");
-                    btn.innerHTML = originalHtml; btn.disabled = false;
                 });
-            };
+            });
 
-            var miModal = new bootstrap.Modal(document.getElementById('modalConfirmarDeleteVault'));
-            miModal.show();
-        }
-    </script>
+            function confirmarEliminacion(id, nombreArchivo) {
+                document.getElementById('vaultFileName').textContent = nombreArchivo;
+                document.getElementById('formDeleteVault').action = '/evidencias/eliminar-ajax/' + id; 
+                
+                document.getElementById('formDeleteVault').onsubmit = function(e) {
+                    e.preventDefault();
+                    let btn = this.querySelector('button[type="submit"]');
+                    let originalHtml = btn.innerHTML;
+                    btn.innerHTML = '<span class="spinner-border spinner-border-sm"></span>';
+                    btn.disabled = true;
+
+                    fetch(this.action, { method: 'POST' })
+                    .then(response => response.json())
+                    .then(data => {
+                        if(data.exito) {
+                            window.location.reload(); 
+                        } else {
+                            alert("Error: " + data.mensaje);
+                            btn.innerHTML = originalHtml; btn.disabled = false;
+                        }
+                    }).catch(error => {
+                        alert("Error de red.");
+                        btn.innerHTML = originalHtml; btn.disabled = false;
+                    });
+                };
+
+                var miModal = new bootstrap.Modal(document.getElementById('modalConfirmarDeleteVault'));
+                miModal.show();
+            }
+        </script>
+    </th:block>
 </body>
 </html>

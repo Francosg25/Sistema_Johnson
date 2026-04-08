@@ -1,62 +1,68 @@
-<nav th:fragment="header" class="navbar navbar-expand-lg navbar-light" style="position: sticky; top: 0; z-index: 1000; background: rgba(255,255,255,0.8); backdrop-filter: blur(10px); width: 100%; border-radius: 0; border-bottom: 1px solid rgba(0,0,0,0.05);">
-    <div class="container-fluid">
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+<nav th:fragment="header" class="navbar navbar-expand-lg navbar-light" style="position: sticky; top: 0; z-index: 1000; background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); width: 100%; border-bottom: 1px solid rgba(226, 232, 240, 0.8);">
+    <div class="container-fluid px-3">
 
-        <button class="btn btn-link text-dark me-3" id="sidebarToggle">
-            <i class="bi bi-list fs-3"></i>
+        <button class="btn btn-link text-dark me-3 rounded-circle p-2 hover-bg-light" id="sidebarToggle" style="transition: all 0.2s;">
+            <i class="bi bi-list fs-4"></i>
         </button>
 
-        <h5 class="navbar-brand mb-0 fw-bold text-dark" style="letter-spacing: -0.5px;">APQP <span class="text-primary">Dashboard</span></h5>
+        <h5 class="navbar-brand mb-0 fw-black text-dark" style="letter-spacing: -0.5px; font-weight: 800;">
+            APQP <span style="color: #F5821F;">Dashboard</span>
+        </h5>
 
-        <div class="ms-auto d-flex align-items-center">
+        <div class="ms-auto d-flex align-items-center gap-1">
             
             <div class="dropdown me-2" id="notifDropdownContainer">
-                <button class="btn btn-light border-0 shadow-none position-relative rounded-circle p-2" type="button" id="notifDropdown" data-bs-toggle="dropdown" aria-expanded="false" onclick="registrarNotificacionesVistas();">
+                <button class="btn btn-light border-0 shadow-none position-relative rounded-circle p-2 hover-bg-light" type="button" id="notifDropdown" data-bs-toggle="dropdown" aria-expanded="false" onclick="registrarNotificacionesVistas();">
                     <i class="bi bi-bell fs-5 text-dark"></i>
-                    <span id="notifBadge" class="position-absolute badge rounded-pill bg-danger d-none" style="z-index: 10; font-size: 0.6rem; padding: 0.35em 0.5em; top: 5px; right: 5px; transform: translate(30%, 30%); border: 2px solid #fff;">
+                    <span id="notifBadge" class="position-absolute badge rounded-pill bg-danger d-none shadow-sm" style="z-index: 10; font-size: 0.65rem; padding: 0.35em 0.5em; top: 2px; right: 2px; transform: translate(30%, 30%); border: 2px solid #fff;">
                         0
                     </span>
                 </button>
-                <div class="dropdown-menu dropdown-menu-end shadow-lg border-0 p-0" aria-labelledby="notifDropdown" style="width: 350px; border-radius: 12px; overflow: hidden; z-index: 1060; margin-top: 10px;">
-                    <div class="bg-light p-3 border-bottom d-flex justify-content-between align-items-center">
-                        <h6 class="m-0 fw-bold text-dark">Notifications</h6>
-                        <button class="btn btn-link btn-sm text-primary p-0 text-decoration-none small fw-bold" onclick="event.stopPropagation(); marcarTodasComoLeidas()">Mark all as read</button>
+                <div class="dropdown-menu dropdown-menu-end border-0 p-0" aria-labelledby="notifDropdown" style="width: 360px; border-radius: 16px; overflow: hidden; z-index: 1060; margin-top: 12px; box-shadow: 0 10px 40px rgba(0,0,0,0.1);">
+                    <div class="bg-white p-3 border-bottom d-flex justify-content-between align-items-center">
+                        <h6 class="m-0 fw-black text-dark">Notifications</h6>
+                        <button class="btn btn-link btn-sm p-0 text-decoration-none small fw-bold" style="color: #F5821F;" onclick="event.stopPropagation(); marcarTodasComoLeidas()">Mark all as read</button>
                     </div>
-                    <div id="notifList" class="overflow-auto" style="max-height: 400px;">
-                        <div class="p-4 text-center text-muted small">
+                    <div id="notifList" class="overflow-auto bg-white" style="max-height: 400px;">
+                        <div class="p-4 text-center text-muted small fw-medium">
+                            <i class="bi bi-bell-slash d-block fs-3 mb-2 opacity-25"></i>
                             You have no new notifications
                         </div>
                     </div>
                     <div class="bg-light p-2 text-center border-top">
-                        <span class="text-muted" style="font-size: 0.65rem;">APQP Alerts Module - Johnson Electric</span>
+                        <span class="text-muted fw-bold" style="font-size: 0.65rem; letter-spacing: 0.5px;">JOHNSON ELECTRIC APQP</span>
                     </div>
                 </div>
             </div>
 
             <div class="dropdown" id="userProfileContainer">
-                <button class="btn btn-light border-0 shadow-none d-flex align-items-center p-1 rounded-pill pe-3 hover-profile" type="button" id="profileDropdown" data-bs-toggle="dropdown" aria-expanded="false" style="transition: all 0.2s ease;">
-                    <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center fw-bold me-2" style="width: 35px; height: 35px; font-size: 0.9rem;">
+                <button class="btn btn-light border-0 shadow-none d-flex align-items-center p-1 rounded-pill pe-3 hover-profile" type="button" id="profileDropdown" data-bs-toggle="dropdown" aria-expanded="false" style="transition: all 0.2s ease; background: transparent;">
+                    <div class="text-white rounded-circle d-flex align-items-center justify-content-center fw-bold me-2 shadow-sm" style="width: 36px; height: 36px; font-size: 0.95rem; background: #1e293b;">
                         <span th:text="${#strings.substring(#authentication.name, 0, 1).toUpperCase()}">U</span>
                     </div>
                     <div class="text-start d-none d-sm-block">
-                        <div class="fw-bold text-dark lh-1" style="font-size: 0.85rem;" th:text="${#authentication.name}">Username</div>
-                        <div class="text-muted" style="font-size: 0.7rem;" th:text="${#authentication.principal.nombreCompletoDepartamento}">Department</div>
+                        <div class="fw-black text-dark lh-1" style="font-size: 0.85rem;" th:text="${#authentication.name}">Username</div>
+                        <div class="text-muted fw-medium" style="font-size: 0.7rem;" th:text="${#authentication.principal.nombreCompletoDepartamento}">Department</div>
                     </div>
                     <i class="bi bi-chevron-down ms-2 text-muted" style="font-size: 0.7rem;"></i>
                 </button>
-                <ul class="dropdown-menu dropdown-menu-end shadow-lg border-0 p-2 mt-2" aria-labelledby="profileDropdown" style="width: 200px; border-radius: 12px;">
+                <ul class="dropdown-menu dropdown-menu-end border-0 p-2 mt-2" aria-labelledby="profileDropdown" style="width: 220px; border-radius: 16px; box-shadow: 0 10px 40px rgba(0,0,0,0.1);">
                     <li>
-                        <div class="px-3 py-2 border-bottom mb-2">
-                            <span class="d-block fw-bold text-dark" style="font-size: 0.85rem;" th:text="${#authentication.name}">Username</span>
-                            <span class="d-block text-muted" style="font-size: 0.7rem;" th:text="${#authentication.principal.nombreCompletoDepartamento}">Department</span>
-                            <span class="text-muted" style="font-size: 0.65rem;">Account Settings</span>
+                        <div class="px-3 py-2 border-bottom mb-2 bg-light rounded-3">
+                            <span class="d-block fw-black text-dark" style="font-size: 0.85rem;" th:text="${#authentication.name}">Username</span>
+                            <span class="d-block text-muted fw-medium" style="font-size: 0.7rem;" th:text="${#authentication.principal.nombreCompletoDepartamento}">Department</span>
                         </div>
                     </li>
-                    <li><hr class="dropdown-divider opacity-50"></li>
                     <li>
                         <form th:action="@{/logout}" method="post" id="logoutForm">
-                            <button type="submit" class="dropdown-item rounded-8 d-flex align-items-center py-2 text-danger">
-                                <i class="bi bi-box-arrow-right me-2"></i>
-                                <span class="fw-bold" style="font-size: 0.85rem;">Logout</span>
+                            <button type="submit" class="dropdown-item rounded-3 d-flex align-items-center py-2 text-danger transition-hover">
+                                <div class="bg-soft-danger p-1 rounded-2 me-2" style="background: #fef2f2;">
+                                    <i class="bi bi-box-arrow-right"></i>
+                                </div>
+                                <span class="fw-bold" style="font-size: 0.85rem;">Secure Logout</span>
                             </button>
                         </form>
                     </li>
@@ -117,7 +123,6 @@
             if (data.ultimas && data.ultimas.length > 0) {
                 maxIdEnPantalla = Math.max(...data.ultimas.map(n => n.id));
 
-                // EL PARCHE MÁGICO: Detectar si la base de datos se reinició
                 if (maxIdEnPantalla < lastSeenId) {
                     lastSeenId = 0;
                     localStorage.setItem('lastSeenNotifId', '0');
@@ -138,31 +143,28 @@
             if (!list) return;
 
             if (!data || !data.ultimas || data.ultimas.length === 0) {
-                list.innerHTML = '<div class="p-4 text-center text-muted small"><i class="bi bi-bell-slash d-block fs-3 mb-2 opacity-50"></i>You have no new notifications</div>';
+                list.innerHTML = '<div class="p-4 text-center text-muted small fw-medium"><i class="bi bi-bell-slash d-block fs-3 mb-2 opacity-25"></i>You have no new notifications</div>';
                 return;
             }
 
             list.innerHTML = data.ultimas.map(n => {
                 const f = formatoFecha(n.fechaCreacion);
-                const esNueva = n.id > lastSeenId ? 'bg-white border-start border-primary border-4' : '';
+                const esNueva = n.id > lastSeenId ? 'bg-white border-start border-4' : 'bg-white opacity-75';
+                const borderColor = esNueva ? 'border-color: #F5821F !important;' : '';
 
                 return `
-                <div class="p-3 border-bottom position-relative hover-bg-light ${esNueva}" style="cursor: pointer;" onclick="marcarLeida(${n.id}, '${n.link}')">
+                <div class="p-3 border-bottom position-relative hover-bg-light ${esNueva}" style="cursor: pointer; ${borderColor} transition: all 0.2s;" onclick="marcarLeida(${n.id}, '${n.link}')">
                     <div class="d-flex align-items-start">
-                        <div class="rounded-circle p-2 me-3 d-flex align-items-center justify-content-center ${getIconBg(n.tipo)}" style="width: 32px; height: 32px; flex-shrink: 0;">
-                            <i class="bi ${getIcon(n.tipo)} text-white" style="font-size: 0.9rem;"></i>
+                        <div class="rounded-circle p-2 me-3 d-flex align-items-center justify-content-center ${getIconBg(n.tipo)} shadow-sm" style="width: 36px; height: 36px; flex-shrink: 0;">
+                            <i class="bi ${getIcon(n.tipo)} text-white" style="font-size: 1rem;"></i>
                         </div>
                         <div class="flex-grow-1" style="min-width: 0;">
-                            <div class="small fw-bold text-dark">${n.titulo}</div>
-                            <div class="text-muted small">${n.mensaje}</div>
-                            <div class="d-flex justify-content-between align-items-start mt-1">
-                                <div class="d-flex flex-column">
-                                    <span class="text-primary fw-bold" style="font-size: 0.65rem;">${f.hora}</span>
-                                    <span class="text-muted" style="font-size: 0.6rem;">${f.fecha}</span>
-                                </div>
-                                <div class="d-flex flex-column text-end">
-                                    <span class="text-muted italic" style="font-size: 0.65rem;">By: ${n.autorAccion || 'System'}</span>
-                                    <span class="text-muted" style="font-size: 0.6rem;">${n.autorDepartamento || ''}</span>
+                            <div class="small fw-bold text-dark lh-sm mb-1">${n.titulo}</div>
+                            <div class="text-muted" style="font-size: 0.75rem; line-height: 1.2;">${n.mensaje}</div>
+                            <div class="d-flex justify-content-between align-items-center mt-2 pt-1 border-top border-light">
+                                <div class="text-muted fw-bold" style="font-size: 0.65rem;"><i class="bi bi-clock me-1"></i>${f.hora} - ${f.fecha}</div>
+                                <div class="text-end">
+                                    <span class="badge bg-light text-dark border" style="font-size: 0.6rem;">${n.autorAccion || 'System'}</span>
                                 </div>
                             </div>
                         </div>
@@ -172,11 +174,9 @@
         }
 
         function registrarNotificacionesVistas() {
-            // Al abrir la campana, marcamos el maxIdEnPantalla como "visto" en el navegador
             if (maxIdEnPantalla > 0) {
                 localStorage.setItem('lastSeenNotifId', maxIdEnPantalla.toString());
             }
-            // Ocultamos el badge visualmente
             document.getElementById('notifBadge').classList.add('d-none');
             const bell = document.querySelector('#notifDropdown i.bi-bell');
             if (bell) bell.classList.remove('notif-active');
@@ -191,11 +191,11 @@
         }
 
         function getIconBg(tipo) {
-            if (!tipo) return 'bg-primary';
+            if (!tipo) return 'bg-primary'; /* Puedes cambiar esto a un gris neutro si prefieres */
             const t = tipo.toUpperCase();
             if (t === 'ALERT' || t === 'ALERTA') return 'bg-danger';
             if (t === 'SUCCESS' || t === 'EXITO') return 'bg-success';
-            return 'bg-primary';
+            return 'bg-secondary';
         }
 
         function formatoFecha(fecha) {
@@ -235,34 +235,26 @@
         
     </script>
     <style>
-        .hover-bg-light:hover { background-color: #f8f9fa; }
-        .hover-profile:hover { background-color: rgba(0,0,0,0.05) !important; }
-        .rounded-8 { border-radius: 8px !important; }
+        .hover-bg-light:hover { background-color: #f8fafc !important; }
+        .hover-profile:hover { background-color: #f1f5f9 !important; }
+        .transition-hover:hover { transform: translateX(4px); background-color: #f8fafc; }
         #notifList::-webkit-scrollbar { width: 4px; }
         #notifList::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
         #notifDropdown i { transition: transform 0.15s ease-in-out; }
-        .dropdown-item:active { background-color: #f8f9fa; color: inherit; }
         
-        /* Animaciones para Notificaciones */
         @keyframes shake {
-            0% { transform: rotate(0); }
-            15% { transform: rotate(15deg); }
-            30% { transform: rotate(-15deg); }
-            45% { transform: rotate(10deg); }
-            60% { transform: rotate(-10deg); }
-            75% { transform: rotate(5deg); }
-            85% { transform: rotate(-5deg); }
-            100% { transform: rotate(0); }
+            0% { transform: rotate(0) scale(1); }
+            15% { transform: rotate(15deg) scale(1.1); }
+            30% { transform: rotate(-15deg) scale(1.1); }
+            45% { transform: rotate(10deg) scale(1.1); }
+            60% { transform: rotate(-10deg) scale(1.1); }
+            75% { transform: rotate(5deg) scale(1.1); }
+            85% { transform: rotate(-5deg) scale(1.1); }
+            100% { transform: rotate(0) scale(1); }
         }
-        .notif-shake { animation: shake 0.5s ease-in-out; }
-        
-        .notif-active { color: #000000 !important; }
-        
-        @keyframes pulse-black {
-            0% { box-shadow: 0 0 0 0 rgba(0, 0, 0, 0.2); }
-            70% { box-shadow: 0 0 0 10px rgba(0, 0, 0, 0); }
-            100% { box-shadow: 0 0 0 0 rgba(0, 0, 0, 0); }
-        }
-        .notif-pulse { animation: pulse-black 2s infinite; }
+        .notif-shake { animation: shake 0.5s ease-in-out; color: #F5821F !important; }
+        .notif-active { color: #F5821F !important; }
     </style>
 </nav>
+</body>
+</html>

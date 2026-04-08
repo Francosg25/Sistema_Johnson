@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" 
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+<head>
+    <div th:replace="~{fragments/head :: head}"></div>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" th:href="@{/css/style.css}" />
+    <link rel="stylesheet" th:href="@{/css/index.css}" />
+
+    <th:block layout:fragment="custom-css"></th:block>
+</head>
+<body>
+    <div class="d-flex" id="wrapper">
+        <div id="sidebar-wrapper">
+            <div th:replace="~{fragments/sidebar :: sidebar(currentUri=${currentUri})}"></div>
+        </div>
+        
+        <div id="page-content-wrapper" class="w-100">
+            <div th:replace="~{fragments/header :: header}"></div>
+            
+            <main class="container-fluid p-4 p-lg-5" layout:fragment="content">
+                </main>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.10/index.global.min.js'></script>
+    
+    <th:block layout:fragment="modals"></th:block>
+
+    <th:block layout:fragment="custom-scripts"></th:block>
+</body>
+</html>

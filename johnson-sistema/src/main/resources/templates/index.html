@@ -1,280 +1,608 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
-<head>
-    <div th:replace="~{fragments/head :: head}"></div>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
-    <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.10/index.global.min.js'></script>
-
-    <link rel="stylesheet" th:href="@{/css/index.css}" />
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout}"> <head>
+    <title>Dashboard - Sistema Johnson</title>
+    
+    <th:block layout:fragment="custom-css">
+        <style>
+            :root {
+                --premium-blue: #1e293b;
+                --premium-orange: #F5821F;
+                --premium-bg: #f8fafc;
+                --premium-card-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.04), 0 8px 10px -6px rgba(0, 0, 0, 0.04);
+                --premium-hover-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+            }
+            body {
+                background-color: var(--premium-bg);
+                color: var(--premium-blue);
+                font-family: 'Inter', -apple-system, sans-serif;
+                letter-spacing: -0.01em;
+            }
+            /* Elevating KPI Cards */
+            .kpi-mini-card {
+                border: none !important;
+                border-radius: 20px !important;
+                box-shadow: var(--premium-card-shadow);
+                transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+                background: white;
+                padding: 1.75rem !important;
+            }
+            .kpi-mini-card:hover {
+                transform: translateY(-5px);
+                box-shadow: var(--premium-hover-shadow);
+            }
+            .kpi-mini-icon {
+                width: 56px !important;
+                height: 56px !important;
+                border-radius: 16px !important;
+                font-size: 1.5rem !important;
+            }
+            .kpi-mini-data h3 {
+                font-size: 1.85rem !important;
+                letter-spacing: -0.02em;
+            }
+            /* Glass Cards Enhancement */
+            .glass-card {
+                background: white !important;
+                border: 1px solid rgba(226, 232, 240, 0.8) !important;
+                border-radius: 24px !important;
+                box-shadow: var(--premium-card-shadow) !important;
+                overflow: hidden;
+            }
+            .glass-header {
+                background: #fff !important;
+                border-bottom: 1px solid #f1f5f9 !important;
+                padding: 1.5rem 1.75rem !important;
+            }
+            .glass-header h6 {
+                color: var(--premium-blue) !important;
+                font-size: 1.15rem !important;
+                font-weight: 800 !important;
+                letter-spacing: -0.02em !important;
+            }
+            /* Premium Buttons */
+            .btn-je-primary {
+                background: var(--premium-orange) !important;
+                border-radius: 14px !important;
+                padding: 0.75rem 1.75rem !important;
+                font-weight: 700 !important;
+                letter-spacing: 0.02em !important;
+                box-shadow: 0 4px 12px rgba(245, 130, 31, 0.2) !important;
+                border: none !important;
+                transition: all 0.3s ease !important;
+            }
+            .btn-je-primary:hover {
+                transform: translateY(-2px) !important;
+                box-shadow: 0 8px 20px rgba(245, 130, 31, 0.3) !important;
+                background: #e67616 !important;
+            }
+            /* Champion Pills Redesign */
+            .champion-pill {
+                padding: 0.5rem 1.25rem !important;
+                border-radius: 12px !important;
+                font-size: 0.8rem !important;
+                border: 1px solid #e2e8f0 !important;
+                background: #fff !important;
+                color: #475569 !important;
+                transition: all 0.2s ease !important;
+            }
+            .champion-pill:hover {
+                border-color: var(--premium-orange) !important;
+                background: #fff7ed !important;
+            }
+            .champion-pill.active {
+                background: var(--premium-orange) !important;
+                border-color: var(--premium-orange) !important;
+                color: white !important;
+                box-shadow: 0 4px 12px rgba(245, 130, 31, 0.25) !important;
+            }
+            /* Animations & Utilities */
+            @keyframes slideUp {
+                from { opacity: 0; transform: translateY(20px); }
+                to { opacity: 1; transform: translateY(0); }
+            }
+            .animate-up {
+                animation: slideUp 0.5s ease-out forwards;
+            }
+            .badge-premium {
+                padding: 0.5rem 0.85rem !important;
+                border-radius: 10px !important;
+                font-weight: 700 !important;
+                font-size: 0.7rem !important;
+                text-transform: uppercase;
+                letter-spacing: 0.03em;
+            }
+        </style>
+    </th:block>
 </head>
 <body>
-    <div class="d-flex" id="wrapper">
-        <div id="sidebar-wrapper"><div th:replace="~{fragments/sidebar :: sidebar(currentUri=${currentUri})}"></div></div>
-        <div id="page-content-wrapper" class="w-100">
-            <div th:replace="~{fragments/header :: header}"></div>
-            
-            <main class="container-fluid p-4">
-                <div th:if="${mensajeExito}" class="alert alert-success border-0 shadow-sm mb-4 rounded-4 animate__animated animate__fadeIn">
+
+    <main layout:fragment="content">
+        <div th:if="${mensajeExito}" class="alert alert-success border-0 shadow-sm mb-5 rounded-4 animate__animated animate__fadeInDown" style="background: #ecfdf5; border-left: 5px solid #10b981 !important;">
+            <div class="d-flex align-items-center p-2">
+                <i class="bi bi-check-circle-fill fs-3 me-3 text-success"></i>
+                <div>
+                    <h6 class="fw-bold mb-1 text-success" th:text="${mensajeExito}">Success!</h6>
+                    <p class="mb-0 small text-success opacity-75">The system has processed your request successfully.</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="d-flex justify-content-between align-items-end mb-5">
+            <div>
+                <nav aria-label="breadcrumb" class="mb-2">
+                    <ol class="breadcrumb mb-0">
+                        <li class="breadcrumb-item small text-muted text-uppercase fw-bold letter-spacing-lg">Overview</li>
+                        <li class="breadcrumb-item small text-muted text-uppercase fw-bold active">Dashboard</li>
+                    </ol>
+                </nav>
+                <h3 class="fw-black text-premium-blue m-0 display-6" style="font-weight: 900; letter-spacing: -0.04em;">Dashboard</h3>
+            </div>
+            <button class="btn btn-je-primary px-4 py-3" sec:authorize="hasRole('ADMIN')" data-bs-toggle="modal" data-bs-target="#modalNuevoProyecto">
+                <i class="bi bi-plus-circle-fill me-2"></i>CREATE PROJECT
+            </button>
+        </div>
+
+        <div class="row g-4 mb-5">
+            <div class="col-md-6 col-xl-3 animate-up" style="animation-delay: 0.1s;">
+                <div class="kpi-mini-card">
                     <div class="d-flex align-items-center">
-                        <i class="bi bi-check-circle-fill fs-3 me-3 text-success"></i>
-                        <div>
-                            <h6 class="fw-bold mb-1" th:text="${mensajeExito}">Success!</h6>
-                            <p class="mb-0 small text-success">The project has been archived and notified to all users.</p>
+                        <div class="kpi-mini-icon icon-blue shadow-sm me-3"><i class="bi bi-grid-1x2-fill"></i></div>
+                        <div class="kpi-mini-data">
+                            <p class="text-muted small fw-bold text-uppercase mb-1">Active Projects</p>
+                            <h3 class="m-0 fw-black" th:text="${proyectos != null ? proyectos.size() : '0'}">0</h3>
                         </div>
                     </div>
                 </div>
-                
-                <div class="d-flex justify-content-between align-items-center mb-4">
-                    <div>
-                        <h2 class="fw-bold text-slate-900 m-0">Main Dashboard</h2>
+            </div>
+            <div class="col-md-6 col-xl-3 animate-up" style="animation-delay: 0.2s;">
+                <div class="kpi-mini-card">
+                    <div class="d-flex align-items-center">
+                        <div class="kpi-mini-icon icon-orange shadow-sm me-3"><i class="bi bi-rocket-takeoff-fill"></i></div>
+                        <div class="kpi-mini-data">
+                            <p class="text-muted small fw-bold text-uppercase mb-1">Upcoming SOPs</p>
+                            <h3 class="m-0 fw-black" th:text="${proximosLanzamientos}">0</h3>
+                        </div>
                     </div>
-                        <a th:href="@{/proyectos/nuevo}" class="btn btn-je-primary shadow" sec:authorize="hasRole('ADMIN')">
-                            <i class="bi bi-plus-lg me-2"></i>NEW PROJECT
-                        </a>
-                    </div>
-
-                <div class="row g-4 mb-4">
-                    <div class="col-md-3"><div class="kpi-mini-card"><div class="kpi-mini-icon icon-blue"><i class="bi bi-folder2-open"></i></div><div class="kpi-mini-data"><h3 th:text="${proyectos != null ? proyectos.size() : '0'}">0</h3><p>Active Projects</p></div></div></div>
-                    <div class="col-md-3"><div class="kpi-mini-card"><div class="kpi-mini-icon icon-orange"><i class="bi bi-calendar3"></i></div><div class="kpi-mini-data"><h3 th:text="${proximosLanzamientos}">0</h3><p>SOP < 6M</p></div></div></div>
-                    <div class="col-md-3"><div class="kpi-mini-card"><div class="kpi-mini-icon icon-red"><i class="bi bi-exclamation-triangle"></i></div><div class="kpi-mini-data"><h3 th:text="${alertas != null ? alertas.size() : '0'}">0</h3><p>Needs Action</p></div></div></div>
-                    <div class="col-md-3"><div class="kpi-mini-card"><div class="kpi-mini-icon icon-green"><i class="bi bi-graph-up"></i></div><div class="kpi-mini-data"><h3 th:text="${avancePromedio + '%'}">0%</h3><p>Avg Progress</p></div></div></div>
                 </div>
+            </div>
+            <div class="col-md-6 col-xl-3 animate-up" style="animation-delay: 0.3s;">
+                <div class="kpi-mini-card">
+                    <div class="d-flex align-items-center">
+                        <div class="kpi-mini-icon icon-red shadow-sm me-3"><i class="bi bi-exclamation-octagon-fill"></i></div>
+                        <div class="kpi-mini-data">
+                            <p class="text-muted small fw-bold text-uppercase mb-1">Needs Action</p>
+                            <h3 class="m-0 fw-black" th:text="${alertas != null ? alertas.size() : '0'}">0</h3>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6 col-xl-3 animate-up" style="animation-delay: 0.4s;">
+                <div class="kpi-mini-card">
+                    <div class="d-flex align-items-center">
+                        <div class="kpi-mini-icon icon-green shadow-sm me-3"><i class="bi bi-pie-chart-fill"></i></div>
+                        <div class="kpi-mini-data">
+                            <p class="text-muted small fw-bold text-uppercase mb-1">Global Progress</p>
+                            <h3 class="m-0 fw-black" th:text="${avancePromedio + '%'}">0%</h3>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
 
-                <div id="dashboard-content">
-                    <div class="row g-4 mb-4">
-                        <div class="col-lg-12">
-                            <div class="card glass-card">
-                                <div class="card-header glass-header d-flex justify-content-between align-items-center"><h6 class="m-0 fw-bold" style="font-size: 1.25rem;">ACTIVE PROJECTS TRACKING</h6><span class="badge bg-primary text-white px-3 py-1 rounded-pill small fw-bold">REAL-TIME</span></div>
-                                <div class="card-body p-0"><div class="table-responsive" style="max-height: 600px;"><table class="table table-hover align-middle mb-0"><thead><tr><th class="ps-4">Project</th><th class="text-center">Customer</th><th style="width: 150px;">Overall Progress</th><th class="text-center" style="width: 200px;">SOP Date</th><th class="text-center pe-4">Actions</th></tr></thead><tbody>
-                                    <tr th:each="p : ${reporteProgreso}"><td class="ps-4"><div class="text-dark-bold" th:text="${p.nombreProyecto}"></div><div class="text-muted" th:text="${p.numeroParte}"></div></td><td class="text-center"><span class="badge badge-customer rounded-3" th:text="${p.cliente}"></span></td><td><div class="d-flex align-items-center"><div class="progress progress-mini flex-grow-1 me-3"><div class="progress-bar" th:classappend="${p.porcentaje < 30 ? 'bg-danger' : (p.porcentaje < 70 ? 'bg-warning' : 'bg-success')}" th:style="'width: ' + ${p.porcentaje} + '%;'"></div></div><span class="text-dark-bold" th:text="${p.porcentaje + '%'}"></span></div></td><td class="text-center text-primary fw-bold" th:text="${p.sop}"></td><td class="text-center pe-4">
-                                        <div class="d-flex justify-content-center gap-2">
-                                            <a th:href="@{/proyectos/checklist/{id}(id=${p.id})}" class="btn btn-sm btn-outline-primary rounded-pill px-3 fw-bold" title="Open Checklist">OPEN</a>
-                                            <a th:if="${#authorization.expression('hasRole(''ADMIN'')')}" 
-                                                th:href="@{/proyectos/editar/{id}(id=${p.id})}"
-                                                class="btn btn-sm btn-outline-secondary rounded-pill px-3 fw-bold"
-                                                title="Edit Project">
-                                                <i class="bi bi-pencil"></i>
-                                            </a>
-                                            <a th:if="${#authorization.expression('hasRole(''ADMIN'')')}" 
-                                               th:href="@{/proyectos/eliminar/{id}(id=${p.id})}" 
-                                               class="btn btn-sm btn-outline-danger rounded-pill px-3 fw-bold btn-delete-project"
-                                               th:data-id="${p.id}"
-                                               th:data-nombre="${p.nombreProyecto}"
-                                               title="Delete Project">
-                                                <i class="bi bi-trash"></i>
-                                            </a>
-                                        </div>
-                                    </td></tr>
-                                </tbody></table></div></div>
+        <div id="dashboard-content">
+            <div class="row g-4 mb-5">
+                <div class="col-lg-12">
+                    <div class="card glass-card border-0">
+                        <div class="card-header glass-header d-flex justify-content-between align-items-center">
+                            <h6 class="m-0">PROJECT TRACKING</h6>
+                            <span class="badge bg-soft-primary text-primary px-3 py-2 rounded-pill small fw-bold" style="background: #eff6ff;">
+                                <i class="bi bi-broadcast me-1"></i> LIVE MONITORING
+                            </span>
+                        </div>
+                        <div class="card-body p-0">
+                            <div class="table-responsive" style="overflow: visible !important;">
+                                <table class="table align-middle">
+                                    <thead>
+                                        <tr>
+                                            <th class="ps-4">Project Information</th>
+                                            <th class="text-center">Client</th>
+                                            <th style="width: 250px;">Progress</th>
+                                            <th class="text-center">SOP Target</th>
+                                            <th class="text-center pe-4">Operations</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr th:each="p : ${reporteProgreso}">
+                                            <td class="ps-4">
+                                                <div class="fw-bold text-dark" style="font-size: 1.05rem;" th:text="${p.nombreProyecto}">Project Name</div>
+                                                <div class="text-muted small fw-medium" th:text="${p.numeroParte}">JE-001</div>
+                                            </td>
+                                            <td class="text-center">
+                                                <span class="badge bg-primary rounded-3 px-3 py-2 fw-bold" th:text="${p.cliente}">Client</span>
+                                            </td>
+                                            <td>
+                                                <div class="d-flex align-items-center">
+                                                    <div class="progress progress-mini flex-grow-1 me-3">
+                                                        <div class="progress-bar" 
+                                                             th:classappend="${p.porcentaje < 30 ? 'bg-danger' : (p.porcentaje < 70 ? 'bg-warning' : 'bg-success')}" 
+                                                             th:style="'width: ' + ${p.porcentaje} + '%;'"></div>
+                                                    </div>
+                                                    <span class="fw-bold text-dark small" th:text="${p.porcentaje + '%'}">0%</span>
+                                                </div>
+                                            </td>
+                                            <td class="text-center">
+                                                <div class="text-primary fw-black" style="font-size: 0.95rem;" th:text="${p.sop}">2024-12-01</div>
+                                            </td>
+                                            <td class="text-center pe-4">
+                                                <div class="d-flex justify-content-center gap-2">
+                                                    <a th:href="@{/proyectos/checklist/{id}(id=${p.id})}" class="btn btn-sm btn-outline-primary rounded-pill px-3 fw-bold">VIEW</a>
+                                                    <div class="dropdown" sec:authorize="hasRole('ADMIN')">
+                                                        <button class="btn btn-sm btn-light rounded-circle shadow-sm" type="button" data-bs-toggle="dropdown" style="width: 32px; height: 32px; padding: 0;">
+                                                            <i class="bi bi-three-dots-vertical"></i>
+                                                        </button>
+                                                        <ul class="dropdown-menu dropdown-menu-end border-0 shadow-lg p-2" style="border-radius: 12px;">
+    <li>
+        <a class="dropdown-item rounded-3 py-2" th:href="@{/proyectos/editar/{id}(id=${p.id})}">
+            <i class="bi bi-pencil me-2 text-muted"></i>Edit Metadata
+        </a>
+    </li>
+    <li><hr class="dropdown-divider opacity-50"></li>
+    <li>
+        <a class="dropdown-item rounded-3 py-2 text-danger btn-delete-project" 
+           th:href="@{/proyectos/eliminar/{id}(id=${p.id})}" 
+           th:data-nombre="${p.nombreProyecto}">
+           <i class="bi bi-trash me-2"></i>Remove Project
+        </a>
+    </li>
+</ul>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
                             </div>
                         </div>
                     </div>
+                </div>
+            </div>
 
-                    <div class="row g-4 mb-4">
-                        <div class="col-lg-7">
-                            <div class="card glass-card">
-                                <div class="card-header glass-header d-flex justify-content-between align-items-center">
-                                    <h6 class="m-0 fw-bold">PENDING DELIVERABLES</h6>
-                                    <div class="d-flex gap-2 overflow-x-auto custom-scrollbar pb-1" style="max-width: 60%;">
-                                        <div class="champion-pill active" data-champion="SHOW_ALL">ALL TASKS <span class="badge" th:text="${todasTareasPendientes.size()}">0</span></div>                                        <div th:each="champ : ${listaChampions}" 
-                                                th:if="${champ != 'FIN' and champ != 'SCS'}"
-                                                class="champion-pill" 
-                                                th:data-champion="${champ}" 
-                                                th:title="${@checklistServicio.obtenerNombreCompletoChampion(champ)}">
-                                                <span th:text="${champ}"></span> 
-                                                <span class="badge" th:text="${conteoPorChampion.get(champ) ?: 0}">0</span>
+            <div class="row g-4 mb-5">
+                <div class="col-lg-7">
+                    <div class="card glass-card h-100">
+                        <div class="card-header glass-header d-flex flex-column gap-3">
+                            <div class="d-flex justify-content-between align-items-center w-100">
+                                <h6 class="m-0">CRITICAL DELIVERABLES</h6>
+                                <span class="badge bg-soft-danger text-danger rounded-pill px-3 py-2 fw-bold" style="background: #fef2f2;">
+                                    <i class="bi bi-clock-history me-1"></i> PENDING
+                                </span>
+                            </div>
+                            <div class="d-flex gap-2 overflow-x-auto custom-scrollbar pb-2" style="scrollbar-width: none;">
+                                <div class="champion-pill active" data-champion="SHOW_ALL">ALL TASKS <span class="badge ms-1" th:text="${todasTareasPendientes.size()}">0</span></div>
+                                <div th:each="champ : ${listaChampions}" 
+                                        th:if="${champ != 'FIN' and champ != 'SCS'}"
+                                        class="champion-pill" 
+                                        th:data-champion="${champ}" 
+                                        th:title="${@checklistServicio.obtenerNombreCompletoChampion(champ)}">
+                                        <span th:text="${champ}"></span> 
+                                        <span class="badge ms-1" th:text="${conteoPorChampion.get(champ) ?: 0}">0</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-body p-0">
+                            <div class="accordion accordion-flush" id="accordionTareas" style="max-height: 450px; overflow-y: auto;">
+                                <div class="accordion-item" th:each="entry, stat : ${tareasAgrupadas}">
+                                    <h3 class="accordion-header" th:id="'heading-' + ${stat.index}">
+                                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" th:data-bs-target="'#collapse-' + ${stat.index}">
+                                            <div class="d-flex align-items-center w-100">
+                                                <div class="rounded-3 bg-soft-primary p-2 me-3" style="background: #f0f7ff;">
+                                                    <i class="bi bi-folder2-open text-primary fs-5"></i>
+                                                </div>
+                                                <span th:text="${entry.key}" class="flex-grow-1 fw-bold text-dark">Project Name</span>
+                                                <span class="badge bg-danger rounded-pill px-2 py-1 ms-3" style="font-size: 0.7rem;" th:text="${entry.value.size()}">0</span>
+                                            </div>
+                                        </button>
+                                    </h3>
+                                    <div th:id="'collapse-' + ${stat.index}" class="accordion-collapse collapse" data-bs-parent="#accordionTareas">
+                                        <div class="accordion-body p-0 bg-white">
+                                            <table class="table align-middle">
+                                                <thead class="bg-light">
+                                                    <tr>
+                                                        <th class="ps-5">Deliverable</th>
+                                                        <th class="text-center">Lead</th>
+                                                        <th class="text-center">Status</th>
+                                                        <th class="text-center pe-4">Portal</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <tr th:each="t : ${entry.value}" class="task-row" th:data-champion="${@checklistServicio.normalizarChampion(t.champion)}">
+                                                        <td class="ps-5 text-dark fw-medium small" th:text="${t.nombre}"></td>
+                                                        <td class="text-center">
+                                                            <span class="badge badge-premium px-3 py-2" 
+                                                                  th:with="normChamp=${@checklistServicio.normalizarChampion(t.champion)}" 
+                                                                  th:classappend="'champ-' + ${#strings.replace(#strings.toLowerCase(normChamp), '/', '-')}" 
+                                                                  th:text="${normChamp}"></span>
+                                                        </td>
+                                                        <td class="text-center">
+                                                            <span class="badge rounded-pill px-3 py-2 fw-bold" 
+                                                                  th:classappend="${t.controlEntregable == 'NEEDS ACTION' ? 'bg-soft-danger text-danger' : 'bg-soft-secondary text-secondary'}" 
+                                                                  style="font-size: 0.65rem;"
+                                                                  th:text="${t.controlEntregable ?: 'PENDING'}"></span>
+                                                        </td>
+                                                        <td class="text-center pe-4">
+                                                            <a th:href="@{/proyectos/checklist/{id}(id=${t.proyecto.id})}" class="btn btn-sm btn-link text-premium-orange fw-black text-decoration-none">ACCESS <i class="bi bi-arrow-right-short"></i></a>
+                                                        </td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
                                         </div>
                                     </div>
                                 </div>
-                                <div class="card-body p-0">
-                                    <div class="accordion accordion-flush custom-scrollbar" id="accordionTareas" style="max-height: 400px; overflow-y: auto;">
-                                        <div class="accordion-item border-bottom" th:each="entry, stat : ${tareasAgrupadas}">
-                                            <h2 class="accordion-header" th:id="'heading-' + ${stat.index}">
-                                                <button class="accordion-button collapsed fw-bold text-dark bg-light" type="button" data-bs-toggle="collapse" th:data-bs-target="'#collapse-' + ${stat.index}">
-                                                        <i class="bi bi-folder2-open text-primary me-2 flex-shrink-0"></i>
-                                                        <span th:text="${entry.key}" class="flex-grow-1 text-truncate text-start me-3">Project Name</span>
-                                                        <span class="badge bg-danger rounded-pill shadow-sm project-task-count me-2 flex-shrink-0" th:text="${entry.value.size()}">0</span>
-                                                </button>
-                                            </h2>
-                                            <div th:id="'collapse-' + ${stat.index}" class="accordion-collapse collapse" data-bs-parent="#accordionTareas">
-                                                <div class="accordion-body p-0">
-                                                    <table class="table table-hover align-middle mb-0">
-                                                        <thead class="table-light">
-                                                            <tr>
-                                                                <th class="ps-4">Deliverable</th>
-                                                                <th class="text-center">Responsible</th>
-                                                                <th class="text-center">Status</th>
-                                                                <th class="text-center pe-4">Action</th>
-                                                            </tr>
-                                                        </thead>
-                                                        <tbody>
-                                                            <tr th:each="t : ${entry.value}" class="task-row" th:data-champion="${@checklistServicio.normalizarChampion(t.champion)}">
-                                                                <td class="ps-4 text-dark fw-medium" th:text="${t.nombre}"></td>
-                                                                <td class="text-center champ-col">
-    <span class="badge bg-secondary px-3 py-2 fw-bold shadow-sm" 
-          th:with="normChamp=${@checklistServicio.normalizarChampion(t.champion)}" 
-          th:classappend="'champ-' + ${#strings.replace(#strings.toLowerCase(normChamp), '/', '-')}" 
-          th:text="${normChamp}" 
-          th:title="${@checklistServicio.obtenerNombreCompletoChampion(normChamp)}">
-    </span>
-</td>
-                                                                <td class="text-center">
-                                                                    <span class="badge rounded-pill border px-3 py-2 shadow-sm" 
-                                                                          th:classappend="${t.controlEntregable == 'NEEDS ACTION' ? 'status-action' : 'status-pending'}" 
-                                                                          th:text="${t.controlEntregable ?: 'PENDING'}">
-                                                                    </span>
-                                                                </td>
-                                                                <td class="text-center pe-4">
-                                                                    <a th:href="@{/proyectos/checklist/{id}(id=${t.proyecto.id})}" class="btn btn-sm btn-link text-primary fw-bold text-decoration-none">OPEN</a>
-                                                                </td>
-                                                            </tr>
-                                                        </tbody>
-                                                    </table>
+                            </div>
+                            <div th:if="${tareasAgrupadas == null or tareasAgrupadas.isEmpty()}" class="p-5 text-center">
+                                <div class="mb-3 opacity-25"><i class="bi bi-check2-all display-1"></i></div>
+                                <p class="text-muted fw-bold">All clear! No pending deliverables.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-5">
+                    <div class="card glass-card h-100 clickable-chart" id="trendCard">
+                        <div class="card-header glass-header d-flex justify-content-between align-items-center">
+                            <h6 class="m-0">OPERATIONAL VELOCITY</h6>
+                            <button class="btn btn-sm btn-light rounded-pill px-3 border-0 fw-bold" style="font-size: 0.7rem;">
+                                <i class="bi bi-arrows-angle-expand me-1"></i> FULL VIEW
+                            </button>
+                        </div>
+                        <div class="card-body p-4">
+                            <div class="p-3 rounded-4 mb-4" style="background: #f8fafc; border: 1px dashed #e2e8f0;">
+                                <p class="small text-muted mb-0"><i class="bi bi-info-circle-fill text-primary me-2"></i>Analyzing approved deliverables (OK) per month for current fiscal cycle.</p>
+                            </div>
+                            <canvas id="miniTrendChart" style="max-height: 280px; width: 100%;"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row g-4">
+                <div class="col-12">
+                    <div class="card glass-card">
+                        <div class="card-header glass-header d-flex justify-content-between align-items-center">
+                            <h6 class="m-0 d-flex align-items-center">
+                                <div class="rounded-3 bg-soft-orange p-2 me-3" style="background: #fff7ed;">
+                                    <i class="bi bi-calendar-check-fill text-premium-orange fs-5"></i>
+                                </div>
+                                SOP MASTER SCHEDULE
+                            </h6>
+                        </div>
+                        <div class="card-body p-0">
+                            <div class="row g-0">
+                                <div class="col-lg-9 p-4 border-end bg-white">
+                                    <div id='calendar' class="premium-calendar"></div>
+                                </div>
+                                <div class="col-lg-3 p-4 bg-light bg-opacity-30">
+                                    <div class="mb-4">
+                                        <h6 class="fw-black text-dark small text-uppercase letter-spacing-lg mb-3">Timeline Events</h6>
+                                        <div class="d-flex align-items-center justify-content-between p-3 rounded-4 bg-white border shadow-sm">
+                                            <span class="small fw-bold text-muted">Upcoming Milestone</span>
+                                            <span class="badge bg-premium-orange text-white rounded-pill px-2 py-1" style="font-size: 0.65rem;" th:text="${eventosCalendario.size()}">0</span>
+                                        </div>
+                                    </div>
+                                    <div id="calendar-event-list" style="max-height: 500px; overflow-y: auto;" class="custom-scrollbar pe-2">
+                                        <div th:each="event : ${eventosCalendario}" class="mb-3 p-3 rounded-4 bg-white border-0 shadow-sm transition-hover premium-event-card">
+                                            <div class="d-flex align-items-start mb-2">
+                                                <div class="rounded-circle mt-1 me-2 pulse-dot" style="width: 8px; height: 8px; flex-shrink: 0;" th:styleappend="'background-color: ' + (${event.className == 'bg-success' ? '#10b981' : (event.className == 'bg-primary' ? '#3b82f6' : '#f59e0b')})"></div>
+                                                <span class="fw-bold text-dark small text-truncate" th:text="${event.title}">Project Event</span>
+                                            </div>
+                                            <div class="d-flex justify-content-between align-items-center mt-3">
+                                                <div class="text-muted" style="font-size: 0.75rem;">
+                                                    <i class="bi bi-calendar4-event me-1"></i> <span th:text="${event.start}">Date</span>
                                                 </div>
+                                                <a th:href="${event.url}" class="btn btn-xs btn-je-primary-outline rounded-pill px-3 py-1 fw-bold" style="font-size: 0.65rem;">PORTAL</a>
                                             </div>
                                         </div>
-                                        <div th:if="${tareasAgrupadas == null or tareasAgrupadas.isEmpty()}" class="p-4 text-center text-muted fst-italic">
-                                            No pending deliverables at this moment.
-                                        </div>
                                     </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-lg-5">
-                            <div class="card glass-card clickable-chart" id="trendCard">
-                                <div class="card-header glass-header d-flex justify-content-between align-items-center"><h6 class="m-0 fw-bold">OPERATIONAL SPEED</h6><span class="badge bg-light text-muted border">CLICK TO ENLARGE</span></div>
-                                <div class="card-body p-4">
-                                    <div class="mt-2 p-3 bg-light bg-opacity-50 rounded-3 border mb-3">
-                                        <p class="small text-muted mb-0" style="font-size: 0.85rem;"><i class="bi bi-info-circle-fill text-primary me-1"></i>This graph measures the number of approved deliverables ("OK") per month for the current year. </p>
-                                    </div>
-                                    <canvas id="miniTrendChart" style="max-height: 250px; width: 100%;"></canvas>
                                 </div>
                             </div>
                         </div>
                     </div>
+                </div>
+            </div>
+        </div> 
+    </main>
 
-                    <div class="row g-4">
-                        <div class="col-12">
-                            <div class="card glass-card">
-                                <div class="card-header premium-header d-flex justify-content-between align-items-center">
-                                    <h6 class="m-0 premium-title">
-                                        <i class="bi bi-calendar3 premium-icon" style="background: rgba(59, 130, 246, 0.1); color: #3b82f6;"></i>
-                                        SOP MASTER SCHEDULE
+    <th:block layout:fragment="modals">
+        <div class="modal fade" id="modalEditarProyecto" tabindex="-1">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content border-0 shadow-lg" style="border-radius: 28px; overflow: hidden;">
+                    <form th:action="@{/proyectos/guardar}" method="post">
+                        <input type="hidden" name="id" id="edit-id">
+                        <div class="modal-header bg-white border-0 p-4 pb-0">
+                            <h5 class="modal-title fw-black text-premium-blue d-flex align-items-center">
+                                <div class="rounded-3 bg-soft-primary p-2 me-3" style="background: #f0f7ff;">
+                                    <i class="bi bi-pencil-square text-primary"></i>
+                                </div>
+                                Update Metadata
+                            </h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body p-4 pt-4">
+                            <div class="mb-4">
+                                <label class="form-label small fw-bold text-uppercase text-muted mb-2 letter-spacing-lg">Project Name</label>
+                                <input type="text" name="nombre" id="edit-nombre" class="form-control form-control-lg" required>
+                            </div>
+                            <div class="row g-4 mb-4">
+                                <div class="col-6">
+                                    <label class="form-label small fw-bold text-uppercase text-muted mb-2 letter-spacing-lg">Part Number</label>
+                                    <input type="text" name="numeroParte" id="edit-numeroParte" class="form-control" required>
+                                </div>
+                                <div class="col-6">
+                                    <label class="form-label small fw-bold text-uppercase text-muted mb-2 letter-spacing-lg">Client</label>
+                                    <input type="text" name="cliente" id="edit-cliente" class="form-control" required>
+                                </div>
+                            </div>
+                            <div class="mb-2">
+                                <label class="form-label small fw-bold text-uppercase text-muted mb-2 letter-spacing-lg">SOP Target</label>
+                                <input type="date" name="sop" id="edit-sop" class="form-control" required>
+                            </div>
+                        </div>
+                        <div class="modal-footer border-0 p-4 pt-0">
+                            <button type="button" class="btn btn-light rounded-pill px-4 fw-bold" data-bs-dismiss="modal">Cancel</button>
+                            <button type="submit" class="btn btn-je-primary rounded-pill px-4 fw-bold">Apply Changes</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal fade" id="modalNuevoProyecto" tabindex="-1">
+            <div class="modal-dialog modal-dialog-centered modal-xl">
+                <div class="modal-content border-0 shadow-premium" style="border-radius: 32px; overflow: hidden;">
+                    <form th:action="@{/proyectos/guardar}" method="post">
+                        <div class="modal-header bg-white border-0 p-5 pb-0">
+                            <div class="d-flex align-items-center">
+                                <div class="rounded-4 bg-soft-orange p-3 me-4" style="background: #fff7ed;">
+                                    <i class="bi bi-rocket-takeoff-fill text-premium-orange fs-2"></i>
+                                </div>
+                                <div>
+                                    <h4 class="modal-title fw-black text-premium-blue mb-0">Initialize APQP Project</h4>
+                                    <p class="text-muted small mb-0 fw-bold opacity-50">COMPLETE PROJECT PARAMETERS</p>
+                                </div>
+                            </div>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body p-5 pt-4">
+                            <div class="row g-5">
+                                
+                                <div class="col-lg-6">
+                                    <h6 class="fw-black text-dark mb-4 d-flex align-items-center">
+                                        <i class="bi bi-box-seam me-2 text-warning fs-5"></i> Product Identification
                                     </h6>
-                                    <div class="d-flex align-items-center gap-3">
-                                        <div class="badge bg-je-blue text-white px-3 py-2 rounded-pill shadow-sm small fw-bold">PLANNING CALENDAR</div>
-                                        <div class="dropdown">
-                                            <button class="btn btn-sm btn-light border fw-bold dropdown-toggle" type="button" id="calendarFilter" data-bs-toggle="dropdown">
-                                                <i class="bi bi-funnel me-1"></i> Filter View
-                                            </button>
-                                            <ul class="dropdown-menu dropdown-menu-end shadow border-0">
-                                                <li><a class="dropdown-item py-2 active" href="#" data-view="dayGridMonth">Month View</a></li>
-                                                <li><a class="dropdown-item py-2" href="#" data-view="listMonth">List Schedule</a></li>
-                                                <li><a class="dropdown-item py-2" href="#" data-view="multiMonthYear">Year Overview</a></li>
-                                            </ul>
+                                    <div class="row g-3">
+                                        <div class="col-12">
+                                            <label class="form-label small fw-black text-premium-blue text-uppercase opacity-50 letter-spacing-lg mb-2">Project Name *</label>
+                                            <input type="text" name="nombre" class="form-control border-0 bg-light px-4 py-2 fw-black" style="border-radius: 12px;" required>
+                                        </div>
+                                        <div class="col-6">
+                                            <label class="form-label small fw-black text-premium-blue text-uppercase opacity-50 letter-spacing-lg mb-2">Part Number</label>
+                                            <input type="text" name="numeroParte" class="form-control border-0 bg-light px-4 py-2 fw-bold" style="border-radius: 12px;">
+                                        </div>
+                                        <div class="col-6">
+                                            <label class="form-label small fw-black text-premium-blue text-uppercase opacity-50 letter-spacing-lg mb-2">Client</label>
+                                            <input type="text" name="cliente" class="form-control border-0 bg-light px-4 py-2 fw-bold" style="border-radius: 12px;">
+                                        </div>
+                                        <div class="col-6">
+                                            <label class="form-label small fw-black text-premium-orange text-uppercase letter-spacing-lg mb-2">Application</label>
+                                            <input type="text" name="aplicacion" class="form-control border-0 bg-light px-4 py-2 fw-bold" style="border-radius: 12px;" >
+                                        </div>
+                                        <div class="col-6">
+                                            <label class="form-label small fw-black text-premium-orange text-uppercase letter-spacing-lg mb-2">Line</label>
+                                            <input type="text" name="linea" class="form-control border-0 bg-light px-4 py-2 fw-bold" style="border-radius: 12px;">
+                                        </div>
+                                        <div class="col-6">
+                                            <label class="form-label small fw-black text-premium-blue text-uppercase opacity-50 letter-spacing-lg mb-2">Product</label>
+                                            <input type="text" name="producto" class="form-control border-0 bg-light px-4 py-2 fw-bold" style="border-radius: 12px;" >
+                                        </div>
+                                        <div class="col-6">
+                                            <label class="form-label small fw-black text-premium-blue text-uppercase opacity-50 letter-spacing-lg mb-2">Revision Reason</label>
+                                            <input type="text" name="razonRevision" class="form-control border-0 bg-light px-4 py-2 fw-bold" style="border-radius: 12px;">
                                         </div>
                                     </div>
                                 </div>
-                                <div class="card-body p-0">
-                                    <div class="row g-0">
-                                        <div class="col-lg-9 p-4 border-end bg-white bg-opacity-40">
-                                            <div id='calendar' class="premium-calendar"></div>
+
+                                <div class="col-lg-6">
+                                    <h6 class="fw-black text-dark mb-4 d-flex align-items-center mt-4 mt-lg-0">
+                                        <i class="bi bi-calendar-event me-2 text-warning fs-5"></i> Milestones & Team
+                                    </h6>
+                                    <div class="row g-3">
+                                        <div class="col-6">
+                                            <label class="form-label small fw-black text-premium-blue text-uppercase opacity-50 letter-spacing-lg mb-2">Start Date</label>
+                                            <input type="date" name="fechaInicio" class="form-control border-0 bg-light px-4 py-2 fw-bold text-muted" style="border-radius: 12px;">
                                         </div>
-                                        <div class="col-lg-3 p-4 bg-light bg-opacity-30">
-                                            <div class="d-flex justify-content-between align-items-center mb-4 border-bottom pb-2">
-                                                <h6 class="fw-bold text-dark m-0">UPCOMING SOPs</h6>
-                                                <span class="badge bg-white text-primary border border-primary border-opacity-25 rounded-pill" th:text="${eventosCalendario.size() + ' TOTAL'}">0</span>
-                                            </div>
-                                            <div id="calendar-event-list" style="max-height: 520px; overflow-y: auto;" class="custom-scrollbar pe-2">
-                                                <div th:each="event : ${eventosCalendario}" class="mb-3 p-3 rounded-4 bg-white border shadow-sm transition-hover premium-event-card">
-                                                    <div class="d-flex align-items-center mb-2">
-                                                        <div class="rounded-circle me-2 pulse-dot" style="width: 10px; height: 10px;" th:styleappend="'background-color: ' + (${event.className == 'bg-success' ? '#10b981' : (event.className == 'bg-primary' ? '#3b82f6' : '#f59e0b')})"></div>
-                                                        <span class="fw-bold text-dark text-truncate" th:text="${event.title}"></span>
-                                                    </div>
-                                                    <div class="d-flex justify-content-between align-items-center mt-3">
-                                                        <div class="text-muted small">
-                                                            <i class="bi bi-calendar-event text-primary me-1"></i> 
-                                                            <span class="fw-bold" th:text="${event.start}"></span>
-                                                        </div>
-                                                        <a th:href="${event.url}" class="btn btn-xs btn-je-primary-outline rounded-pill px-3 py-1 fw-bold" style="font-size: 0.7rem;">VIEW</a>
-                                                    </div>
-                                                </div>
-                                                <div th:if="${eventosCalendario.isEmpty()}" class="text-center py-5">
-                                                    <i class="bi bi-calendar-x text-muted fs-1 opacity-25"></i>
-                                                    <p class="text-muted small mt-2">No upcoming SOPs scheduled</p>
-                                                </div>
+                                        <div class="col-6">
+                                            <label class="form-label small fw-black text-premium-orange text-uppercase letter-spacing-lg mb-2">PPAP Date</label>
+                                            <input type="date" name="fechaPpap" class="form-control border-0 bg-light px-4 py-2 fw-bold text-muted" style="border-radius: 12px;">
+                                        </div>
+                                        <div class="col-6">
+                                            <label class="form-label small fw-black text-premium-blue text-uppercase opacity-50 letter-spacing-lg mb-2">SOP Target *</label>
+                                            <input type="date" name="sop" class="form-control border-0 bg-light px-4 py-2 fw-black text-premium-orange" style="border-radius: 12px;" required>
+                                        </div>
+                                        <div class="col-6">
+                                            <label class="form-label small fw-black text-premium-orange text-uppercase letter-spacing-lg mb-2">Safe Launch End</label>
+                                            <input type="date" name="fechaTerminoSafeLaunch" class="form-control border-0 bg-light px-4 py-2 fw-bold text-muted" style="border-radius: 12px;">
+                                        </div>
+                                        <div class="col-12 mt-4">
+                                            <label class="form-label small fw-black text-premium-blue text-uppercase opacity-50 letter-spacing-lg mb-2">Program Manager</label>
+                                            <div class="input-group">
+                                                <span class="input-group-text border-0 bg-light px-3" style="border-radius: 12px 0 0 12px;"><i class="bi bi-person-fill text-muted"></i></span>
+                                                <input type="text" name="programManager" class="form-control border-0 bg-light px-3 py-2 fw-bold" style="border-radius: 0 12px 12px 0;" placeholder="e.g. PM Name">
                                             </div>
                                         </div>
                                     </div>
                                 </div>
+
                             </div>
                         </div>
-                    </div>
-                </div> 
-            </main>
-        </div>
-    </div>
-
-    <div class="modal fade" id="modalFullTrend" tabindex="-1">
-        <div class="modal-dialog modal-xl modal-dialog-centered">
-            <div class="modal-content shadow-lg border-0" style="border-radius: 20px;">
-                <div class="modal-header border-0 p-4 pb-0"><h5 class="fw-bold m-0">Annual Operational Efficiency Trend</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
-                <div class="modal-body p-5"><canvas id="fullTrendChart" style="max-height: 500px;"></canvas></div>
-            </div>
-        </div>
-    </div>
-
-    <div class="modal fade" id="modalEditarProyecto" tabindex="-1">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content shadow-lg border-0" style="border-radius: 24px;">
-                <form th:action="@{/proyectos/guardar}" method="post">
-                    <input type="hidden" name="id" id="edit-id">
-                    <div class="modal-header bg-primary text-white py-4" style="border-radius: 24px 24px 0 0;"><h5 class="modal-title fw-bold px-2"><i class="bi bi-pencil-square me-2"></i>Edit Project</h5><button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button></div>
-                    <div class="modal-body p-4">
-                        <div class="mb-3"><label class="form-label small fw-bold text-uppercase">Project Name *</label><div class="input-group"><span class="input-group-text bg-light"><i class="bi bi-tag"></i></span><input type="text" name="nombre" id="edit-nombre" class="form-control" placeholder="e.g. Project Apollo" required></div></div>
-                        <div class="row g-3 mb-3"><div class="col-6"><label class="form-label small fw-bold text-uppercase">Part Number *</label><div class="input-group"><span class="input-group-text bg-light"><i class="bi bi-hash"></i></span><input type="text" name="numeroParte" id="edit-numeroParte" class="form-control" placeholder="JE-XXXXX" required></div></div><div class="col-6"><label class="form-label small fw-bold text-uppercase">Client *</label><div class="input-group"><span class="input-group-text bg-light"><i class="bi bi-person"></i></span><input type="text" name="cliente" id="edit-cliente" class="form-control" placeholder="Client Name" required></div></div></div>
-                        <div class="mb-3"><label class="form-label small fw-bold text-uppercase">Target SOP Date *</label><div class="input-group"><span class="input-group-text bg-light"><i class="bi bi-calendar-check"></i></span><input type="date" name="sop" id="edit-sop" class="form-control" required></div></div>
-                    </div>
-                    <div class="modal-footer border-0 p-4 pt-0"><button type="button" class="btn btn-light px-4 py-2 fw-bold" data-bs-dismiss="modal">Cancel</button><button type="submit" class="btn btn-primary px-4 py-2 fw-bold shadow">Save Changes</button></div>
-                </form>
-            </div>
-        </div>
-    </div>
-
-    <div class="modal fade" id="modalEliminarProyecto" tabindex="-1">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content border-0 shadow-lg" style="border-radius: 24px;">
-                <div class="modal-header bg-danger text-white py-4" style="border-radius: 24px 24px 0 0;">
-                    <h5 class="modal-title fw-bold px-2"><i class="bi bi-exclamation-triangle-fill me-2"></i>Confirm Deletion</h5>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
-                </div>
-                <div class="modal-body p-5 text-center">
-                    <div class="mb-4">
-                        <i class="bi bi-trash text-danger" style="font-size: 4rem; opacity: 0.2;"></i>
-                    </div>
-                    <h4 class="fw-bold text-dark mb-3">Delete Project?</h4>
-                    <p class="text-muted mb-0">You are about to delete <span id="nombreProyectoEliminar" class="fw-bold text-dark"></span>.</p>
-                    <p class="text-muted small">All checklist items, attachments, and milestones will be permanently removed. This action cannot be undone.</p>
-                </div>
-                <div class="modal-footer border-0 p-4 pt-0">
-                    <button type="button" class="btn btn-light px-4 py-2 fw-bold" data-bs-dismiss="modal">Cancel</button>
-                    <a id="btnConfirmarEliminar" href="#" class="btn btn-danger px-4 py-2 fw-bold shadow">Delete Permanently</a>
+                        <div class="modal-footer border-0 p-5 pt-0 mt-2 gap-3">
+                            <button type="button" class="btn btn-light rounded-pill px-5 py-3 fw-black text-muted" data-bs-dismiss="modal">Discard</button>
+                            <button type="submit" class="btn btn-je-primary flex-grow-1 rounded-pill py-3 fw-black shadow-lg">
+                                <i class="bi bi-rocket-takeoff-fill me-2"></i> INITIALIZE PROJECT
+                            </button>
+                        </div>
+                    </form>
                 </div>
             </div>
         </div>
-    </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script th:src="@{/js/index.js}"></script>
-    <script th:inline="javascript">
-        window.addEventListener('load', function() {
-            const tendenciaData = /*[[${tendencia}]]*/ {};
-            const eventosCalendario = /*[[${eventosCalendario}]]*/ [];
-            initDashboard(tendenciaData, eventosCalendario);
-        });
+        <div class="modal fade" id="modalEliminarProyecto" tabindex="-1">
+            <div class="modal-dialog modal-dialog-centered modal-sm" style="max-width: 400px;">
+                <div class="modal-content border-0 shadow-lg" style="border-radius: 28px;">
+                    <div class="modal-body p-5 text-center">
+                        <div class="mb-4">
+                            <div class="d-inline-flex align-items-center justify-content-center rounded-circle bg-soft-danger" style="width: 80px; height: 80px; background: #fef2f2;">
+                                <i class="bi bi-trash3-fill text-danger fs-1"></i>
+                            </div>
+                        </div>
+                        <h4 class="fw-black text-premium-blue mb-3">Permanent Delete?</h4>
+                        <p class="text-muted small mb-4">You are about to remove <span id="nombreProyectoEliminar" class="fw-bold text-dark"></span> and all its associated data. This cannot be reversed.</p>
+                        <div class="d-grid gap-2">
+                            <a id="btnConfirmarEliminar" href="#" class="btn btn-danger rounded-pill py-3 fw-bold shadow-sm">Yes, Delete Everything</a>
+                            <button type="button" class="btn btn-light rounded-pill py-3 fw-bold" data-bs-dismiss="modal">Keep Project</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
 
-      </script>
+        <div class="modal fade" id="modalFullTrend" tabindex="-1">
+            <div class="modal-dialog modal-xl modal-dialog-centered">
+                <div class="modal-content border-0 shadow-lg" style="border-radius: 32px;">
+                    <div class="modal-header border-0 p-4 pb-0">
+                        <h5 class="fw-black text-premium-blue m-0 px-3">Lifecycle Efficiency Analytics</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body p-5">
+                        <canvas id="fullTrendChart" style="max-height: 500px;"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </th:block>
+
+    <th:block layout:fragment="custom-scripts">
+        <script th:src="@{/js/index.js}"></script>
+        <script th:inline="javascript">
+            window.addEventListener('load', function() {
+                const tendenciaData = /*[[${tendencia}]]*/ {};
+                const eventosCalendario = /*[[${eventosCalendario}]]*/ [];
+                initDashboard(tendenciaData, eventosCalendario);
+            });
+        </script>
+    </th:block>
+
 </body>
 </html>

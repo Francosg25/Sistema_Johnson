@@ -1,11 +1,14 @@
-<div th:fragment="sidebar(currentUri)" class="sidebar-je d-flex flex-column shadow-sm" style="min-height: 100vh;">
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<body>
+<div th:fragment="sidebar(currentUri)" class="sidebar-je d-flex flex-column" style="min-height: 100vh;">
     
-    <div class="brand-logo d-flex flex-column align-items-center">
-        <span class="fw-black" style="font-weight: 900; font-size: 1.4rem; letter-spacing: -1px;">JOHNSON</span>
-        <span class="light small" style="letter-spacing: 3px; font-weight: 300;">ELECTRIC</span>
+    <div class="brand-logo d-flex flex-column align-items-center py-4">
+        <span class="fw-black text-dark" style="font-weight: 900; font-size: 1.5rem; letter-spacing: -1px; line-height: 1;">JOHNSON</span>
+        <span class="small fw-bold" style="letter-spacing: 4px; color: #F5821F; font-size: 0.65rem;">ELECTRIC</span>
     </div>
 
-    <ul class="nav flex-column mb-auto w-100 mt-3">
+    <ul class="nav flex-column mb-auto w-100 mt-2 px-2">
         <li class="nav-item">
             <a th:href="@{/}" class="nav-link" th:classappend="${currentUri == '/' || currentUri == '/index' || currentUri == '/proyectos'} ? 'active' : ''">
                 <i class="bi bi-grid-fill"></i> <span>Dashboard</span>
@@ -13,18 +16,20 @@
         </li>
         <li class="nav-item">
             <a th:href="@{/timeline}" class="nav-link" th:classappend="${currentUri != null and currentUri.startsWith('/timeline')} ? 'active' : ''">
-                <i class="bi bi-calendar3-range"></i> <span>Timeline</span>
+                <i class="bi bi-calendar3-range-fill"></i> <span>Timeline</span>
             </a>
         </li>
         <li class="nav-item">
-            <a th:href="@{/reportes}" class="nav-link" 
-                th:classappend="${currentUri == 'reportes' or (currentUri != null and currentUri.startsWith('/reportes'))} ? 'active' : ''">
+            <a th:href="@{/reportes}" class="nav-link" th:classappend="${currentUri == 'reportes' or (currentUri != null and currentUri.startsWith('/reportes'))} ? 'active' : ''">
                 <i class="bi bi-bar-chart-fill"></i> <span>Reports</span>
             </a>
         </li>
+        <li class="nav-item mt-3 mb-1">
+            <span class="px-4 text-uppercase text-muted fw-bold" style="font-size: 0.65rem; letter-spacing: 1px;">Data Management</span>
+        </li>
         <li class="nav-item">
             <a th:href="@{/evidencias}" class="nav-link" th:classappend="${currentUri == '/evidencias'} ? 'active' : ''">
-                <i class="bi bi-safe2-fill"></i> <span>Evidence Vault</span>
+                <i class="bi bi-folder-fill"></i> <span>Evidence Vault</span>
             </a>
         </li>
         <li class="nav-item">
@@ -32,18 +37,24 @@
                 <i class="bi bi-archive-fill"></i> <span>Historical Vault</span>
             </a>
         </li>
+        <li class="nav-item mt-3 mb-1">
+            <span class="px-4 text-uppercase text-muted fw-bold" style="font-size: 0.65rem; letter-spacing: 1px;">System</span>
+        </li>
         <li class="nav-item">
             <a th:href="@{/bitacora}" class="nav-link" th:classappend="${currentUri != null and currentUri.startsWith('/bitacora')} ? 'active' : ''">
                 <i class="bi bi-clock-history"></i> <span>Audit Trail</span>
             </a>
         </li>
-        <li class="nav-item" th:if="${#authorization.expression('hasRole(''ROLE_ADMIN'')')}">
+        <li class="nav-item" sec:authorize="hasRole('ADMIN')">
             <a th:href="@{/admin/usuarios}" class="nav-link" th:classappend="${currentUri != null and currentUri.startsWith('/admin/usuarios')} ? 'active' : ''">
-                <i class="bi bi-people-fill"></i> <span>Users</span>
+                <i class="bi bi-people-fill"></i> <span>Users Control</span>
             </a>
         </li>
     </ul>
 
-    
+    <div class="sidebar-footer text-center py-3 opacity-50">
+        <span style="font-size: 0.65rem; font-weight: 700;">v2.0 PRO</span>
     </div>
 </div>
+</body>
+</html>

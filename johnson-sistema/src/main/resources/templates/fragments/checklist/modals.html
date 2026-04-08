@@ -4,59 +4,60 @@
 
     <div th:fragment="modalEvidencia(item)" class="modal fade" th:id="'modalEvidencia_' + ${item.id}" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content border-0 shadow-lg">
-                <div class="modal-header bg-light border-bottom-0 pb-0">
+            <div class="modal-content border-0 shadow-lg" style="border-radius: 24px; overflow: hidden;">
+                <div class="modal-header bg-light border-bottom-0 p-4 pb-0">
                     <div>
-                        <h5 class="modal-title fw-bold text-dark mb-0"><i class="bi bi-folder-check text-primary me-2"></i>Evidence</h5>
-                        <p class="text-muted small mb-0 mt-1" th:text="${item.nombre}"></p>
+                        <h5 class="modal-title fw-black text-dark mb-0 d-flex align-items-center">
+                            <i class="bi bi-folder-check fs-4 me-2" style="color: var(--je-orange);"></i> Evidence Vault
+                        </h5>
+                        <p class="text-muted small fw-bold mb-0 mt-1" th:text="${item.nombre}"></p>
                     </div>
                     <button type="button" class="btn-close shadow-none" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <div class="modal-body pt-4">
+                <div class="modal-body p-4 pt-4">
                     <div th:id="'alerta-' + ${item.id}"></div>
                     <form th:action="@{'/evidencias/subir-ajax/' + ${item.id}}" th:data-item-id="${item.id}" method="post" enctype="multipart/form-data" class="mb-4 form-evidencia-ajax" sec:authorize="hasAnyRole('ADMIN', 'CHAMPION')">
     
-                <div class="drop-zone p-4 border border-2 border-primary border-opacity-25 rounded bg-light text-center position-relative transition-all" th:id="'drop-zone-' + ${item.id}" style="border-style: dashed !important;">
-        
-                    <i class="bi bi-cloud-arrow-up text-primary" style="font-size: 2.5rem;"></i>
-                    <h6 class="fw-bold mt-2 text-dark">Drag and drop your evidence here</h6>
-                    <p class="text-muted small mb-0">o haz clic para explorar tus archivos (Máx 15MB)</p>
-                    
-                    <input type="file" name="archivo" class="form-control file-input position-absolute top-0 start-0 w-100 h-100 opacity-0" style="cursor: pointer;" th:id="'file-input-' + ${item.id}">
-                </div>
+                        <div class="drop-zone p-5 border border-2 border-secondary border-opacity-25 bg-light text-center position-relative transition-all" th:id="'drop-zone-' + ${item.id}" style="border-style: dashed !important; border-radius: 16px;">
+                            <i class="bi bi-cloud-arrow-up text-primary" style="font-size: 3rem; opacity: 0.8;"></i>
+                            <h6 class="fw-black mt-3 text-dark">Drag and drop your evidence here</h6>
+                            <p class="text-muted small fw-medium mb-0">or click to browse your files (Max 15MB)</p>
+                            
+                            <input type="file" name="archivo" class="form-control file-input position-absolute top-0 start-0 w-100 h-100 opacity-0" style="cursor: pointer;" th:id="'file-input-' + ${item.id}">
+                        </div>
 
-                <div class="mt-2 text-center d-none" th:id="'file-name-display-' + ${item.id}">
-                    <span class="badge bg-success bg-opacity-10 text-success px-3 py-2 rounded-pill">
-                        <i class="bi bi-file-earmark-check me-1"></i> <span class="file-name-text fw-bold"></span>
-                </span>
-                </div>
+                        <div class="mt-3 text-center d-none" th:id="'file-name-display-' + ${item.id}">
+                            <span class="badge bg-success bg-opacity-10 text-success px-3 py-2 rounded-pill fs-6 fw-bold border border-success border-opacity-25">
+                                <i class="bi bi-file-earmark-check-fill me-1"></i> <span class="file-name-text"></span>
+                            </span>
+                        </div>
 
-                <div class="mt-3 text-end">
-                    <button type="submit" id="btnSubirEvidencia" class="btn btn-primary fw-bold shadow-sm rounded-pill px-4 btn-subir">
-                        <i class="bi bi-upload me-1"></i> Upload
-                    </button>
-                </div>
-            </form>
+                        <div class="mt-4 text-end">
+                            <button type="submit" id="btnSubirEvidencia" class="btn btn-je-primary fw-bold shadow-sm rounded-pill px-5 btn-subir w-100 py-3">
+                                <i class="bi bi-upload me-2"></i> UPLOAD TO VAULT
+                            </button>
+                        </div>
+                    </form>
 
-                    <h6 class="fw-bold small mb-3 text-secondary border-bottom pb-2">ATTACHED FILES</h6>
+                    <h6 class="fw-black small mb-3 text-muted text-uppercase letter-spacing-lg border-bottom pb-2">Attached Files</h6>
                     <ul class="list-group list-group-flush small" th:id="'lista-' + ${item.id}">
-                        <li th:if="${item.adjuntos == null or item.adjuntos.isEmpty()}" th:id="'msg-vacio-' + ${item.id}" class="list-group-item d-flex justify-content-between align-items-center px-0 bg-transparent border-bottom-dashed text-muted fst-italic">
-                            No evidence uploaded yet.
+                        <li th:if="${item.adjuntos == null or item.adjuntos.isEmpty()}" th:id="'msg-vacio-' + ${item.id}" class="list-group-item d-flex justify-content-center align-items-center bg-transparent border-0 py-4 text-muted fst-italic">
+                            <i class="bi bi-inbox fs-4 me-2 opacity-50"></i> No evidence uploaded yet.
                         </li>
-                        <li th:each="adj : ${item.adjuntos}" class="list-group-item d-flex justify-content-between align-items-center px-0 bg-transparent border-bottom-dashed py-2">
+                        <li th:each="adj : ${item.adjuntos}" class="list-group-item d-flex justify-content-between align-items-center px-2 bg-light mb-2 rounded-3 border-0 py-3 shadow-sm">
                             <div class="d-flex align-items-center text-truncate pe-3">
-                                <i class="bi bi-file-earmark-check-fill text-success fs-4 me-2"></i>
-                                <span class="text-truncate fw-bold text-dark" th:text="${adj.nombreArchivo}"></span>
+                                <i class="bi bi-file-earmark-check-fill text-success fs-4 me-3"></i>
+                                <span class="text-truncate fw-bold text-dark" style="font-size: 0.9rem;" th:text="${adj.nombreArchivo}"></span>
                             </div>
                             <div class="d-flex gap-2">
                                 <div sec:authorize="hasAnyRole('ADMIN', 'CHAMPION')" style="display:inline;">
-                                    <a th:href="@{'/evidencias/descargar/' + ${adj.id}}" class="btn btn-sm btn-light border rounded-circle shadow-sm text-primary" title="Download">
+                                    <a th:href="@{'/evidencias/descargar/' + ${adj.id}}" class="btn btn-sm btn-white border rounded-circle shadow-sm text-primary" style="width: 32px; height: 32px; display: flex; align-items: center; justify-content: center;" title="Download">
                                         <i class="bi bi-download"></i>
                                     </a>
                                 </div>
                                 <span sec:authorize="hasRole('VIEWER')" class="text-muted small"><i class="bi bi-lock-fill"></i></span>
-                                <button type="button" class="btn btn-sm btn-light border rounded-circle shadow-sm text-danger" title="Delete" th:onclick="'eliminarEvidenciaAjax(' + ${adj.id} + ', this, ' + ${item.id} + ')'" sec:authorize="hasAnyRole('ADMIN', 'CHAMPION')">
-                                    <i class="bi bi-trash"></i>
+                                <button type="button" class="btn btn-sm btn-white border rounded-circle shadow-sm text-danger" style="width: 32px; height: 32px; display: flex; align-items: center; justify-content: center;" title="Delete" th:onclick="'eliminarEvidenciaAjax(' + ${adj.id} + ', this, ' + ${item.id} + ')'" sec:authorize="hasAnyRole('ADMIN', 'CHAMPION')">
+                                    <i class="bi bi-trash3-fill"></i>
                                 </button>
                             </div>
                         </li>
@@ -68,21 +69,28 @@
 
     <div th:fragment="modalComentarios" class="modal fade" id="modalEditorComentarios" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered modal-lg">
-            <div class="modal-content shadow-lg border-0">
-                <div class="modal-header bg-light border-bottom-0 pb-3">
-                    <h5 class="modal-title fw-bold text-dark"><i class="bi bi-card-text text-primary me-2"></i>Remarks <span class="badge bg-secondary ms-2 fw-normal shadow-sm"></span></h5>
+            <div class="modal-content shadow-lg border-0" style="border-radius: 24px;">
+                <div class="modal-header bg-light border-bottom-0 p-4 pb-3" style="border-radius: 24px 24px 0 0;">
+                    <h5 class="modal-title fw-black text-dark d-flex align-items-center">
+                        <i class="bi bi-card-text text-primary fs-4 me-2"></i> Official Remarks 
+                    </h5>
                     <button type="button" class="btn-close shadow-none" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <div class="modal-body pt-0 bg-light">
-                    <div class="p-3 bg-white rounded border shadow-sm">
-                        <p class="small text-muted mb-2"><i class="bi bi-info-circle me-1"></i> You can use multiple lines, lists and dates. Use <strong>@</strong> to mention.</p>
+                <div class="modal-body p-4 pt-0 bg-light">
+                    <div class="p-4 bg-white rounded-4 border-0 shadow-sm">
+                        <div class="d-flex align-items-center mb-3 text-muted small fw-bold bg-light p-2 rounded-3">
+                            <i class="bi bi-info-circle-fill text-primary me-2"></i> 
+                            Use '@' to mention team members. Lists and dates are supported.
+                        </div>
                         <input type="hidden" id="editor-item-id">
-                        <div id="editor-textarea" contenteditable="true" class="form-control border-secondary-subtle"></div>
+                        <div id="editor-textarea" contenteditable="true" class="form-control form-control-lg border-0 bg-light p-4" style="min-height: 250px; font-size: 0.95rem; border-radius: 12px;"></div>
                     </div>
                 </div>
-                <div class="modal-footer bg-light border-top-0">
-                    <button type="button" class="btn btn-outline-secondary btn-sm fw-bold px-3 shadow-sm" data-bs-dismiss="modal">Cancel</button>
-                    <button type="button" class="btn btn-primary btn-sm fw-bold px-4 shadow-sm" onclick="guardarComentarioModal()"><i class="bi bi-check2-circle me-2"></i> Apply to Checklist</button>
+                <div class="modal-footer bg-light border-top-0 p-4" style="border-radius: 0 0 24px 24px;">
+                    <button type="button" class="btn btn-white rounded-pill fw-bold px-4 shadow-sm border" data-bs-dismiss="modal">Discard</button>
+                    <button type="button" class="btn btn-je-primary rounded-pill fw-bold px-5 shadow-sm" onclick="guardarComentarioModal()">
+                        <i class="bi bi-check2-circle me-2"></i> Save Note
+                    </button>
                 </div>
             </div>
         </div>
@@ -90,14 +98,16 @@
 
     <div th:fragment="modalEliminarEvidencia" class="modal fade" id="modalConfirmarEliminacion" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered modal-sm">
-            <div class="modal-content border-0 shadow-lg">
-                <div class="modal-body text-center p-4">
-                    <i class="bi bi-exclamation-circle text-danger display-4 mb-3 d-block"></i>
-                    <h6 class="fw-bold text-dark mb-2">Delete Evidence?</h6>
-                    <p class="text-muted small mb-4">The file will be permanently deleted.</p>
-                    <div class="d-flex justify-content-center gap-2">
-                        <button type="button" class="btn btn-light btn-sm px-3 border shadow-sm fw-bold" data-bs-dismiss="modal">Cancel</button>
-                        <button type="button" class="btn btn-danger btn-sm px-4 fw-bold shadow-sm" id="btnConfirmarEliminar">Delete</button>
+            <div class="modal-content border-0 shadow-lg" style="border-radius: 24px;">
+                <div class="modal-body text-center p-5">
+                    <div class="rounded-circle bg-soft-danger d-inline-flex justify-content-center align-items-center mb-4" style="width: 80px; height: 80px; background: #fef2f2;">
+                        <i class="bi bi-trash3-fill text-danger" style="font-size: 2.5rem;"></i>
+                    </div>
+                    <h5 class="fw-black text-dark mb-2">Delete Evidence?</h5>
+                    <p class="text-muted small fw-medium mb-4">This file will be permanently removed from the vault.</p>
+                    <div class="d-grid gap-2">
+                        <button type="button" class="btn btn-danger rounded-pill py-2 fw-bold shadow-sm" id="btnConfirmarEliminar">Yes, Delete File</button>
+                        <button type="button" class="btn btn-light rounded-pill py-2 fw-bold" data-bs-dismiss="modal">Cancel</button>
                     </div>
                 </div>
             </div>
@@ -106,20 +116,29 @@
 
     <div th:fragment="modalFinalizarProyecto(proyecto)" class="modal fade" id="modalFinalizarProyecto" tabindex="-1">
         <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content shadow-lg border-0" style="border-radius: 24px;">
+            <div class="modal-content shadow-lg border-0" style="border-radius: 28px;">
                 <form th:action="@{/proyectos/archivar/{id}(id=${proyecto.id})}" method="post">
-                    <div class="modal-header bg-light py-4" style="border-radius: 24px 24px 0 0; border-bottom: 1px solid rgba(0,0,0,0.05);">
-                        <h5 class="modal-title fw-bold px-2 text-dark"><i class="bi bi-check-circle-fill me-2 text-success"></i>Finalize & Archive Project</h5>
+                    <div class="modal-header bg-white border-0 p-5 pb-0">
+                        <div class="d-flex align-items-center">
+                            <div class="rounded-4 bg-soft-success p-3 me-4" style="background: #ecfdf5;">
+                                <i class="bi bi-archive-fill text-success fs-2"></i>
+                            </div>
+                            <div>
+                                <h4 class="modal-title fw-black text-dark mb-0">Archive Project</h4>
+                                <p class="text-muted small mb-0 fw-bold opacity-75">CLOSE APQP CYCLE</p>
+                            </div>
+                        </div>
                         <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                     </div>
                     <div class="modal-body p-5 text-center">
-                        <div class="mb-4"><i class="bi bi-archive-fill text-dark" style="font-size: 4rem; opacity: 0.1;"></i></div>
-                        <h4 class="fw-bold text-dark mb-3">Is the project ready?</h4>
-                        <p class="text-muted mb-4">This action will move <strong class="text-dark" th:text="${proyecto.nombre}"></strong> to the historic Evidence Vault and notify all users.</p>
+                        <h5 class="fw-bold text-dark mb-3">Is the project 100% ready?</h5>
+                        <p class="text-muted mb-0 fw-medium">This action will move <strong class="text-dark" th:text="${proyecto.nombre}"></strong> to the Historical Evidence Vault and notify all stakeholders. This process seals the project in Read-Only mode.</p>
                     </div>
-                    <div class="modal-footer border-0 p-4 pt-0">
-                        <button type="button" class="btn btn-light px-4 py-2 fw-bold" data-bs-dismiss="modal">Cancel</button>
-                        <button type="submit" class="btn btn-dark px-4 py-2 fw-bold shadow"><i class="bi bi-check2-all me-2"></i>FINALIZE NOW</button>
+                    <div class="modal-footer border-0 p-5 pt-0 gap-3 d-flex flex-nowrap">
+                        <button type="button" class="btn btn-light rounded-pill py-3 fw-bold flex-grow-1" data-bs-dismiss="modal">Go Back</button>
+                        <button type="submit" class="btn btn-dark rounded-pill py-3 fw-black shadow-lg flex-grow-1">
+                            <i class="bi bi-lock-fill me-2"></i> FINALIZE & LOCK
+                        </button>
                     </div>
                 </form>
             </div>
@@ -128,27 +147,36 @@
 
     <div th:fragment="modalFirmas" class="modal fade" id="modalConfirmarFirma" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content border-0 shadow-lg" style="border-radius: 20px;">
-                <div class="modal-header text-white border-0" style="background: linear-gradient(135deg, #F5821F 0%, #e0600d 100%); border-radius: 20px 20px 0 0;">
-                    <h5 class="modal-title fw-bold"><i class="bi bi-patch-check me-2"></i>Apply Approval Seal</h5>
-                    <button type="button" class="btn-close btn-close-white shadow-none" data-bs-dismiss="modal"></button>
-                </div>
-                <div class="modal-body text-center p-4">
-                    <i class="bi bi-shield-lock-fill text-warning" style="font-size: 3.5rem;"></i>
-                    <h4 class="fw-bold mt-3 text-dark">Are you completely sure?</h4>
-                    <p class="text-muted mb-3">You are about to officially sign and approve <b>Gate <span id="modalGateText" class="text-primary"></span></b> as <b><span id="modalRolText" class="text-primary"></span></b>.</p>
+            <div class="modal-content border-0 shadow-lg" style="border-radius: 28px; overflow: hidden;">
+                <div class="modal-body text-center p-5 position-relative">
                     
-                    <div class="mt-3 text-start mx-auto" style="max-width: 300px;">
-                        <label for="passwordValidacion" class="form-label small fw-bold text-muted">Confirm your password:</label>
-                        <input type="password" id="passwordValidacion" class="form-control rounded-pill border-2 shadow-sm" placeholder="Your password">
-                        <div id="passwordError" class="text-danger small mt-1 d-none">
-                            <i class="bi bi-exclamation-circle me-1"></i> Incorrect password.
+                    <div class="position-absolute top-0 start-0 w-100" style="height: 120px; background: linear-gradient(135deg, var(--je-orange) 0%, #e0600d 100%); z-index: 0;"></div>
+                    
+                    <button type="button" class="btn-close btn-close-white position-absolute top-0 end-0 m-4" style="z-index: 2;" data-bs-dismiss="modal"></button>
+
+                    <div class="position-relative" style="z-index: 1; margin-top: 20px;">
+                        <div class="bg-white rounded-circle d-inline-flex justify-content-center align-items-center shadow-lg mb-4" style="width: 100px; height: 100px;">
+                            <i class="bi bi-shield-lock-fill" style="font-size: 3.5rem; color: var(--je-orange);"></i>
+                        </div>
+                        
+                        <h3 class="fw-black text-dark mb-2">Apply Official Seal</h3>
+                        <p class="text-muted mb-4 px-3 fw-medium">You are about to electronically sign and approve <b>Gate <span id="modalGateText" class="text-primary"></span></b> in your role as <br><b class="fs-6 text-dark"><span id="modalRolText"></span></b>.</p>
+                        
+                        <div class="bg-light p-4 rounded-4 mx-auto mb-4" style="max-width: 320px; border: 1px dashed #cbd5e1;">
+                            <label for="passwordValidacion" class="form-label small fw-black text-uppercase text-muted letter-spacing-lg mb-3 d-block text-start"><i class="bi bi-key-fill me-1"></i> Authentication Required</label>
+                            <input type="password" id="passwordValidacion" class="form-control form-control-lg text-center fw-bold border-0 shadow-sm" style="letter-spacing: 2px;" placeholder="••••••••">
+                            <div id="passwordError" class="text-danger small fw-bold mt-2 d-none animate__animated animate__headShake">
+                                <i class="bi bi-exclamation-circle-fill me-1"></i> Incorrect password.
+                            </div>
+                        </div>
+
+                        <div class="d-grid gap-2 mx-auto" style="max-width: 320px;">
+                            <button type="button" id="btnConfirmarFirmaAjax" class="btn btn-success py-3 fw-black rounded-pill shadow-lg" style="font-size: 1.1rem;">
+                                <i class="bi bi-vector-pen me-2"></i> CONFIRM & SIGN
+                            </button>
+                            <button type="button" class="btn btn-light py-2 fw-bold rounded-pill text-muted mt-2" data-bs-dismiss="modal">Cancel Process</button>
                         </div>
                     </div>
-                </div>
-                <div class="modal-footer bg-light border-0 d-flex justify-content-center" style="border-radius: 0 0 20px 20px;">
-                    <button type="button" class="btn btn-outline-secondary fw-bold rounded-pill px-4" data-bs-dismiss="modal">Cancel</button>
-                    <button type="button" id="btnConfirmarFirmaAjax" class="btn btn-success fw-bold rounded-pill px-4 shadow-sm"><i class="bi bi-vector-pen me-2"></i>Yes, Apply Seal</button>
                 </div>
             </div>
         </div>

@@ -1,5 +1,18 @@
 :root {
     --je-orange: #F5821F;
+    --je-orange-hover: #e67616;
+    --je-blue: #1e293b;
+    --je-bg-light: #f8fafc;
+    
+    --premium-card-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.04), 0 8px 10px -6px rgba(0, 0, 0, 0.04);
+    --premium-hover-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+    
+    --bs-primary: var(--je-orange);
+    --bs-primary-rgb: 245, 130, 31; 
+}
+
+:root {
+    --je-orange: #F5821F;
     --je-dark: #212529;
     --je-dark-hover: #343a40;
     --je-light-text: #f8f9fa;
