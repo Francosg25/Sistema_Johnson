@@ -37,10 +37,17 @@ public class BackupServicio {
             String timestamp = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd_HHmmss"));
             String fileName = backupDir + File.separator + "backup_" + timestamp + ".sql";
 
-            // Extraer host y dbname del URL (jdbc:postgresql://host:port/dbname)
+            // 1. Limpiar la URL de "jdbc:postgresql://"
             String cleanUrl = dbUrl.replace("jdbc:postgresql://", "");
+            
+            // 2. Separar Host/Puerto del Nombre de la BD
             String hostPort = cleanUrl.split("/")[0];
-            String dbName = cleanUrl.split("/")[1];
+            String fullDbName = cleanUrl.split("/")[1];
+            
+            // 3. CORRECCIÓN CRÍTICA: Eliminar parámetros como "?sslmode=disable" del nombre de la BD
+            String dbName = fullDbName.contains("?") ? fullDbName.split("\\?")[0] : fullDbName;
+            
+            // 4. Extraer Host y Puerto
             String host = hostPort.split(":")[0];
             String port = hostPort.contains(":") ? hostPort.split(":")[1] : "5432";
 
@@ -54,7 +61,7 @@ public class BackupServicio {
                 dbName
             );
 
-            // Pasar la contraseña vía variable de entorno para evitar prompts
+            // Pasar la contraseña vía variable de entorno para evitar prompts en la consola
             pb.environment().put("PGPASSWORD", dbPassword);
 
             Process process = pb.start();
@@ -63,7 +70,7 @@ public class BackupServicio {
             if (exitCode == 0) {
                 logger.info("Backup realizado con éxito: " + fileName);
             } else {
-                logger.severe("Error al realizar el backup. Código de salida: " + exitCode);
+                logger.severe("Error al realizar el backup. Código de salida de pg_dump: " + exitCode);
             }
 
             // Limpieza opcional: borrar backups de más de 30 días

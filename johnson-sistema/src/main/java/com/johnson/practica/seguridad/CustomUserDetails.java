@@ -26,6 +26,7 @@ public class CustomUserDetails extends User {
         if (departamento == null) return "Active User";
         
         switch (departamento.toUpperCase()) {
+            case "PM": return "Program Manager";
             case "DE": return "Design Engineering";
             case "QE": return "Quality Engineering";
             case "PE": return "Process Engineering";
