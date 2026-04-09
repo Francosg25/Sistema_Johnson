@@ -413,7 +413,7 @@
             const paletteWaterfall = ['#3b82f6', '#0ea5e9', '#10b981', '#f59e0b', '#8b5cf6'];
             const paletteStatus = ['#10b981', '#ef4444', '#f59e0b', '#3b82f6']; 
 
-            // 1. BAR CHART
+            // BAR CHART
             const ctx1 = document.getElementById('chartProgreso');
             if(ctx1 && reportes.length > 0) {
                 const context1 = ctx1.getContext('2d');
@@ -446,7 +446,7 @@
                 });
             }
 
-            // 2. WATERFALL CHART
+            // WATERFALL CHART
             const ctxCascada = document.getElementById('chartCascada');
             function updateChartCascada(dataToShow, reportesToShow) {
                 const alturaMinimaPorBarra = 100; 
@@ -520,7 +520,7 @@
                 selectC.addEventListener('change', function() { this.value === 'GLOBAL' ? updateChartCascada(datosCascada, reportes) : updateChartCascada([datosCascada[this.value]], [reportes[this.value]]); });
             }
 
-            // 3. HEALTH CHART
+            // HEALTH CHART
             const ctx3 = document.getElementById('chartVolumen');
             if (ctx3 && datosEstadoGlobal) {
                 chartVolumenInstance = new Chart(ctx3, {

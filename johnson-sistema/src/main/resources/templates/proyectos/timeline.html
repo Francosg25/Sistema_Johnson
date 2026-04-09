@@ -17,34 +17,6 @@
                 --premium-hover-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
             }
 
-            .kpi-mini-card {
-                border: none !important;
-                border-radius: 20px !important;
-                box-shadow: var(--premium-card-shadow);
-                transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-                background: white;
-                padding: 1.5rem !important;
-                height: 100%;
-            }
-            .kpi-mini-card:hover {
-                transform: translateY(-5px);
-                box-shadow: var(--premium-hover-shadow);
-            }
-            .kpi-mini-icon {
-                width: 48px !important;
-                height: 48px !important;
-                border-radius: 14px !important;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                font-size: 1.25rem !important;
-            }
-            .icon-green { background: #ecfdf5; color: #10b981; }
-            .icon-blue { background: #eff6ff; color: #3b82f6; }
-            .icon-orange { background: #fff7ed; color: #f59e0b; }
-            .icon-red { background: #fef2f2; color: #ef4444; }
-
-            /* Status Badge Utilities */
             .badge-soft-blue { background: #eff6ff !important; color: #3b82f6 !important; border: 1px solid #dbeafe !important; }
             .badge-soft-red { background: #fef2f2 !important; color: #ef4444 !important; border: 1px solid #fee2e2 !important; }
             .badge-soft-green { background: #ecfdf5 !important; color: #10b981 !important; border: 1px solid #d1fae5 !important; }
@@ -59,11 +31,11 @@
             .glass-header {
                 background: #fff !important;
                 border-bottom: 1px solid #f1f5f9 !important;
-                padding: 1.5rem 1.75rem !important;
+                padding: 1.25rem 1.5rem !important;
             }
             .glass-header h6 {
                 color: var(--premium-blue) !important;
-                font-size: 1.15rem !important;
+                font-size: 1.1rem !important;
                 font-weight: 800 !important;
                 letter-spacing: -0.02em !important;
             }
@@ -71,7 +43,7 @@
             .btn-je-primary {
                 background: var(--premium-orange) !important;
                 border-radius: 12px !important;
-                padding: 0.6rem 1.5rem !important;
+                padding: 0.5rem 1.25rem !important;
                 font-weight: 700 !important;
                 color: white !important;
                 border: none !important;
@@ -85,275 +57,150 @@
             }
 
             /* Vis Timeline Customization */
-            #visualization {
-                border: none;
-                background: #fff;
-            }
-            .vis-item {
-                border-radius: 6px !important;
-                font-family: 'Inter', sans-serif !important;
-                font-weight: 600 !important;
-                font-size: 11px !important;
-                border: none !important;
-                box-shadow: 0 2px 4px rgba(0,0,0,0.05) !important;
-            }
-            
-            /* Diamond styling for Milestones */
-            .vis-item.vis-point[class*="hito-"] {
-                background-color: transparent !important;
-                border: none !important;
-                box-shadow: none !important;
-            }
-            
-            .vis-item.vis-point[class*="hito-"] .vis-item-content {
-                margin-left: 20px !important;
-            }
-
-            .vis-item.vis-point[class*="hito-"] .vis-dot {
-                border: none !important;
-                background-color: transparent !important;
-                width: 12px !important;
-                height: 12px !important;
-                top: 0 !important;
-            }
-
-            .vis-item.vis-point[class*="hito-"] .vis-dot::before {
-                content: '';
-                position: absolute;
-                width: 12px;
-                height: 12px;
-                background-color: inherit;
-                transform: rotate(45deg);
-                border: 2px solid #fff;
-                box-shadow: 0 0 0 1px rgba(0,0,0,0.1);
-                left: -6px;
-                top: -6px;
-            }
-
+            #visualization { border: none; background: #fff; }
+            .vis-item { border-radius: 6px !important; font-family: 'Inter', sans-serif !important; font-weight: 600 !important; font-size: 11px !important; border: none !important; box-shadow: 0 2px 4px rgba(0,0,0,0.05) !important; }
+            .vis-item.vis-point[class*="hito-"] { background-color: transparent !important; border: none !important; box-shadow: none !important; }
+            .vis-item.vis-point[class*="hito-"] .vis-item-content { margin-left: 20px !important; }
+            .vis-item.vis-point[class*="hito-"] .vis-dot { border: none !important; background-color: transparent !important; width: 12px !important; height: 12px !important; top: 0 !important; }
+            .vis-item.vis-point[class*="hito-"] .vis-dot::before { content: ''; position: absolute; width: 12px; height: 12px; background-color: inherit; transform: rotate(45deg); border: 2px solid #fff; box-shadow: 0 0 0 1px rgba(0,0,0,0.1); left: -6px; top: -6px; }
             .hito-completado .vis-dot::before { background-color: #10b981 !important; }
             .hito-atrasado .vis-dot::before { background-color: #ef4444 !important; }
             .hito-pendiente .vis-dot::before { background-color: #3b82f6 !important; }
 
-            .vis-item.vis-selected {
-                background-color: var(--premium-orange) !important;
-                color: white !important;
-            }
-            .vis-time-axis .vis-text {
-                font-size: 11px !important;
-                font-weight: 700 !important;
-                color: #64748b !important;
-                text-transform: uppercase !important;
-            }
-            .vis-group {
-                border-bottom: 1px solid #f1f5f9 !important;
-            }
-            .vis-label {
-                font-weight: 700 !important;
-                color: var(--premium-blue) !important;
-                font-size: 12px !important;
-            }
+            .vis-item.vis-selected { background-color: var(--premium-orange) !important; color: white !important; }
+            .vis-time-axis .vis-text { font-size: 11px !important; font-weight: 700 !important; color: #64748b !important; text-transform: uppercase !important; }
+            .vis-group { border-bottom: 1px solid #f1f5f9 !important; }
+            .vis-label { font-weight: 700 !important; color: var(--premium-blue) !important; font-size: 12px !important; }
 
-            .status-key-box {
-                background: white;
-                padding: 0.75rem 1.25rem;
-                border-radius: 16px;
-                border: 1px solid #f1f5f9;
-                box-shadow: var(--premium-card-shadow);
-                display: flex;
-                align-items: center;
-                gap: 1.5rem;
-            }
-            
-            .filter-container {
-                background: white;
-                padding: 0.5rem 1rem;
-                border-radius: 16px;
-                border: 1px solid #f1f5f9;
-                box-shadow: var(--premium-card-shadow);
+            .compact-legend {
+                background: #f8fafc;
+                padding: 0.4rem 0.8rem;
+                border-radius: 12px;
                 display: flex;
                 align-items: center;
                 gap: 1rem;
             }
+            
+            .compact-filters {
+                background: #f8fafc;
+                padding: 0.4rem 0.8rem;
+                border-radius: 12px;
+                display: flex;
+                align-items: center;
+                gap: 0.75rem;
+            }
 
-            .premium-title-section {
-                margin-bottom: 2.5rem;
+            .help-btn {
+                width: 32px;
+                height: 32px;
+                border-radius: 50%;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                background: #1e293b;
+                color: white;
+                cursor: pointer;
+                transition: all 0.2s ease;
+                border: none;
             }
-            .premium-title-section h3 {
-                font-weight: 900;
-                letter-spacing: -0.04em;
-                color: var(--premium-blue);
-                margin: 0;
-            }
+            .help-btn:hover { background: #334155; transform: scale(1.1); }
+
+            .premium-title-section { margin-bottom: 1.25rem; }
+            .premium-title-section h3 { font-weight: 900; letter-spacing: -0.04em; color: var(--premium-blue); margin: 0; }
         </style>
     </th:block>
 </head>
 <body>
 
     <main layout:fragment="content">
-        <!-- Title Section -->
-        <div class="premium-title-section d-flex justify-content-between align-items-end">
+        <!-- Compact Header -->
+        <div class="premium-title-section d-flex flex-wrap justify-content-between align-items-center gap-3">
             <div>
-                <nav aria-label="breadcrumb" class="mb-2">
-                    <ol class="breadcrumb mb-0">
-                        <li class="breadcrumb-item small text-muted text-uppercase fw-bold letter-spacing-lg">Planning</li>
-                        <li class="breadcrumb-item small text-muted text-uppercase fw-bold active">Master Timeline</li>
-                    </ol>
-                </nav>
-                <h3 class="display-6">Master Timeline</h3>
-                <p class="text-muted small fw-medium mt-2 mb-0">Interactive multi-project visualization & milestones</p>
+                <h3 class="display-6" style="font-size: 1.5rem;">Master Timeline</h3>
+                <p class="text-muted small fw-medium m-0">Interactive visualization & milestones</p>
             </div>
-        </div>
+            
+            <div class="d-flex flex-wrap align-items-center gap-3">
+                <!-- Legend -->
+                <div class="compact-legend d-none d-md-flex">
+                    <div class="d-flex align-items-center gap-2 small fw-bold text-premium-blue" style="font-size: 0.7rem;">
+                        <div style="width: 8px; height: 8px; background: #3b82f6; border: 1px solid #fff; transform: rotate(45deg);"></div> Milestones
+                    </div>
+                    <div class="d-flex align-items-center gap-2 small fw-bold text-premium-blue" style="font-size: 0.7rem;">
+                        <div style="width: 10px; height: 10px; background: #3b82f6; border-radius: 2px;"></div> Events
+                    </div>
+                </div>
 
-        <!-- KPI Cards -->
-        <div class="row g-4 mb-4" th:if="${statusGlobal != null}">
-            <!-- ... (cards remain the same) ... -->
-            <div class="col-md-6 col-xl-3">
-                <div class="kpi-mini-card">
-                    <div class="d-flex align-items-center">
-                        <div class="kpi-mini-icon icon-green shadow-sm me-3"><i class="bi bi-check-circle-fill"></i></div>
-                        <div class="kpi-mini-data">
-                            <p class="text-muted small fw-bold text-uppercase mb-1">On Time</p>
-                            <h3 class="m-0 fw-black" th:text="${statusGlobal.onTimeCount}">0</h3>
-                            <div class="small text-success fw-bold" th:text="${statusGlobal.onTimePercentage + '%'}">0%</div>
-                        </div>
+                <!-- Filters -->
+                <div class="compact-filters">
+                    <div class="form-check m-0">
+                        <input class="form-check-input filter-checkbox shadow-none" type="checkbox" id="chkMilestones" checked>
+                        <label class="form-check-label fw-bold text-muted" for="chkMilestones" style="font-size: 0.7rem;">Milestones</label>
+                    </div>
+                    <div class="form-check m-0 border-start ps-4">
+                        <input class="form-check-input filter-checkbox shadow-none" type="checkbox" id="chkMainEvents" checked>
+                        <label class="form-check-label fw-bold text-muted" for="chkMainEvents" style="font-size: 0.7rem;">Events</label>
                     </div>
                 </div>
-            </div>
-            <div class="col-md-6 col-xl-3">
-                <div class="kpi-mini-card">
-                    <div class="d-flex align-items-center">
-                        <div class="kpi-mini-icon icon-blue shadow-sm me-3"><i class="bi bi-lightning-charge-fill"></i></div>
-                        <div class="kpi-mini-data">
-                            <p class="text-muted small fw-bold text-uppercase mb-1">Fulfilled</p>
-                            <h3 class="m-0 fw-black" th:text="${statusGlobal.fulfilledCount}">0</h3>
-                            <div class="small text-primary fw-bold" th:text="${(statusGlobal.totalDeliverables > 0 ? (statusGlobal.fulfilledCount * 100 / statusGlobal.totalDeliverables) : 0) + '%'}">0%</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-6 col-xl-3">
-                <div class="kpi-mini-card">
-                    <div class="d-flex align-items-center">
-                        <div class="kpi-mini-icon icon-orange shadow-sm me-3"><i class="bi bi-clock-history"></i></div>
-                        <div class="kpi-mini-data">
-                            <p class="text-muted small fw-bold text-uppercase mb-1">Delayed</p>
-                            <h3 class="m-0 fw-black" th:text="${statusGlobal.delayedCount}">0</h3>
-                            <div class="small text-warning fw-bold" th:text="${statusGlobal.latePercentage + '%'}">0%</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-6 col-xl-3">
-                <div class="kpi-mini-card">
-                    <div class="d-flex align-items-center">
-                        <div class="kpi-mini-icon icon-red shadow-sm me-3"><i class="bi bi-exclamation-triangle-fill"></i></div>
-                        <div class="kpi-mini-data">
-                            <p class="text-muted small fw-bold text-uppercase mb-1">Escalation</p>
-                            <h3 class="m-0 fw-black" th:text="${statusGlobal.escalationCount}">0</h3>
-                            <div class="small text-danger fw-bold" th:text="${statusGlobal.needsActionPercentage + '%'}">0%</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
 
-        <!-- Quick Guide Section -->
-        <div class="row g-4 mb-5">
-            <div class="col-lg-12">
-                <div class="glass-card border-0 p-4" style="background: linear-gradient(135deg, #fff 0%, #f0f7ff 100%) !important;">
-                    <div class="d-flex align-items-start">
-                        <div class="bg-primary text-white rounded-circle p-2 me-4 shadow-sm" style="width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
-                            <i class="bi bi-info-circle-fill fs-5"></i>
-                        </div>
-                        <div class="row w-100 g-3">
-                            <div class="col-md-4 border-end">
-                                <h6 class="fw-bold text-premium-blue mb-2"><i class="bi bi-star-fill text-warning me-2"></i>Main Events</h6>
-                                <p class="small text-muted mb-0">To see a deliverable here, mark it as "Main Event" in the checklist and ensure it has a <strong>Planned Date</strong> assigned.</p>
-                            </div>
-                            <div class="col-md-4 border-end">
-                                <h6 class="fw-bold text-premium-blue mb-2"><i class="bi bi-diamond-fill text-primary me-2"></i>Milestones</h6>
-                                <p class="small text-muted mb-0">Configure these </span> to track the progress % of a specific stage versus a deadline.</p>
-                            </div>
-                            <div class="col-md-4">
-                                <h6 class="fw-bold text-premium-blue mb-2"><i class="bi bi-palette-fill text-secondary me-2"></i>Status Colors</h6>
-                                <div class="d-flex flex-wrap gap-2">
-                                    <span class="badge badge-soft-blue px-2">Blue: Pending</span>
-                                    <span class="badge badge-soft-red px-2">Red: Delayed</span>
-                                    <span class="badge badge-soft-green px-2">Green: OK</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
+                <button class="btn btn-je-primary btn-sm" data-bs-toggle="modal" data-bs-target="#modalConfigHitos">
+                   <i class="bi bi-plus-circle me-1"></i> ADD MILESTONE / EVENT
+                </button>
 
-        <div class="d-flex flex-wrap justify-content-between align-items-center mb-4 gap-3">
-            <div class="status-key-box">
-                <div class="small fw-bold text-muted text-uppercase border-end pe-3">Legend</div>
-                <div class="d-flex align-items-center gap-2 small fw-bold text-premium-blue">
-                    <div style="width: 10px; height: 10px; background: #3b82f6; border: 1.5px solid #fff; box-shadow: 0 0 0 1px #ddd; transform: rotate(45deg);"></div> Milestones %
-                </div>
-                <div class="d-flex align-items-center gap-2 small fw-bold text-premium-blue">
-                    <div style="width: 12px; height: 12px; background: #3b82f6; border-radius: 3px;"></div> APQP Events
-                </div>
-            </div>
-
-            <div class="filter-container">
-                <div class="form-check m-0">
-                    <input class="form-check-input filter-checkbox shadow-none" type="checkbox" id="chkMilestones" checked>
-                    <label class="form-check-label fw-bold small text-muted" for="chkMilestones">Milestones</label>
-                </div>
-                <div class="form-check m-0 border-start ps-3">
-                    <input class="form-check-input filter-checkbox shadow-none" type="checkbox" id="chkMainEvents" checked>
-                    <label class="form-check-label fw-bold small text-muted" for="chkMainEvents">Events</label>
-                </div>
-                <button class="btn btn-je-primary btn-sm ms-2" data-bs-toggle="modal" data-bs-target="#modalConfigHitos">
-                   <i></i> ADD MILESTONE OR EVENT
+                <button class="help-btn" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasHelp">
+                    <i class="bi bi-question-lg"></i>
                 </button>
             </div>
         </div>
 
+        <!-- Timeline Monitoring Card -->
         <div class="card glass-card border-0 mb-5">
             <div class="card-header glass-header d-flex justify-content-between align-items-center">
-                <h6 class="m-0">VISUAL TIMELINE MONITORING</h6>
+                <h6 class="m-0">VISUAL TIMELINE MONITORING <span class="text-muted fw-normal small ms-2" style="font-size: 0.75rem;"><i class="bi bi-mouse me-1"></i>(Ctrl + Scroll to zoom)</span></h6>
                 <span class="badge bg-soft-primary text-primary px-3 py-2 rounded-pill small fw-bold" style="background: #eff6ff;">
-                    <i class="bi bi-broadcast me-1"></i> LIVE TRACKING
+                    <i class="bi bi-broadcast me-1"></i> LIVE
                 </span>
             </div>
             <div class="card-body p-0">
-                <div id="visualization"></div>
+                <div id="visualization" style="min-height: 500px;"></div>
             </div>
         </div>
     </main>
 
     <th:block layout:fragment="modals">
-        <div class="modal fade" id="modalDetalleTimeline" tabindex="-1" aria-hidden="true" style="backdrop-filter: blur(4px);">
-            <div class="modal-dialog modal-dialog-centered">
-                <div class="modal-content glass-card border-0">
-                    <div class="modal-header glass-header border-0">
-                        <h6 class="modal-title fw-bold m-0"><i class="bi bi-info-circle-fill text-primary me-2"></i>Event Details</h6>
-                        <button type="button" class="btn-close shadow-none" data-bs-dismiss="modal"></button>
+        <!-- Offcanvas Help -->
+        <div class="offcanvas offcanvas-end border-0 shadow" tabindex="-1" id="offcanvasHelp" style="width: 350px;">
+            <div class="offcanvas-header bg-dark text-white p-4">
+                <h5 class="offcanvas-title fw-bold"><i class="bi bi-info-circle me-2"></i>Quick Guide</h5>
+                <button type="button" class="btn-close btn-close-white shadow-none" data-bs-dismiss="offcanvas"></button>
+            </div>
+            <div class="offcanvas-body p-4">
+                <div class="mb-4">
+                    <h6 class="fw-bold text-premium-blue mb-3">Interactions</h6>
+                    <div class="bg-light p-3 rounded-3 mb-2 small">
+                        <i class="bi bi-mouse me-2"></i><strong>Zoom:</strong> Hold <code>Ctrl</code> + Mouse Wheel
                     </div>
-                    <div class="modal-body p-4 bg-light bg-opacity-50">
-                        <div class="bg-white p-4 rounded-4 shadow-sm border">
-                            <div class="mb-4">
-                                <label class="small text-muted fw-bold text-uppercase mb-2 d-block">Description</label>
-                                <h5 id="detalle-nombre" class="fw-bold text-premium-blue m-0 lh-base"></h5>
-                            </div>
-                            <div class="pt-3 border-top">
-                                <label class="small text-muted fw-bold text-uppercase mb-2 d-block">Scheduled Date</label>
-                                <div class="d-flex align-items-center">
-                                    <div class="bg-primary bg-opacity-10 p-2 rounded-3 me-3 text-primary">
-                                        <i class="bi bi-calendar-check fs-4"></i>
-                                    </div>
-                                    <h6 id="detalle-fecha" class="text-primary fw-bold mb-0 fs-5"></h6>
-                                </div>
-                            </div>
-                        </div>
+                    <div class="bg-light p-3 rounded-3 small">
+                        <i class="bi bi-arrows-move me-2"></i><strong>Drag:</strong> Click and hold to move horizontally
                     </div>
-                    <div class="modal-footer border-0 pt-0 pb-4 px-4 bg-light bg-opacity-50">
-                        <button type="button" class="btn btn-light fw-bold w-100 rounded-pill py-2 border" data-bs-dismiss="modal">Close</button>
+                </div>
+
+                <div class="mb-4 pt-3 border-top">
+                    <h6 class="fw-bold text-premium-blue mb-3">Main Events (APQP)</h6>
+                    <p class="small text-muted">Items shown as rectangles. To highlight a deliverable here, mark it as "Main Event" in the checklist with a Planned Date.</p>
+                </div>
+
+                <div class="mb-4 pt-3 border-top">
+                    <h6 class="fw-bold text-premium-blue mb-3">Milestones</h6>
+                    <p class="small text-muted">Diamond icons representing stage completion targets. They track % progress vs a specific deadline.</p>
+                </div>
+
+                <div class="pt-3 border-top">
+                    <h6 class="fw-bold text-premium-blue mb-3">Status Colors</h6>
+                    <div class="d-grid gap-2">
+                        <span class="badge badge-soft-blue p-2 text-start"><i class="bi bi-circle-fill me-2"></i> Blue: Pending</span>
+                        <span class="badge badge-soft-red p-2 text-start"><i class="bi bi-circle-fill me-2"></i> Red: Delayed</span>
+                        <span class="badge badge-soft-green p-2 text-start"><i class="bi bi-circle-fill me-2"></i> Green: On Time</span>
                     </div>
                 </div>
             </div>
@@ -458,6 +305,38 @@
                     <div class="modal-footer bg-white border-top-0 p-4">
                         <button type="button" class="btn btn-light fw-bold px-4 rounded-pill border" data-bs-dismiss="modal">Close</button>
                         <button type="button" class="btn btn-dark fw-bold px-4 rounded-pill" onclick="location.reload()">UPDATE TIMELINE</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Detail Modal -->
+        <div class="modal fade" id="modalDetalleTimeline" tabindex="-1" aria-hidden="true" style="backdrop-filter: blur(4px);">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content glass-card border-0">
+                    <div class="modal-header glass-header border-0">
+                        <h6 class="modal-title fw-bold m-0"><i class="bi bi-info-circle-fill text-primary me-2"></i>Event Details</h6>
+                        <button type="button" class="btn-close shadow-none" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body p-4 bg-light bg-opacity-50">
+                        <div class="bg-white p-4 rounded-4 shadow-sm border">
+                            <div class="mb-4">
+                                <label class="small text-muted fw-bold text-uppercase mb-2 d-block">Description</label>
+                                <h5 id="detalle-nombre" class="fw-bold text-premium-blue m-0 lh-base"></h5>
+                            </div>
+                            <div class="pt-3 border-top">
+                                <label class="small text-muted fw-bold text-uppercase mb-2 d-block">Scheduled Date</label>
+                                <div class="d-flex align-items-center">
+                                    <div class="bg-primary bg-opacity-10 p-2 rounded-3 me-3 text-primary">
+                                        <i class="bi bi-calendar-check fs-4"></i>
+                                    </div>
+                                    <h6 id="detalle-fecha" class="text-primary fw-bold mb-0 fs-5"></h6>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer border-0 pt-0 pb-4 px-4 bg-light bg-opacity-50">
+                        <button type="button" class="btn btn-light fw-bold w-100 rounded-pill py-2 border" data-bs-dismiss="modal">Close</button>
                     </div>
                 </div>
             </div>
