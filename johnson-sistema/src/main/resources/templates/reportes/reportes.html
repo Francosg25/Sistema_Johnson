@@ -7,46 +7,148 @@
     
     <th:block layout:fragment="custom-css">
         <style>
-            :root {
-                --premium-blue: #1e293b;
-                --premium-orange: #F5821F;
-                --premium-bg: #f8fafc;
-                --premium-card-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.04), 0 8px 10px -6px rgba(0, 0, 0, 0.04);
-                --premium-hover-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+            /* --- CONGELAR COLUMNAS PARA PRECISIÓN --- */
+            .roadmap-table {
+                table-layout: fixed !important; 
+                width: 100%;
+                position: relative;
+                border-collapse: collapse;
+            }
+            
+            .roadmap-table th:first-child, 
+            .roadmap-table td:first-child {
+                width: 280px !important;
+                min-width: 280px !important;
+                max-width: 280px !important;
+                white-space: normal; 
+            }
+            
+            .roadmap-table th:not(:first-child), 
+            .roadmap-table td:not(:first-child) {
+                width: calc((100% - 280px) / 12) !important;
+                min-width: calc((100% - 280px) / 12) !important;
+            }
+            
+            .roadmap-table thead {
+                position: relative; 
             }
 
-            /* --- TRANSIT ANIMATION STYLES --- */
             .transit-row {
                 position: relative;
                 transition: background-color 0.2s ease;
             }
+            
             .transit-row:hover {
-                background-color: rgba(248, 250, 252, 0.8);
+                background-color: #f8fafc; 
             }
+
+            /* --- LÍNEA TRANSVERSAL VERTICAL (Día de Hoy) --- */
+            .today-line {
+                position: absolute;
+                top: 0;
+                bottom: 0; 
+                width: 4px; 
+                background: #ef4444; 
+                z-index: 5; 
+                cursor: crosshair;
+                transition: all 0.2s ease;
+            }
+
+            .today-line:hover {
+                background: #dc2626; 
+                width: 6px;
+                transform: translateX(-1px);
+            }
+
+            .today-tooltip-fast {
+                position: absolute;
+                top: 15px; 
+                left: 15px; 
+                background: #1e293b;
+                color: #fff;
+                font-size: 0.75rem;
+                font-weight: 700;
+                padding: 4px 10px;
+                border-radius: 6px;
+                white-space: nowrap;
+                opacity: 0;
+                visibility: hidden;
+                transition: all 0.2s ease-in-out;
+                box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+                z-index: 20;
+            }
+
+            .today-line:hover .today-tooltip-fast {
+                opacity: 1;
+                visibility: visible;
+            }
+
             .transit-track {
                 position: absolute;
                 height: 2px;
                 background: repeating-linear-gradient(to right, #3b82f6 0, #3b82f6 5px, transparent 5px, transparent 10px);
-                z-index: 1;
+                z-index: 4; 
                 top: 50%;
                 transform: translateY(-50%);
-                opacity: 0.4;
+                opacity: 0.8;
             }
+
+            /* --- ÍCONOS (Con fondo y corte para que se interpongan limpiamente) --- */
             .ship-moving, .factory-destination, .milestone-icon {
                 position: absolute;
-                z-index: 3;
+                z-index: 10; 
                 font-size: 1.4rem;
                 top: 50%;
                 transform: translate(-50%, -50%);
                 transition: all 0.3s ease;
                 cursor: pointer;
-            }
-            .ship-moving:hover, .factory-destination:hover, .milestone-icon:hover {
-                transform: translate(-50%, -50%) scale(1.2);
-                filter: drop-shadow(0 4px 6px rgba(0,0,0,0.1));
+                
+                background-color: #ffffff; 
+                padding: 2px; 
+                border-radius: 50%; 
+                box-shadow: 0 0 0 8px #ffffff; 
+                
+                display: flex;
+                align-items: center;
+                justify-content: center;
             }
 
-            /* --- PREMIUM CARDS --- */
+            .transit-row:hover .ship-moving, 
+            .transit-row:hover .factory-destination, 
+            .transit-row:hover .milestone-icon {
+                background-color: #f8fafc;
+                box-shadow: 0 0 0 8px #f8fafc;
+            }
+
+            .ship-moving:hover, .factory-destination:hover, .milestone-icon:hover {
+                transform: translate(-50%, -50%) scale(1.2);
+                z-index: 15;
+            }
+            
+            .ship-progress-badge {
+                position: absolute;
+                bottom: -25px;
+                left: 50%;
+                transform: translateX(-50%);
+                background: #ffffff;
+                border: 1px solid #3b82f6;
+                color: #3b82f6;
+                font-size: 0.6rem;
+                font-weight: 800;
+                padding: 2px 6px;
+                border-radius: 10px;
+                box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+                white-space: nowrap;
+            }
+
+            /* --- PREMIUM CARDS & UTILS --- */
+            :root {
+                --premium-blue: #1e293b;
+                --premium-orange: #F5821F;
+                --premium-bg: #f8fafc;
+                --premium-card-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.04), 0 8px 10px -6px rgba(0, 0, 0, 0.04);
+            }
+
             .glass-card {
                 background: white !important;
                 border: 1px solid rgba(226, 232, 240, 0.8) !important;
@@ -87,15 +189,9 @@
             .icon-green-soft { background: #ecfdf5; color: #10b981; }
             .icon-red-soft { background: #fef2f2; color: #ef4444; }
 
-            .chart-container {
-                position: relative;
-                padding: 1.5rem;
-                width: 100%;
-            }
+            .chart-container { position: relative; padding: 1.5rem; width: 100%; }
 
-            .premium-title-section {
-                margin-bottom: 2.5rem;
-            }
+            .premium-title-section { margin-bottom: 2.5rem; }
             .premium-title-section h3 {
                 font-weight: 900;
                 letter-spacing: -0.04em;
@@ -126,11 +222,7 @@
                 cursor: pointer;
             }
 
-            /* Waterfall scrollbar */
-            .waterfall-container {
-                overflow-y: auto; 
-                overflow-x: hidden;
-            }
+            .waterfall-container { overflow-y: auto; overflow-x: hidden; }
             .waterfall-container::-webkit-scrollbar { width: 6px; }
             .waterfall-container::-webkit-scrollbar-track { background: transparent; }
             .waterfall-container::-webkit-scrollbar-thumb { background: #e2e8f0; border-radius: 10px; }
@@ -141,7 +233,6 @@
 <body>
 
     <main layout:fragment="content">
-        <!-- Title Section -->
         <div class="premium-title-section d-flex justify-content-between align-items-end">
             <div>
                 <nav aria-label="breadcrumb" class="mb-2">
@@ -151,12 +242,9 @@
                     </ol>
                 </nav>
                 <h3 class="display-6">Performance Analytics</h3>
-                <p class="text-muted small fw-medium mt-2 mb-0">High-level overview of project roadmaps, progress and risks</p>
             </div>
-            
         </div>
 
-        <!-- Master Roadmap -->
         <div class="row mb-5">
             <div class="col-12">
                 <div class="card glass-card border-0">
@@ -168,6 +256,9 @@
                             MASTER EXECUTIVE ROADMAP <span id="currentYearBadge" class="badge bg-soft-primary text-primary ms-3 rounded-pill px-3 py-1 fw-bold" style="font-size: 0.7rem; background: #eff6ff;"></span>
                         </h6>
                         <div class="d-flex gap-4 small fw-bold text-muted pe-3">
+                            <span class="d-flex align-items-center" title="Current Date">
+                                <span class="me-2" style="width: 4px; height: 16px; background-color: #ef4444; border-radius: 2px;"></span> Today
+                            </span>
                             <span class="d-flex align-items-center"><span class="me-2">💰</span> CAR</span>
                             <span class="d-flex align-items-center"><span class="me-2">🚢</span> Ship</span>
                             <span class="d-flex align-items-center"><span class="me-2">🏭</span> Factory</span>
@@ -176,8 +267,9 @@
                     </div>
                     <div class="card-body p-0">
                         <div class="table-responsive">
-                            <table class="table table-hover roadmap-table align-middle mb-0" style="min-width: 1400px; table-layout: fixed;">
-                                <thead class="text-center">
+                            <div id="roadmapContainer" style="position: relative; min-width: 1400px;">
+                                <table class="table table-hover roadmap-table align-middle mb-0">
+                                    <thead class="text-center">
                                     <tr>
                                         <th style="width: 280px; text-align: left;" class="ps-4">Project Information</th>
                                         <th>Jan</th><th>Feb</th><th>Mar</th><th>Apr</th><th>May</th><th>Jun</th>
@@ -192,7 +284,6 @@
             </div>
         </div>
 
-        <!-- Progress Waterfall -->
         <div class="row mb-5">
             <div class="col-12">
                 <div class="card glass-card border-0">
@@ -204,7 +295,7 @@
                             STAGE-BY-STAGE PROGRESS
                         </h6>
                         <select id="selectCascadaProyecto" class="form-select form-select-sm form-select-premium" style="width: auto;">
-                            <option value="GLOBAL">Consolidated View</option>
+                            <option value="GLOBAL">-----</option>
                         </select>
                     </div>
                     <div class="card-body waterfall-container p-0" style="max-height: 600px;">
@@ -216,7 +307,6 @@
             </div>
         </div>
 
-        <!-- Global Progress Comparison -->
         <div class="row mb-5">
             <div class="col-12">
                 <div class="card glass-card border-0">
@@ -234,11 +324,10 @@
                 </div>
             </div>
         </div>
-
-        <!-- Health & Risk Row -->
-        <div class="row g-4 mb-5">
+<div class="row g-4 mb-5">
+            
             <div class="col-md-6">
-                <div class="card glass-card border-0">
+                <div class="card glass-card border-0 h-100">
                     <div class="card-header glass-header d-flex justify-content-between align-items-center">
                         <h6 class="premium-title">
                             <div class="premium-icon-box icon-green-soft">
@@ -250,14 +339,14 @@
                             <option value="GLOBAL">Global Health</option>
                         </select>
                     </div>
-                    <div class="card-body chart-container d-flex align-items-center justify-content-center" style="height: 350px;">
+                    <div class="card-body chart-container d-flex align-items-center justify-content-center" style="height: 400px;">
                         <canvas id="chartVolumen" style="max-height: 280px;"></canvas>
                     </div>
                 </div>
             </div>
 
             <div class="col-md-6">
-                <div class="card glass-card border-0">
+                <div class="card glass-card border-0 h-100">
                     <div class="card-header glass-header d-flex justify-content-between align-items-center">
                         <h6 class="premium-title">
                             <div class="premium-icon-box icon-red-soft">
@@ -269,12 +358,15 @@
                             <option value="" selected disabled>Select Project...</option>
                         </select>
                     </div>
-                    <div class="card-body chart-container d-flex align-items-center justify-content-center flex-column pb-4" style="height: 350px;">
+                    <div class="card-body chart-container d-flex align-items-center justify-content-center flex-column pb-4" style="height: 400px;">
                         <canvas id="chartRiesgo" style="max-height: 250px;"></canvas>
                     </div>
                 </div>
             </div>
+            
         </div>
+    
+</div>
     </main>
 
     <th:block layout:fragment="modals">
@@ -348,15 +440,7 @@
                         plugins: { legend: { display: false } },
                         scales: { 
                             y: { beginAtZero: true, max: 100, border: { display: false }, grid: { color: '#f1f5f9' }, ticks: { callback: v => v + '%' } },
-                            x: { 
-                                grid: { display: false }, border: { display: false },
-                                ticks: {
-                                    callback: function(value, index) {
-                                        let label = this.getLabelForValue(value);
-                                        return label.length > 20 ? label.substring(0, 17) + '...' : label;
-                                    }
-                                }
-                            }
+                            x: { grid: { display: false }, border: { display: false }, ticks: { callback: function(value) { let label = this.getLabelForValue(value); return label.length > 20 ? label.substring(0, 17) + '...' : label; } } }
                         }
                     }
                 });
@@ -370,12 +454,10 @@
                 document.getElementById('cascadaInnerContainer').style.height = alturaCalculada + 'px';
 
                 const s1Data = [], s2Data = [], s3Data = [], s4Data = [], s5Data = [], totalData = [];
-                dataToShow.forEach((d, idx) => {
+                dataToShow.forEach((d) => {
                     const capped = d.porcentajesPorFase.map(pct => Math.min(pct, 100));
-                    let p1 = (capped[0] || 0) / 5; let p2 = (capped[1] || 0) / 5;
-                    let p3 = (capped[2] || 0) / 5; let p4 = (capped[3] || 0) / 5;
-                    let p5 = (capped[4] || 0) / 5;
-                    let end1 = p1; let end2 = end1 + p2; let end3 = end2 + p3; let end4 = end3 + p4; let end5 = end4 + p5;
+                    let p1 = (capped[0] || 0) / 5, p2 = (capped[1] || 0) / 5, p3 = (capped[2] || 0) / 5, p4 = (capped[3] || 0) / 5, p5 = (capped[4] || 0) / 5;
+                    let end1 = p1, end2 = end1 + p2, end3 = end2 + p3, end4 = end3 + p4, end5 = end4 + p5;
 
                     s1Data.push(p1 > 0 ? [0, end1] : null); s2Data.push(p2 > 0 ? [end1, end2] : null);
                     s3Data.push(p3 > 0 ? [end2, end3] : null); s4Data.push(p4 > 0 ? [end3, end4] : null);
@@ -395,13 +477,10 @@
                 };
 
                 if (chartCascadaInstance) {
-                    chartCascadaInstance.data = chartData;
-                    chartCascadaInstance.config._config.customSops = dataToShow.map(d => d.sop);
-                    chartCascadaInstance.update();
+                    chartCascadaInstance.data = chartData; chartCascadaInstance.config._config.customSops = dataToShow.map(d => d.sop); chartCascadaInstance.update();
                 } else {
                     chartCascadaInstance = new Chart(ctxCascada, {
-                        type: 'bar',
-                        data: chartData,
+                        type: 'bar', data: chartData,
                         plugins: [{
                             id: 'sopLabels',
                             afterDatasetsDraw(chart) {
@@ -424,22 +503,9 @@
                             }
                         }],
                         options: { 
-                            indexAxis: 'y', responsive: true, maintainAspectRatio: false, 
-                            layout: { padding: { right: 140 } }, 
-                            plugins: {
-                                tooltip: {
-                                    callbacks: {
-                                        label: function(context) {
-                                            const val = context.dataset.realPct[context.dataIndex];
-                                            return context.dataset.label + ': ' + (val ? val.toFixed(1) : '0') + '%';
-                                        }
-                                    }
-                                }
-                            },
-                            scales: { 
-                                x: { max: 100, border: { display: false }, grid: { color: '#f8fafc' }, ticks: { callback: v => v + '%' } }, 
-                                y: { grid: { display: false }, border: { display: false }, ticks: { font: { weight: '700', color: '#1e293b' } } } 
-                            }
+                            indexAxis: 'y', responsive: true, maintainAspectRatio: false, layout: { padding: { right: 140 } }, 
+                            plugins: { tooltip: { callbacks: { label: function(context) { const val = context.dataset.realPct[context.dataIndex]; return context.dataset.label + ': ' + (val ? val.toFixed(1) : '0') + '%'; } } } },
+                            scales: { x: { max: 100, border: { display: false }, grid: { color: '#f8fafc' }, ticks: { callback: v => v + '%' } }, y: { grid: { display: false }, border: { display: false }, ticks: { font: { weight: '700', color: '#1e293b' } } } }
                         }
                     });
                 }
@@ -449,14 +515,9 @@
                 updateChartCascada(datosCascada, reportes);
                 const selectC = document.getElementById('selectCascadaProyecto');
                 datosCascada.forEach((d, index) => {
-                    let opt = document.createElement('option'); opt.value = index;
-                    opt.textContent = d.nombreProyecto.length > 40 ? d.nombreProyecto.substring(0, 37) + '...' : d.nombreProyecto;
-                    selectC.appendChild(opt);
+                    let opt = document.createElement('option'); opt.value = index; opt.textContent = d.nombreProyecto.length > 40 ? d.nombreProyecto.substring(0, 37) + '...' : d.nombreProyecto; selectC.appendChild(opt);
                 });
-                selectC.addEventListener('change', function() {
-                    if (this.value === 'GLOBAL') updateChartCascada(datosCascada, reportes);
-                    else updateChartCascada([datosCascada[this.value]], [reportes[this.value]]);
-                });
+                selectC.addEventListener('change', function() { this.value === 'GLOBAL' ? updateChartCascada(datosCascada, reportes) : updateChartCascada([datosCascada[this.value]], [reportes[this.value]]); });
             }
 
             // 3. HEALTH CHART
@@ -464,43 +525,22 @@
             if (ctx3 && datosEstadoGlobal) {
                 chartVolumenInstance = new Chart(ctx3, {
                     type: 'doughnut',
-                    data: {
-                        labels: ['ON TIME', 'LATE', 'NEEDS ACTION', 'DECISION'],
-                        datasets: [{
-                            data: [datosEstadoGlobal.onTimePercentage, datosEstadoGlobal.latePercentage, datosEstadoGlobal.needsActionPercentage, datosEstadoGlobal.decisionPercentage],
-                            rawCounts: [datosEstadoGlobal.onTimeCount, datosEstadoGlobal.delayedCount, datosEstadoGlobal.escalationCount, datosEstadoGlobal.decisionCount || 0],
-                            backgroundColor: paletteStatus, borderWidth: 0, borderRadius: 5, spacing: 3, cutout: '78%'
-                        }]
-                    },
-                    options: { 
-                        responsive: true, maintainAspectRatio: false, 
-                        plugins: { 
-                            legend: { position: 'bottom', labels: { boxWidth: 10, padding: 20, usePointStyle: true, font: { weight: '600' } } } 
-                        } 
-                    }
+                    data: { labels: ['ON TIME', 'LATE', 'NEEDS ACTION', 'DECISION'], datasets: [{ data: [datosEstadoGlobal.onTimePercentage, datosEstadoGlobal.latePercentage, datosEstadoGlobal.needsActionPercentage, datosEstadoGlobal.decisionPercentage], rawCounts: [datosEstadoGlobal.onTimeCount, datosEstadoGlobal.delayedCount, datosEstadoGlobal.escalationCount, datosEstadoGlobal.decisionCount || 0], backgroundColor: paletteStatus, borderWidth: 0, borderRadius: 5, spacing: 3, cutout: '78%' }] },
+                    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: { boxWidth: 10, padding: 20, usePointStyle: true, font: { weight: '600' } } } } }
                 });
 
                 const selectH = document.getElementById('selectHealthProyecto');
-                reportes.forEach((repo, index) => {
-                    let opt = document.createElement('option'); opt.value = index;
-                    opt.textContent = repo.nombreProyecto.length > 25 ? repo.nombreProyecto.substring(0, 22) + '...' : repo.nombreProyecto; 
-                    selectH.appendChild(opt);
-                });
+                reportes.forEach((repo, index) => { let opt = document.createElement('option'); opt.value = index; opt.textContent = repo.nombreProyecto.length > 25 ? repo.nombreProyecto.substring(0, 22) + '...' : repo.nombreProyecto; selectH.appendChild(opt); });
 
                 selectH.addEventListener('change', function() {
                     let newData, newRaw;
                     if (this.value === 'GLOBAL') {
-                        newData = [datosEstadoGlobal.onTimePercentage, datosEstadoGlobal.latePercentage, datosEstadoGlobal.needsActionPercentage, datosEstadoGlobal.decisionPercentage];
-                        newRaw = [datosEstadoGlobal.onTimeCount, datosEstadoGlobal.delayedCount, datosEstadoGlobal.escalationCount, datosEstadoGlobal.decisionCount || 0];
+                        newData = [datosEstadoGlobal.onTimePercentage, datosEstadoGlobal.latePercentage, datosEstadoGlobal.needsActionPercentage, datosEstadoGlobal.decisionPercentage]; newRaw = [datosEstadoGlobal.onTimeCount, datosEstadoGlobal.delayedCount, datosEstadoGlobal.escalationCount, datosEstadoGlobal.decisionCount || 0];
                     } else {
-                        const r = reportes[this.value];
-                        const t = r.onTimeCount + r.lateCount + r.needsActionCount + r.decisionCount;
-                        newRaw = [r.onTimeCount, r.lateCount, r.needsActionCount, r.decisionCount];
-                        newData = t > 0 ? newRaw.map(v => Math.round((v/t)*100)) : [0,0,0,0];
+                        const r = reportes[this.value]; const t = r.onTimeCount + r.lateCount + r.needsActionCount + r.decisionCount;
+                        newRaw = [r.onTimeCount, r.lateCount, r.needsActionCount, r.decisionCount]; newData = t > 0 ? newRaw.map(v => Math.round((v/t)*100)) : [0,0,0,0];
                     }
-                    chartVolumenInstance.data.datasets[0].data = newData;
-                    chartVolumenInstance.data.datasets[0].rawCounts = newRaw;
-                    chartVolumenInstance.update();
+                    chartVolumenInstance.data.datasets[0].data = newData; chartVolumenInstance.data.datasets[0].rawCounts = newRaw; chartVolumenInstance.update();
                 });
             }
 
@@ -511,40 +551,24 @@
                 const gaugeTextPlugin = {
                     id: 'gaugeText',
                     beforeDraw: (chart) => {
-                        const { width, height, ctx } = chart;
-                        ctx.save(); ctx.textAlign = "center"; ctx.textBaseline = "middle";
-                        ctx.font = "900 32px Inter, sans-serif"; ctx.fillStyle = currentRiskColor;
-                        ctx.fillText(currentRiskScore + "%", width / 2, height - 35);
-                        ctx.font = "bold 13px Inter, sans-serif"; ctx.fillStyle = "#64748b";
-                        ctx.fillText(currentRiskLabel, width / 2, height - 5);
-                        ctx.restore();
+                        const { width, height, ctx } = chart; ctx.save(); ctx.textAlign = "center"; ctx.textBaseline = "middle";
+                        ctx.font = "900 32px Inter, sans-serif"; ctx.fillStyle = currentRiskColor; ctx.fillText(currentRiskScore + "%", width / 2, height - 35);
+                        ctx.font = "bold 13px Inter, sans-serif"; ctx.fillStyle = "#64748b"; ctx.fillText(currentRiskLabel, width / 2, height - 5); ctx.restore();
                     }
                 };
 
                 chartRiesgoInstance = new Chart(ctxRiesgo, {
-                    type: 'doughnut',
-                    data: { datasets: [{ data: [0, 100], backgroundColor: ['#e2e8f0', '#f8fafc'], borderWidth: 0, borderRadius: 10 }] },
-                    plugins: [gaugeTextPlugin],
-                    options: {
-                        circumference: 180, rotation: 270, cutout: '82%', responsive: true, maintainAspectRatio: false,
-                        plugins: { legend: { display: false }, tooltip: { enabled: false } }
-                    }
+                    type: 'doughnut', data: { datasets: [{ data: [0, 100], backgroundColor: ['#e2e8f0', '#f8fafc'], borderWidth: 0, borderRadius: 10 }] }, plugins: [gaugeTextPlugin],
+                    options: { circumference: 180, rotation: 270, cutout: '82%', responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, tooltip: { enabled: false } } }
                 });
 
                 const selectR = document.getElementById('selectRiesgoProyecto');
-                reportes.forEach((repo, index) => {
-                    let opt = document.createElement('option'); opt.value = index;
-                    opt.textContent = repo.nombreProyecto.length > 25 ? repo.nombreProyecto.substring(0, 22) + '...' : repo.nombreProyecto;
-                    selectR.appendChild(opt);
-                });
+                reportes.forEach((repo, index) => { let opt = document.createElement('option'); opt.value = index; opt.textContent = repo.nombreProyecto.length > 25 ? repo.nombreProyecto.substring(0, 22) + '...' : repo.nombreProyecto; selectR.appendChild(opt); });
 
                 selectR.addEventListener('change', function() {
                     currentRiskScore = parseFloat(reportes[this.value].riesgo.toFixed(1));
-                    currentRiskColor = currentRiskScore >= 50 ? '#ef4444' : (currentRiskScore >= 20 ? '#f59e0b' : '#10b981');
-                    currentRiskLabel = currentRiskScore >= 50 ? 'HIGH RISK' : (currentRiskScore >= 20 ? 'MEDIUM RISK' : 'LOW RISK');
-                    chartRiesgoInstance.data.datasets[0].data = [currentRiskScore, 100 - currentRiskScore];
-                    chartRiesgoInstance.data.datasets[0].backgroundColor = [currentRiskColor, '#f8fafc'];
-                    chartRiesgoInstance.update();
+                    currentRiskColor = currentRiskScore >= 50 ? '#ef4444' : (currentRiskScore >= 20 ? '#f59e0b' : '#10b981'); currentRiskLabel = currentRiskScore >= 50 ? 'HIGH RISK' : (currentRiskScore >= 20 ? 'MEDIUM RISK' : 'LOW RISK');
+                    chartRiesgoInstance.data.datasets[0].data = [currentRiskScore, 100 - currentRiskScore]; chartRiesgoInstance.data.datasets[0].backgroundColor = [currentRiskColor, '#f8fafc']; chartRiesgoInstance.update();
                 });
             }
 
@@ -552,16 +576,55 @@
             function initMasterTimeline() {
                 const tbody = document.getElementById('masterTimelineBody');
                 if (!tbody || !reportes) return;
+                
                 const now = new Date();
+
+                // Calculamos usando milisegundos reales del año para una precisión del 100%
+                function getYearFraction(date) {
+                    const start = new Date(date.getFullYear(), 0, 1);
+                    const end = new Date(date.getFullYear() + 1, 0, 1);
+                    return (date.getTime() - start.getTime()) / (end.getTime() - start.getTime());
+                }
+
+                function fractionToCss(fraction) {
+                    return `calc(280px + ((100% - 280px) * ${fraction}))`;
+                }
+
+                function formatDateShort(date) {
+                    return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+                }
+
+                const todayFrac = getYearFraction(now);
+                const todayLine = document.createElement('div');
+                todayLine.className = 'today-line';
+                todayLine.style.left = fractionToCss(todayFrac);
+                
+                const tooltip = document.createElement('div');
+                tooltip.className = 'today-tooltip-fast';
+                tooltip.innerText = 'Today';
+                todayLine.appendChild(tooltip);
+
+                // Inyectamos la línea de HOY en el div contenedor para que atraviese de arriba a abajo
+                const container = document.getElementById('roadmapContainer');
+                if (container) {
+                    container.appendChild(todayLine); 
+                }
+
                 reportes.forEach(proyecto => {
-                    const tr = document.createElement('tr'); tr.className = 'transit-row';
+                    const tr = document.createElement('tr'); 
+                    tr.className = 'transit-row';
+                    
                     const tdNombre = document.createElement('td');
                     tdNombre.className = 'ps-4 py-4';
-                    tdNombre.innerHTML = `<div class="fw-bold text-premium-blue">${proyecto.nombreProyecto}</div><div class="text-muted small fw-medium">Global: ${proyecto.porcentaje}%</div>`;
+                    tdNombre.innerHTML = `<div class="fw-bold text-premium-blue">${proyecto.nombreProyecto}</div>`;
                     tr.appendChild(tdNombre);
 
+                    // 12 Columnas vacías para el calendario
                     for (let i = 0; i < 12; i++) {
-                        const td = document.createElement('td'); td.className = 'text-center'; td.style.height = '140px'; tr.appendChild(td);
+                        const td = document.createElement('td'); 
+                        td.className = 'text-center'; 
+                        td.style.height = '140px'; 
+                        tr.appendChild(td);
                     }
 
                     const monthStackCount = {};
@@ -571,26 +634,50 @@
                         return (count % 2 === 0 ? 1 : -1) * (Math.ceil(count / 2) * 40);
                     }
 
+                    // TRAYECTO DEL BARCO (Shipment)
                     if (proyecto.fechaTransit && proyecto.fechaTransit !== "null") {
                         const shipD = new Date(proyecto.fechaTransit);
                         if (!isNaN(shipD.getTime())) {
-                            const factoryD = new Date(shipD); factoryD.setDate(factoryD.getDate() + 60);
-                            const shipM = shipD.getMonth(); const factoryM = factoryD.getMonth();
+                            const factoryD = new Date(shipD); 
+                            factoryD.setDate(factoryD.getDate() + 60); 
+                            
                             if (shipD.getFullYear() === now.getFullYear() || factoryD.getFullYear() === now.getFullYear()) {
-                                const startX = 20 + (shipM * 6.66) + 3.33; const endX = 20 + (factoryM * 6.66) + 3.33;
-                                const track = document.createElement('div'); track.className = 'transit-track';
-                                track.style.left = startX + '%'; track.style.width = (endX - startX) + '%';
+                                const startFrac = getYearFraction(shipD);
+                                const endFrac = getYearFraction(factoryD);
+                                
+                                const track = document.createElement('div'); 
+                                track.className = 'transit-track';
+                                track.style.left = fractionToCss(startFrac); 
+                                track.style.width = `calc((100% - 280px) * ${endFrac - startFrac})`;
                                 tr.appendChild(track);
 
-                                [{d: factoryD, i: '🏭', n: 'Arrival at Factory'}, {d: shipD, i: '🚢', n: 'Ship & Transit'}].forEach(h => {
-                                    const icon = document.createElement('div'); icon.className = h.i === '🚢' ? 'ship-moving' : 'factory-destination';
-                                    icon.innerHTML = h.i; 
-                                    const prog = h.i === '🚢' ? (now >= factoryD ? 100 : (now > shipD ? ((now-shipD)/(factoryD-shipD))*100 : 0)) : 100;
-                                    icon.style.left = (h.i === '🚢' ? (startX + ((endX-startX)*(prog/100))) : endX) + '%';
-                                    icon.onclick = () => showHito(h.i, h.n, h.d);
-                                    tr.appendChild(icon);
-                                });
-                                monthStackCount[shipM] = 1; monthStackCount[factoryM] = 1;
+                                const shipProg = now >= factoryD ? 100 : (now > shipD ? ((now-shipD)/(factoryD-shipD))*100 : 0);
+                                const currentFrac = startFrac + ((endFrac - startFrac) * (shipProg / 100));
+
+                                const shipIcon = document.createElement('div'); 
+                                shipIcon.className = 'ship-moving';
+                                shipIcon.innerHTML = '🚢';
+                                shipIcon.style.left = fractionToCss(currentFrac);
+                                shipIcon.title = `Departure: ${formatDateShort(shipD)}`; 
+                                shipIcon.onclick = () => showHito('🚢', 'Ship & Transit', shipD);
+                                
+                                if (shipProg < 100) {
+                                    const badge = document.createElement('div');
+                                    badge.className = 'ship-progress-badge';
+                                    badge.innerText = Math.round(shipProg) + '%';
+                                    shipIcon.appendChild(badge);
+                                }
+                                tr.appendChild(shipIcon);
+
+                                const factoryIcon = document.createElement('div');
+                                factoryIcon.className = 'factory-destination';
+                                factoryIcon.innerHTML = '🏭';
+                                factoryIcon.style.left = fractionToCss(endFrac);
+                                factoryIcon.title = `Arrival: ${formatDateShort(factoryD)}`; 
+                                factoryIcon.onclick = () => showHito('🏭', 'Arrival at Factory', factoryD);
+                                tr.appendChild(factoryIcon);
+
+                                monthStackCount[shipD.getMonth()] = 1; monthStackCount[factoryD.getMonth()] = 1;
                             }
                         }
                     }
@@ -600,12 +687,15 @@
                         if (!isNaN(d.getTime()) && d.getFullYear() === now.getFullYear()) {
                             const mon = d.getMonth(); const offset = getIconYOffset(mon);
                             const icon = document.createElement('div'); icon.className = 'milestone-icon';
-                            icon.innerHTML = m.i; icon.style.left = (20 + (mon * 6.66) + 3.33) + '%';
+                            icon.innerHTML = m.i; 
+                            icon.style.left = fractionToCss(getYearFraction(d)); 
                             icon.style.top = `calc(50% + ${offset}px)`;
+                            icon.title = `${m.n}: ${formatDateShort(d)}`; 
                             icon.onclick = () => showHito(m.i, m.n, d);
                             tr.appendChild(icon);
                         }
                     });
+                    
                     tbody.appendChild(tr);
                 });
             }

@@ -1,170 +1,166 @@
 :root {
     --je-primary-orange: #F5821F;
-    --je-primary-orange-hover: #e0600d;
     --je-text-dark: #1e293b;
-    --je-sidebar-bg: rgba(255, 255, 255, 0.7); 
+    --je-sidebar-bg: #ffffff; 
     --je-sidebar-text: #64748b; 
-    --sidebar-width: 240px;
+    --sidebar-width: 260px;
     --sidebar-collapsed-width: 75px;
+    --sidebar-padding-x: 1.5rem; /* Padding constante para alineación perfecta */
+    --premium-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05);
 }
 
-/* Estructura del Wrapper */
 #wrapper {
     display: flex;
-    width: 100vw;
-    height: 100vh;
-    overflow: hidden;
+    width: 100%;
+    min-height: 100vh;
+    background-color: #f8fafc;
 }
 
-/* Sidebar Wrapper - EL EFECTO CRISTAL */
 #sidebar-wrapper {
     width: var(--sidebar-width);
     min-width: var(--sidebar-width);
+    height: 100vh;
+    position: fixed;
+    left: 0;
+    top: 0;
     background: var(--je-sidebar-bg);
-    backdrop-filter: blur(15px);
-    -webkit-backdrop-filter: blur(15px);
-    border-right: 1px solid rgba(0, 0, 0, 0.05);
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    border-right: 1px solid rgba(226, 232, 240, 0.8);
+    transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     display: flex;
     flex-direction: column;
     z-index: 1050;
-    box-shadow: 4px 0 15px rgba(0,0,0,0.02);
+    overflow: hidden; /* Evita que el texto se asome al colapsar */
 }
 
-/* Estado Colapsado */
+/* Estado Colapsado - SOLO CAMBIA EL ANCHO */
 #wrapper.toggled #sidebar-wrapper {
     width: var(--sidebar-collapsed-width);
     min-width: var(--sidebar-collapsed-width);
 }
 
-/* Contenido Principal */
 #page-content-wrapper {
     flex: 1;
-    min-width: 0;
-    height: 100vh;
-    overflow-y: auto;
-    display: flex;
-    flex-direction: column;
-    background-color: #f4f6f9;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    width: 100%;
+    margin-left: var(--sidebar-width);
+    transition: margin-left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    min-height: 100vh;
+    overflow-y: auto; /* Permite scroll vertical */
+    position: relative;
 }
 
-/* Ocultar texto cuando está colapsado */
-#wrapper.toggled #sidebar-wrapper .nav-link span,
-#wrapper.toggled #sidebar-wrapper .brand-logo span,
-#wrapper.toggled #sidebar-wrapper .sidebar-footer .container-info-usuario,
-#wrapper.toggled #sidebar-wrapper .sidebar-footer strong {
-    display: none;
+#wrapper.toggled #page-content-wrapper {
+    margin-left: var(--sidebar-collapsed-width);
 }
 
-#wrapper.toggled #sidebar-wrapper .nav-link i {
-    margin-right: 0;
-    font-size: 1.3rem;
-}
-
-#wrapper.toggled #sidebar-wrapper .nav-link {
-    justify-content: center;
-    padding: 0.9rem 0;
-}
-
-/* Efecto Hover para expandir */
-#wrapper.toggled #sidebar-wrapper:hover {
-    width: var(--sidebar-width);
-    min-width: var(--sidebar-width);
-    box-shadow: 10px 0 30px rgba(0,0,0,0.1);
-}
-
-#wrapper.toggled #sidebar-wrapper:hover .nav-link span,
-#wrapper.toggled #sidebar-wrapper:hover .brand-logo span,
-#wrapper.toggled #sidebar-wrapper:hover .sidebar-footer .container-info-usuario {
-    display: inline-block;
-}
-
-#wrapper.toggled #sidebar-wrapper:hover .nav-link i {
-    margin-right: 1rem;
-}
-
-#wrapper.toggled #sidebar-wrapper:hover .nav-link {
-    justify-content: flex-start;
-    padding: 0.9rem 1.5rem;
-}
-
-/* Estilos internos de la barra */
-.sidebar-je {
-    height: 100%;
-    display: flex;
-    flex-direction: column;
-}
-
+/* BRAND LOGO - Alineación fija */
 .sidebar-je .brand-logo {
     height: 70px;
     display: flex;
-    flex-direction: column;
-    justify-content: center;
     align-items: center;
-    border-bottom: 1px solid rgba(0, 0, 0, 0.05); /* Misma línea que el header */
-    margin-bottom: 0; /* Eliminamos el margen para que la línea se conecte */
+    padding: 0 var(--sidebar-padding-x);
+    border-bottom: 1px solid rgba(226, 232, 240, 0.8);
     color: var(--je-text-dark);
+    text-decoration: none;
+    overflow: hidden;
     white-space: nowrap;
-    box-sizing: border-box;
 }
 
-/* Espaciado para compensar la falta de margen en el logo */
-.sidebar-je .nav {
-    margin-top: 1rem;
-}
-
-.sidebar-je .brand-logo .light {
+.sidebar-je .brand-logo i {
+    min-width: 30px; /* Ancho fijo para el icono del logo */
+    font-size: 1.75rem;
     color: var(--je-primary-orange);
+    margin-right: 1rem;
 }
 
+/* NAV LINKS - Alineación fija */
 .sidebar-je .nav-link {
     color: var(--je-sidebar-text);
-    padding: 0.9rem 1.5rem;
-    font-weight: 600;
-    font-size: 0.95rem;
-    border-radius: 10px;
-    margin: 4px 12px;
-    transition: all 0.2s ease;
-    white-space: nowrap;
+    padding: 0.8rem var(--sidebar-padding-x);
+    font-weight: 700;
+    font-size: 0.85rem;
+    border-radius: 12px;
+    margin: 4px 10px;
     display: flex;
     align-items: center;
+    text-decoration: none;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+    overflow: hidden;
 }
 
 .sidebar-je .nav-link i {
-    min-width: 25px;
-    text-align: center;
+    min-width: 30px; /* MISMO ANCHO FIJO QUE EL LOGO */
+    font-size: 1.2rem;
+    margin-right: 1rem;
+    display: inline-flex;
+    justify-content: flex-start; /* Siempre pegados a la izquierda del contenedor */
 }
 
+/* OCULTAR TEXTO SUAVEMENTE */
+.sidebar-je .nav-link span, 
+.sidebar-je .brand-logo div,
+.sidebar-je .menu-divider,
+.sidebar-je .container-info-usuario {
+    transition: opacity 0.2s ease;
+    opacity: 1;
+}
+
+#wrapper.toggled #sidebar-wrapper span, 
+#wrapper.toggled #sidebar-wrapper .brand-logo div,
+#wrapper.toggled #sidebar-wrapper .menu-divider,
+#wrapper.toggled #sidebar-wrapper .container-info-usuario {
+    opacity: 0;
+    pointer-events: none;
+}
+
+/* Hover expand */
+#wrapper.toggled #sidebar-wrapper:hover {
+    width: var(--sidebar-width);
+    box-shadow: 10px 0 30px rgba(0,0,0,0.1);
+}
+
+#wrapper.toggled #sidebar-wrapper:hover span, 
+#wrapper.toggled #sidebar-wrapper:hover .brand-logo div,
+#wrapper.toggled #sidebar-wrapper:hover .menu-divider,
+#wrapper.toggled #sidebar-wrapper:hover .container-info-usuario {
+    opacity: 1;
+}
+
+/* Estilos de estado */
 .sidebar-je .nav-link:hover {
-    background-color: rgba(245, 130, 31, 0.05);
-    color: var(--je-primary-orange);
-    transform: translateX(3px);
+    background-color: #f1f5f9;
+    color: var(--je-text-dark);
 }
 
 .sidebar-je .nav-link.active {
-    background-color: rgba(245, 130, 31, 0.1);
+    background-color: #fff7ed;
     color: var(--je-primary-orange);
-    box-shadow: 0 4px 10px rgba(245, 130, 31, 0.05);
 }
 
 .sidebar-je .sidebar-footer {
-    padding: 1.5rem;
-    border-top: 1px solid rgba(0, 0, 0, 0.05);
+    padding: 1.25rem var(--sidebar-padding-x);
+    border-top: 1px solid rgba(226, 232, 240, 0.8);
     margin-top: auto;
-    background: rgba(255, 255, 255, 0.2);
+    overflow: hidden;
+    white-space: nowrap;
 }
 
 .sidebar-je .sidebar-footer .avatar-initial {
-    width: 38px;
-    height: 38px;
-    min-width: 38px;
-    background: linear-gradient(135deg, var(--je-primary-orange) 0%, #e0600d 100%);
-    color: #ffffff; 
+    width: 35px;
+    height: 35px;
+    min-width: 35px;
+    background: var(--je-text-dark);
+    color: #fff;
     display: flex;
-    justify-content: center;
     align-items: center;
+    justify-content: center;
     font-weight: 800;
-    border-radius: 10px;
-    box-shadow: 0 4px 8px rgba(245, 130, 31, 0.2);
+    border-radius: 8px;
+}
+
+/* Responsive */
+@media (max-width: 992px) {
+    #sidebar-wrapper { transform: translateX(-100%); }
+    #wrapper.toggled #sidebar-wrapper { transform: translateX(0); width: var(--sidebar-width); }
+    #page-content-wrapper { margin-left: 0 !important; }
 }
