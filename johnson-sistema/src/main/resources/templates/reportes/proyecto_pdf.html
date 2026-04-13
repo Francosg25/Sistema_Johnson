@@ -14,7 +14,7 @@
             }
         }
         body {
-            font-family: 'Helvetica', 'Arial', sans-serif;
+            font-family: 'DejaVu Sans', 'Helvetica', 'Arial', sans-serif;
             font-size: 9pt;
             color: #2b3035;
             line-height: 1.2;
@@ -77,6 +77,29 @@
             margin: 15px 0 25px 0;
             border-bottom: 1.5px solid #ccc;
         }
+        .today-line {
+            position: absolute;
+            top: 0;
+            height: 100%;
+            width: 3px;
+            background-color: #ef4444;
+            border-left: 1px solid #ef4444;
+            z-index: 100;
+        }
+        .today-label {
+            position: absolute;
+            top: -16px;
+            left: -30px; /* Centrado relativo a la línea de 3px */
+            width: 63px; /* Suficiente para el texto "TODAY" */
+            text-align: center;
+            font-size: 7pt;
+            font-weight: bold;
+            color: #ef4444;
+            text-transform: uppercase;
+            white-space: nowrap;
+            background-color: white;
+            padding: 0 2px;
+        }
         .month-table {
             width: 100%;
             border-collapse: collapse;
@@ -93,22 +116,50 @@
         .roadmap-hito {
             position: absolute;
             text-align: center;
-            width: 60px;
-            margin-left: -30px;
+            width: 70px;
+            margin-left: -35px;
+            z-index: 10;
         }
         .hito-icon {
-            font-size: 20pt;
+            font-size: 18pt;
             display: block;
+            background-color: #ffffff;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            line-height: 30px;
+            margin: 0 auto 3px auto;
+            border: 1.5px solid #f1f5f9;
         }
         .hito-name {
-            font-size: 8pt;
+            font-size: 7.5pt;
             font-weight: bold;
             display: block;
+            color: #1e293b;
+            line-height: 1;
         }
         .hito-date {
-            font-size: 7.5pt;
-            color: #555;
+            font-size: 7pt;
+            color: #64748b;
             display: block;
+        }
+
+        .roadmap-legend {
+            margin-top: 10px;
+            margin-bottom: 5px;
+            text-align: right;
+            padding-right: 10px;
+        }
+        .legend-item {
+            display: inline-block;
+            margin-left: 15px;
+            font-size: 7.5pt;
+            font-weight: bold;
+            color: #64748b;
+        }
+        .legend-emoji {
+            margin-right: 4px;
+            font-size: 10pt;
         }
 
         /* --- Dashboard Grid using Tables (Reliable for IText) --- */
@@ -258,7 +309,7 @@
         </tr>
     </table>
 
-    <div class="section-title">Executive Roadmap 2026</div>
+    <div class="section-title" th:text="'Executive Roadmap ' + ${yearRoadmap}">Executive Roadmap</div>
     <div class="roadmap-wrapper">
         <table class="month-table">
             <tr>
@@ -268,10 +319,24 @@
         </table>
         <div th:each="hito, iter : ${roadmapHitos}" class="roadmap-hito" 
              th:style="'left: ' + ${hito.posicion} + '%; top: ' + (${iter.index % 2 == 0 ? '2px' : '28px'})">
-            <span class="hito-icon" th:text="${hito.icono}"></span>
+            <span class="hito-icon" 
+                  th:style="'border-color: ' + (${hito.tipo == 'car' ? '#f59e0b' : (hito.tipo == 'ship' ? '#3b82f6' : (hito.tipo == 'factory' ? '#64748b' : (hito.tipo == 'buyoff' ? '#10b981' : '#1e293b')))})"
+                  th:text="${hito.icono}"></span>
             <span class="hito-name" th:text="${hito.nombre}"></span>
             <span class="hito-date" th:text="${#temporals.format(hito.fecha, 'dd/MM')}"></span>
         </div>
+        <!-- Mover la línea de hoy al final para asegurar que esté encima de todo -->
+        <div class="today-line" th:style="'left: ' + ${hoyPosicion} + '%;'">
+            <div class="today-label">Today</div>
+        </div>
+    </div>
+
+    <div class="roadmap-legend">
+        <div class="legend-item"><span class="legend-emoji">👥</span> CAR</div>
+        <div class="legend-item"><span class="legend-emoji">🚢</span> Ship</div>
+        <div class="legend-item"><span class="legend-emoji">🏭</span> Factory</div>
+        <div class="legend-item"><span class="legend-emoji">💰</span> Buy-off</div>
+        <div class="legend-item"><span class="legend-emoji">🏁</span> SOP</div>
     </div>
 
     <div class="section-title">Dashboards</div>
@@ -332,7 +397,7 @@
         </tbody>
     </table>
 
-    <div class="footer">
+    <div class="footer" th:text="'Johnson Electric &copy; ' + ${#dates.format(#dates.createNow(), 'yyyy')} + ' - Confidential APQP Management Report'">
         Johnson Electric &copy; 2026 - Confidential APQP Management Report
     </div>
 </body>

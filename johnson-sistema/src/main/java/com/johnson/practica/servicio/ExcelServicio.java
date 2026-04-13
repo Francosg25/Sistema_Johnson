@@ -86,8 +86,8 @@ public class ExcelServicio {
             legendActual.createCell(1).setCellValue("Real Date (Actual / Executed)");
 
             Row legendIcon1 = sheet.createRow(3);
-            legendIcon1.createCell(0).setCellValue("💰 CAR Approval");
-            legendIcon1.createCell(1).setCellValue("👥 Line Buy-off");
+            legendIcon1.createCell(0).setCellValue("👥 CAR Approval");
+            legendIcon1.createCell(1).setCellValue("💰 Line Buy-off");
 
             Row legendIcon2 = sheet.createRow(4);
             legendIcon2.createCell(0).setCellValue("🚢 Equipment Transit");
@@ -184,8 +184,8 @@ public class ExcelServicio {
                     cell.setCellStyle(projectIconStyle); 
                     
                     StringBuilder iconos = new StringBuilder();
-                    if (proyecto.getFechaCar() != null && YearMonth.from(proyecto.getFechaCar()).equals(ym)) iconos.append("💰 ");
-                    if (proyecto.getFechaBuyoff() != null && YearMonth.from(proyecto.getFechaBuyoff()).equals(ym)) iconos.append("👥 ");
+                    if (proyecto.getFechaCar() != null && YearMonth.from(proyecto.getFechaCar()).equals(ym)) iconos.append("👥 ");
+                    if (proyecto.getFechaBuyoff() != null && YearMonth.from(proyecto.getFechaBuyoff()).equals(ym)) iconos.append("💰 ");
                     if (proyecto.getFechaTransit() != null && YearMonth.from(proyecto.getFechaTransit()).equals(ym)) iconos.append("🚢 ");
                     
                     if (iconos.length() > 0) {

@@ -49,24 +49,43 @@ function initDashboard(tendenciaData, eventosCalendario) {
                     const editNumParte = document.getElementById('edit-numeroParte');
                     const editCliente = document.getElementById('edit-cliente');
                     const editSop = document.getElementById('edit-sop');
+                    const editBu = document.getElementById('edit-bu');
+                    const editPlanta = document.getElementById('edit-planta');
+                    const editLaunchEngineer = document.getElementById('edit-launchEngineer');
+                    const editFechaLineArrival = document.getElementById('edit-fechaLineArrival');
+                    const editFechaPvBuild = document.getElementById('edit-fechaPvBuild');
+                    const editFechaPpap = document.getElementById('edit-fechaPpap');
+                    const editScope = document.getElementById('edit-scope');
+                    const editProgramManager = document.getElementById('edit-programManager');
 
-                    if (editId) editId.value = data.id;
-                    if (editNombre) editNombre.value = data.nombre;
-                    if (editNumParte) editNumParte.value = data.numeroParte;
-                    if (editCliente) editCliente.value = data.cliente;
+                    if (editId) editId.value = data.id || '';
+                    if (editNombre) editNombre.value = data.nombre || '';
+                    if (editNumParte) editNumParte.value = data.numeroParte || '';
+                    if (editCliente) editCliente.value = data.cliente || '';
+                    if (editBu) editBu.value = data.bu || '';
+                    if (editPlanta) editPlanta.value = data.planta || '';
+                    if (editLaunchEngineer) editLaunchEngineer.value = data.launchEngineer || '';
+                    if (editScope) editScope.value = data.scope || '';
+                    if (editProgramManager) editProgramManager.value = data.programManager || '';
                     
-                    if (data.sop && editSop) {
+                    const fillDateInput = (input, dateVal) => {
+                        if (!input || !dateVal) return;
                         let dateStr = "";
-                        if (Array.isArray(data.sop)) {
-                            const y = data.sop[0];
-                            const m = String(data.sop[1]).padStart(2, '0');
-                            const d = String(data.sop[2]).padStart(2, '0');
+                        if (Array.isArray(dateVal)) {
+                            const y = dateVal[0];
+                            const m = String(dateVal[1]).padStart(2, '0');
+                            const d = String(dateVal[2]).padStart(2, '0');
                             dateStr = `${y}-${m}-${d}`;
                         } else {
-                            dateStr = data.sop.split('T')[0];
+                            dateStr = dateVal.split('T')[0];
                         }
-                        editSop.value = dateStr;
-                    }
+                        input.value = dateStr;
+                    };
+
+                    fillDateInput(editSop, data.sop);
+                    fillDateInput(editFechaLineArrival, data.fechaLineArrival);
+                    fillDateInput(editFechaPvBuild, data.fechaPvBuild);
+                    fillDateInput(editFechaPpap, data.fechaPpap);
                     
                     const modalEl = document.getElementById('modalEditarProyecto');
                     if (modalEl) {
@@ -290,4 +309,28 @@ function initializeCalendar(events) {
             btn.innerHTML = `<i class="bi bi-funnel me-1"></i> ${this.textContent}`;
         });
     });
+
+    // Función para llenar dinámicamente el modal de Edición de Proyecto
+function llenarModalEditar(btn) {
+    // Tomamos los datos que vienen ocultos en el botón (data-atributos)
+    // y los inyectamos en los inputs del modal buscando por su ID
+    document.getElementById('edit-id').value = btn.getAttribute('data-id') || '';
+    document.getElementById('edit-nombre').value = btn.getAttribute('data-nombre') || '';
+    document.getElementById('edit-numeroParte').value = btn.getAttribute('data-numeroparte') || '';
+    document.getElementById('edit-cliente').value = btn.getAttribute('data-cliente') || '';
+    document.getElementById('edit-bu').value = btn.getAttribute('data-bu') || '';
+    document.getElementById('edit-planta').value = btn.getAttribute('data-planta') || '';
+    document.getElementById('edit-launchEngineer').value = btn.getAttribute('data-launchengineer') || '';
+    
+    // Fechas
+    document.getElementById('edit-fechaLineArrival').value = btn.getAttribute('data-fechalinearrival') || '';
+    document.getElementById('edit-fechaPvBuild').value = btn.getAttribute('data-fechapvbuild') || '';
+    document.getElementById('edit-sop').value = btn.getAttribute('data-sop') || '';
+    document.getElementById('edit-fechaPpap').value = btn.getAttribute('data-fechappap') || '';
+    
+    // Textareas y otros
+    document.getElementById('edit-scope').value = btn.getAttribute('data-scope') || '';
+    document.getElementById('edit-programManager').value = btn.getAttribute('data-programmanager') || '';
+}
+
 }

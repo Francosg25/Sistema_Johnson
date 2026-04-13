@@ -253,16 +253,21 @@
                             <div class="premium-icon-box icon-orange-soft">
                                 <i class="bi bi-calendar3"></i>
                             </div>
-                            MASTER EXECUTIVE ROADMAP <span id="currentYearBadge" class="badge bg-soft-primary text-primary ms-3 rounded-pill px-3 py-1 fw-bold" style="font-size: 0.7rem; background: #eff6ff;"></span>
+                            MASTER EXECUTIVE ROADMAP <span id="currentYearBadge" class="badge bg-soft-primary text-primary ms-3 me-3 rounded-pill px-3 py-1 fw-bold" style="font-size: 0.7rem; background: #eff6ff; border: 1px solid #dbeafe;"></span>
                         </h6>
-                        <div class="d-flex gap-4 small fw-bold text-muted pe-3">
+                        <div class="d-flex gap-4 align-items-center small fw-bold text-muted pe-3">
+                            <div class="d-flex align-items-center gap-3 me-4">
+                                <label for="roadmapYearSelector" class="text-uppercase mb-0" style="font-size: 0.65rem; letter-spacing: 0.05em; color: #94a3b8; white-space: nowrap;">View Year:</label>
+                                <select id="roadmapYearSelector" class="form-select form-select-sm form-select-premium py-1" style="width: auto; min-width: 120px; height: 32px; font-size: 0.75rem !important;">
+                                </select>
+                            </div>
                             <span class="d-flex align-items-center" title="Current Date">
                                 <span class="me-2" style="width: 4px; height: 16px; background-color: #ef4444; border-radius: 2px;"></span> Today
                             </span>
-                            <span class="d-flex align-items-center"><span class="me-2">💰</span> CAR</span>
+                            <span class="d-flex align-items-center"><span class="me-2">👥</span> CAR</span>
                             <span class="d-flex align-items-center"><span class="me-2">🚢</span> Ship</span>
                             <span class="d-flex align-items-center"><span class="me-2">🏭</span> Factory</span>
-                            <span class="d-flex align-items-center"><span class="me-2">👥</span> Buy-off</span>
+                            <span class="d-flex align-items-center"><span class="me-2">💰</span> Buy-off</span>
                         </div>
                     </div>
                     <div class="card-body p-0">
@@ -284,7 +289,7 @@
             </div>
         </div>
 
-        <div class="row mb-5">
+      <div class="row mb-5 mt-5"> 
             <div class="col-12">
                 <div class="card glass-card border-0">
                     <div class="card-header glass-header d-flex justify-content-between align-items-center">
@@ -335,7 +340,7 @@
                             </div>
                             DELIVERABLE HEALTH
                         </h6>
-                        <select id="selectHealthProyecto" class="form-select form-select-sm form-select-premium" style="width: auto;">
+                        <select id="selectHealthProyecto" class="form-select form-select-sm form-select-premium" style="width: 200px;">
                             <option value="GLOBAL">Global Health</option>
                         </select>
                     </div>
@@ -352,9 +357,9 @@
                             <div class="premium-icon-box icon-red-soft">
                                 <i class="bi bi-speedometer2"></i>
                             </div>
-                            DYNAMIC RISK METER
+                            RISK METER
                         </h6>
-                        <select id="selectRiesgoProyecto" class="form-select form-select-sm form-select-premium" style="width: auto;">
+                        <select id="selectRiesgoProyecto" class="form-select form-select-sm form-select-premium" style="width: 200px;">
                             <option value="" selected disabled>Select Project...</option>
                         </select>
                     </div>
@@ -573,41 +578,50 @@
             }
 
             // MASTER ROADMAP LOGIC
-            function initMasterTimeline() {
+            function initMasterTimeline(yearToShow) {
                 const tbody = document.getElementById('masterTimelineBody');
-                if (!tbody || !reportes) return;
+                const container = document.getElementById('roadmapContainer');
+                if (!tbody || !reportes || !container) return;
                 
                 const now = new Date();
+                const displayYear = parseInt(yearToShow) || now.getFullYear();
+                
+                // Limpiar contenido previo
+                tbody.innerHTML = '';
+                const existingTodayLine = container.querySelector('.today-line');
+                if (existingTodayLine) existingTodayLine.remove();
 
-                // Calculamos usando milisegundos reales del año para una precisión del 100%
+                // Actualizar Badge de año
+                const badge = document.getElementById('currentYearBadge');
+                if (badge) badge.textContent = displayYear;
+
+                // Función de posicionamiento relativa al año seleccionado
                 function getYearFraction(date) {
-                    const start = new Date(date.getFullYear(), 0, 1);
-                    const end = new Date(date.getFullYear() + 1, 0, 1);
-                    return (date.getTime() - start.getTime()) / (end.getTime() - start.getTime());
+                    const startOfYear = new Date(displayYear, 0, 1);
+                    const endOfYear = new Date(displayYear + 1, 0, 1);
+                    return (date.getTime() - startOfYear.getTime()) / (endOfYear.getTime() - startOfYear.getTime());
                 }
 
                 function fractionToCss(fraction) {
-                    return `calc(280px + ((100% - 280px) * ${fraction}))`;
+                    return `calc(280px + ((100% - 280px) * ${Math.max(0, Math.min(1, fraction))}))`;
                 }
 
                 function formatDateShort(date) {
                     return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
                 }
 
-                const todayFrac = getYearFraction(now);
-                const todayLine = document.createElement('div');
-                todayLine.className = 'today-line';
-                todayLine.style.left = fractionToCss(todayFrac);
-                
-                const tooltip = document.createElement('div');
-                tooltip.className = 'today-tooltip-fast';
-                tooltip.innerText = 'Today';
-                todayLine.appendChild(tooltip);
-
-                // Inyectamos la línea de HOY en el div contenedor para que atraviese de arriba a abajo
-                const container = document.getElementById('roadmapContainer');
-                if (container) {
-                    container.appendChild(todayLine); 
+                // Línea de HOY (solo si es el año actual)
+                if (displayYear === now.getFullYear()) {
+                    const todayFrac = getYearFraction(now);
+                    const todayLine = document.createElement('div');
+                    todayLine.className = 'today-line';
+                    todayLine.style.left = fractionToCss(todayFrac);
+                    
+                    const tooltip = document.createElement('div');
+                    tooltip.className = 'today-tooltip-fast';
+                    tooltip.innerText = 'Today';
+                    todayLine.appendChild(tooltip);
+                    container.appendChild(todayLine);
                 }
 
                 reportes.forEach(proyecto => {
@@ -641,50 +655,62 @@
                             const factoryD = new Date(shipD); 
                             factoryD.setDate(factoryD.getDate() + 60); 
                             
-                            if (shipD.getFullYear() === now.getFullYear() || factoryD.getFullYear() === now.getFullYear()) {
-                                const startFrac = getYearFraction(shipD);
-                                const endFrac = getYearFraction(factoryD);
+                            // Verificar si el trayecto se cruza con el año actual
+                            const startOfYear = new Date(displayYear, 0, 1);
+                            const endOfYear = new Date(displayYear, 11, 31, 23, 59, 59);
+
+                            if (shipD <= endOfYear && factoryD >= startOfYear) {
+                                let startFrac = getYearFraction(shipD);
+                                let endFrac = getYearFraction(factoryD);
                                 
+                                // Dibujar el track (línea punteada)
                                 const track = document.createElement('div'); 
                                 track.className = 'transit-track';
                                 track.style.left = fractionToCss(startFrac); 
-                                track.style.width = `calc((100% - 280px) * ${endFrac - startFrac})`;
+                                track.style.width = `calc((100% - 280px) * ${Math.min(1, endFrac) - Math.max(0, startFrac)})`;
                                 tr.appendChild(track);
 
-                                const shipProg = now >= factoryD ? 100 : (now > shipD ? ((now-shipD)/(factoryD-shipD))*100 : 0);
-                                const currentFrac = startFrac + ((endFrac - startFrac) * (shipProg / 100));
-
-                                const shipIcon = document.createElement('div'); 
-                                shipIcon.className = 'ship-moving';
-                                shipIcon.innerHTML = '🚢';
-                                shipIcon.style.left = fractionToCss(currentFrac);
-                                shipIcon.title = `Departure: ${formatDateShort(shipD)}`; 
-                                shipIcon.onclick = () => showHito('🚢', 'Ship & Transit', shipD);
-                                
-                                if (shipProg < 100) {
-                                    const badge = document.createElement('div');
-                                    badge.className = 'ship-progress-badge';
-                                    badge.innerText = Math.round(shipProg) + '%';
-                                    shipIcon.appendChild(badge);
+                                // Icono de Barco (solo si cae en este año)
+                                if (shipD.getFullYear() === displayYear) {
+                                    const shipProg = now >= factoryD ? 100 : (now > shipD ? ((now-shipD)/(factoryD-shipD))*100 : 0);
+                                    // La posición del barco depende de su progreso real, pero lo mostramos si el barco "está" en este año
+                                    let currentPosDate = new Date(shipD.getTime() + (factoryD.getTime() - shipD.getTime()) * (shipProg / 100));
+                                    
+                                    if (currentPosDate.getFullYear() === displayYear) {
+                                        const shipIcon = document.createElement('div'); 
+                                        shipIcon.className = 'ship-moving';
+                                        shipIcon.innerHTML = '🚢';
+                                        shipIcon.style.left = fractionToCss(getYearFraction(currentPosDate));
+                                        shipIcon.title = `Departure: ${formatDateShort(shipD)}`; 
+                                        shipIcon.onclick = () => showHito('🚢', 'Ship & Transit', shipD);
+                                        
+                                        if (shipProg < 100) {
+                                            const badge = document.createElement('div');
+                                            badge.className = 'ship-progress-badge';
+                                            badge.innerText = Math.round(shipProg) + '%';
+                                            shipIcon.appendChild(badge);
+                                        }
+                                        tr.appendChild(shipIcon);
+                                    }
                                 }
-                                tr.appendChild(shipIcon);
 
-                                const factoryIcon = document.createElement('div');
-                                factoryIcon.className = 'factory-destination';
-                                factoryIcon.innerHTML = '🏭';
-                                factoryIcon.style.left = fractionToCss(endFrac);
-                                factoryIcon.title = `Arrival: ${formatDateShort(factoryD)}`; 
-                                factoryIcon.onclick = () => showHito('🏭', 'Arrival at Factory', factoryD);
-                                tr.appendChild(factoryIcon);
-
-                                monthStackCount[shipD.getMonth()] = 1; monthStackCount[factoryD.getMonth()] = 1;
+                                // Icono de Fábrica (solo si cae en este año)
+                                if (factoryD.getFullYear() === displayYear) {
+                                    const factoryIcon = document.createElement('div');
+                                    factoryIcon.className = 'factory-destination';
+                                    factoryIcon.innerHTML = '🏭';
+                                    factoryIcon.style.left = fractionToCss(getYearFraction(factoryD));
+                                    factoryIcon.title = `Arrival: ${formatDateShort(factoryD)}`; 
+                                    factoryIcon.onclick = () => showHito('🏭', 'Arrival at Factory', factoryD);
+                                    tr.appendChild(factoryIcon);
+                                }
                             }
                         }
                     }
 
-                    [{k: 'car', n: 'CAR Approval', i: '💰', d: proyecto.fechaCar}, {k: 'buyoff', n: 'Line Buy-off', i: '👥', d: proyecto.fechaBuyoff}].forEach(m => {
+                    [{k: 'car', n: 'CAR Approval', i: '👥', d: proyecto.fechaCar}, {k: 'buyoff', n: 'Line Buy-off', i: '💰', d: proyecto.fechaBuyoff}].forEach(m => {
                         const d = new Date(m.d);
-                        if (!isNaN(d.getTime()) && d.getFullYear() === now.getFullYear()) {
+                        if (!isNaN(d.getTime()) && d.getFullYear() === displayYear) {
                             const mon = d.getMonth(); const offset = getIconYOffset(mon);
                             const icon = document.createElement('div'); icon.className = 'milestone-icon';
                             icon.innerHTML = m.i; 
@@ -708,8 +734,20 @@
             }
 
             document.addEventListener('DOMContentLoaded', () => {
-                initMasterTimeline();
-                if (document.getElementById('currentYearBadge')) document.getElementById('currentYearBadge').textContent = new Date().getFullYear();
+                const yearSelector = document.getElementById('roadmapYearSelector');
+                if (yearSelector) {
+                    const currentYear = new Date().getFullYear();
+                    for (let i = 0; i <= 2; i++) {
+                        const year = currentYear + i;
+                        const opt = document.createElement('option');
+                        opt.value = year;
+                        opt.textContent = year;
+                        yearSelector.appendChild(opt);
+                    }
+                    yearSelector.addEventListener('change', (e) => initMasterTimeline(e.target.value));
+                }
+
+                initMasterTimeline(new Date().getFullYear());
             });
             /*]]>*/
         </script>

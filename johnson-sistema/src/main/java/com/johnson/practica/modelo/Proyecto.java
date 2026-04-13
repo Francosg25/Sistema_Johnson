@@ -50,6 +50,21 @@ public class Proyecto {
     private String razonRevision;
     private String programManager;
 
+    // Nuevos campos para Master Timeline
+    private String bu;
+    private String planta;
+
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
+    private LocalDate fechaLineArrival;
+
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
+    private LocalDate fechaPvBuild;
+    
+    @Column(columnDefinition = "TEXT")
+    private String scope;
+
+    private String launchEngineer;
+
     @Column(columnDefinition = "TEXT")
     private String observaciones;
 

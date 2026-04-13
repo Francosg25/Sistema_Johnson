@@ -60,11 +60,7 @@ public class CargadorDatos implements CommandLineRunner {
             admin.setRoles(roles);
 
             usuarioServicio.guardarUsuario(admin);
-        } else {
-            Usuario admin = adminOpt.get();
-            admin.setPassword(defaultAdminPassword);
-            usuarioServicio.guardarUsuario(admin);
-        }
+        
 
         System.out.println("\n=========================================================");
         System.out.println("CREDENCIALES MAESTRAS DEL SISTEMA APQP");
@@ -72,4 +68,5 @@ public class CargadorDatos implements CommandLineRunner {
         System.out.println(" CONTRASEÑA: " + defaultAdminPassword);
         System.out.println("=========================================================\n");
     }
+}
 }

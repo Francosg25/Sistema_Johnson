@@ -96,16 +96,17 @@ public class ReporteServicio {
         long roundedRisk = Math.round(riesgoScore);
 
         List<Map<String, Object>> roadmapHitos = new java.util.ArrayList<>();
-        int yearActual = 2026; 
+        // El año del roadmap se basa en el SOP del proyecto, o el año actual si no tiene SOP
+        int yearRoadmap = (proyecto.getSop() != null) ? proyecto.getSop().getYear() : java.time.LocalDate.now().getYear(); 
 
-        agregarHito(roadmapHitos, "CAR Approval", "💰", proyecto.getFechaCar(), yearActual);
-        agregarHito(roadmapHitos, "Line Buy-off", "👥", proyecto.getFechaBuyoff(), yearActual);
-        agregarHito(roadmapHitos, "Equipment Ship", "🚢", proyecto.getFechaTransit(), yearActual);
+        agregarHito(roadmapHitos, "CAR Approval", "👥", "car", proyecto.getFechaCar(), yearRoadmap);
+        agregarHito(roadmapHitos, "Line Buy-off", "💰", "buyoff", proyecto.getFechaBuyoff(), yearRoadmap);
+        agregarHito(roadmapHitos, "Equipment Ship", "🚢", "ship", proyecto.getFechaTransit(), yearRoadmap);
         
         if (proyecto.getFechaTransit() != null) {
-            agregarHito(roadmapHitos, "Factory Arrival", "🏭", proyecto.getFechaTransit().plusDays(60), yearActual);
+            agregarHito(roadmapHitos, "Factory Arrival", "🏭", "factory", proyecto.getFechaTransit().plusDays(60), yearRoadmap);
         }
-        agregarHito(roadmapHitos, "SOP", "🏁", proyecto.getFechaSop(), yearActual);
+        agregarHito(roadmapHitos, "SOP", "🏁", "sop", proyecto.getFechaSop(), yearRoadmap);
 
         
         // GENERAL APQP STATUS 
@@ -227,6 +228,21 @@ public class ReporteServicio {
         variables.put("riesgoScore", roundedRisk);
         variables.put("progresoEtapas", progresoEtapas);
         variables.put("roadmapHitos", roadmapHitos);
+        variables.put("yearRoadmap", yearRoadmap);
+        
+        java.time.LocalDate hoy = java.time.LocalDate.now();
+        
+        // Calcular hoyPosicion relativo al yearRoadmap
+        double hoyPorcentaje = 0.0;
+        if (hoy.getYear() == yearRoadmap) {
+            int diaAnio = hoy.getDayOfYear();
+            hoyPorcentaje = (diaAnio * 100.0) / 365.0;
+        } else if (hoy.getYear() > yearRoadmap) {
+            hoyPorcentaje = 110.0; // Fuera del rango (adelante)
+        } else {
+            hoyPorcentaje = -10.0; // Fuera del rango (atrás)
+        }
+        variables.put("hoyPosicion", Math.round(hoyPorcentaje * 10.0) / 10.0);
         
         variables.put("totalTareas", entregablesPrograma.size());
         variables.put("tareasOk", okCount);
@@ -236,12 +252,13 @@ public class ReporteServicio {
         return variables;
     }
 
-    private void agregarHito(List<Map<String, Object>> lista, String nombre, String icono, java.time.LocalDate fecha, int year) {
+    private void agregarHito(List<Map<String, Object>> lista, String nombre, String icono, String tipo, java.time.LocalDate fecha, int year) {
         if (fecha == null || fecha.getYear() != year) return;
         
         Map<String, Object> hito = new HashMap<>();
         hito.put("nombre", nombre);
         hito.put("icono", icono);
+        hito.put("tipo", tipo);
         hito.put("fecha", fecha);
         
         // Calcular posición porcentual en el año

@@ -138,6 +138,7 @@ public class DashboardControlador {
             model.addAttribute("usuarioLogueado", principal.getName());
         }
 
+        model.addAttribute("usuarios", usuarioRepositorio.findAll());
         model.addAttribute("titulo", "Dashboard de Proyectos APQP - Johnson Electric");
         model.addAttribute("currentUri", request.getRequestURI());
         return "index"; 

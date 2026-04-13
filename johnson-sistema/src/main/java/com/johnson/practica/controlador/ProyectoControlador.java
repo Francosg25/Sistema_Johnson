@@ -346,6 +346,14 @@ public class ProyectoControlador {
         return "redirect:/proyectos/vault";
     }
 
+    @GetMapping("/vista-general")
+    public String verVistaGeneral(Model model, HttpServletRequest request) {
+        List<Proyecto> proyectos = proyectoRepositorio.findByEsHistoricoFalse();
+        model.addAttribute("proyectos", proyectos);
+        model.addAttribute("currentUri", request.getRequestURI());
+        return "proyectos/vista-general";
+    }
+
     @GetMapping("/vault")
     public String verHistoricalVault(Model model, HttpServletRequest request) {
         List<Proyecto> historicos = proyectoRepositorio.findByEsHistoricoTrue();

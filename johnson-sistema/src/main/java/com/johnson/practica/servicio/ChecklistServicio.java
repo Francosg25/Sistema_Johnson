@@ -263,4 +263,6 @@ public class ChecklistServicio {
 
         if (!paraActualizar.isEmpty()) repositorio.saveAll(paraActualizar);
     }
+    
+
 }

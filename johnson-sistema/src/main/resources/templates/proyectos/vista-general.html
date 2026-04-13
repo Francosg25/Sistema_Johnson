@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout}">
+<head>
+    <title>Master Timeline Overview - Johnson Electric</title>
+    <th:block layout:fragment="custom-css">
+        <style>
+            :root {
+                --je-orange: #F5821F;
+                --je-blue: #1e293b;
+            }
+            .master-container {
+                background: #f8fafc;
+                min-height: 100vh;
+                padding: 2rem;
+            }
+            .excel-card {
+                background: white;
+                border-radius: 20px;
+                box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05);
+                border: 1px solid #e2e8f0;
+                overflow: hidden;
+            }
+            .table-master {
+                font-size: 0.85rem;
+                border-collapse: separate;
+                border-spacing: 0;
+            }
+            .table-master th {
+                background: #f1f5f9;
+                color: #475569;
+                font-weight: 800;
+                text-transform: uppercase;
+                letter-spacing: 0.03em;
+                padding: 1rem;
+                border-bottom: 2px solid #e2e8f0;
+                white-space: nowrap;
+                position: sticky;
+                top: 0;
+                z-index: 10;
+            }
+            .table-master td {
+                padding: 1rem;
+                border-bottom: 1px solid #f1f5f9;
+                vertical-align: middle;
+            }
+            .table-master tr:hover td {
+                background-color: #f8fafc;
+            }
+            .sticky-col {
+                position: sticky;
+                left: 0;
+                background: white;
+                z-index: 5;
+                border-right: 2px solid #e2e8f0 !important;
+            }
+            th.sticky-col {
+                z-index: 11;
+                background: #f1f5f9;
+            }
+            .badge-status {
+                padding: 0.5rem 0.75rem;
+                border-radius: 8px;
+                font-weight: 700;
+                font-size: 0.7rem;
+                text-transform: uppercase;
+            }
+            .bg-soft-success { background: #dcfce7; color: #166534; }
+            .bg-soft-warning { background: #fef9c3; color: #854d0e; }
+            .bg-soft-danger { background: #fee2e2; color: #991b1b; }
+            
+            .project-name-cell {
+                min-width: 250px;
+                font-weight: 700;
+                color: var(--je-blue);
+            }
+            .scope-cell {
+                min-width: 300px;
+                max-width: 450px;
+                white-space: pre-wrap; /* Mantiene saltos de línea y ajusta al ancho */
+                word-break: break-word;
+                color: #64748b;
+                font-style: italic;
+                line-height: 1.4;
+                font-size: 0.8rem;
+            }
+            .btn-back {
+                color: #64748b;
+                text-decoration: none;
+                font-weight: 700;
+                display: inline-flex;
+                align-items: center;
+                transition: color 0.2s;
+            }
+            .btn-back:hover {
+                color: var(--je-orange);
+            }
+        </style>
+    </th:block>
+</head>
+<body>
+    <main layout:fragment="content" class="master-container">
+        <div class="mb-4 d-flex justify-content-between align-items-center">
+            <div>
+                <a th:href="@{/}" class="btn-back mb-2">
+                    <i class="bi bi-arrow-left me-2"></i> BACK TO DASHBOARD
+                </a>
+                <h2 class="fw-black text-je-blue m-0" style="font-weight: 900; letter-spacing: -0.04em;">Master Timeline Overview</h2>
+                <p class="text-muted fw-bold small opacity-75">CENTRALIZED PROJECT PORTFOLIO CONTROL</p>
+            </div>
+        </div>
+
+        <div class="excel-card">
+            <div class="table-responsive">
+                <table class="table table-master mb-0">
+                    <thead>
+                        <tr>
+                            <th class="sticky-col">BU</th>
+                            <th>Plant</th>
+                            <th>LE (Launch Engineer)</th>
+                            <th class="project-name-cell">Project Name</th>
+                            <th>Line Arrival</th>
+                            <th>PV Build</th>
+                            <th>SOP Date</th>
+                            <th>CAR Date</th>
+                            <th>Buy-off Date</th>
+                            <th>Shipment Date</th>
+                            <th class="scope-cell">Scope</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="p : ${proyectos}">
+                            <td class="sticky-col fw-bold text-je-orange" th:text="${p.bu ?: 'N/A'}">BU</td>
+                            <td th:text="${p.planta ?: 'N/A'}">Plant</td>
+                            <td>
+                                <div class="d-flex align-items-center">
+                                    <div class="rounded-circle bg-soft-primary p-1 me-2 text-center" style="width: 24px; height: 24px; font-size: 0.6rem; background: #eff6ff; color: #3b82f6;">
+                                        <i class="bi bi-person-fill"></i>
+                                    </div>
+                                    <span th:text="${p.launchEngineer ?: 'Unassigned'}">LE</span>
+                                </div>
+                            </td>
+                            <td class="project-name-cell">
+                                <a th:href="@{/proyectos/checklist/{id}(id=${p.id})}" class="text-decoration-none text-je-blue" th:text="${p.nombre}">Project Name</a>
+                                <div class="small text-muted" th:text="${p.numeroParte}">P/N</div>
+                            </td>
+                            <td th:text="${p.fechaLineArrival != null ? #temporals.format(p.fechaLineArrival, 'dd/MM/yyyy') : '-'}">Line Arrival</td>
+                            <td th:text="${p.fechaPvBuild != null ? #temporals.format(p.fechaPvBuild, 'dd/MM/yyyy') : '-'}">PV Build</td>
+                            <td>
+                                <span class="fw-bold text-primary" th:text="${p.sop != null ? #temporals.format(p.sop, 'dd/MM/yyyy') : 'TBD'}">SOP</span>
+                            </td>
+                            
+                            <td th:text="${p.fechaCar != null ? #temporals.format(p.fechaCar, 'dd/MM/yyyy') : '-'}">CAR Date</td>
+                            <td th:text="${p.fechaBuyoff != null ? #temporals.format(p.fechaBuyoff, 'dd/MM/yyyy') : '-'}">Buyoff</td>
+                            <td th:text="${p.fechaTransit != null ? #temporals.format(p.fechaTransit, 'dd/MM/yyyy') : '-'}">Shipment</td>
+                            <td class="scope-cell" th:title="${p.scope}" th:text="${p.scope ?: 'No scope defined'}">Scope</td>
+                        </tr>
+                        <tr th:if="${proyectos.isEmpty()}">
+                            <td colspan="11" class="text-center py-5 text-muted">
+                                <i class="bi bi-folder-x display-4 opacity-25"></i>
+                                <p class="mt-2 fw-bold">No active projects found in the master timeline.</p>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+</body>
+</html>

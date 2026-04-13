@@ -19,7 +19,7 @@ public class RecuperacionControlador {
 
     @GetMapping("/olvido-password")
     public String mostrarFormOlvido() {
-        return "olvido-password";
+        return "auth/olvido-password";
     }
 
     @PostMapping("/olvido-password")
@@ -36,7 +36,7 @@ public class RecuperacionControlador {
     @GetMapping("/recuperar-password")
     public String mostrarFormRecuperar(@RequestParam("token") String token, Model model) {
         model.addAttribute("token", token);
-        return "recuperar-password";
+        return "auth/recuperar-password";
     }
 
     @PostMapping("/recuperar-password")

@@ -119,11 +119,11 @@
                                     <form th:action="@{/proyectos/guardar-hitos/{id}(id=${proyecto.id})}" method="post" id="formHitosProyecto">
                                         <div class="row g-3">
                                             <div class="col-md-4">
-                                                <label class="form-label small fw-bold text-muted mb-1">💰 CAR Approval</label>
+                                                <label class="form-label small fw-bold text-muted mb-1">👥 CAR Approval</label>
                                                 <input type="date" class="form-control form-control-sm border-0 bg-light update-hito" name="fechaCar" th:value="${proyecto.fechaCar}" th:disabled="${!#authorization.expression('hasRole(''ADMIN'')')}">
                                             </div>
                                             <div class="col-md-4">
-                                                <label class="form-label small fw-bold text-muted mb-1">👥 Line Buy-off</label>
+                                                <label class="form-label small fw-bold text-muted mb-1">💰 Line Buy-off</label>
                                                 <input type="date" class="form-control form-control-sm border-0 bg-light update-hito" name="fechaBuyoff" th:value="${proyecto.fechaBuyoff}" th:disabled="${!#authorization.expression('hasRole(''ADMIN'')')}">
                                             </div>
                                             <div class="col-md-4">
@@ -221,6 +221,18 @@
                     html: true
                 })
             });
+        });
+    </script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            setTimeout(() => {
+                const skeleton = document.getElementById('checklist-skeleton');
+                const content = document.getElementById('checklist-content');
+                if(skeleton && content) {
+                    skeleton.style.display = 'none';
+                    content.style.display = 'block';
+                }
+            }, 250);
         });
     </script>
 </body>
