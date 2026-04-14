@@ -23,6 +23,13 @@ public class FirmaEtapaServicio {
     private final UsuarioRepositorio usuarioRepositorio;
     private final BitacoraServicio bitacoraServicio;
     private final NotificacionServicio notificacionServicio;
+    private final ChecklistServicio checklistServicio;
+
+    private static final List<String> ROLES_REQUERIDOS = List.of(
+        "Project Engineer", "Quality Engineer", "Process Engineer", "Project Leader",
+        "Operations Manager", "Quality Manager", "Materials Manager", "SCS Manager", 
+        "Finance Manager", "HR Manager"
+    );
 
     public Map<String, FirmaEtapa> obtenerFirmasPorEtapa(Long proyectoId, Integer etapa) {
         return firmaEtapaRepositorio.findByProyectoIdAndEtapa(proyectoId, etapa)
@@ -40,6 +47,35 @@ public class FirmaEtapaServicio {
         Proyecto proyecto = proyectoRepositorio.findById(proyectoId)
                 .orElseThrow(() -> new RuntimeException("Project not found"));
         
+        // --- VALIDACIÓN DE SECUENCIA DE GATES ---
+        
+        // 1. Validar que el checklist del Gate actual esté completo antes de permitir firmas
+        List<String> erroresPropioGate = checklistServicio.validarGate(proyectoId, etapa);
+        if (!erroresPropioGate.isEmpty()) {
+            throw new RuntimeException("❌ Checklist for Gate " + etapa + " is not complete: " + String.join(", ", erroresPropioGate));
+        }
+
+        // 2. Gate 3 requiere que Gate 2 esté completo
+        if (etapa == 3) {
+            List<String> erroresGate2 = checklistServicio.validarGate(proyectoId, 2);
+            if (!erroresGate2.isEmpty()) {
+                throw new RuntimeException("❌ Gate 2 is not complete: " + String.join(", ", erroresGate2));
+            }
+        } 
+        // 3. Gate N requiere firmas completas de Gate N-1
+        else if (etapa > 3) {
+            int etapaAnterior = etapa - 1;
+            List<FirmaEtapa> firmasAnteriores = firmaEtapaRepositorio.findByProyectoIdAndEtapa(proyectoId, etapaAnterior);
+            
+            for (String rolReq : ROLES_REQUERIDOS) {
+                boolean firmado = firmasAnteriores.stream().anyMatch(f -> f.getRol().equalsIgnoreCase(rolReq));
+                if (!firmado) {
+                    throw new RuntimeException("❌ Gate " + etapaAnterior + " is not complete. All required roles must sign Gate " + etapaAnterior + " before signing Gate " + etapa + ".");
+                }
+            }
+        }
+        // ----------------------------------------
+
         Usuario usuario = usuarioRepositorio.findByUsername(username)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
@@ -69,6 +105,4 @@ public class FirmaEtapaServicio {
         
         notificacionServicio.alertarATodos("Gate " + etapa + " Approval", msj, "SUCCESS", url, username);
     }
-
-    
 }

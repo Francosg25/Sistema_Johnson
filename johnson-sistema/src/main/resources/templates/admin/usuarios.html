@@ -117,6 +117,7 @@
 
                 <div class="d-flex gap-2 overflow-x-auto custom-scrollbar pb-2" id="deptFilter">
                     <div class="champion-pill active depto-filter-pill" data-depto="ALL">ALL DEPTS</div>
+                    <div class="champion-pill depto-filter-pill" data-depto="LE">LE</div>
                     <div class="champion-pill depto-filter-pill" data-depto="DE">DE</div>
                     <div class="champion-pill depto-filter-pill" data-depto="QE">QE</div>
                     <div class="champion-pill depto-filter-pill" data-depto="PE">PE</div>
@@ -259,11 +260,12 @@
                                     <label class="form-label fw-black text-premium-blue text-uppercase opacity-50 letter-spacing-lg mb-1" style="font-size: 0.65rem;">Department</label>
                                     <select name="departamento" class="form-select bg-light border-0 px-3 py-2 fw-bold rounded-3 depto-selector" required>
                                         <option value="ALL">ALL (General)</option>
+                                        <option value="PROJ_LEAD">PROJ_LEAD (Project Leader)</option>
+                                        <option value="LE">LE (Launch Engineer)</option>
                                         <option value="DE">DE (Design)</option>
                                         <option value="QE">QE (Quality)</option>
                                         <option value="PE">PE (Process)</option>
                                         <option value="PROJ">PROJ (Project Engineer)</option>
-                                        <option value="PROJ_LEAD">PROJ_LEAD (Project Leader)</option>
                                         <option value="PM">PM (Program Manager)</option>
                                         <option value="SCS">SCS (Supply)</option>
                                         <option value="FIN">FIN (Finance)</option>
@@ -341,11 +343,12 @@
                                     <label class="form-label fw-black text-premium-blue text-uppercase opacity-50 letter-spacing-lg mb-1" style="font-size: 0.65rem;">Department</label>
                                     <select name="departamento" id="editUserDepto" class="form-select bg-light border-0 px-3 py-2 fw-bold rounded-3 depto-selector" required>
                                         <option value="ALL">ALL (General)</option>
+                                        <option value="LE">LE (Launch Engineer)</option>
+                                        <option value="PROJ_LEAD">PROJ_LEAD (Project Leader)</option>
                                         <option value="DE">DE (Design)</option>
                                         <option value="QE">QE (Quality)</option>
                                         <option value="PE">PE (Process)</option>
                                         <option value="PROJ">PROJ (Project Engineer)</option>
-                                        <option value="PROJ_LEAD">PROJ_LEAD (Project Leader)</option>
                                         <option value="PM">PM (Program Manager)</option>
                                         <option value="SCS">SCS (Supply)</option>
                                         <option value="FIN">FIN (Finance)</option>

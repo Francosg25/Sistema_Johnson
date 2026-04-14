@@ -181,6 +181,7 @@ public class ChecklistServicio {
         if (c.equals("OPS") || c.contains("OPERATIONS")) return "OPS";
         if (c.contains("HR") || c.contains("HUMAN RESOURCES")) return "HR";
         if (c.contains("MATERIALS")) return "MAT";
+        if (c.equals("LE") || c.contains("LAUNCH ENGINEER")) return "LE";
         if (c.contains("CLIENTE") || c.contains("CUSTOMER")) return "CUST";
         if (c.contains("PROVEEDOR") || c.contains("SUPPLIER")) return "SUPP";
         if (c.equals("QE/PE") || (c.contains("QE") && c.contains("PE"))) return "QE/PE";
@@ -202,12 +203,42 @@ public class ChecklistServicio {
             case "OPS" -> "Operations / Manufacturing";
             case "HR" -> "Human Resources";
             case "MAT" -> "Materials Management";
+            case "LE" -> "Launch Engineer";
             case "CUST" -> "Customer / Client";
             case "SUPP" -> "Supplier / Vendor";
             case "QE/PE" -> "Shared Quality & Process Responsibility";
             case "ALL" -> "Cross-Functional Team (All)";
             default -> sigla;
         };
+    }
+
+    @Transactional(readOnly = true)
+    public List<String> validarGate(Long proyectoId, Integer etapa) {
+        List<ElementoChecklist> todos = repositorio.findByProyecto_Id(proyectoId);
+        List<String> errores = new ArrayList<>();
+
+        if (etapa == 2) {
+            // Validar Gate 2 (Design) - Todo lo que empiece por '2' en fase
+            long sinResponder = todos.stream()
+                .filter(e -> e.getFase() != null && e.getFase().startsWith("2") && !"GATE".equals(e.getTipoInput()))
+                .filter(e -> e.getEstado() == null || e.getEstado().isEmpty() || "PENDING".equals(e.getEstado()))
+                .count();
+            if (sinResponder > 0) {
+                errores.add(sinResponder + " Design requirements are pending (Gate 2).");
+            }
+        } else if (etapa >= 3 && etapa <= 5) {
+            // Validar requerimientos de validación/conclusión del gate específico
+            final String prefix = "S" + etapa;
+            long sinMarcar = todos.stream()
+                .filter(e -> e.getFase() != null && e.getFase().startsWith(etapa.toString()))
+                .filter(e -> e.getGrupo() != null && e.getGrupo().equalsIgnoreCase("Conclusion"))
+                .filter(e -> e.getEstado() == null || e.getEstado().trim().isEmpty() || "PENDING".equals(e.getEstado()))
+                .count();
+            if (sinMarcar > 0) {
+                errores.add(sinMarcar + " validation points are not yet marked in Gate " + etapa + ".");
+            }
+        }
+        return errores;
     }
 
     @Transactional(readOnly = true)
