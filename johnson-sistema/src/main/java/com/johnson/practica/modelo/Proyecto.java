@@ -28,9 +28,6 @@ public class Proyecto {
     
     private String liderProyecto; 
 
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
-    private LocalDate sop;
-
     private String projectEngineer;
     private String qualityEngineer;
     private String processEngineer;
@@ -58,7 +55,13 @@ public class Proyecto {
     private LocalDate fechaLineArrival;
 
     @DateTimeFormat(pattern = "yyyy-MM-dd")
+    private LocalDate fechaLineArrivalFin;
+
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
     private LocalDate fechaPvBuild;
+
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
+    private LocalDate fechaPvBuildFin;
     
     @Column(columnDefinition = "TEXT")
     private String scope;
@@ -70,6 +73,15 @@ public class Proyecto {
 
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     private LocalDate fechaPpap;
+
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
+    private LocalDate fechaPpapFin;
+
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
+    private LocalDate sop;
+
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
+    private LocalDate sopFin;
 
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     private LocalDate fechaTerminoSafeLaunch;

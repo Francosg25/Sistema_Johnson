@@ -75,6 +75,9 @@
                 font-weight: 700;
                 color: var(--je-blue);
             }
+            .date-range-cell {
+                min-width: 180px;
+            }
             .scope-cell {
                 min-width: 300px;
                 max-width: 450px;
@@ -120,8 +123,9 @@
                             <th>Plant</th>
                             <th>LE (Launch Engineer)</th>
                             <th class="project-name-cell">Project Name</th>
-                            <th>Line Arrival</th>
-                            <th>PV Build</th>
+                            <th class="date-range-cell">Line Arrival</th>
+                            <th class="date-range-cell">PV Build</th>
+                            <th>PPAP Date</th>
                             <th>SOP Date</th>
                             <th>CAR Date</th>
                             <th>Buy-off Date</th>
@@ -145,13 +149,88 @@
                                 <a th:href="@{/proyectos/checklist/{id}(id=${p.id})}" class="text-decoration-none text-je-blue" th:text="${p.nombre}">Project Name</a>
                                 <div class="small text-muted" th:text="${p.numeroParte}">P/N</div>
                             </td>
-                            <td th:text="${p.fechaLineArrival != null ? #temporals.format(p.fechaLineArrival, 'dd/MM/yyyy') : '-'}">Line Arrival</td>
-                            <td th:text="${p.fechaPvBuild != null ? #temporals.format(p.fechaPvBuild, 'dd/MM/yyyy') : '-'}">PV Build</td>
-                            <td>
-                                <span class="fw-bold text-primary" th:text="${p.sop != null ? #temporals.format(p.sop, 'dd/MM/yyyy') : 'TBD'}">SOP</span>
+                            <td class="date-range-cell">
+                                <th:block th:if="${p.fechaLineArrival != null and p.fechaLineArrivalFin != null and 
+                                                p.fechaLineArrival.dayOfMonth == 1 and 
+                                                p.fechaLineArrivalFin.dayOfMonth == p.fechaLineArrivalFin.lengthOfMonth() and
+                                                p.fechaLineArrival.month == p.fechaLineArrivalFin.month and
+                                                p.fechaLineArrival.year == p.fechaLineArrivalFin.year}">
+                                    <span class="fw-bold text-uppercase" th:text="${#temporals.format(p.fechaLineArrival, 'MMMM yyyy')}">MONTH YEAR</span>
+                                </th:block>
+                                <th:block th:unless="${p.fechaLineArrival != null and p.fechaLineArrivalFin != null and 
+                                                p.fechaLineArrival.dayOfMonth == 1 and 
+                                                p.fechaLineArrivalFin.dayOfMonth == p.fechaLineArrivalFin.lengthOfMonth() and
+                                                p.fechaLineArrival.month == p.fechaLineArrivalFin.month and
+                                                p.fechaLineArrival.year == p.fechaLineArrivalFin.year}">
+                                    <span th:text="${p.fechaLineArrival != null ? #temporals.format(p.fechaLineArrival, 'dd/MM/yyyy') : '-'}"></span>
+                                    <span th:if="${p.fechaLineArrivalFin != null}" th:text="' - ' + ${#temporals.format(p.fechaLineArrivalFin, 'dd/MM/yyyy')}"></span>
+                                </th:block>
+                            </td>
+                            <td class="date-range-cell">
+                                <th:block th:if="${p.fechaPvBuild != null and p.fechaPvBuildFin != null and 
+                                                p.fechaPvBuild.dayOfMonth == 1 and 
+                                                p.fechaPvBuildFin.dayOfMonth == p.fechaPvBuildFin.lengthOfMonth() and
+                                                p.fechaPvBuild.month == p.fechaPvBuildFin.month and
+                                                p.fechaPvBuild.year == p.fechaPvBuildFin.year}">
+                                    <span class="fw-bold text-uppercase" th:text="${#temporals.format(p.fechaPvBuild, 'MMMM yyyy')}">MONTH YEAR</span>
+                                </th:block>
+                                <th:block th:unless="${p.fechaPvBuild != null and p.fechaPvBuildFin != null and 
+                                                p.fechaPvBuild.dayOfMonth == 1 and 
+                                                p.fechaPvBuildFin.dayOfMonth == p.fechaPvBuildFin.lengthOfMonth() and
+                                                p.fechaPvBuild.month == p.fechaPvBuildFin.month and
+                                                p.fechaPvBuild.year == p.fechaPvBuildFin.year}">
+                                    <span th:text="${p.fechaPvBuild != null ? #temporals.format(p.fechaPvBuild, 'dd/MM/yyyy') : '-'}"></span>
+                                    <span th:if="${p.fechaPvBuildFin != null}" th:text="' - ' + ${#temporals.format(p.fechaPvBuildFin, 'dd/MM/yyyy')}"></span>
+                                </th:block>
+                            </td>
+                            <td class="date-range-cell">
+                                <th:block th:if="${p.fechaPpap != null and p.fechaPpapFin != null and 
+                                                p.fechaPpap.dayOfMonth == 1 and 
+                                                p.fechaPpapFin.dayOfMonth == p.fechaPpapFin.lengthOfMonth() and
+                                                p.fechaPpap.month == p.fechaPpapFin.month and
+                                                p.fechaPpap.year == p.fechaPpapFin.year}">
+                                    <span class="fw-bold text-uppercase" th:text="${#temporals.format(p.fechaPpap, 'MMMM yyyy')}">MONTH YEAR</span>
+                                </th:block>
+                                <th:block th:unless="${p.fechaPpap != null and p.fechaPpapFin != null and 
+                                                p.fechaPpap.dayOfMonth == 1 and 
+                                                p.fechaPpapFin.dayOfMonth == p.fechaPpapFin.lengthOfMonth() and
+                                                p.fechaPpap.month == p.fechaPpapFin.month and
+                                                p.fechaPpap.year == p.fechaPpapFin.year}">
+                                    <span th:text="${p.fechaPpap != null ? #temporals.format(p.fechaPpap, 'dd/MM/yyyy') : '-'}"></span>
+                                    <span th:if="${p.fechaPpapFin != null}" th:text="' - ' + ${#temporals.format(p.fechaPpapFin, 'dd/MM/yyyy')}"></span>
+                                </th:block>
+                            </td>
+                            <td class="date-range-cell">
+                                <th:block th:if="${p.sop != null and p.sopFin != null and 
+                                                p.sop.dayOfMonth == 1 and 
+                                                p.sopFin.dayOfMonth == p.sopFin.lengthOfMonth() and
+                                                p.sop.month == p.sopFin.month and
+                                                p.sop.year == p.sopFin.year}">
+                                    <span class="fw-bold text-primary text-uppercase" th:text="${#temporals.format(p.sop, 'MMMM yyyy')}">MONTH YEAR</span>
+                                </th:block>
+                                <th:block th:unless="${p.sop != null and p.sopFin != null and 
+                                                p.sop.dayOfMonth == 1 and 
+                                                p.sopFin.dayOfMonth == p.sopFin.lengthOfMonth() and
+                                                p.sop.month == p.sopFin.month and
+                                                p.sop.year == p.sopFin.year}">
+                                    <span class="fw-bold text-primary" th:text="${p.sop != null ? #temporals.format(p.sop, 'dd/MM/yyyy') : 'TBD'}"></span>
+                                    <span class="fw-bold text-primary" th:if="${p.sopFin != null}" th:text="' - ' + ${#temporals.format(p.sopFin, 'dd/MM/yyyy')}"></span>
+                                </th:block>
                             </td>
                             
-                            <td th:text="${p.fechaCar != null ? #temporals.format(p.fechaCar, 'dd/MM/yyyy') : '-'}">CAR Date</td>
+                            <td class="text-center">
+                                <div th:if="${p.fechaCar != null}">
+                                    <span class="badge bg-soft-success text-success rounded-pill px-3 py-2 fw-bold" style="font-size: 0.7rem; letter-spacing: 0.02em;">
+                                        <i class="bi bi-check-circle-fill me-1"></i> APPROVED
+                                    </span>
+                                    <div class="mt-1 fw-bold text-dark" style="font-size: 0.85rem;" th:text="${#temporals.format(p.fechaCar, 'dd/MM/yyyy')}"></div>
+                                </div>
+                                <div th:unless="${p.fechaCar != null}">
+                                    <span class="badge bg-soft-warning text-warning rounded-pill px-3 py-2 fw-bold" style="font-size: 0.7rem; letter-spacing: 0.02em;">
+                                        <i class="bi bi-clock-history me-1"></i> IN PROGRESS
+                                    </span>
+                                </div>
+                            </td>
                             <td th:text="${p.fechaBuyoff != null ? #temporals.format(p.fechaBuyoff, 'dd/MM/yyyy') : '-'}">Buyoff</td>
                             <td th:text="${p.fechaTransit != null ? #temporals.format(p.fechaTransit, 'dd/MM/yyyy') : '-'}">Shipment</td>
                             <td class="scope-cell" th:title="${p.scope}" th:text="${p.scope ?: 'No scope defined'}">Scope</td>

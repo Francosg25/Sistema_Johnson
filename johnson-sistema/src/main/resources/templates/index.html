@@ -464,36 +464,54 @@
                                             <label class="form-label small fw-black text-premium-blue text-uppercase opacity-50 letter-spacing-lg mb-1">Launch Engineer (LE)</label>
                                             <input type="text" name="launchEngineer" id="edit-launchEngineer" class="form-control border-0 bg-light px-3 py-2 fw-bold" style="border-radius: 10px;" placeholder="Full Name">
                                         </div>
+                                        <div class="col-12">
+                                            <label class="form-label small fw-black text-premium-blue text-uppercase opacity-50 letter-spacing-lg mb-1">Program Manager</label>
+                                            <input type="text" name="programManager" id="edit-programManager" class="form-control border-0 bg-light px-3 py-2 fw-bold" style="border-radius: 10px;" placeholder="e.g. PM Name">
+                                        </div>
                                     </div>
                                 </div>
 
                                 <!-- RIGHT COLUMN -->
                                 <div class="col-lg-6">
                                     <div class="row g-2">
-                                        <div class="col-6">
+                                        <div class="col-12">
                                             <label class="form-label small fw-black text-premium-blue text-uppercase opacity-50 letter-spacing-lg mb-1">Line Arrival (Zacatecas)</label>
-                                            <input type="date" name="fechaLineArrival" id="edit-fechaLineArrival" class="form-control border-0 bg-light px-3 py-2 fw-bold text-muted" style="border-radius: 10px;">
+                                            <div class="input-group">
+                                                <input type="date" name="fechaLineArrival" id="edit-fechaLineArrival" class="form-control border-0 bg-light px-3 py-2 fw-bold text-muted" style="border-radius: 10px 0 0 10px;">
+                                                <span class="input-group-text border-0 bg-light text-muted fw-bold">-</span>
+                                                <input type="date" name="fechaLineArrivalFin" id="edit-fechaLineArrivalFin" class="form-control border-0 bg-light px-3 py-2 fw-bold text-muted" style="border-radius: 0 10px 10px 0;">
+                                            </div>
                                         </div>
-                                        <div class="col-6">
+                                        <div class="col-12">
                                             <label class="form-label small fw-black text-premium-blue text-uppercase opacity-50 letter-spacing-lg mb-1">PV Build</label>
-                                            <input type="date" name="fechaPvBuild" id="edit-fechaPvBuild" class="form-control border-0 bg-light px-3 py-2 fw-bold text-muted" style="border-radius: 10px;">
+                                            <div class="input-group">
+                                                <input type="date" name="fechaPvBuild" id="edit-fechaPvBuild" class="form-control border-0 bg-light px-3 py-2 fw-bold text-muted" style="border-radius: 10px 0 0 10px;">
+                                                <span class="input-group-text border-0 bg-light text-muted fw-bold">-</span>
+                                                <input type="date" name="fechaPvBuildFin" id="edit-fechaPvBuildFin" class="form-control border-0 bg-light px-3 py-2 fw-bold text-muted" style="border-radius: 0 10px 10px 0;">
+                                            </div>
                                         </div>
-                                        <div class="col-6">
-                                            <label class="form-label small fw-black text-premium-blue text-uppercase opacity-50 letter-spacing-lg mb-1">SOP Target</label>
-                                            <input type="date" name="sop" id="edit-sop" class="form-control border-0 bg-light px-3 py-2 fw-black text-premium-orange" style="border-radius: 10px;">
-                                        </div>
-                                        <div class="col-6">
+                                        <div class="col-12">
                                             <label class="form-label small fw-black text-premium-orange text-uppercase letter-spacing-lg mb-1">PPAP Date</label>
-                                            <input type="date" name="fechaPpap" id="edit-fechaPpap" class="form-control border-0 bg-light px-3 py-2 fw-bold text-muted" style="border-radius: 10px;">
+                                            <div class="input-group">
+                                                <input type="date" name="fechaPpap" id="edit-fechaPpap" class="form-control border-0 bg-light px-3 py-2 fw-bold text-muted" style="border-radius: 10px 0 0 10px;">
+                                                <span class="input-group-text border-0 bg-light text-muted fw-bold">-</span>
+                                                <input type="date" name="fechaPpapFin" id="edit-fechaPpapFin" class="form-control border-0 bg-light px-3 py-2 fw-bold text-muted" style="border-radius: 0 10px 10px 0;">
+                                            </div>
                                         </div>
+                                        <div class="col-12">
+                                            <label class="form-label small fw-black text-premium-blue text-uppercase opacity-50 letter-spacing-lg mb-1">SOP Target</label>
+                                            <div class="input-group">
+                                                <input type="date" name="sop" id="edit-sop" class="form-control border-0 bg-light px-3 py-2 fw-black text-premium-orange" style="border-radius: 10px 0 0 10px;">
+                                                <span class="input-group-text border-0 bg-light text-muted fw-bold">-</span>
+                                                <input type="date" name="sopFin" id="edit-sopFin" class="form-control border-0 bg-light px-3 py-2 fw-black text-premium-orange" style="border-radius: 0 10px 10px 0;">
+                                            </div>
+                                        </div>
+                                        
                                         <div class="col-12">
                                             <label class="form-label small fw-black text-premium-blue text-uppercase opacity-50 letter-spacing-lg mb-1">Project Scope</label>
                                             <textarea name="scope" id="edit-scope" class="form-control border-0 bg-light px-3 py-2 fw-bold" style="border-radius: 10px; height: 80px;" placeholder="Describe project boundaries..."></textarea>
                                         </div>
-                                        <div class="col-12">
-                                            <label class="form-label small fw-black text-premium-blue text-uppercase opacity-50 letter-spacing-lg mb-1">Program Manager</label>
-                                            <input type="text" name="programManager" id="edit-programManager" class="form-control border-0 bg-light px-3 py-2 fw-bold" style="border-radius: 10px;" placeholder="e.g. PM Name">
-                                        </div>
+                                        
                                     </div>
                                 </div>
                             </div>
@@ -551,35 +569,51 @@
                                             <label class="form-label small fw-black text-premium-blue text-uppercase opacity-50 letter-spacing-lg mb-1">Launch Engineer (LE)</label>
                                             <input type="text" name="launchEngineer" class="form-control border-0 bg-light px-3 py-2 fw-bold" style="border-radius: 10px;" placeholder="Full Name">
                                         </div>
+                                        <div class="col-12">
+                                            <label class="form-label small fw-black text-premium-blue text-uppercase opacity-50 letter-spacing-lg mb-1">Program Manager</label>
+                                            <input type="text" name="programManager" class="form-control border-0 bg-light px-3 py-2 fw-bold" style="border-radius: 10px;" placeholder="e.g. PM Name">
+                                        </div>
                                     </div>
                                 </div>
 
                                 <!-- RIGHT COLUMN -->
                                 <div class="col-lg-6">
                                     <div class="row g-2">
-                                        <div class="col-6">
+                                        <div class="col-12">
                                             <label class="form-label small fw-black text-premium-blue text-uppercase opacity-50 letter-spacing-lg mb-1">Line Arrival (Zacatecas)</label>
-                                            <input type="date" name="fechaLineArrival" class="form-control border-0 bg-light px-3 py-2 fw-bold text-muted" style="border-radius: 10px;">
+                                            <div class="input-group">
+                                                <input type="date" name="fechaLineArrival" class="form-control border-0 bg-light px-3 py-2 fw-bold text-muted" style="border-radius: 10px 0 0 10px;">
+                                                <span class="input-group-text border-0 bg-light text-muted fw-bold">-</span>
+                                                <input type="date" name="fechaLineArrivalFin" class="form-control border-0 bg-light px-3 py-2 fw-bold text-muted" style="border-radius: 0 10px 10px 0;">
+                                            </div>
                                         </div>
-                                        <div class="col-6">
+                                        <div class="col-12">
                                             <label class="form-label small fw-black text-premium-blue text-uppercase opacity-50 letter-spacing-lg mb-1">PV Build</label>
-                                            <input type="date" name="fechaPvBuild" class="form-control border-0 bg-light px-3 py-2 fw-bold text-muted" style="border-radius: 10px;">
+                                            <div class="input-group">
+                                                <input type="date" name="fechaPvBuild" class="form-control border-0 bg-light px-3 py-2 fw-bold text-muted" style="border-radius: 10px 0 0 10px;">
+                                                <span class="input-group-text border-0 bg-light text-muted fw-bold">-</span>
+                                                <input type="date" name="fechaPvBuildFin" class="form-control border-0 bg-light px-3 py-2 fw-bold text-muted" style="border-radius: 0 10px 10px 0;">
+                                            </div>
                                         </div>
-                                        <div class="col-6">
-                                            <label class="form-label small fw-black text-premium-blue text-uppercase opacity-50 letter-spacing-lg mb-1">SOP Target</label>
-                                            <input type="date" name="sop" class="form-control border-0 bg-light px-3 py-2 fw-black text-premium-orange" style="border-radius: 10px;">
-                                        </div>
-                                        <div class="col-6">
+                                        <div class="col-12">
                                             <label class="form-label small fw-black text-premium-orange text-uppercase letter-spacing-lg mb-1">PPAP Date</label>
-                                            <input type="date" name="fechaPpap" class="form-control border-0 bg-light px-3 py-2 fw-bold text-muted" style="border-radius: 10px;">
+                                            <div class="input-group">
+                                                <input type="date" name="fechaPpap" class="form-control border-0 bg-light px-3 py-2 fw-bold text-muted" style="border-radius: 10px 0 0 10px;">
+                                                <span class="input-group-text border-0 bg-light text-muted fw-bold">-</span>
+                                                <input type="date" name="fechaPpapFin" class="form-control border-0 bg-light px-3 py-2 fw-bold text-muted" style="border-radius: 0 10px 10px 0;">
+                                            </div>
+                                        </div>
+                                        <div class="col-12">
+                                            <label class="form-label small fw-black text-premium-blue text-uppercase opacity-50 letter-spacing-lg mb-1">SOP Target</label>
+                                            <div class="input-group">
+                                                <input type="date" name="sop" class="form-control border-0 bg-light px-3 py-2 fw-black text-premium-orange" style="border-radius: 10px 0 0 10px;">
+                                                <span class="input-group-text border-0 bg-light text-muted fw-bold">-</span>
+                                                <input type="date" name="sopFin" class="form-control border-0 bg-light px-3 py-2 fw-black text-premium-orange" style="border-radius: 0 10px 10px 0;">
+                                            </div>
                                         </div>
                                         <div class="col-12">
                                             <label class="form-label small fw-black text-premium-blue text-uppercase opacity-50 letter-spacing-lg mb-1">Project Scope</label>
                                             <textarea name="scope" class="form-control border-0 bg-light px-3 py-2 fw-bold" style="border-radius: 10px; height: 80px;" placeholder="Describe project boundaries..."></textarea>
-                                        </div>
-                                        <div class="col-12">
-                                            <label class="form-label small fw-black text-premium-blue text-uppercase opacity-50 letter-spacing-lg mb-1">Program Manager</label>
-                                            <input type="text" name="programManager" class="form-control border-0 bg-light px-3 py-2 fw-bold" style="border-radius: 10px;" placeholder="e.g. PM Name">
                                         </div>
                                     </div>
                                 </div>

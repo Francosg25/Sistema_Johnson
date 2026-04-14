@@ -126,6 +126,24 @@
                         <div class="card-body p-4">
                             <div class="row g-3 mb-3">
                                 <div class="col-md-6">
+                                    <label class="form-label small fw-bold text-muted text-uppercase mb-1">Line Arrival (Zacatecas)</label>
+                                    <div class="input-group">
+                                        <input type="date" th:field="*{fechaLineArrival}" class="form-control form-control-premium text-center">
+                                        <span class="input-group-text bg-light border-0">-</span>
+                                        <input type="date" th:field="*{fechaLineArrivalFin}" class="form-control form-control-premium text-center">
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label small fw-bold text-muted text-uppercase mb-1">PV Build</label>
+                                    <div class="input-group">
+                                        <input type="date" th:field="*{fechaPvBuild}" class="form-control form-control-premium text-center">
+                                        <span class="input-group-text bg-light border-0">-</span>
+                                        <input type="date" th:field="*{fechaPvBuildFin}" class="form-control form-control-premium text-center">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row g-3 mb-3">
+                                <div class="col-md-6">
                                     <label class="form-label small fw-bold text-muted text-uppercase mb-1">Start Date</label>
                                     <input type="date" th:field="*{fechaInicio}" class="form-control form-control-premium text-center">
                                 </div>

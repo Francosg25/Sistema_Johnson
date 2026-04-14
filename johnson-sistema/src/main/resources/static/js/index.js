@@ -49,12 +49,16 @@ function initDashboard(tendenciaData, eventosCalendario) {
                     const editNumParte = document.getElementById('edit-numeroParte');
                     const editCliente = document.getElementById('edit-cliente');
                     const editSop = document.getElementById('edit-sop');
+                    const editSopFin = document.getElementById('edit-sopFin');
                     const editBu = document.getElementById('edit-bu');
                     const editPlanta = document.getElementById('edit-planta');
                     const editLaunchEngineer = document.getElementById('edit-launchEngineer');
                     const editFechaLineArrival = document.getElementById('edit-fechaLineArrival');
+                    const editFechaLineArrivalFin = document.getElementById('edit-fechaLineArrivalFin');
                     const editFechaPvBuild = document.getElementById('edit-fechaPvBuild');
+                    const editFechaPvBuildFin = document.getElementById('edit-fechaPvBuildFin');
                     const editFechaPpap = document.getElementById('edit-fechaPpap');
+                    const editFechaPpapFin = document.getElementById('edit-fechaPpapFin');
                     const editScope = document.getElementById('edit-scope');
                     const editProgramManager = document.getElementById('edit-programManager');
 
@@ -83,9 +87,13 @@ function initDashboard(tendenciaData, eventosCalendario) {
                     };
 
                     fillDateInput(editSop, data.sop);
+                    fillDateInput(editSopFin, data.sopFin);
                     fillDateInput(editFechaLineArrival, data.fechaLineArrival);
+                    fillDateInput(editFechaLineArrivalFin, data.fechaLineArrivalFin);
                     fillDateInput(editFechaPvBuild, data.fechaPvBuild);
+                    fillDateInput(editFechaPvBuildFin, data.fechaPvBuildFin);
                     fillDateInput(editFechaPpap, data.fechaPpap);
+                    fillDateInput(editFechaPpapFin, data.fechaPpapFin);
                     
                     const modalEl = document.getElementById('modalEditarProyecto');
                     if (modalEl) {
@@ -324,7 +332,9 @@ function llenarModalEditar(btn) {
     
     // Fechas
     document.getElementById('edit-fechaLineArrival').value = btn.getAttribute('data-fechalinearrival') || '';
+    document.getElementById('edit-fechaLineArrivalFin').value = btn.getAttribute('data-fechalinearrivalfin') || '';
     document.getElementById('edit-fechaPvBuild').value = btn.getAttribute('data-fechapvbuild') || '';
+    document.getElementById('edit-fechaPvBuildFin').value = btn.getAttribute('data-fechapvbuildfin') || '';
     document.getElementById('edit-sop').value = btn.getAttribute('data-sop') || '';
     document.getElementById('edit-fechaPpap').value = btn.getAttribute('data-fechappap') || '';
     

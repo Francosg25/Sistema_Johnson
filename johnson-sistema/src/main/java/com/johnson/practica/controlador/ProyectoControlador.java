@@ -268,6 +268,24 @@ public class ProyectoControlador {
                     if (anterior.getCliente() != null && !anterior.getCliente().equals(proyecto.getCliente()))
                         cambios.append("Customer (").append(anterior.getCliente()).append(" -> ").append(proyecto.getCliente()).append("). ");
                     
+                    if (esDiferenteFecha(anterior.getFechaLineArrival(), proyecto.getFechaLineArrival()))
+                        cambios.append("Line Arrival Start (").append(anterior.getFechaLineArrival()).append(" -> ").append(proyecto.getFechaLineArrival()).append("). ");
+                    if (esDiferenteFecha(anterior.getFechaLineArrivalFin(), proyecto.getFechaLineArrivalFin()))
+                        cambios.append("Line Arrival End (").append(anterior.getFechaLineArrivalFin()).append(" -> ").append(proyecto.getFechaLineArrivalFin()).append("). ");
+                    if (esDiferenteFecha(anterior.getFechaPvBuild(), proyecto.getFechaPvBuild()))
+                        cambios.append("PV Build Start (").append(anterior.getFechaPvBuild()).append(" -> ").append(proyecto.getFechaPvBuild()).append("). ");
+                    if (esDiferenteFecha(anterior.getFechaPvBuildFin(), proyecto.getFechaPvBuildFin()))
+                        cambios.append("PV Build End (").append(anterior.getFechaPvBuildFin()).append(" -> ").append(proyecto.getFechaPvBuildFin()).append("). ");
+                    
+                    if (esDiferenteFecha(anterior.getSop(), proyecto.getSop()))
+                        cambios.append("SOP Start (").append(anterior.getSop()).append(" -> ").append(proyecto.getSop()).append("). ");
+                    if (esDiferenteFecha(anterior.getSopFin(), proyecto.getSopFin()))
+                        cambios.append("SOP End (").append(anterior.getSopFin()).append(" -> ").append(proyecto.getSopFin()).append("). ");
+                    if (esDiferenteFecha(anterior.getFechaPpap(), proyecto.getFechaPpap()))
+                        cambios.append("PPAP Start (").append(anterior.getFechaPpap()).append(" -> ").append(proyecto.getFechaPpap()).append("). ");
+                    if (esDiferenteFecha(anterior.getFechaPpapFin(), proyecto.getFechaPpapFin()))
+                        cambios.append("PPAP End (").append(anterior.getFechaPpapFin()).append(" -> ").append(proyecto.getFechaPpapFin()).append("). ");
+                    
                     if (cambios.length() > 0) {
                         bitacoraServicio.registrarAccion(usuarioLogueado, "UPDATE PROJECT", 
                             "Project modified: " + anterior.getNombre() + ". Changes: " + cambios.toString());
