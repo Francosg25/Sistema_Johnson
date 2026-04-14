@@ -40,6 +40,72 @@
                 letter-spacing: -0.02em !important;
             }
 
+            /* New Premium Config Styles */
+            .config-card {
+                background: #ffffff;
+                border-radius: 20px;
+                border: 1px solid #edf2f7;
+                box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+            }
+            .nav-config {
+                gap: 0.5rem;
+                padding: 0.5rem;
+                background: #f1f5f9;
+                border-radius: 14px;
+                border: none;
+            }
+            .nav-config .nav-link {
+                border: none !important;
+                border-radius: 10px !important;
+                color: #64748b;
+                font-weight: 700;
+                padding: 0.6rem 1.25rem;
+                transition: all 0.2s ease;
+            }
+            .nav-config .nav-link.active {
+                background: white !important;
+                color: var(--premium-orange) !important;
+                box-shadow: 0 4px 12px rgba(0,0,0,0.05) !important;
+            }
+            .form-section-label {
+                font-size: 0.7rem;
+                text-transform: uppercase;
+                letter-spacing: 0.05em;
+                font-weight: 800;
+                color: #94a3b8;
+                margin-bottom: 1rem;
+                display: flex;
+                align-items: center;
+                gap: 0.5rem;
+            }
+            .form-section-label::after {
+                content: '';
+                flex-grow: 1;
+                height: 1px;
+                background: #e2e8f0;
+            }
+            .search-wrapper {
+                position: relative;
+            }
+            .search-wrapper i {
+                position: absolute;
+                left: 1.25rem;
+                top: 50%;
+                transform: translateY(-50%);
+                color: #94a3b8;
+            }
+            .search-wrapper .form-control {
+                padding-left: 3rem;
+                border-radius: 14px;
+                background: #f8fafc;
+                border: 1px solid #e2e8f0;
+            }
+            .search-wrapper .form-control:focus {
+                background: white;
+                border-color: var(--premium-orange);
+                box-shadow: 0 0 0 4px rgba(245, 130, 31, 0.1);
+            }
+
             .btn-je-primary {
                 background: var(--premium-orange) !important;
                 border-radius: 12px !important;
@@ -208,103 +274,158 @@
 
         <!-- Configuration Modal -->
         <div class="modal fade" id="modalConfigHitos" tabindex="-1" aria-hidden="true">
-            <div class="modal-dialog modal-xl">
-                <div class="modal-content glass-card border-0">
+            <div class="modal-dialog modal-xl modal-dialog-centered">
+                <div class="modal-content border-0 shadow-lg" style="border-radius: 28px; overflow: hidden;">
                     <div class="modal-header bg-dark text-white p-4">
-                        <div>
-                            <h5 class="modal-title fw-bold mb-0"><i class="bi bi-gear-fill text-premium-orange me-2"></i>Timeline Configuration</h5>
-                            <p class="small text-light text-opacity-75 mb-0">Manage percentage milestones and highlighted events.</p>
+                        <div class="d-flex align-items-center">
+                            <div class="rounded-3 bg-premium-orange p-2 me-3 shadow-sm">
+                                <i class="bi bi-gear-fill text-white fs-5"></i>
+                            </div>
+                            <div>
+                                <h5 class="modal-title fw-black mb-0" style="letter-spacing: -0.02em;">Timeline Configuration</h5>
+                                <p class="small text-light text-opacity-50 mb-0 fw-bold">PROJECT MILESTONES & HIGHLIGHTED EVENTS</p>
+                            </div>
                         </div>
                         <button type="button" class="btn-close btn-close-white shadow-none" data-bs-dismiss="modal"></button>
                     </div>
-                    <div class="modal-body p-0 bg-light bg-opacity-50">
-                        <div class="p-4 bg-white border-bottom shadow-sm">
-                            <div class="row align-items-center">
-                                <div class="col-md-5 col-lg-4">
-                                    <label class="form-label small fw-bold text-dark mb-1">
-                                        <i class="bi bi-folder-fill text-primary me-1"></i> Select Project
-                                    </label>
-                                    <select id="selProyecto" class="form-select form-select-sm shadow-none border-primary border-opacity-25 bg-light bg-opacity-50 fw-bold rounded-3">
-                                        <option value="">Choose a project to configure...</option>
-                                        <option th:each="p : ${proyectos}" th:value="${p.id}" th:text="${p.nombre}"></option>
-                                    </select>
-                                </div>
+                    
+                    <div class="modal-body p-4 bg-light bg-opacity-50">
+                        <!-- Quick Guide Callout (Dismissible) -->
+                        <div class="alert alert-dismissible fade show border-0 shadow-sm mb-4 d-flex align-items-center animate__animated animate__fadeIn" style="background: #e0f2fe; border-left: 4px solid #0ea5e9 !important; border-radius: 16px;">
+                            <i class="bi bi-info-circle-fill fs-4 me-3 text-info"></i>
+                            <div class="small pe-4">
+                                <p class="mb-0 fw-bold text-dark">Quick Setup Guide:</p>
+                                <p class="mb-0 text-muted">1. Use <strong>Milestones</strong> to set % progress targets for each stage. 2. Use <strong>Main Events</strong> to highlight specific deliverables (from the checklist) on the interactive timeline.</p>
                             </div>
+                            <button type="button" class="btn-close shadow-none" data-bs-dismiss="alert" aria-label="Close" style="top: 50%; transform: translateY(-50%); right: 1rem;"></button>
                         </div>
 
-                        <ul class="nav nav-tabs nav-fill bg-white border-bottom-0" id="configTabs" role="tablist">
-                            <li class="nav-item"><button class="nav-link active fw-bold py-3 border-0 rounded-0" data-bs-toggle="tab" data-bs-target="#tabHitos"><i class="bi bi-diamond-half me-2"></i>Progress Milestones</button></li>
-                            <li class="nav-item"><button class="nav-link fw-bold py-3 border-0 rounded-0" data-bs-toggle="tab" data-bs-target="#tabMainEvents" id="btnTabMainEvents"><i class="bi bi-star-fill me-2 text-warning"></i>Main Events (APQP)</button></li>
-                        </ul>
-                        <div class="tab-content p-4">
-                            <div class="tab-pane fade show active" id="tabHitos">
-                                <div class="row g-3 mb-4 bg-white p-4 rounded-4 border shadow-sm align-items-end">
-                                    <div class="col-md-5">
-                                        <label class="form-label small fw-bold text-dark">Stage to Reach</label>
-                                        <select id="hitoEtapa" class="form-select shadow-none rounded-3">
-                                            <option value="STAGE 1">STAGE 1 - Planning</option>
-                                            <option value="STAGE 2">STAGE 2 - Product Design</option>
-                                            <option value="STAGE 3">STAGE 3 - Process Design</option>
-                                            <option value="STAGE 4">STAGE 4 - Product & Process Validation</option>
-                                            <option value="STAGE 5">STAGE 5 - Feedback & Launch</option>
+                        <div class="row g-4">
+                            <!-- Sidebar: Project Selection & Navigation -->
+                            <div class="col-lg-3">
+                                <div class="config-card p-4 mb-3">
+                                    <div class="form-section-label">Context</div>
+                                    <div class="mb-4">
+                                        <label class="form-label small fw-black text-premium-blue text-uppercase opacity-50 mb-1">Active Project</label>
+                                        <select id="selProyecto" class="form-select border-0 bg-light px-3 py-2 fw-bold rounded-3 shadow-none">
+                                            <option value="">Select project...</option>
+                                            <option th:each="p : ${proyectos}" th:value="${p.id}" th:text="${p.nombre}"></option>
                                         </select>
                                     </div>
-                                    <div class="col-md-3">
-                                        <label class="form-label small fw-bold text-dark">Deadline</label>
-                                        <input type="date" id="hitoFecha" class="form-control shadow-none rounded-3">
-                                    </div>
-                                    <div class="col-md-2">
-                                        <label class="form-label small fw-bold text-dark">Target %</label>
-                                        <input type="number" id="hitoPorcentaje" class="form-control shadow-none rounded-3" value="100" min="0" max="100">
-                                    </div>
-                                    <div class="col-md-2">
-                                        <button class="btn btn-je-primary w-100 shadow-sm" onclick="guardarHito()">
-                                            <i class="bi bi-plus-lg me-1"></i> ADD
-                                        </button>
-                                    </div>
+
+                                    <div class="form-section-label">Navigation</div>
+                                    <ul class="nav nav-pills nav-config flex-column" id="configTabs" role="tablist">
+                                        <li class="nav-item">
+                                            <button class="nav-link active w-100 text-start" data-bs-toggle="tab" data-bs-target="#tabHitos">
+                                                <i class="bi bi-diamond-half me-2"></i>Milestones
+                                            </button>
+                                        </li>
+                                        <li class="nav-item">
+                                            <button class="nav-link w-100 text-start" data-bs-toggle="tab" data-bs-target="#tabMainEvents" id="btnTabMainEvents">
+                                                <i class="bi bi-star-fill me-2"></i>Main Events
+                                            </button>
+                                        </li>
+                                    </ul>
                                 </div>
-                                <div class="card glass-card border-0 overflow-hidden">
-                                    <div class="table-responsive">
-                                        <table class="table table-hover align-middle mb-0">
-                                            <thead class="bg-light text-secondary small text-uppercase fw-bold">
-                                                <tr><th class="ps-4">Configured Stage</th><th>Date</th><th>Target</th><th class="text-center pe-4">Actions</th></tr>
-                                            </thead>
-                                            <tbody id="listaHitos"></tbody>
-                                        </table>
-                                    </div>
+                                
+                                <div class="p-3 rounded-4 bg-primary bg-opacity-10 border border-primary border-opacity-10">
+                                    <p class="small text-primary mb-0 fw-bold">
+                                        <i class="bi bi-info-circle-fill me-2"></i>
+                                        Configure targets and highlight deliverables to track on the timeline.
+                                    </p>
                                 </div>
                             </div>
-                            <div class="tab-pane fade" id="tabMainEvents">
-                                <div class="row mb-4">
-                                    <div class="col-md-12">
-                                        <div class="input-group shadow-sm rounded-4 overflow-hidden border">
-                                            <span class="input-group-text bg-white border-0"><i class="bi bi-search text-muted"></i></span>
-                                            <input type="text" id="searchMainEvents" class="form-control border-0 shadow-none ps-0" placeholder="Search deliverable by name or code...">
+
+                            <!-- Main Content Area -->
+                            <div class="col-lg-9">
+                                <div class="tab-content">
+                                    <!-- TAB: MILESTONES -->
+                                    <div class="tab-pane fade show active" id="tabHitos">
+                                        <div class="config-card p-4 mb-4">
+                                            <div class="form-section-label">Add New Milestone</div>
+                                            <div class="row g-3 align-items-end">
+                                                <div class="col-md-5">
+                                                    <label class="form-label small fw-bold text-muted text-uppercase mb-1">Target Stage</label>
+                                                    <select id="hitoEtapa" class="form-select border-0 bg-light px-3 py-2 fw-bold rounded-3">
+                                                        <option value="STAGE 1">STAGE 1 - Planning</option>
+                                                        <option value="STAGE 2">STAGE 2 - Product Design</option>
+                                                        <option value="STAGE 3">STAGE 3 - Process Design</option>
+                                                        <option value="STAGE 4">STAGE 4 - Product & Process Validation</option>
+                                                        <option value="STAGE 5">STAGE 5 - Feedback & Launch</option>
+                                                    </select>
+                                                </div>
+                                                <div class="col-md-3">
+                                                    <label class="form-label small fw-bold text-muted text-uppercase mb-1">Deadline</label>
+                                                    <input type="date" id="hitoFecha" class="form-control border-0 bg-light px-3 py-2 fw-bold rounded-3">
+                                                </div>
+                                                <div class="col-md-2">
+                                                    <label class="form-label small fw-bold text-muted text-uppercase mb-1">Target %</label>
+                                                    <input type="number" id="hitoPorcentaje" class="form-control border-0 bg-light px-3 py-2 fw-bold rounded-3" value="100">
+                                                </div>
+                                                <div class="col-md-2">
+                                                    <button class="btn btn-je-primary w-100 py-2 shadow-sm" onclick="guardarHito()">
+                                                        <i class="bi bi-plus-lg"></i>
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="glass-card border-0">
+                                            <div class="table-responsive">
+                                                <table class="table table-hover align-middle mb-0">
+                                                    <thead class="bg-light">
+                                                        <tr>
+                                                            <th class="ps-4 small fw-black text-muted text-uppercase py-3">Stage</th>
+                                                            <th class="small fw-black text-muted text-uppercase py-3">Date</th>
+                                                            <th class="small fw-black text-muted text-uppercase py-3">Target</th>
+                                                            <th class="text-center pe-4 small fw-black text-muted text-uppercase py-3">Actions</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody id="listaHitos">
+                                                        <tr><td colspan="4" class="text-center py-5 text-muted fst-italic">Select a project to see milestones</td></tr>
+                                                    </tbody>
+                                                </table>
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
-                                <div class="card glass-card border-0 overflow-hidden">
-                                    <div class="table-responsive" style="max-height: 450px;">
-                                        <table class="table table-hover align-middle mb-0">
-                                            <thead class="bg-light text-secondary small text-uppercase fw-bold sticky-top">
-                                                <tr>
-                                                    <th class="ps-4">Deliverable</th>
-                                                    <th>Stage</th>
-                                                    <th class="text-center pe-4">Highlight</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody id="listaElementosMain">
-                                                <tr><td colspan="3" class="text-center py-5 text-muted fst-italic">Select a project to load the deliverables</td></tr>
-                                            </tbody>
-                                        </table>
+
+                                    <!-- TAB: MAIN EVENTS -->
+                                    <div class="tab-pane fade" id="tabMainEvents">
+                                        <div class="config-card p-4 mb-4">
+                                            <div class="form-section-label">Filter Deliverables</div>
+                                            <div class="search-wrapper">
+                                                <i class="bi bi-search"></i>
+                                                <input type="text" id="searchMainEvents" class="form-control border-0 shadow-none" placeholder="Search by name or code...">
+                                            </div>
+                                        </div>
+
+                                        <div class="glass-card border-0">
+                                            <div class="table-responsive" style="max-height: 400px;">
+                                                <table class="table table-hover align-middle mb-0">
+                                                    <thead class="bg-light sticky-top">
+                                                        <tr>
+                                                            <th class="ps-4 small fw-black text-muted text-uppercase py-3">Deliverable</th>
+                                                            <th class="small fw-black text-muted text-uppercase py-3">Stage</th>
+                                                            <th class="text-center pe-4 small fw-black text-muted text-uppercase py-3">Highlight</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody id="listaElementosMain">
+                                                        <tr><td colspan="3" class="text-center py-5 text-muted fst-italic">Select a project to load the deliverables</td></tr>
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                    <div class="modal-footer bg-white border-top-0 p-4">
-                        <button type="button" class="btn btn-light fw-bold px-4 rounded-pill border" data-bs-dismiss="modal">Close</button>
-                        <button type="button" class="btn btn-dark fw-bold px-4 rounded-pill" onclick="location.reload()">UPDATE TIMELINE</button>
+                    
+                    <div class="modal-footer bg-white border-0 p-4 pt-0 gap-2">
+                        <button type="button" class="btn btn-light rounded-pill px-4 py-2 fw-black text-muted" data-bs-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-dark rounded-pill px-4 py-2 fw-black shadow-lg" onclick="location.reload()">
+                            <i class="bi bi-arrow-repeat me-2"></i>REFRESH TIMELINE
+                        </button>
                     </div>
                 </div>
             </div>
