@@ -104,6 +104,45 @@ function initDashboard(tendenciaData, eventosCalendario) {
                 .catch(error => console.error('Error fetching project data:', error));
         });
     });
+
+    // LÓGICA PARA BOTÓN "FULL MONTH"
+    document.querySelectorAll('.btn-full-month').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const container = this.closest('.col-12');
+            const inputs = container.querySelectorAll('input[type="date"]');
+            
+            if (inputs.length >= 2) {
+                const startInput = inputs[0];
+                const endInput = inputs[1];
+                
+                if (startInput.value) {
+                    // Si hay fecha de inicio, calculamos el fin de ese mes
+                    const parts = startInput.value.split('-');
+                    const y = parseInt(parts[0]);
+                    const m = parseInt(parts[1]);
+                    // Creamos el último día del mes: día 0 del siguiente mes
+                    const lastDayDate = new Date(y, m, 0);
+                    
+                    const lastD = String(lastDayDate.getDate()).padStart(2, '0');
+                    const monthStr = String(m).padStart(2, '0');
+                    
+                    endInput.value = `${y}-${monthStr}-${lastD}`;
+                } else {
+                    // Si no hay fecha de inicio, ponemos el mes actual completo por defecto
+                    const now = new Date();
+                    const y = now.getFullYear();
+                    const m = now.getMonth() + 1;
+                    const lastDayDate = new Date(y, m, 0);
+                    
+                    const monthStr = String(m).padStart(2, '0');
+                    const lastD = String(lastDayDate.getDate()).padStart(2, '0');
+                    
+                    startInput.value = `${y}-${monthStr}-01`;
+                    endInput.value = `${y}-${monthStr}-${lastD}`;
+                }
+            }
+        });
+    });
 }
 
 function initializeCharts(data) {

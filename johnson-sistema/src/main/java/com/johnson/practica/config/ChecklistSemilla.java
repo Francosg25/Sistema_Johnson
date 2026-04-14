@@ -21,19 +21,22 @@ public class ChecklistSemilla {
     CommandLineRunner initDatabase(CatalogoElementoRepositorio repositorio) {
         return args -> {
             try {
-                elementoRepo.deleteAll();
-                repositorio.deleteAll();
+                if (repositorio.count() == 0) {
+                    System.out.println("SEED: Catalogo vacio, iniciando carga de semillas...");
+                    
+                    cargarProgramaAPQP(repositorio); 
+                    cargarStage2(repositorio);       
+                    
+                    cargarGateReview(repositorio, "3. Stage 3");
+                    cargarGateReview(repositorio, "4. Stage 4");
+                    cargarGateReview(repositorio, "5. Stage 5");
 
-                cargarProgramaAPQP(repositorio); 
-                cargarStage2(repositorio);       
-                
-                cargarGateReview(repositorio, "3. Stage 3");
-                cargarGateReview(repositorio, "4. Stage 4");
-                cargarGateReview(repositorio, "5. Stage 5");
-
-                System.out.println("SEED LOADED: Original structure restored, Stage 1 added and Stages configured.");
+                    System.out.println("SEED LOADED: Original structure restored, Stage 1 added and Stages configured.");
+                } else {
+                    System.out.println("SEED: El catalogo ya contiene elementos. Saltando inicializacion.");
+                }
             } catch (Exception e) {
-                System.err.println("Error: " + e.getMessage());
+                System.err.println("Error en semilla: " + e.getMessage());
             }
         };
     }
