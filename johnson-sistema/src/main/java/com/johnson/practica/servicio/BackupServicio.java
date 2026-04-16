@@ -5,6 +5,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -12,6 +13,9 @@ import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.logging.Logger;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
+import java.util.stream.Stream;
 
 @Service
 public class BackupServicio {
@@ -35,8 +39,24 @@ public class BackupServicio {
             Files.createDirectories(Paths.get(backupDir));
 
             String timestamp = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd_HHmmss"));
-            String fileName = backupDir + File.separator + "backup_" + timestamp + ".sql";
+            
+            // 1. Respaldar Base de Datos (.sql)
+            realizarBackupBD(backupDir, timestamp);
+            
+            // 2. Respaldar Evidencias (.zip)
+            respaldarEvidencias(backupDir, timestamp);
 
+            // 3. Limpieza opcional: borrar archivos de más de 30 días
+            limpiarBackupsAntiguos(backupDir, 30);
+
+        } catch (IOException e) {
+            logger.severe("Excepción durante el proceso de backup: " + e.getMessage());
+        }
+    }
+
+    private void realizarBackupBD(String backupDir, String timestamp) {
+        String fileName = backupDir + File.separator + "backup_" + timestamp + ".sql";
+        try {
             // 1. Limpiar la URL de "jdbc:postgresql://"
             String cleanUrl = dbUrl.replace("jdbc:postgresql://", "");
             
@@ -44,7 +64,7 @@ public class BackupServicio {
             String hostPort = cleanUrl.split("/")[0];
             String fullDbName = cleanUrl.split("/")[1];
             
-            // 3. CORRECCIÓN CRÍTICA: Eliminar parámetros como "?sslmode=disable" del nombre de la BD
+            // 3. Eliminar parámetros adicionales
             String dbName = fullDbName.contains("?") ? fullDbName.split("\\?")[0] : fullDbName;
             
             // 4. Extraer Host y Puerto
@@ -56,28 +76,53 @@ public class BackupServicio {
                 "-h", host,
                 "-p", port,
                 "-U", dbUser,
-                "-F", "p", // formato plain sql
+                "-F", "p", 
                 "-f", fileName,
                 dbName
             );
 
-            // Pasar la contraseña vía variable de entorno para evitar prompts en la consola
             pb.environment().put("PGPASSWORD", dbPassword);
 
             Process process = pb.start();
             int exitCode = process.waitFor();
 
             if (exitCode == 0) {
-                logger.info("Backup realizado con éxito: " + fileName);
+                logger.info("Backup de BD realizado con éxito: " + fileName);
             } else {
-                logger.severe("Error al realizar el backup. Código de salida de pg_dump: " + exitCode);
+                logger.severe("Error al realizar el backup de BD. Código: " + exitCode);
             }
-
-            // Limpieza opcional: borrar backups de más de 30 días
-            limpiarBackupsAntiguos(backupDir, 30);
-
         } catch (IOException | InterruptedException e) {
-            logger.severe("Excepción durante el backup: " + e.getMessage());
+            logger.severe("Error en pg_dump: " + e.getMessage());
+        }
+    }
+
+    private void respaldarEvidencias(String backupDir, String timestamp) {
+        String sourceDir = "evidencias";
+        String zipFileName = backupDir + File.separator + "evidencias_" + timestamp + ".zip";
+        Path sourcePath = Paths.get(sourceDir);
+
+        if (!Files.exists(sourcePath)) {
+            logger.warning("La carpeta de evidencias no existe: " + sourceDir);
+            return;
+        }
+
+        try (ZipOutputStream zos = new ZipOutputStream(new FileOutputStream(zipFileName));
+             Stream<Path> paths = Files.walk(sourcePath)) {
+            
+            paths.filter(path -> !Files.isDirectory(path))
+                 .forEach(path -> {
+                     ZipEntry zipEntry = new ZipEntry(sourcePath.relativize(path).toString());
+                     try {
+                         zos.putNextEntry(zipEntry);
+                         Files.copy(path, zos);
+                         zos.closeEntry();
+                     } catch (IOException e) {
+                         logger.severe("Error al añadir archivo al zip: " + path + " - " + e.getMessage());
+                     }
+                 });
+            logger.info("Respaldo de evidencias (ZIP) completado: " + zipFileName);
+        } catch (IOException e) {
+            logger.severe("Error al crear el archivo ZIP de evidencias: " + e.getMessage());
         }
     }
 
@@ -89,7 +134,7 @@ public class BackupServicio {
             for (File file : files) {
                 if (file.lastModified() < threshold) {
                     if (file.delete()) {
-                        logger.info("Backup antiguo eliminado: " + file.getName());
+                        logger.info("Archivo antiguo eliminado: " + file.getName());
                     }
                 }
             }
