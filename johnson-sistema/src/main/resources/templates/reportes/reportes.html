@@ -227,6 +227,32 @@
             .waterfall-container::-webkit-scrollbar-track { background: transparent; }
             .waterfall-container::-webkit-scrollbar-thumb { background: #e2e8f0; border-radius: 10px; }
             .waterfall-container::-webkit-scrollbar-thumb:hover { background: #cbd5e1; }
+
+            /* --- SCROLLBAR PREMIUM PARA TABLAS --- */
+            .table-responsive {
+                padding: 0 1rem 1rem 1rem; /* Separa la tabla de los bordes curvos */
+            }
+
+            .table-responsive::-webkit-scrollbar {
+                height: 8px; /* Scrollbar más fino y elegante */
+            }
+
+            .table-responsive::-webkit-scrollbar-track {
+                background: #f1f5f9;
+    border-radius: 10px;
+    margin: 0 1rem; /* Evita que el riel choque con la orilla derecha */
+}
+
+.table-responsive::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 10px;
+}
+
+.table-responsive::-webkit-scrollbar-thumb:hover {
+    background: #94a3b8;
+}
+
+
         </style>
     </th:block>
 </head>
@@ -248,29 +274,35 @@
         <div class="row mb-5">
             <div class="col-12">
                 <div class="card glass-card border-0">
-                    <div class="card-header glass-header d-flex justify-content-between align-items-center">
-                        <h6 class="premium-title">
-                            <div class="premium-icon-box icon-orange-soft">
-                                <i class="bi bi-calendar3"></i>
-                            </div>
-                            MASTER EXECUTIVE ROADMAP <span id="currentYearBadge" class="badge bg-soft-primary text-primary ms-3 me-3 rounded-pill px-3 py-1 fw-bold" style="font-size: 0.7rem; background: #eff6ff; border: 1px solid #dbeafe;"></span>
-                        </h6>
-                        <div class="d-flex gap-4 align-items-center small fw-bold text-muted pe-3">
-                            <div class="d-flex align-items-center gap-3 me-4">
-                                <label for="roadmapYearSelector" class="text-uppercase mb-0" style="font-size: 0.65rem; letter-spacing: 0.05em; color: #94a3b8; white-space: nowrap;">View Year:</label>
-                                <select id="roadmapYearSelector" class="form-select form-select-sm form-select-premium py-1" style="width: auto; min-width: 120px; height: 32px; font-size: 0.75rem !important;">
-                                </select>
-                            </div>
-                            <span class="d-flex align-items-center" title="Current Date">
-                                <span class="me-2" style="width: 4px; height: 16px; background-color: #ef4444; border-radius: 2px;"></span> Today
-                            </span>
-                            <span class="d-flex align-items-center"><span class="me-2">👥</span> CAR</span>
-                            <span class="d-flex align-items-center"><span class="me-2">🚢</span> Ship</span>
-                            <span class="d-flex align-items-center"><span class="me-2">🏭</span> Factory</span>
-                            <span class="d-flex align-items-center"><span class="me-2">💰</span> Buy-off</span>
-                        </div>
-                    </div>
-                    <div class="card-body p-0">
+                    <div class="card-header glass-header d-flex flex-wrap justify-content-between align-items-center gap-3">
+    
+    <h6 class="premium-title mb-0">
+        <div class="premium-icon-box icon-orange-soft">
+            <i class="bi bi-calendar3"></i>
+        </div>
+        MASTER EXECUTIVE ROADMAP 
+        <span id="currentYearBadge" class="badge bg-soft-primary text-primary ms-3 rounded-pill px-3 py-1 fw-bold" style="font-size: 0.7rem; background: #eff6ff; border: 1px solid #dbeafe;"></span>
+    </h6>
+    
+    <div class="d-flex align-items-center gap-3 small fw-bold text-muted" style="white-space: nowrap !important;">
+        
+        <div class="d-flex align-items-center gap-2 border-end pe-3">
+            <label for="roadmapYearSelector" class="text-uppercase mb-0" style="font-size: 0.65rem; letter-spacing: 0.05em; color: #94a3b8;">View Year:</label>
+            <select id="roadmapYearSelector" class="form-select form-select-sm form-select-premium py-1" style="width: auto; min-width: 100px; height: 32px; font-size: 0.75rem !important;">
+            </select>
+        </div>
+        
+        <div class="d-flex align-items-center gap-3">
+            <span class="d-flex align-items-center"><span class="me-2" style="width: 4px; height: 16px; background-color: #ef4444; border-radius: 2px;"></span> Today</span>
+            <span class="d-flex align-items-center"><span class="me-1">👥</span> CAR</span>
+            <span class="d-flex align-items-center"><span class="me-1">🚢</span> Ship</span>
+            <span class="d-flex align-items-center"><span class="me-1">🏭</span> Factory</span>
+            <span class="d-flex align-items-center" style="white-space: nowrap !important;"><span class="me-1">💰</span> Buy-off</span>
+        </div>
+        
+    </div>
+</div>
+                    <div class="card-body px-2 pb-2 pt-0">
                         <div class="table-responsive">
                             <div id="roadmapContainer" style="position: relative; min-width: 1400px;">
                                 <table class="table table-hover roadmap-table align-middle mb-0">
