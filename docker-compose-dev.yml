@@ -1,0 +1,13 @@
+services:
+  db:
+    image: postgres:15-alpine
+    container_name: johnson_db_dev
+    restart: always
+    environment:
+      - POSTGRES_DB=${DB_NAME:-johnsondb}
+      - POSTGRES_USER=${DB_USER:-admin}
+      - POSTGRES_PASSWORD=${DB_PASSWORD:-johnsonbase2026}
+    ports:
+      - "5444:5432"
+    volumes:
+      - ./postgres_data_dev:/var/lib/postgresql/data

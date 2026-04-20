@@ -125,6 +125,8 @@
             /* Vis Timeline Customization */
             #visualization { border: none; background: #fff; }
             .vis-item { border-radius: 6px !important; font-family: 'Inter', sans-serif !important; font-weight: 600 !important; font-size: 11px !important; border: none !important; box-shadow: 0 2px 4px rgba(0,0,0,0.05) !important; }
+            
+            /* Milestones (Diamond points) */
             .vis-item.vis-point[class*="hito-"] { background-color: transparent !important; border: none !important; box-shadow: none !important; }
             .vis-item.vis-point[class*="hito-"] .vis-item-content { margin-left: 20px !important; }
             .vis-item.vis-point[class*="hito-"] .vis-dot { border: none !important; background-color: transparent !important; width: 12px !important; height: 12px !important; top: 0 !important; }
@@ -133,7 +135,29 @@
             .hito-atrasado .vis-dot::before { background-color: #ef4444 !important; }
             .hito-pendiente .vis-dot::before { background-color: #3b82f6 !important; }
 
-            .vis-item.vis-selected { background-color: var(--premium-orange) !important; color: white !important; }
+            /* Main Events (Boxes) */
+            .vis-item.vis-box.vis-event {
+                padding: 4px 10px !important;
+                border-radius: 8px !important;
+                color: white !important;
+                font-weight: 800 !important;
+                border: 2px solid rgba(255,255,255,0.3) !important;
+                box-shadow: 0 4px 6px rgba(0,0,0,0.1) !important;
+                text-shadow: 0 1px 2px rgba(0,0,0,0.2);
+            }
+
+            /* Specific status classes with !important to win over Vis.js defaults */
+            .vis-item.event-completed { background-color: #10b981 !important; }
+            .vis-item.event-delayed { background-color: #ef4444 !important; animation: pulse-red-border 2s infinite !important; }
+            .vis-item.event-pending { background-color: #3b82f6 !important; }
+
+            @keyframes pulse-red-border {
+                0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); }
+                70% { box-shadow: 0 0 0 10px rgba(239, 68, 68, 0); }
+                100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
+            }
+
+            .vis-item.vis-selected { border: 2px solid var(--premium-orange) !important; transform: scale(1.05); z-index: 100 !important; }
             .vis-time-axis .vis-text { font-size: 11px !important; font-weight: 700 !important; color: #64748b !important; text-transform: uppercase !important; }
             .vis-group { border-bottom: 1px solid #f1f5f9 !important; }
             .vis-label { font-weight: 700 !important; color: var(--premium-blue) !important; font-size: 12px !important; }
@@ -518,8 +542,8 @@
 
                 function renderizarTablaMainEvents(elementos) {
                     const tbody = document.getElementById('listaElementosMain');
-                    elementos = elementos.filter(el => el.fase.includes('Program'));
-                    tbody.innerHTML = elementos.map(el => `<tr><td class="ps-4 small fw-bold text-premium-blue">${el.nombre}</td><td class="small text-muted">${el.etapa}</td><td class="text-center"><button class="btn btn-sm ${el.esMainEvent ? 'btn-warning' : 'btn-outline-secondary'} border-0 rounded-circle" onclick="toggleMainEvent(${el.id}, this)" style="width: 32px; height: 32px; padding: 0;"><i class="bi ${el.esMainEvent ? 'bi-star-fill' : 'bi-star'}"></i></button></td></tr>`).join('') || '<tr><td colspan="3" class="text-center py-5 text-muted fst-italic">No deliverables found for Program</td></tr>';
+                    // Eliminamos el filtro por 'Program' para que aparezcan todos los entregables de todas las etapas
+                    tbody.innerHTML = elementos.map(el => `<tr><td class="ps-4 small fw-bold text-premium-blue">${el.nombre}</td><td class="small text-muted">${el.etapa}</td><td class="text-center"><button class="btn btn-sm ${el.esMainEvent ? 'btn-warning' : 'btn-outline-secondary'} border-0 rounded-circle" onclick="toggleMainEvent(${el.id}, this)" style="width: 32px; height: 32px; padding: 0;"><i class="bi ${el.esMainEvent ? 'bi-star-fill' : 'bi-star'}"></i></button></td></tr>`).join('') || '<tr><td colspan="3" class="text-center py-5 text-muted fst-italic">No deliverables found</td></tr>';
                 }
 
                 window.guardarHito = function() {
@@ -545,7 +569,11 @@
                         const item = items.get(p.items[0]);
                         const temp = document.createElement('div'); temp.innerHTML = item.content;
                         document.getElementById('detalle-nombre').innerText = (temp.querySelector('.event-content')?.getAttribute('data-realname') || temp.innerText).trim();
-                        document.getElementById('detalle-fecha').innerText = new Date(item.start).toLocaleDateString('en-US', {weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'});
+                        
+                        // Corregimos el desfase de un día agregando la hora T12:00:00
+                        const fechaAjustada = new Date(item.start + 'T12:00:00');
+                        document.getElementById('detalle-fecha').innerText = fechaAjustada.toLocaleDateString('en-US', {weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'});
+                        
                         bootstrap.Modal.getOrCreateInstance(document.getElementById('modalDetalleTimeline')).show();
                     }
                 });

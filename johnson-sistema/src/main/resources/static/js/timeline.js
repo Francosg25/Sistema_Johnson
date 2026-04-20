@@ -100,7 +100,7 @@ function renderizarTablaMainEvents(elementos) {
     const tbody = document.getElementById('listaElementosMain');
     if (!tbody) return;
 
-    elementos = elementos.filter(el => el.fase.includes('Program'));
+    // Eliminamos el filtro por 'Program' para que aparezcan todos los entregables de todas las etapas
     tbody.innerHTML = elementos.map(el => `
         <tr>
             <td class="small fw-bold">${el.nombre}</td>
@@ -111,7 +111,7 @@ function renderizarTablaMainEvents(elementos) {
                     <i class="bi ${el.esMainEvent ? 'bi-star-fill text-warning' : 'bi-star'}"></i>
                 </button>
             </td>
-        </tr>`).join('') || '<tr><td colspan="3" class="text-center py-5 text-muted fst-italic">No deliverables found for Program</td></tr>';
+        </tr>`).join('') || '<tr><td colspan="3" class="text-center py-5 text-muted fst-italic">No deliverables found</td></tr>';
 }
 
 window.guardarHito = function() {

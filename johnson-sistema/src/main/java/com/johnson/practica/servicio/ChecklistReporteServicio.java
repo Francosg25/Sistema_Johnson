@@ -258,28 +258,35 @@ public class ChecklistReporteServicio {
                     String scoreActual = item.getScore() != null ? item.getScore().trim().toUpperCase() : "";
                     String controlActual = item.getControlEntregable() != null ? item.getControlEntregable().trim().toUpperCase() : "";
 
+                    // Lógica de Completado (Más flexible)
                     boolean estaCompletado = scoreActual.equals("OK") || scoreActual.equals("NA") || scoreActual.equals("N/A");
 
+                    // Lógica de Retraso (Más precisa)
                     boolean estaRetrasado = false;
                     
-                    if (item.getFechaPlan() != null && item.getFechaPlan().isBefore(hoy)) {
+                    // 1. Si ya pasó la fecha plan y no está completado
+                    if (item.getFechaPlan() != null && item.getFechaPlan().isBefore(hoy) && !estaCompletado) {
                         estaRetrasado = true;
                     }
                     
+                    // 2. Si se terminó después de la fecha plan
                     if (item.getFechaReal() != null && item.getFechaPlan() != null && item.getFechaReal().isAfter(item.getFechaPlan())) {
                         estaRetrasado = true;
                     }
                     
+                    // 3. Si el control indica explícitamente retraso o acción necesaria
                     if (controlActual.contains("LATE") || controlActual.contains("ACTION")) {
                         estaRetrasado = true;
                     }
 
-                    if (estaCompletado) {
-                        claseCSS += "event-completed"; // Verde (Prioridad 1: Ya tiene el OK oficial)
+                    if (estaCompletado && !estaRetrasado) {
+                        claseCSS += "event-completed"; // Verde (A tiempo y OK)
+                    } else if (estaCompletado && estaRetrasado) {
+                        claseCSS += "event-completed"; // Podría ser verde también si ya se cerró aunque fuera tarde
                     } else if (estaRetrasado) {
-                        claseCSS += "event-delayed";   // Rojo (Prioridad 2: Vencido matemáticamente o por HOY)
+                        claseCSS += "event-delayed";   // Rojo
                     } else {
-                        claseCSS += "event-pending";   // Azul (Prioridad 3: Pendiente pero a tiempo)
+                        claseCSS += "event-pending";   // Azul
                     }
                     // --------------------------------------------
                     

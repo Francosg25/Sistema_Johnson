@@ -34,6 +34,7 @@ build/
 ### VS Code ###
 .vscode/
 postgres_data/
+postgres_data_dev/
 uploads/
 .env
 *.log 
