@@ -7,7 +7,6 @@ services:
       - POSTGRES_DB=${DB_NAME}
       - POSTGRES_USER=${DB_USER}
       - POSTGRES_PASSWORD=${DB_PASSWORD}
-    #Solo la 'app' puede verlo internamente
     volumes:
       - ./postgres_data:/var/lib/postgresql/data
     healthcheck:
@@ -15,7 +14,6 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
-    #Rotación de logs para evitar saturación de disco
     logging:
       driver: "json-file"
       options:
@@ -30,28 +28,21 @@ services:
     depends_on:
       db:
         condition: service_healthy
+    # LA TÁCTICA PROFESIONAL: Inyectar el archivo oculto completo
+    env_file:
+      - .env
     environment:
       DB_URL: jdbc:postgresql://db:5432/${DB_NAME}
-      DB_USER: ${DB_USER}
-      DB_PASSWORD: ${DB_PASSWORD}
-      APP_BASE_URL: ${APP_BASE_URL}
-      #Optimización de rendimiento UI en producción
       SPRING_THYMELEAF_CACHE: "true" 
-      SPRING_MAIL_HOST: ${SPRING_MAIL_HOST}
-      SPRING_MAIL_PORT: ${SPRING_MAIL_PORT}
-      SPRING_MAIL_USERNAME: ${SPRING_MAIL_USERNAME}
-      SPRING_MAIL_PASSWORD: ${SPRING_MAIL_PASSWORD}
     volumes:
       - ./backups:/app/backups
       - ./evidencias:/app/evidencias
     restart: always
-    #Rotación de logs (Máximo 50MB en total de logs almacenados)
     logging:
       driver: "json-file"
       options:
         max-size: "10m"
         max-file: "5"
-    #Contención de recursos (Previene el OOM Killer de Linux)
     deploy:
       resources:
         limits:
@@ -72,7 +63,6 @@ services:
       - ./nginx.conf:/etc/nginx/nginx.conf:ro
       - ./certs:/etc/nginx/certs:ro
     restart: always
-    #Rotación de logs web (Evita que el log de accesos llene el disco)
     logging:
       driver: "json-file"
       options:
