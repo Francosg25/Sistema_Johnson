@@ -1,3 +1,5 @@
+DROP TABLE IF EXISTS adjuntos CASCADE;
+
 CREATE TABLE adjuntos (
     id BIGSERIAL PRIMARY KEY,
     nombre_archivo VARCHAR(255) NOT NULL,
