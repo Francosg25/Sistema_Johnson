@@ -43,5 +43,4 @@ backups
 evidencias
 postgres_data
 certs
-application.properties
 docker-compose.yml
