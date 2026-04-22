@@ -1,4 +1,4 @@
-\CREATE TABLE adjuntos (
+CREATE TABLE adjuntos (
     id BIGSERIAL PRIMARY KEY,
     nombre_archivo VARCHAR(255) NOT NULL,
     tipo_contenido VARCHAR(100) NOT NULL,
