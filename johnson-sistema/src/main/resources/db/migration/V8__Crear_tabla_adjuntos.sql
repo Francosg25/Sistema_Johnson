@@ -6,7 +6,7 @@ CREATE TABLE adjuntos (
     tamano_bytes BIGINT,
     fecha_subida TIMESTAMP WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     proyecto_id BIGINT,
-    CONSTRAINT fk_adjunto_proyecto FOREIGN KEY (proyecto_id) REFERENCES proyectos(id) ON DELETE CASCADE
+    CONSTRAINT fk_adjunto_proyecto FOREIGN KEY (proyecto_id) REFERENCES proyectos(id) ON DELETE CASCADE,
     datos BYTEA
 );
 
