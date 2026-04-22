@@ -1,0 +1,1 @@
+ALTER TABLE elemento_checklist ALTER COLUMN comentario TYPE TEXT;

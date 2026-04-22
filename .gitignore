@@ -38,7 +38,6 @@ postgres_data_dev/
 uploads/
 .env
 *.log 
-*.sql
 src/main/resources/application.properties
 backups 
 evidencias
