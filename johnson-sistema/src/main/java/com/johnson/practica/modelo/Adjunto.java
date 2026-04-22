@@ -20,8 +20,7 @@ public class Adjunto {
 
     private String tipoContenido;
 
-    @Lob
-    @Column(name = "datos", nullable = false)
+    @Column(name = "datos", nullable = false, columnDefinition = "BYTEA")
     @Basic(fetch = FetchType.LAZY)
     private byte[] datos;
 
