@@ -44,3 +44,4 @@ evidencias
 postgres_data
 certs
 docker-compose.yml
+*.tar

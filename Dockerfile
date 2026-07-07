@@ -6,11 +6,16 @@ FROM maven:3.8.5-openjdk-17 AS build
 WORKDIR /app/johnson-sistema
 
 # OPTIMIZACIÓN DE CACHÉ ESTRICTA
+# ... líneas anteriores ...
+
+# OPTIMIZACIÓN DE CACHÉ ESTRICTA
 COPY johnson-sistema/pom.xml .
-RUN mvn -B dependency:go-offline
+RUN mvn -B dependency:go-offline -Dmaven.wagon.http.ssl.insecure=true -Dmaven.wagon.http.ssl.allowall=true -Dmaven.wagon.http.ssl.ignore.validity.dates=true
 
 COPY johnson-sistema/src ./src
-RUN mvn -B -DskipTests package
+RUN mvn -B -DskipTests package -Dmaven.wagon.http.ssl.insecure=true -Dmaven.wagon.http.ssl.allowall=true -Dmaven.wagon.http.ssl.ignore.validity.dates=true
+
+# ... resto del archivo ...
 
 # ==========================================
 # ETAPA 2: EJECUCIÓN (RUNTIME)

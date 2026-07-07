@@ -47,8 +47,8 @@ public class CargadorDatos implements CommandLineRunner {
             admin.setUsername("admin");
             admin.setPassword(defaultAdminPassword); 
             
-            admin.setCorreo("Eduardo.Tejeida@johnsonelectric.com"); 
-            admin.setNombreCompleto("Eduardo Tejeida"); 
+            admin.setCorreo("franco.sanchez@johnsonelectric.com"); 
+            admin.setNombreCompleto("Franco Sanchez"); 
             admin.setDepartamento("Management"); 
             
             admin.setEnabled(true);
